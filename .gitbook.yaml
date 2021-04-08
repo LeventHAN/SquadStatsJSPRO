@@ -1,0 +1,5 @@
+root: ./
+title: 'SquadStatJSv3'
+description: 'SquadStatJSv3 is a powerful Discord bot made with NodeJs with a lot of commands!'
+structure:
+    readme: ./README.md
