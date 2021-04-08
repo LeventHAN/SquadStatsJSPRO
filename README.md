@@ -37,6 +37,8 @@ An user should first link his steam64ID (17 digits long steam identifier) with h
 If a player did missconfigure their profile, they can run: `{prefix}profile re-link`.
 <br>This will let users make another link by running `{prefix}profile <steam64ID>`
 
+**Important: Experience will be avaible once SquadJS has it, it is in the PR so soon.**
+
 
 
 ### Prerequisites
