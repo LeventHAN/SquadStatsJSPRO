@@ -44,6 +44,7 @@ If a player did missconfigure their profile, they can run: `{prefix}profile re-l
 ### Prerequisites
  * Git
  * MongoDB ([Windows](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/#download-the-installer) || [Linux](https://docs.mongodb.com/manual/administration/install-on-linux/))
+   * Just download and install it. No need to configure anything. One time install and forget about it.
  * [Node.js](https://nodejs.org/en/) (Current) - [Download](https://nodejs.org/en/)
  * NPM
 
