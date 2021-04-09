@@ -6,9 +6,6 @@ node_modules
 package-lock.json
 yarn.lock
 
-# Fortnite Shop images
-assets/img/fortnite/shop/**/*.png
-!assets/img/fortnite/shop/**/example-shop.png
 
 # DB
 giveaways.json
@@ -54,8 +51,6 @@ coverage
 # Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
-# Bower dependency directory (https://bower.io/)
-bower_components
 
 # node-waf configuration
 .lock-wscript
