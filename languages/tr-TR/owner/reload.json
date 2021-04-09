@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Bir komutu yeniler!",
+    "USAGE": "{{prefix}}reload",
+    "EXAMPLES": "{{prefix}}reload",
+    "NOT_FOUND": "`{{search}}` adında bir komut bulunamadı!",
+    "SUCCESS": "Komut Yenilendi!"
+}
