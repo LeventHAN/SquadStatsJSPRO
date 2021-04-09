@@ -16,7 +16,6 @@
     "GOODBYE_DISABLED": "Mensagens de despedida desabilitadas.",
     "SPECIAL_CHANNELS": "Canais especiais",
     "MODLOGS": "Moderation logs: *{{channel}}*",
-    "FORTNITESHOP": "Fortnite daily shop: *{{channel}}*",
     "SUGGESTIONS": "Suggestions: *{{channel}}*",
     "REPORTS": "Reports: *{{channel}}*",
     "AUTOMOD_TITLE": "Auto-moderation:",

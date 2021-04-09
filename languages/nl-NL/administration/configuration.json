@@ -16,7 +16,6 @@
     "GOODBYE_DISABLED": "Vaarwel berichten uitgeschakeld.",
     "SPECIAL_CHANNELS": "Speciale kanalen",
     "MODLOGS": "Moderation logs: *{{channel}}*",
-    "FORTNITESHOP": "Fortnite daily shop: *{{channel}}*",
     "SUGGESTIONS": "Suggestions: *{{channel}}*",
     "REPORTS": "Reports: *{{channel}}*",
     "AUTOMOD_TITLE": "Auto-moderation:",
