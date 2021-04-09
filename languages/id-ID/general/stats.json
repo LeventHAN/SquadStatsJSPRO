@@ -1,0 +1,17 @@
+{
+    "DESCRIPTION": "Menunjukan statistik bot!",
+    "USAGE": "{{prefix}}stats",
+    "EXAMPLES": "{{prefix}}stats",
+    "COUNTS_TITLE": "• __Statistics__",
+    "COUNTS_CONTENT": "`Server: {{servers}}`\n`Pengguna: {{users}}`",
+    "VERSIONS_TITLE": "• __Using__",
+    "RAM_TITLE": "• __RAM__",
+    "ONLINE_TITLE": "• __Online__",
+    "ONLINE_CONTENT": "Telah Online {{time}}",
+    "MUSIC_TITLE": "• __Music__",
+    "MUSIC_CONTENT": "Memutar musik di `{{count}}` server",
+    "CREDITS_TITLE": ":heart: • __Pengakuan & kredit__",
+    "CREDITS_CONTENT": "Terima kasih kepada [Icons8](https://icons8.com/) untuk hampir semua emoji!\n__**Donatur**__:\n{{donators}}\n__**Penerjemah**__:\n{{translators}}",
+    "LINKS_TITLE": "• __Links__",
+    "MADE": "SquadStatJSv3 adalah bot open source yang dikembangkan oleh Androz # 2091!"
+}

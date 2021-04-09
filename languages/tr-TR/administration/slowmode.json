@@ -1,0 +1,8 @@
+{
+    "DESCRIPTION": "Yavaşmod'u ayarla",
+    "USAGE": "{{prefix}}slowmode [#kanal] (zaman)",
+    "EXAMPLES": "{{prefix}}slowmode #genel 10m\n{{prefix}}slowmode #genel",
+    "DISABLED": "**Yavaş-mod {{channel}} kanalında devredışı bırakıldı!**\n\n:arrow_right_hook: *Tekrar etkinleştirmek için `{{prefix}}slowmode [#kanal] (zaman)` yaz!*\n",
+    "ENABLED": "**Yavaş-mod {{channel}} kanalında etkinleştirildi!**\n\n:arrow_right_hook: *Tekrar kapatmak için `{{prefix}}slowmode [#kanal] (zaman)` yaz!*",
+    "PLEASE_WAIT": "Şu kanal {{channel}} yavaş mod da! Lütfen {{time}} sonra tekrar deneyin!"
+}

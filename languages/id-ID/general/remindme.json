@@ -1,0 +1,9 @@
+{
+    "DESCRIPTION": "Tambahkan pengingat pribadi baru",
+    "USAGE": "{{prefix}}remindme [pesan]",
+    "EXAMPLES": "{{prefix}}remindme 24h perintah Work\n{{prefix}}remindme 3m Ambil pasta dari teflon!",
+    "MISSING_MESSAGE": "Kamu harus memberikan pesan!",
+    "SAVED": "Pengingat disimpan, kamu akan menerima pesan pada akhir dari waktunya!",
+    "TITLE": "Pengingat SquadStatJSv3",
+    "CREATED": "Pesan dibuat {{time}}"
+}

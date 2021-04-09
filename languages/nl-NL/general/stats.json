@@ -1,0 +1,17 @@
+{
+    "DESCRIPTION": "Shows the bot stats!",
+    "USAGE": "{{prefix}}stats",
+    "EXAMPLES": "{{prefix}}stats",
+    "COUNTS_TITLE": "• __Statistics__",
+    "COUNTS_CONTENT": "`Servers: {{servers}}`\n`Gebruikers: {{users}}`",
+    "VERSIONS_TITLE": "• __Using__",
+    "RAM_TITLE": "• __RAM__",
+    "ONLINE_TITLE": "• __Online__",
+    "ONLINE_CONTENT": "Online voor {{time}}",
+    "MUSIC_TITLE": "• __Music__",
+    "MUSIC_CONTENT": "Muziek op `{{count}}` servers aan het afspelen",
+    "CREDITS_TITLE": ":heart: • __Thanks & Credits__",
+    "CREDITS_CONTENT": "Thanks to [Icons8](https://icons8.com/) for almost all the emojis!\n__**Donators**__:\n{{donators}}\n__**Translators**__:\n{{translators}}",
+    "LINKS_TITLE": "• __Links__",
+    "MADE": "SquadStatJSv3 is een open source bot ontwikkeld door LeventHAN™#0001!"
+}

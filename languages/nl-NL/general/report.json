@@ -1,0 +1,11 @@
+{
+    "DESCRIPTION": "Stuur uw rapport naar het kanaal dat voor hen is gedefinieerd!",
+    "USAGE": "{{prefix}}report [@user] [reason]",
+    "EXAMPLES": "{{prefix}}report @LeventHAN™#0001 De regels breken",
+    "MISSING_CHANNEL": "Geen rapportkanaal gedefinieerd!",
+    "MISSING_REASON": "Please enter a report reason!",
+    "MISSING_USER": "Vermeld de gebruiker die u wilt rapporteren!",
+    "INVALID_USER": "Je kunt jezelf niet melden",
+    "SUCCESS": "Je melding is verzonden in {{channel}}!",
+    "TITLE": "Report - {{user}}"
+}

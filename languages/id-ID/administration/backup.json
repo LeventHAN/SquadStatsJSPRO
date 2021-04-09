@@ -1,0 +1,19 @@
+{
+    "DESCRIPTION": "Kelola cadangan server kamu dengan cara yang efisien!",
+    "USAGE": "{{prefix}}backup [create/load/infos]",
+    "EXAMPLES": "{{prefix}}backup create\n{{prefix}}backup load 558328638911545423\n{{prefix}}backup infos 558328638911545423",
+    "MISSING_STATUS": "Pilih tindakan antara: `create`, `load` dan `info`!",
+    "MISSING_BACKUP_ID": "Harap berikan ID cadangan!",
+    "NO_BACKUP_FOUND": "Tidak ada cadangan ditemukan untuk `{{backupID}}`",
+    "TIMES_UP": "Waktu habis! Pemuatan cadangan dibatalkan!",
+    "SUCCESS_PUBLIC": "Cadangan berhasil dibuat! ID cadangan telah dikirimkan kepadamu dalam pesan pribadi!",
+    "SUCCESS_PRIVATE": "Ini ID cadanganmu: `{{backupID}}`, gunakan untuk memuat cadanganmu di server lain!",
+    "CONFIRMATION": ":warning: | **Memuat cadangan akan menggantikan server sebenarnya dengan yang disimpan.**\n\n:arrow_right_hook: *Jawab dengan mengirimkan `konfirmasi` untuk mengkonfirmasi tindakan ini!*",
+    "START_LOADING": "Pemuatan cadangan dimulai!",
+    "LOAD_SUCCESS": "Cadangan berhasil dimuat!",
+    "TITLE_INFOS": "Informasi Cadangan",
+    "TITLE_ID": "ID",
+    "TITLE_SERVER_ID": "Server ID",
+    "TITLE_SIZE": "Ukuran",
+    "TITLE_CREATED_AT": "Dibuat pada"
+}

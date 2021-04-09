@@ -1,0 +1,8 @@
+{
+    "DESCRIPTION": "Przełącz automatyczne usuwanie poleceń moderacji!",
+    "USAGE": "{{prefix}}deletemod [on/off]",
+    "EXAMPLES": "{{prefix}}deletemod on",
+    "MISSING_STATUS": "Musisz określić `on` lub `off`",
+    "ENABLED": "Automatyczne usuwanie poleceń moderacji!",
+    "DISABLED": "Automatyczne usuwanie poleceń moderacji wyłączone!"
+}

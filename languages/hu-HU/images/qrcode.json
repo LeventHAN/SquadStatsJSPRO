@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Generálok egy QR-kód képet a szövegedből",
+    "USAGE": "{{prefix}}qrcode [szöveg]",
+    "EXAMPLES": "{{prefix}}qrcode Helló",
+    "MISSING_TEXT": "Kérlek add meg az üzenet szövegét!",
+    "SUCCESS": "Itt van a QRKód!"
+}

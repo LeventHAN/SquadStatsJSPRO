@@ -1,0 +1,6 @@
+{
+    "DESCRIPTION": "Hasilkan tautan LMGTFY dengan pencarianmu",
+    "USAGE": "{{prefix}}lmg [pencarian]",
+    "EXAMPLES": "{{prefix}}lmg Bagaimana cara membuat bot Discord?",
+    "MISSING": "Kamu harus menentukan pencarian!"
+}

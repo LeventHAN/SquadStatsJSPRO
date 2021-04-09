@@ -1,0 +1,8 @@
+{
+    "DESCRIPTION": "Sunucu önek'ini ayarla!",
+    "USAGE": "{{prefix}}setprefix [prefix]",
+    "EXAMPLES": "{{prefix}}setprefix +",
+    "MISSING_PREFIX": "Lütfen geçeri bir prefix girin!",
+    "TOO_LONG": "Prefix 5 karakteri aşmamalı!",
+    "SUCCESS": "Bot'un prefixi `{{prefix}}` olarak ayarlandı!"
+}

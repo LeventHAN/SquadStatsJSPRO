@@ -1,0 +1,6 @@
+{
+    "DESCRIPTION": "Cek jika anggota mempunyai tautan server Discord di status mereka!",
+    "USAGE": "{{prefix}}checkinvites",
+    "EXAMPLES": "{{prefix}}checkinvites",
+    "NOBODY": "Tidak ada anggota yang beriklan di status mereka!"
+}

@@ -1,0 +1,6 @@
+{
+    "DESCRIPTION": "Üyenin bu kanaldaki yetkilerini gösterir",
+    "USAGE": "{{prefix}}permissions (@üye)",
+    "EXAMPLES": "{{prefix}}permissions\n{{prefix}}permissions @LeventHAN™#0001",
+    "TITLE": "{{user}} Kullanıcı'sının {{channel}} kanalındaki yetkisi"
+}

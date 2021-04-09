@@ -1,0 +1,10 @@
+{
+    "DESCRIPTION": "Usir anggota yang disebutkan!",
+    "USAGE": "{{prefix}}kick [@anggota] (alasan)",
+    "EXAMPLES": "{{prefix}}kick @LeventHAN™#0001 Spam",
+    "MISSING_MEMBER": "Harap tentukan anggota yang valid untuk di usir!",
+    "MISSING_PERM": "Telah terjadi kesalahan... Periksa apakah aku memiliki izin untuk mengusir anggota tertentu ini dan coba lagi!",
+    "KICKED_DM": "Halo {{username}},\nKamu baru saja diusir dari **{{server}}** oleh **{{moderator}}** karena **{{reason}}**!",
+    "KICKED": "**{{username}}** baru saja diusir dari **{{server}}** oleh **{{moderator}}** karena **{{reason}}**!",
+    "CASE": "Usir | Kasus #{{count}}"
+}

@@ -1,0 +1,5 @@
+{
+    "DESCRIPTION": "Générer une image \"facepalm\" en utilisant canvas",
+    "USAGE": "{{prefix}}facepalm (@membre)",
+    "EXAMPLES": "{{prefix}}facepalm\n{{prefix}}facepalm LeventHAN™#0001"
+}

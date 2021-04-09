@@ -1,0 +1,12 @@
+{
+    "DESCRIPTION": "Définissez les sanctions que les membres recevront après un certain nombre d'avertissements !",
+    "USAGE": "{{prefix}}setwarns [kick/ban] [number/reset]",
+    "EXAMPLES": "{{prefix}}setwarns kick 10\n{{prefix}}setwarns ban 10\n{{prefix}}setwarns ban reset",
+    "MISSING_TYPE": "Veuillez spécifier la sanction entre `kick` et `ban`",
+    "SUCCESS_KICK": "**`{{count}}` avertissements vous causeront une expulsion !**\n\n:arrow_right_hook: *Envoyez `{{prefix}}configuration` pour voir la configuration mise à jour !*",
+    "SUCCESS_BAN": "**`{{count}}` avertissements vous causeront un bannissement !**\n\n:arrow_right_hook: *Envoyez `{{prefix}}configuration` pour voir la configuration mise à jour !*",
+    "SUCCESS_KICK_RESET": "**Les membres ne peuvent plus être automatiquement expulsés !**\n\n:arrow_right_hook: *Envoyez `{{prefix}}configuration` pour voir la configuration mise à jour !*",
+    "SUCCESS_BAN_RESET": "**Les membres ne peuvent plus être automatiquement bannis !**\n\n:arrow_right_hook: *Envoyez `{{prefix}}configuration` pour voir la configuration mise à jour !*",
+    "AUTO_BAN": "**{{username}}** a été automatiquement banni car il a plus de **{{count}}** avertissements !",
+    "AUTO_KICK": "**{{username}}** a été automatiquement expulsé car il a plus de **{{count}}** avertissements !"
+}

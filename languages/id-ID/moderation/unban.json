@@ -1,0 +1,8 @@
+{
+    "DESCRIPTION": "Batalkan pencekalan pengguna dari server!",
+    "USAGE": "{{prefix}}unban [userID/user#0000]",
+    "EXAMPLES": "{{prefix}}unban 422820341791064085\n{{prefix}}unban LeventHAN™#0001",
+    "MISSING_ID": "Harap tentukan ID anggota yang ingin kamu batalkan pencekalannya!",
+    "NOT_BANNED": "**{{username}}** tidak dicekal!",
+    "UNBANNED": "**{{username}}** baru saja dibatalkan pencekalannya dari **{{server}}**!"
+}

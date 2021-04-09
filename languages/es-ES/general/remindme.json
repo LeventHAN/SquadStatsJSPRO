@@ -1,0 +1,9 @@
+{
+    "DESCRIPTION": "Add a new personal reminder",
+    "USAGE": "{{prefix}}remindme [mensaje]",
+    "EXAMPLES": "{{prefix}}remindme 24h Ir a trabajar\n{{prefix}}remindme 3m ¡Atender la freidora!",
+    "MISSING_MESSAGE": "You must enter a message!",
+    "SAVED": "Recordatorio guardado, ¡recibirá un mensaje al final del tiempo!",
+    "TITLE": "Recordatorio de SquadStatJSv3",
+    "CREATED": "Mensaje creado en {{time}}"
+}

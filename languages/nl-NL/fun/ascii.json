@@ -1,0 +1,6 @@
+{
+    "DESCRIPTION": "Verander uw tekst in ascii karakters!",
+    "USAGE": "{{prefix}}ascii [text]",
+    "EXAMPLES": "{{prefix}}ascii Hallo wereld!",
+    "TEXT_MISSING": "Voer een geldige tekst in (minder dan 20 tekens)!"
+}

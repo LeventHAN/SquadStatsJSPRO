@@ -1,0 +1,8 @@
+{
+    "DESCRIPTION": "Dodaj niestandardową komendę!",
+    "USAGE": "{{prefix}}addcommand [nazwa] [odpowiedź]",
+    "EXAMPLES": "{{prefix}}addcommand cześć Cześć {user}! jak się masz?",
+    "MISSING_NAME": "Podaj nazwę komendy!",
+    "MISSING_ANSWER": "Podaj odpowiedź komendy!",
+    "SUCCESS": "Komenda **{{prefix}}{{commandName}}** została dodana!"
+}

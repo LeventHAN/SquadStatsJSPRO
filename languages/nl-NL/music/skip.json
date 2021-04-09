@@ -1,0 +1,8 @@
+{
+    "DESCRIPTION": "Sla het huidige nummer over",
+    "USAGE": "{{prefix}}skip",
+    "EXAMPLES": "{{prefix}}skip",
+    "NO_NEXT_SONG": "Er is geen nummer na deze!",
+    "VOTE_CONTENT": "exterlied: {{songName}}\nReageer met 👍 om de muziek te stoppen! {{requiredCount}}  Meer stemmen zijn nodig.",
+    "SUCCESS": "Nummer overgeslagen!"
+}

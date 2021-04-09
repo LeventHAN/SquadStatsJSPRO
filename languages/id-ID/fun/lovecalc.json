@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Seberapa besar cinta di antara dua orang?\n* Ini adalah perintah senang - senang, jangan dianggap serius *",
+    "USAGE": "{{prefix}}lovecalc [@anggota1] (@anggota2)",
+    "EXAMPLES": "{{prefix}}lovecalc @LeventHAN™#0001\n{{prefix}}lovecalc @LeventHAN™#0001 @SquadStatJSv3#6770",
+    "MISSING": "Kamu harus menyebut dua anggota!",
+    "CONTENT": "Ada **{{percent}}%** cinta diantara **{{firstUsername}}** dan **{{secondUsername}}**!\n**Selamat!**"
+}

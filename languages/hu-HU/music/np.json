@@ -1,0 +1,11 @@
+{
+    "DESCRIPTION": "Információk megtektintése az aktuális dalról!",
+    "USAGE": "{{prefix}}np",
+    "EXAMPLES": "{{prefix}}np",
+    "CURRENTLY_PLAYING": "Jelenleg szól",
+    "T_TITLE": "Cím",
+    "T_CHANNEL": "Csatorna",
+    "T_DURATION": "Tartam",
+    "T_DESCRIPTION": "Leírás",
+    "NO_DESCRIPTION": "Nincs Leírás..."
+}

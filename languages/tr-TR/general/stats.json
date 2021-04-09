@@ -1,0 +1,17 @@
+{
+    "DESCRIPTION": "Botun istatistiklerini gösterir!",
+    "USAGE": "{{prefix}}stats",
+    "EXAMPLES": "{{prefix}}stats",
+    "COUNTS_TITLE": "• __Statistics__",
+    "COUNTS_CONTENT": "`Sunucular: {{servers}}`\n`Kullanıcılar: {{users}}`",
+    "VERSIONS_TITLE": "• __Using__",
+    "RAM_TITLE": "• __RAM__",
+    "ONLINE_TITLE": "• __Online__",
+    "ONLINE_CONTENT": "{{time}} Açık",
+    "MUSIC_TITLE": "• __Music__",
+    "MUSIC_CONTENT": "Şuanda `{{count}}` sunucu müzik dinliyor",
+    "CREDITS_TITLE": ":heart: • __Teşekkürler & yapımcılar__",
+    "CREDITS_CONTENT": "Emojiler ve resimler için [Icons8](https://icons8.com/) e teşekkür ederiz!\n__**Destekçiler**__:\n{{donators}}\n__**Çevirmenler**__:\n{{translators}}",
+    "LINKS_TITLE": "• __Links__",
+    "MADE": "SquadStatJSv3 açık kaynak kodlu discord botu, LeventHAN™#0001 tarafından geliştirildi!"
+}

@@ -1,0 +1,8 @@
+{
+    "DESCRIPTION": "Définir un temps de cooldown dans un salon",
+    "USAGE": "{{prefix}}slowmode [#salon] (temps)",
+    "EXAMPLES": "{{prefix}}slowmode #general 10m\n{{prefix}}slowmode #general",
+    "DISABLED": "**Le mode lent vient d'être désactivé dans {{channel}} !**\n\n:arrow_right_hook: *Envoyez `{{prefix}}slowmode [#salon] (temps)` pour l'activer a nouveau !*",
+    "ENABLED": "**Un mode lent de `{{time}}` vient d'être activé dans `{{channel}}`!**\n\n:arrow_right_hook: *Envoyez `{{prefix}}slowmode {{channel}}` pour le désactiver !*",
+    "PLEASE_WAIT": "Le salon {{channel}} est en mode lent ! Veuillez attendre {{time}} pour pouvoir envoyer un nouveau message !"
+}

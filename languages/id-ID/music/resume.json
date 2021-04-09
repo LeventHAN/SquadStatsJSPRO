@@ -1,0 +1,6 @@
+{
+    "DESCRIPTION": "Lanjutkan lagu saat ini!",
+    "USAGE": "{{prefix}}resume",
+    "EXAMPLES": "{{prefix}}resume",
+    "SUCCESS": "▶️ Musik dilanjutkan!"
+}

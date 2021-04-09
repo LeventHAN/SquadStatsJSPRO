@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Mengirim daftar semua filter dan statusnya",
+    "USAGE": "{{prefix}}filters",
+    "EXAMPLES": "{{prefix}}filters",
+    "TITLE": "**Filter**",
+    "CONTENT": "Berikut daftar semua filter yg diaktifkan atau dinonaktifkan. Gunakan `{{prefix}}filter` untuk mengganti status salah satu dari mereka."
+}

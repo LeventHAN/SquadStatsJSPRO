@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Defina o canal para registos de moderação!",
+    "USAGE": "{{prefix}}setmodlogs (#canal)",
+    "EXAMPLES": "{{prefix}}setmodlogs #registoMod\n{{prefix}}setmodlogs",
+    "SUCCESS_ENABLED": "Os registos de moderação serão enviados no canal **{{channel}}**!",
+    "SUCCESS_DISABLED": "Canal para registos de moderação excluído!"
+}

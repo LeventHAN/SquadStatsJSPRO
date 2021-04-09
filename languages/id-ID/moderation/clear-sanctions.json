@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Bersihkan sanksi anggota!",
+    "USAGE": "{{prefix}}clear-sanctions [@anggota]",
+    "EXAMPLES": "{{prefix}}clear-sanctions @LeventHAN™#0001",
+    "MISSING_MEMBER": "Harap sebutkan anggota yang ingin kamu hapus sanksinya!",
+    "SUCCESS": "Sanksi **{{username}}** telah dihapus!"
+}

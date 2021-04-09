@@ -1,0 +1,10 @@
+{
+    "DESCRIPTION": "Megmutatja a dalszövegeket",
+    "USAGE": "{{prefix}}lyrics [zene-név]",
+    "EXAMPLES": "{{prefix}}lyrics Skyfall",
+    "LYRICS_OF": "🎤 {{songName}} dalszövege",
+    "AND_MORE": "\n**És több...**",
+    "REST": "Kiterjed",
+    "MISSING_SONG_NAME": "Adj meg egy dal nevet!",
+    "NO_LYRICS_FOUND": "Nem található `{{songName}}` dal szövege!"
+}

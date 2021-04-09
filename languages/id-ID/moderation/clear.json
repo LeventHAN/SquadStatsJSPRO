@@ -1,0 +1,10 @@
+{
+    "DESCRIPTION": "Hapus banyak pesan dengan singkat!",
+    "USAGE": "{{prefix}}clear [jumlah-pesan] (@anggota)",
+    "EXAMPLES": "{{prefix}}clear 10\n{{prefix}}clear 10 @LeventHAN™#0001",
+    "MISSING_AMOUNT": "Kamu harus menentukan jumlah pesan yang akan dihapus!",
+    "ALL_CONFIRM": "Semua pesan di saluran ini akan dihapus! Untuk mengkonfirmasi ketik `-confirm`",
+    "CHANNEL_CLEARED": "Saluran dibersihkan!",
+    "CLEARED": "**{{amount}}** pesan telah dihapus!",
+    "CLEARED_MEMBER": "**{{amount}}** pesan oleh **{{username}}** telah dihapus!"
+}

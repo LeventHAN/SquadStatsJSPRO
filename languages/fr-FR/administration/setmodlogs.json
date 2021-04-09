@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Activer les logs de modération !",
+    "USAGE": "{{prefix}}setmodlogs (#salon)",
+    "EXAMPLES": "{{prefix}}setmodlogs #modlogs\n{{prefix}}setmodlogs",
+    "SUCCESS_ENABLED": "Les logs de modérations seront envoyés dans **{{channel}}** !",
+    "SUCCESS_DISABLED": "Salon des logs de modération supprimé !"
+}

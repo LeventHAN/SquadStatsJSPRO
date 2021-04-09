@@ -1,0 +1,9 @@
+{
+    "DESCRIPTION": "Aktifkan atau Nonaktifkan filter!",
+    "USAGE": "{{prefix}}filter [filter]",
+    "EXAMPLES": "{{prefix}}filter vaporwave",
+    "MISSING_FILTER": "Harap tentukan filter yang valid untuk mengaktifkan atau menonaktifkan! (atau kirim `{{prefix}}filters` untuk mendapatkan status filter)",
+    "UNKNOWN_FILTER": "Filter ini tidak ada! Kirim `{{prefix}}filters` untuk mendapatkan daftarnya!",
+    "ADDING_FILTER": "Aku sedang menambahkan filternya ke musik, mohon tunggu...\nCatatan: semakin pendek musiknya, semakin cepat jadinya.",
+    "REMOVING_FILTER": "Aku sedang menghapus filternya dari musik, mohon tunggu...\nCatatan: semakin pendek musiknya, semakin cepat jadinya."
+}

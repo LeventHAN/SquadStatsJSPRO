@@ -1,0 +1,11 @@
+{
+    "DESCRIPTION": "Şuan ki şarkı hakkında bilgi gösterir!",
+    "USAGE": "{{prefix}}np\n",
+    "EXAMPLES": "{{prefix}}np",
+    "CURRENTLY_PLAYING": "Şuanda Dinleniyor",
+    "T_TITLE": "Başlık",
+    "T_CHANNEL": "Kanal",
+    "T_DURATION": "Süre",
+    "T_DESCRIPTION": "Açıklama",
+    "NO_DESCRIPTION": "Açıklama yok..."
+}

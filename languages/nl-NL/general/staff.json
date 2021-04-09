@@ -1,0 +1,10 @@
+{
+    "DESCRIPTION": "Shows the server staff members list!",
+    "USAGE": "{{prefix}}staff",
+    "EXAMPLES": "{{prefix}}staff",
+    "TITLE": "{{guild}} staff",
+    "ADMINS": "Beheerders",
+    "NO_ADMINS": "Geen beheerders",
+    "MODS": "Moderatoren",
+    "NO_MODS": "Geen moderatoren"
+}

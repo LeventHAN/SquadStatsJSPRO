@@ -1,0 +1,5 @@
+{
+    "DESCRIPTION": "Menunjukan avatar anggota yang disebutkan",
+    "USAGE": "{{prefix}}avatar (@anggota)",
+    "EXAMPLES": "{{prefix}}avatar\n{{prefix}}avatar @LeventHAN™#0001"
+}

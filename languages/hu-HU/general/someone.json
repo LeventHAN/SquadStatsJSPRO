@@ -1,0 +1,5 @@
+{
+    "DESCRIPTION": "Válassz egy véletlenszerű tagot a szerveren!",
+    "USAGE": "{{prefix}}someone",
+    "EXAMPLES": "{{prefix}}someone"
+}

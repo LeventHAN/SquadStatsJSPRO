@@ -1,0 +1,10 @@
+{
+    "DESCRIPTION": "Tambahkan emoji ke server!",
+    "USAGE": "{{prefix}}addemoji [url-gambar] [nama]",
+    "EXAMPLES": "{{prefix}}addemoji https://via.placeholder.com/150 emoji-tes",
+    "MISSING_URL": "Harap sediakan URL gambar!",
+    "MISSING_NAME": "Harap sediakan nama emoji!",
+    "INVALID_NAME": "Panjang nama emoji harus diantara 2 dan 32!",
+    "SUCCESS": ":{{emojiName}}: ditambahkan!",
+    "ERROR": "{{emojiName}} tidak dapat ditambahkan. Cek jika servermu masih ada ruang untuk emoji baru!"
+}

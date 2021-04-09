@@ -1,0 +1,8 @@
+{
+    "DESCRIPTION": "Basculer la suppression automatique des commandes de modération !",
+    "USAGE": "{{prefix}}deletemod [on/off]",
+    "EXAMPLES": "{{prefix}}deletemod on",
+    "MISSING_STATUS": "Vous devez spécifier `on` ou `off`",
+    "ENABLED": "Suppression automatique des commandes de modération !",
+    "DISABLED": "Suppression automatique des commandes de modération désactivée !"
+}

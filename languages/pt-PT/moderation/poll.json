@@ -1,0 +1,8 @@
+{
+    "DESCRIPTION": "Inicie uma pesquisa no canal atual!",
+    "USAGE": "{{prefix}}poll [question]",
+    "EXAMPLES": "{{prefix}}poll Is the Earth flat?",
+    "MISSING_QUESTION": "Por favor especifique uma pergunta!",
+    "REACT": "Reagir com {{success}} ou {{error}}!",
+    "TITLE": "📊 Votação:"
+}

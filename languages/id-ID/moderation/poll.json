@@ -1,0 +1,8 @@
+{
+    "DESCRIPTION": "Luncurkan survei di saluran saat ini!",
+    "USAGE": "{{prefix}}poll [pertanyaan]",
+    "EXAMPLES": "{{prefix}}poll Apa bumi itu bulat?",
+    "MISSING_QUESTION": "Harap tentukan pertanyaannya!",
+    "REACT": "Reaksi dengan {{success}} atau {{error}}!",
+    "TITLE": "📊 Pemilihan:"
+}

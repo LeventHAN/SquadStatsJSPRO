@@ -1,0 +1,8 @@
+{
+    "DESCRIPTION": "Állíts be egy csatornára hűtését",
+    "USAGE": "{{prefix}}slowmode [#csatorna] (idő)",
+    "EXAMPLES": "{{prefix}}slowmode #általános 10m\n{{prefix}}slowmode #általános",
+    "DISABLED": "**A lassú üzemmódot éppen letiltottam a(z) {{channel}} csatornában!**\n\n:arrow_right_hook: *Írd be a `{{prefix}}slowmode [#csatorna] (idő)` az újra engedélyezéshez!*",
+    "ENABLED": "**A lassú mód `{{time}}` engedélyezve lett a(z) `{{channel}}` csatornában!**\n\n:arrow_right_hook: *Írd be a `{{prefix}}slowmode {{channel}}` a letíltásra!*",
+    "PLEASE_WAIT": "Csatorna {{channel}} lassú üzemmódban van! Kérlek várj minden üzenet között {{time}}!"
+}

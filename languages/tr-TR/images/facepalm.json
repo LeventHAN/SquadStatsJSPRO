@@ -1,0 +1,5 @@
+{
+    "DESCRIPTION": "\"facepalm\" ifadesini canvas kullanarak oluştur",
+    "USAGE": "{{prefix}}facepalm (@üye)",
+    "EXAMPLES": "{{prefix}}facepalm\n{{prefix}}facepalm LeventHAN™#0001"
+}

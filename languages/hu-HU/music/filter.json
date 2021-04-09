@@ -1,0 +1,9 @@
+{
+    "DESCRIPTION": "Szűrő engedélyezése vagy letiltása!",
+    "USAGE": "{{prefix}}filter [szűrő]",
+    "EXAMPLES": "{{prefix}}filter vaporwave",
+    "MISSING_FILTER": "Kélek adj meg egy érvényes szűrőt az engedélyezéshez vagy letiltáshoz! (vagy írd be a `{{prefix}}filters` parancsot a szűrők állapotainak lekéréséhez)",
+    "UNKNOWN_FILTER": "Nem létezik ilyen szürő! Írd be a `{{prefix}}filters` parancsot a lista lekéréséhez.",
+    "ADDING_FILTER": "Hozzáadom a szűrőt a zenéhez, kérlek várj... Megjegyzés: minél rövidebb a zene, annál gyorsabb lesz.",
+    "REMOVING_FILTER": "Eltávolítom a szűrőt a zenéből, kérlek várj... Megjegyzés: minél rövidebb a zene, annál gyorsabb lesz."
+}

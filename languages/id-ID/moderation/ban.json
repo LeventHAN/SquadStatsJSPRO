@@ -1,0 +1,13 @@
+{
+    "DESCRIPTION": "Cekal anggota yang disebutkan!",
+    "USAGE": "{{prefix}}ban [@pengguna] (alasan)",
+    "EXAMPLES": "{{prefix}}ban @LeventHAN™#0001 Spam",
+    "MISSING_MEMBER": "Harap tentukan anggota yang valid untuk di cekal!",
+    "YOURSELF": "Kamu tidak dapat memberi sanksi pada dirimu sendiri!",
+    "SUPERIOR": "Kamu tidak dapat memberikan atau perbarui sanksi anggota yang hirarkinya lebih tinggi atau sama dengamu!",
+    "ALREADY_BANNED": "**{{username}}** sudah di cekal!",
+    "MISSING_PERM": "Telah terjadi kesalahan... Periksa apakah aku memiliki izin untuk mencekal anggota tertentu ini dan coba lagi!",
+    "BANNED_DM": "Halo {{username}},\nKamu baru saja dicekal dari **{{server}}** oleh **{{moderator}}** karena **{{reason}}**!",
+    "BANNED": "**{{username}}** baru saja dicekal dari **{{server}}** oleh **{{moderator}}** karena **{{reason}}**!",
+    "CASE": "Cekal | Kasus #{{count}}"
+}

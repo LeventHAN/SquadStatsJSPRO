@@ -1,0 +1,10 @@
+{
+    "DESCRIPTION": "Şarkının sözlerini göster",
+    "USAGE": "{{prefix}}lyrics [şarkı-ismi]",
+    "EXAMPLES": "{{prefix}}lyrics Skyfall",
+    "LYRICS_OF": "🎤 {{songName}} sözleri",
+    "AND_MORE": "\n**Daha fazla...**",
+    "REST": "Genişlet",
+    "MISSING_SONG_NAME": "Lütfen uygun bir şarkı gir!",
+    "NO_LYRICS_FOUND": "Bu şarkı için `{{songName}}` sözleri bulunamadı !"
+}

@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Stel het kanaal voor moderatielogboeken in!",
+    "USAGE": "{{prefix}}setmodlogs (#channel)",
+    "EXAMPLES": "{{prefix}}setmodlogs #modlogs\n{{prefix}}setmodlogs",
+    "SUCCESS_ENABLED": "Moderatielogboeken worden verzonden in **{{channel}}**!",
+    "SUCCESS_DISABLED": "Moderatielogboeken kanaal verwijderd!"
+}

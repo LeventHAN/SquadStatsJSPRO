@@ -1,0 +1,8 @@
+{
+    "DESCRIPTION": "Adj hozzá egyéni parancsot!",
+    "USAGE": "{{prefix}}addcommand [név] [válasz]",
+    "EXAMPLES": "{{prefix}}addcommand helló Hell* {user}! Hogy vagy?",
+    "MISSING_NAME": "Add meg a parancs nevét!",
+    "MISSING_ANSWER": "Add meg a parancs válaszát!",
+    "SUCCESS": "A **{{prefix}}{{commandName}}** parancs hozzáadva!"
+}

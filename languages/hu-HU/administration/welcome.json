@@ -1,0 +1,16 @@
+{
+    "DESCRIPTION": "Váltás az üdvözlő üzenetre!",
+    "USAGE": "{{prefix}}welcome",
+    "EXAMPLES": "{{prefix}}welcome",
+    "MISSING_STATUS": "Meg kell adnod egy műveletet a ezek közül: `edit` és `off`",
+    "DEFAULT_MESSAGE": "Üdvözöllek {user} a {server} szerveren, mi {membercount} lettünk! A te felhasználód {createdat} készült.",
+    "TEST_SUCCESS": "A teszt végrehajtva!",
+    "FORM_1": "**Melyik csatornába küldjem az üdvözlő üzenetet?**\n\n:arrow_right_hook: *Válasz egy csatorna megemlítésével!*",
+    "FORM_2": "**Kérlek írd be a kívánt üdvözlő üzenetet.**\n\n**Ha akarod:**\n*-* __Felhasználó megemlítése__: {user}\n*-* __Tagok száma__: {membercount}\n*-* __Szerver neve__: {server}\n\n**Példa a felhasználásra:**\nÜdvözöllek a(z) {server} szerveren, {user}! Most {membercount} lettünk!\n:fast_forward:\nÜdvözöllek a(z) {{guildName}} szerveren, {{author}}! Most {{memberCount}} lettünk!",
+    "FORM_3": "**Szeretnél egy nagyszerű üdvözlő képet is?**\n\n:arrow_right_hook: *Válaszok: `yes` vagy `no`!*",
+    "FORM_SUCCESS": "**Rendben, kész!**\n\n:arrow_right_hook: *Írd be a `{{prefix}}welcome test` az üdvözlő üzenet teszteléséhez!*",
+    "DISABLED": "**Az elbúcsúzó üzenet éppen le van tiltva!**\n\n:arrow_right_hook: *Írd be a `{{prefix}}configuration` parancsot a frissített konfiguráció megtekintéséhez!*",
+    "IMG_WELCOME": "Üdvözöllek a {{server}} szerveren!",
+    "IMG_NB": "- {{memberCount}} felhasználó!",
+    "TITLE": "ÜDVÖZLŐ"
+}

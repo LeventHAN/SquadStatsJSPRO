@@ -1,0 +1,10 @@
+{
+    "DESCRIPTION": "Włącz/Wyłącz autorole na tym serwerze!",
+    "USAGE": "{{prefix}}autorole [on/off] (rola)",
+    "EXAMPLES": "{{prefix}}autorole on @Członek\n{{prefix}}autorole off",
+    "MISSING_STATUS": "Wprowadź prawidłową wartość między `on` i `off`",
+    "MISSING_ROLE": "Wprowadź prawidłową Role!",
+    "SUCCESS_ENABLED": "Autorole został włączony! Nowi członkowie automatycznie dostaną role **{{roleName}}** .",
+    "ALREADY_DISABLED": "**autorole jest została już wyłączona.**\n\n:arrow_right_hook: *Wpisz `{{prefix}}autorole on @TwojaRola` aby ją włączyć!*",
+    "SUCCESS_DISABLED": "**Autorole została wyłączona!**\n\n:arrow_right_hook: *Wpisz `{{prefix}}configuration` aby zobaczyć konfigurację serwera!*"
+}

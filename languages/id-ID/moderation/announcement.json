@@ -1,0 +1,10 @@
+{
+    "DESCRIPTION": "Kirim pengumuman di saluran saat ini!",
+    "USAGE": "{{prefix}}announcement [teks]",
+    "EXAMPLES": "{{prefix}}announcement Anggota staff baru!",
+    "MISSING_TEXT": "Kamu harus memberikan teks pengumuman!",
+    "TOO_LONG": "Teks-mu seharusnya lebih pendek dari 1030 karakter!",
+    "MENTION_PROMPT": "Apakah kamu ingin menambahkan sebutan ke pesanmu?\nJawab dengan mengirim `yes` atau `no`!",
+    "MENTION_TYPE_PROMPT": "Pilih untuk menyebut `@`everyone dengan mengetik `every` atau untuk menyebut `@`here dengan mengetik `here`!",
+    "TITLE": "📢 Pengumuman:"
+}

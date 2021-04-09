@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Genereert een QR-code afbeelding van een bepaalde tekst",
+    "USAGE": "{{prefix}}qrcode [text]",
+    "EXAMPLES": "{{prefix}}qrcode Hallo",
+    "MISSING_TEXT": "Geef de brontekst van de QR-code aan!",
+    "SUCCESS": "Hier is je QRCode!"
+}

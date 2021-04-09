@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Változtasd meg a szerver nyelvét!",
+    "USAGE": "{{prefix}}setlang [nyelv]",
+    "EXAMPLES": "{{prefix}}setlang french\n{{prefix}}setlang english",
+    "MISSING_LANG": "Kérlek, írj be egy érvényes nyelvet ezek közül: {{list}}",
+    "SUCCESS": ":flag_gb: A szerver nyelve mostmár angol!"
+}

@@ -1,0 +1,10 @@
+{
+    "DESCRIPTION": "Hızlıca tüm mesajları sil!",
+    "USAGE": "{{prefix}}clear [number-of-messages] (@üye)",
+    "EXAMPLES": "{{prefix}}clear 10\n{{prefix}}clear 10 @LeventHAN™#0001",
+    "MISSING_AMOUNT": "Mesajı silmek için uygun bir rakam gir!",
+    "ALL_CONFIRM": "Bu kanaldakı tüm mesajlar silinecek lütfen `-confirm` yazarak onaylayın",
+    "CHANNEL_CLEARED": "Kanal temizlendi!",
+    "CLEARED": "**{{amount}}** Mesaj silindi!",
+    "CLEARED_MEMBER": "**{{amount}}** tane **{{username}}** üyenin gönderdiği mesaj silindi!"
+}

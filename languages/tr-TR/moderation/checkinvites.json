@@ -1,0 +1,6 @@
+{
+    "DESCRIPTION": "Hangi üyenin discord a ne kadar üye getirdiğini gör!",
+    "USAGE": "{{prefix}}checkinvites",
+    "EXAMPLES": "{{prefix}}checkinvites",
+    "NOBODY": "Bu durumda hiçbir üye reklam yapamaz!"
+}

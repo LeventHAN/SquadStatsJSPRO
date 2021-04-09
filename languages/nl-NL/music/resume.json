@@ -1,0 +1,6 @@
+{
+    "DESCRIPTION": "Hervat het huidige nummer!",
+    "USAGE": "{{prefix}}resume",
+    "EXAMPLES": "{{prefix}}resume",
+    "SUCCESS": "▶️ Muziek hervat!"
+}

@@ -1,0 +1,6 @@
+{
+    "DESCRIPTION": "Ubah teksmu menjadi karakter ascii!",
+    "USAGE": "{{prefix}}ascii [teks]",
+    "EXAMPLES": "{{prefix}}ascii Halo dunia!",
+    "TEXT_MISSING": "Harap berikan teks yang valid (kurang dari 20 karakter)!"
+}

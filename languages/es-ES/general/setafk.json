@@ -1,0 +1,9 @@
+{
+    "DESCRIPTION": "Conviértase en AFK (los miembros que lo mencionen recibirán un mensaje)",
+    "USAGE": "{{prefix}}setafk [razón]",
+    "EXAMPLES": "{{prefix}}setafk Estoy en clase",
+    "MISSING_REASON": "¡Especifique el motivo de su estado de AFK!",
+    "SUCCESS": "Estás AFK (razón: {{reason}})",
+    "DELETED": "**{{username}}**, your AFK status has just been deleted!",
+    "IS_AFK": "**{{user}}** está AFK, razón:\n```{{reason}}```"
+}

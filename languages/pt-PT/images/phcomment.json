@@ -1,0 +1,6 @@
+{
+    "DESCRIPTION": "Gera uma imagem \"phcomment\" usando a API Nekobot",
+    "USAGE": "{{prefix}}phcomment (@membro) [text]",
+    "EXAMPLES": "{{prefix}}phcomment Oi!\n{{prefix}}phcomment @LeventHAN™#0001 Oi!",
+    "MISSING_TEXT": "Please specify the comment text!"
+}

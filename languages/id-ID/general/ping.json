@@ -1,0 +1,6 @@
+{
+    "DESCRIPTION": "Tunjukan ping bot",
+    "USAGE": "{{prefix}}ping",
+    "EXAMPLES": "{{prefix}}ping",
+    "CONTENT": "Pong! Ping-ku `{{ping}}` ms."
+}

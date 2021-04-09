@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Atur saluran saran!",
+    "USAGE": "{{prefix}}setsuggests (#saluran)",
+    "EXAMPLES": "{{prefix}}setsuggests #saran\n{{prefix}}setsuggests",
+    "SUCCESS_ENABLED": "Saran akan dikirimkan di **{{channel}}**!",
+    "SUCCESS_DISABLED": "Saluran saran dihapus!"
+}

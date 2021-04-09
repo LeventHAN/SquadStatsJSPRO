@@ -1,0 +1,9 @@
+{
+    "DESCRIPTION": "Send your suggestion to the defined channel!",
+    "USAGE": "{{prefix}}suggest [mensaje]",
+    "EXAMPLES": "{{prefix}}suggest Nuevo canal de memes jeje",
+    "MISSING_CHANNEL": "¡No se ha definido ningún canal de sugerencias!",
+    "MISSING_CONTENT": "¡Por favor, introduzca una sugerencia!",
+    "TITLE": "Sugerencia - {{user}}",
+    "SUCCESS": "¡Tu sugerencia va a ser votada en {{channel}}!"
+}

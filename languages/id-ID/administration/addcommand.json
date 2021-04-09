@@ -1,0 +1,8 @@
+{
+    "DESCRIPTION": "Tambahkan perintah buatan!",
+    "USAGE": "{{prefix}}addcommand [nama] [jawaban]",
+    "EXAMPLES": "{{prefix}}addcommand halo Hallo {user}! Apa kabarmu?",
+    "MISSING_NAME": "Harap sediakan nama perintah!",
+    "MISSING_ANSWER": "Harap sediakan jawaban perintah!",
+    "SUCCESS": "Perintah **{{prefix}}{{commandName}}** ditambahkan!"
+}

@@ -1,0 +1,6 @@
+{
+    "DESCRIPTION": "Kapcsold be a szöveget ascii karakterekbe!",
+    "USAGE": "{{prefix}}ascii [szöveg]",
+    "EXAMPLES": "{{prefix}}ascii Helló világ!",
+    "TEXT_MISSING": "Adj meg egy érvényes szöveget (kevesebb mint 20 karakter)!"
+}

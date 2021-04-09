@@ -1,0 +1,10 @@
+{
+    "ONE_DAY": "1 zi",
+    "DAYS": "{{amount}} zile",
+    "ONE_HOUR": "1 oră",
+    "HOURS": "{{amount}} ore",
+    "ONE_MINUTE": "1 minut",
+    "MINUTES": "{{amount}} minute",
+    "ONE_SECOND": "1 secundă",
+    "SECONDS": "{{amount}} secunde"
+}

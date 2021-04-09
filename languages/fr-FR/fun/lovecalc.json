@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Combien de pourcentage d'amour y a t'il entre deux personnes ?\n*Ceci est une commande humoristique, ne pas prendre au sérieux*",
+    "USAGE": "{{prefix}}lovecalc [@membre1] (@membre2)",
+    "EXAMPLES": "{{prefix}}lovecalc @LeventHAN™#0001\n{{prefix}}lovecalc @LeventHAN™#0001 @SquadStatJSv3#6770",
+    "MISSING": "Vous devez mentionner deux membres !",
+    "CONTENT": "Il y a **{{percent}}%** d'amour entre **{{firstUsername}}** et **{{secondUsername}}** !\n**Félicitations !**"
+}

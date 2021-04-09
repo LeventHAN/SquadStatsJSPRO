@@ -1,0 +1,8 @@
+{
+    "DESCRIPTION": "Şuan ki şarkıyı geç",
+    "USAGE": "{{prefix}}skip",
+    "EXAMPLES": "{{prefix}}skip",
+    "NO_NEXT_SONG": "Sonraki şarkı yok!",
+    "VOTE_CONTENT": "Sonraki Şarkı: {{songName}}\nGeçmek için 👍 tepkisini ver! {{requiredCount}} oy daha gerekli.",
+    "SUCCESS": "Sonraki şarkıya geçildi!"
+}

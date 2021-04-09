@@ -1,0 +1,18 @@
+{
+    "DESCRIPTION": "Memutar musik untukmu!",
+    "USAGE": "{{prefix}}play [lagu]",
+    "EXAMPLES": "{{prefix}}play Bye Bye",
+    "NO_VOICE_CHANNEL": "Kamu harus terhubung ke saluran suara!",
+    "VOICE_CHANNEL_CONNECT": "Aku tidak dapat terhubung ke saluran suara kamu!",
+    "MISSING_SONG_NAME": "Harap tentukan nama lagu atau tautan!",
+    "RESULTS_FOOTER": "Harap pilih lagu dengan mengirim angka antara 1 dan 10.",
+    "NO_RESULT": "Tidak dapat menemukan di Youtube!",
+    "NOW_PLAYING": "Sekarang diputar **{{songName}}** :musical_note:",
+    "PLAYING_PLAYLIST": "Memulai daftar putar **{{playlistTitle}}**. {{playlistEmoji}}\nMemutar lagu pertama, **{{songName}}**! :musical_note:",
+    "CANCELLED": "Pilihan dibatalkan",
+    "NOT_PLAYING": "Tidak ada lagu yang sedang diputar di server ini saat ini.",
+    "QUEUE_ENDED": "Antrian berakhir. Tidak ada lagi musik untuk diputar...",
+    "ADDED_QUEUE": "{{songName}} telah ditambahkan ke antrian!",
+    "ADDED_QUEUE_COUNT": "{{songCount}} lagu ditambahkan ke antrian!",
+    "STOP_DISCONNECTED": "Aku baru saja menghentikan musik karena aku telah diputus dari saluran."
+}

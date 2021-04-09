@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Moderasyon kayıtları kanalını ayarla!",
+    "USAGE": "{{prefix}}setmodlogs (#kanal)",
+    "EXAMPLES": "{{prefix}}setmodlogs #modlogs\n{{prefix}}setmodlogs",
+    "SUCCESS_ENABLED": "Moderasyon kayıtları **{{channel}}** kanalına gönderilecek!",
+    "SUCCESS_DISABLED": "Moderasyon kayıtları kanalı silindi!"
+}

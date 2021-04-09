@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Defina o canal para denúncias!",
+    "USAGE": "{{prefix}}setreports (#canal)",
+    "EXAMPLES": "{{prefix}}setreports #denúncias\n{{prefix}}setreports",
+    "SUCCESS_ENABLED": "As denúncias serão enviadas no canal **{{channel}}**!",
+    "SUCCESS_DISABLED": "Canal para denúncias excluído!"
+}

@@ -1,0 +1,8 @@
+{
+    "DESCRIPTION": "Usuń niestandardowe polecenie!",
+    "USAGE": "{{prefix}} delcommand [nazwa-polecenia]",
+    "EXAMPLES": "{{prefix}}delcommand hej",
+    "MISSING_NAME": "Wprowadź prawidłową nazwę polecenia niestandardowego!",
+    "UNKNOWN_COMMAND": "Polecenie {{commandName}} nie istnieje!",
+    "SUCCESS": "Polecenie {{commandName}} zostało usunięte z serwera!"
+}

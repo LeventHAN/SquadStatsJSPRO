@@ -1,0 +1,17 @@
+{
+    "DESCRIPTION": "Shows the bot stats!",
+    "USAGE": "{{prefix}}stats",
+    "EXAMPLES": "{{prefix}}stats",
+    "COUNTS_TITLE": "• __Estadísticas__",
+    "COUNTS_CONTENT": "`Servidores: {{servers}}`\n`Usuarios: {{users}}`",
+    "VERSIONS_TITLE": "• __Using__",
+    "RAM_TITLE": "• __RAM__",
+    "ONLINE_TITLE": "• __Online__",
+    "ONLINE_CONTENT": "Online desde hace {{time}}",
+    "MUSIC_TITLE": "• __Música__",
+    "MUSIC_CONTENT": "Escuchando música en `{{count}}` servidores",
+    "CREDITS_TITLE": ":heart: •Agradecimientos & Créditos__",
+    "CREDITS_CONTENT": "Thanks to [Icons8](https://icons8.com/) for almost all the emojis!\n__**Donators**__:\n{{donators}}\n__**Translators**__:\n{{translators}}",
+    "LINKS_TITLE": "• __Links__",
+    "MADE": "¡SquadStatJSv3 es un bot de código abierto desarrollado por LeventHAN™#0001!"
+}

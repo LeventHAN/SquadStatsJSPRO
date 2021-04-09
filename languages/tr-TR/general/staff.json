@@ -1,0 +1,10 @@
+{
+    "DESCRIPTION": "Sunucudaki yetkilileri listeler!",
+    "USAGE": "{{prefix}}staff",
+    "EXAMPLES": "{{prefix}}staff",
+    "TITLE": "{{guild}} staff",
+    "ADMINS": "Yetkililer",
+    "NO_ADMINS": "Yetkili yok",
+    "MODS": "Moderatörler",
+    "NO_MODS": "Moderatör Yok"
+}

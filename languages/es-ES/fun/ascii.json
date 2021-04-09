@@ -1,0 +1,6 @@
+{
+    "DESCRIPTION": "¡Convierte tu texto en caracteres ascii!",
+    "USAGE": "{{prefix}}ascii [texto]",
+    "EXAMPLES": "{{prefix}}ascii Hola Mundo!",
+    "TEXT_MISSING": "¡Ingrese un texto válido (menos de 20 caracteres)!"
+}

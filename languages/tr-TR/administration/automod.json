@@ -1,0 +1,10 @@
+{
+    "DESCRIPTION": "Discord Sunucu davetlerini otomatik silmeyi engelle",
+    "USAGE": "{{prefix}}automod [on/off] (#kanal)",
+    "EXAMPLES": "{{prefix}}automod on\n{{prefix}}automod off #general\n{{prefix}}automod off",
+    "MISSING_STATUS": "Lütfen `on` veya `off` olarak açık mı kapalı mı olduğunu belirtin",
+    "ENABLED": "**Discord daveti otomatik olarak silindi!**\n\n:arrow_right_hook: *Şunu `{{prefix}}automod off #kanal` yazarak kanal için kapatabilirsiniz!*",
+    "DISABLED_CHANNEL": "Otomatik moderasyon artık {{channel}} bu kanal için çalışmayacak!",
+    "DISABLED": "Tamamdır! Otomatik moderasyon bu sunucu için kapatıldı!",
+    "DELETED": "Senin Discord mesajın silindi çünkü bu sunucuda reklam yapmak yasaklanmıştır!"
+}

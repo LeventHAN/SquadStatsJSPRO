@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Je lance les dés pour vous !",
+    "USAGE": "{{prefix}}flip",
+    "EXAMPLES": "{{prefix}}flip",
+    "HEADS": "🎲 | Pile !",
+    "TAILS": "🎲 | Face !"
+}

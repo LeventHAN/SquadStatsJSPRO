@@ -1,0 +1,19 @@
+{
+    "DESCRIPTION": "Kezeld a szerver biztonsági másolatait hatékonyan!",
+    "USAGE": "{{prefix}}backup [create/load/infos]",
+    "EXAMPLES": "{{prefix}}backup create\n{{prefix}}backup load 558328638911545423\n{{prefix}}backup infos 558328638911545423",
+    "MISSING_STATUS": "Válassz egy műveletet a lehetőségek közül: `create`, `load` és `info`!",
+    "MISSING_BACKUP_ID": "Kérlek adj meg egy biztonásgi mentés ID-t!",
+    "NO_BACKUP_FOUND": "Nem található ilyen biztonsági mentés: `{{backupID}}`",
+    "TIMES_UP": "Az idő lejárt! Visszavonva a biztonsági mentés!",
+    "SUCCESS_PUBLIC": "A biztonsági mentés sikeresen létrehozva! A tartalék azonosítót privát üzenetbe elküldtem neked!",
+    "SUCCESS_PRIVATE": "Itt van a biztonásgi mentés azonosítója: `{{backupID}}`, használd, hogy egy másik szerverre töltsd be a biztonsági másolatot!",
+    "CONFIRMATION": ":warning: | **A biztonsági másolat betöltésekor az aktuális szerver felváltja a mentett szervert.**\n\n:arrow_right_hook: *A megerősítés céljából küld el a `confirm` szót!*",
+    "START_LOADING": "A biztonsági mentés elkezdődött!",
+    "LOAD_SUCCESS": "A biztonsági mentés sikeresen betöltve!",
+    "TITLE_INFOS": "Biztonsági Mentési Információk",
+    "TITLE_ID": "ID",
+    "TITLE_SERVER_ID": "Szerver ID",
+    "TITLE_SIZE": "Méret",
+    "TITLE_CREATED_AT": "Létrehozva"
+}

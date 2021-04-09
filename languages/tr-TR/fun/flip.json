@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Senin için yazı/tura atıyorum!",
+    "USAGE": "{{prefix}}flip",
+    "EXAMPLES": "{{prefix}}flip",
+    "HEADS": "🎲 | Tura!",
+    "TAILS": "🎲 | Yazı!"
+}

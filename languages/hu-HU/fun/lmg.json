@@ -1,0 +1,6 @@
+{
+    "DESCRIPTION": "Hozz létre egy LMGTFY linket a kereséseddel",
+    "USAGE": "{{prefix}}lmg [keresés]",
+    "EXAMPLES": "{{prefix}}lmg Hogyan lehet Discord botot készíteni?",
+    "MISSING": "Meg kell adnod a keresést!"
+}

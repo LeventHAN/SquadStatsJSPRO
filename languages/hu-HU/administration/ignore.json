@@ -1,0 +1,7 @@
+{
+    "DESCRIPTION": "Parancsok váltása egy csatornán",
+    "USAGE": "{{prefix}}ignore [csatorna]",
+    "EXAMPLES": "{{prefix}}ignore #csatorna",
+    "ALLOWED": "A parancsok mostantól engedélyezettek a {{channel}} csatornában!",
+    "IGNORED": "A parancsok mostantól letíltva a {{channel}} csatornában!"
+}

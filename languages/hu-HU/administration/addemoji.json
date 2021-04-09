@@ -1,0 +1,10 @@
+{
+    "DESCRIPTION": "Adj hozzá hangulatjelet a szerverhez!",
+    "USAGE": "{{prefix}}addemoji [kép-url] [név]",
+    "EXAMPLES": "{{prefix}}addemoji https://via.placeholder.com/150 teszt-emoji",
+    "MISSING_URL": "Kérlek, add meg a kép URL-jét!",
+    "MISSING_NAME": "Add meg a hangulatjel nevét!",
+    "INVALID_NAME": "Az emoji név hosszának 2 és 32 között kell lennie!",
+    "SUCCESS": ":{{emojiName}}: hozzáadva!",
+    "ERROR": "{{emojiName}} hangulatjelet nem lehetett hozzáadni. Ellenőrizd, hogy a szerveren van-e még hely új hangulatjelek számára!"
+}

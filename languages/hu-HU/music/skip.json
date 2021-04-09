@@ -1,0 +1,8 @@
+{
+    "DESCRIPTION": "Átugrás az aktuális dalról",
+    "USAGE": "{{prefix}}skip",
+    "EXAMPLES": "{{prefix}}skip",
+    "NO_NEXT_SONG": "A dal után nincs több zene!",
+    "VOTE_CONTENT": "Következő dal: {{songName}}\nNyomj egy 👍 a zene leállításhoz! {{requiredCount}} további szavazatra van szükség.",
+    "SUCCESS": "A dal átugorva!"
+}
