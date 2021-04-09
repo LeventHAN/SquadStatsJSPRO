@@ -16,7 +16,6 @@
     "GOODBYE_DISABLED": "Güle Güle mesajı devre dışı bırakıldı.",
     "SPECIAL_CHANNELS": "Özel Kanallar",
     "MODLOGS": "Moderasyon logları: *{{channel}}*",
-    "FORTNITESHOP": "Fortnite günlük içerik mağazası: *{{channel}}*",
     "SUGGESTIONS": "Öneri kanalı: *{{channel}}*",
     "REPORTS": "Şikayet kanalı: *{{channel}}*",
     "AUTOMOD_TITLE": "Otomatik-moderasyon:",

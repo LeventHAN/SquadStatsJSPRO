@@ -38,7 +38,7 @@ class Profile extends Command {
 		if (member.user.bot) {
 			return message.error("squad/profile:BOT_USER");
 		}
-		if (!data.guild.squadStatRoles) return message.error("My owner didn't configure the squad server connection yet.");
+		if (!data.guild.squadStatRoles) return message.error("squad/profile:NOT_CONFIGURED");
 		
 		// Gets the data of the user whose profile you want to display
 		const memberData =
@@ -59,9 +59,9 @@ class Profile extends Command {
 
 		if(args[0] === "re" || args[0] === "re-link") {
 			data.memberData.tracking = false;
-			data.memberData.save()
+			data.memberData.save();
 			return message.success(
-				"Your profile link is changed, you can now re-link your steam."
+				"squad/profile:RE_LINKED"
 			);
 		}
 
@@ -215,8 +215,10 @@ class Profile extends Command {
 				)
 				.addField(`\u200B`, `\u200B`)
 				.addField(
-					message.translate("squad/profile:EXP"),
-					`**${memberData.exp}** points`,
+					message.translate("squad/profile:EXPS"),
+					message.translate("squad/profile:EXP", {
+						exp: memberData.exp
+					}),
 					true
 				)
 				.addField(
@@ -237,9 +239,7 @@ class Profile extends Command {
 
 
 		if (!data.guild.squadStatRoles) {
-			return message.error(
-				`Please configure the squad server first. Command; ${data.guild.prefix}add-sq`
-			);
+			return message.error("squad/profile:NOT_CONFIGURED");
 		} else {
 			if(!data.memberData.tracking || (data.memberData.tracking && lastUpdate < dt)) {
 				con.connect((error) => {

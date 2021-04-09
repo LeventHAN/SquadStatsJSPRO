@@ -57,7 +57,9 @@ class Addsquaddb extends Command {
 				data.guild.squadStatRoles = true;
 				data.guild.save();
 			} else {
-				return message.error("Please delete the following role first; <@&"+controlPoint+">");
+				return message.error("squad/addsquadserver:DELETEROLES", {
+					role: controlPoint
+				});
 			}
 
 
@@ -81,30 +83,30 @@ class Addsquaddb extends Command {
 				client.logger.log(error, "error");
 				if(args.length == 0) {
 					const profileEmbed = new Discord.MessageEmbed()
-						.setAuthor(message.translate("Squad Configuration Pane"))
-						.setDescription("The password is censored, please don't write your squad database password on a public channel.")
-						.addField("Connection Status: ",message.translate("squad/addsquadserver:CONNECTION_ERROR"), false)
+						.setAuthor(message.translate("squad/addsquadserver:PANE_NAME"))
+						.setDescription(message.translate("squad/addsquadserver:PANE_DESC"))
+						.addField(message.translate("squad/addsquadserver:CONNECTION_TITLE"), message.translate("squad/addsquadserver:CONNECTION_ERROR"), false)
 		
 						.addField(message.translate("squad/addsquadserver:HOSTS"), message.translate("squad/addsquadserver:HOST", {
-							host: data.guild.squadDB.host || "Not Configured"
+							host: data.guild.squadDB.host || ":x:"
 						}), true)
 						.addField(message.translate("squad/addsquadserver:PORTS"), message.translate("squad/addsquadserver:PORT", {
-							port: data.guild.squadDB.port || "Not Configured"
+							port: data.guild.squadDB.port || ":x:"
 						}), true)
 						.addField(message.translate("squad/addsquadserver:USERS"), message.translate("squad/addsquadserver:USER", {
-							user: data.guild.squadDB.user || "Not Configured"
+							user: data.guild.squadDB.user || ":x:"
 						}), true)
 						.addField(message.translate("squad/addsquadserver:PASSWORDS"), message.translate("squad/addsquadserver:PASSWORD", {
-							password: (data.guild.squadDB.password == "")?"Not Configured Yet":"Configured"
+							password: (data.guild.squadDB.password == "")?":x:":":white_check_mark:"
 						}), true)
 						.addField(message.translate("squad/addsquadserver:DATABASES"), message.translate("squad/addsquadserver:DATABASE", {
-							database: data.guild.squadDB.database || "Not Configured"
+							database: data.guild.squadDB.database || ":x:"
 						}), true)
 						.addField(message.translate("squad/addsquadserver:SERVER_IDS"), message.translate("squad/addsquadserver:SERVER_ID", {
-							id: data.guild.squadDB.serverID || "Not Configured"
+							id: data.guild.squadDB.serverID || ":x:"
 						}), true)
 						.addField(message.translate("squad/addsquadserver:ROLES"), message.translate("squad/addsquadserver:ROLE", {
-							stats: (data.guild.squadStatRoles ? "Roles Given" : "Not Configured ERROR!")
+							stats: (data.guild.squadStatRoles ? ":white_check_mark:" : ":x: ERROR!")
 						}), true)
 						// .addField(message.translate("squad/addsquadserver:IGNORED_MAPS"), message.translate("squad/addsquadserver:IGNORED_MAP", {
 						// 	map: data.guild.squadDB.ignoredMaps || "Not Configured"
@@ -144,34 +146,34 @@ class Addsquaddb extends Command {
 			} else {
 				if(args.length == 0) {
 					const profileEmbed = new Discord.MessageEmbed()
-						.setAuthor(message.translate("Squad Configuration Pane"))
-						.setDescription("The password is censored, please don't write your squad database password on a public channel.")
-						.addField("Connection Status: ",message.translate("squad/addsquadserver:CONNECTION_SUCCESS"), false)
-		
+						.setAuthor(message.translate("squad/addsquadserver:PANE_NAME"))
+						.setDescription(message.translate("squad/addsquadserver:PANE_DESC"))
+						.addField(message.translate("squad/addsquadserver:CONNECTION_TITLE"), message.translate("squad/addsquadserver:CONNECTION_SUCCESS"), false)
+	
 						.addField(message.translate("squad/addsquadserver:HOSTS"), message.translate("squad/addsquadserver:HOST", {
-							host: data.guild.squadDB.host
+							host: data.guild.squadDB.host || ":x:"
 						}), true)
 						.addField(message.translate("squad/addsquadserver:PORTS"), message.translate("squad/addsquadserver:PORT", {
-							port: data.guild.squadDB.port
+							port: data.guild.squadDB.port || ":x:"
 						}), true)
 						.addField(message.translate("squad/addsquadserver:USERS"), message.translate("squad/addsquadserver:USER", {
-							user: data.guild.squadDB.user
+							user: data.guild.squadDB.user || ":x:"
 						}), true)
 						.addField(message.translate("squad/addsquadserver:PASSWORDS"), message.translate("squad/addsquadserver:PASSWORD", {
-							password: (data.guild.squadDB.password == "")?"Not Configured Yet":"Configured"
+							password: (data.guild.squadDB.password == "")?":x:":":white_check_mark:"
 						}), true)
 						.addField(message.translate("squad/addsquadserver:DATABASES"), message.translate("squad/addsquadserver:DATABASE", {
-							database: data.guild.squadDB.database
+							database: data.guild.squadDB.database || ":x:"
 						}), true)
 						.addField(message.translate("squad/addsquadserver:SERVER_IDS"), message.translate("squad/addsquadserver:SERVER_ID", {
-							id: data.guild.squadDB.serverID
+							id: data.guild.squadDB.serverID || ":x:"
 						}), true)
 						.addField(message.translate("squad/addsquadserver:ROLES"), message.translate("squad/addsquadserver:ROLE", {
-							stats: data.guild.squadStatRoles ? "Configured" : "Not Configured ERROR!"
+							stats: (data.guild.squadStatRoles ? ":white_check_mark:" : ":x: ERROR!")
 						}), true)
-						// .addField(message.translate("squad/addsquadserver:IGNORED_MAPS"), message.translate("squad/addsquadserver:IGNORED_MAP", {
-						// 	map: data.guild.squadDB.ignoredMaps
-						// }), true)
+					// .addField(message.translate("squad/addsquadserver:IGNORED_MAPS"), message.translate("squad/addsquadserver:IGNORED_MAP", {
+					// 	map: data.guild.squadDB.ignoredMaps || "Not Configured"
+					// }), true)
 						.addField(
 							"\u200B", "\u200B",
 						)
@@ -194,22 +196,15 @@ class Addsquaddb extends Command {
 						.addField(message.translate("squad/addsquadserver:SET_SERVER_IDS"), message.translate("squad/addsquadserver:SET_SERVER_ID", {
 							prefix: data.guild.prefix
 						}), true)
-						// .addField(message.translate("squad/addsquadserver:SET_IGNORED_MAPS"), message.translate("squad/addsquadserver:SET_IGNORED_MAP", {
-						// 	prefix: data.guild.prefix
-						// }), true)
-		
-		
-		
-		
-						.addField(message.translate("squad/addsquadserver:HOW_TO_SETS"), message.translate("squad/addsquadserver:HOW_TO_SET"), true)
+					// .addField(message.translate("squad/addsquadserver:SET_IGNORED_MAPS"), message.translate("squad/addsquadserver:SET_IGNORED_MAP", {
+					// 	prefix: data.guild.prefix
+					// }), true)
 						.setColor(data.config.embed.color) // Sets the color of the embed
 						.setFooter(data.config.embed.footer) // Sets the footer of the embed
 						.setTimestamp();
-		
 					return message.channel.send(profileEmbed); // Send the embed in the current channel
 				}
 			}
-			
 		});
 
 
@@ -218,45 +213,36 @@ class Addsquaddb extends Command {
 
 		if(args.length < 1) return;
 
-
-
-		for(const requester in pendings){
-			// If the member already sent a request to someone
-			if(requester === message.author.id){
-				return message.success("There is already an configuration on progress.");
-			}
-		}
 		let itemToChange;
 		// Update pending requests
 		pendings[message.author.id] = message.author.id;
 
 		switch(args[0].toLowerCase()) {
 			case "host":
-				itemToChange = "Fill in the **host** IP address (Write `cancel` to stop.)";
+				itemToChange = message.translate("squad/addsquadserver:FILL_HOST");
 				break;
 			case "port":
-				itemToChange = "Fill in the **port** address (Write `cancel` to stop. Default value is **3306**[recommended])";
+				itemToChange = message.translate("squad/addsquadserver:FILL_PORT");
 				break;
 			case "database":
-				itemToChange = "Fill in the **database** name you want to use (Write `cancel` to stop.)";
+				itemToChange = message.translate("squad/addsquadserver:FILL_DATABASE");
 				break;
 			case "user":
-				itemToChange = "Fill in the **user**name you want to use (Write `cancel` to stop.)";
+				itemToChange = message.translate("squad/addsquadserver:FILL_USER");
 				break;
 			case "password":
-				itemToChange = "Fill in the **password** you want to use (Write `cancel` to stop.)";
+				itemToChange = message.translate("squad/addsquadserver:FILL_PASSWORD");
 				break;
 			case "serverid":
-				itemToChange = "Fill in the **server ID(s)** you want to use; **Example: `1,2,3` (Write `cancel` to stop.)";
+				itemToChange = message.translate("squad/addsquadserver:FILL_SERVER_ID");
 		}
-	
-			
+
 		message.sendT(itemToChange);
 		const collector = new Discord.MessageCollector(message.channel, (m) => m.author.id === sender, {
 			time: 120000
 		});
 
-		
+
 		let isCanceled = false;
 		collector.on("collect", async (msg) => {
 			if(msg.content){
@@ -299,11 +285,11 @@ class Addsquaddb extends Command {
 			// Delete pending request 
 			delete pendings[message.author.id];
 			if(reason === "time"){
-				return message.error("Timeout command. Please try again.");
+				return message.error("squad/addsquadserver:TIMEOUT");
 			} else if(!isCanceled) {
-				return message.success("Configured successfully!");
+				return message.success("squad/addsquadserver:CONF_SUC");
 			} else {
-				return message.success("Canceled successfully!");
+				return message.success("squad/addsquadserver:CAN_SUC");
 			}
 		});
 

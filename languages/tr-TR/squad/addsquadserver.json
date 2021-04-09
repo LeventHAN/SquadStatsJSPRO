@@ -3,6 +3,7 @@
     "USAGE": "{{prefix}}addsquadserver",
     "EXAMPLES": "{{prefix}}add-sq",
     "NOT_CONFIGURED": "Squad için DB ayarlanmamış.",
+    "CONNECTION_TITLE": "Bağlantı Durumu",
     "CONNECTION_SUCCESS": "<:SquadStatJSv3_online:616613445424513028> DB'ye Başarıyla bağlandı!",
     "CONNECTION_ERROR": "<:SquadStatJSv3_dnd:616613445252546570> DB'ye bağlanılamadı.",
     "HOSTS": "<:SquadStatJSv3_ip:598161921329594368> Host",
@@ -36,5 +37,17 @@
     "SET_SERVER_IDS": "Sunucu numara(ları)mı nasıl ayarlarım?",
     "SET_SERVER_ID": "{{prefix}}add-sq serverid",
     "SET_IGNORED_MAPS": "Devredışı bırakılcak haritaları nasıl ayarlarım?",
-    "SET_IGNORED_MAP": "{{prefix}}add-sq ignoredmap"
+    "SET_IGNORED_MAP": "{{prefix}}add-sq ignoredmap",
+    "DELETEROLES": "Lütfen önce bu rolu silin <@&{{role}}>",
+    "PANE_NAME": "Squad Bağlantı Durum Penceresi",
+    "PANE_DESC": "Şifreniz bu pencerede gösterilmemektedir. Ancak siz yinede ilk ayarlarken gizli bir odada ayarlayın.",
+    "FILL_HOST": "**Host** adresinizi girin. (İptal için `cancel` yaz)",
+    "FILL_PORT": "**Port** adresinizi girin. (İptal için `cancel` yaz. Default port **3306**)",
+    "FILL_DATABASE": "**Database** ismini gir. (İptal için `cancel` yaz)",
+    "FILL_USER": "**Kullanıcı İsmi** gir. (İptal için `cancel` yaz)",
+    "FILL_PASSWORD": "**Şifreni** gir. (İptal için `cancel` yaz)",
+    "FILL_SERVER_ID": "**Sunucu ID**lerini gir. ( Örn. `1,2,3` | İptal için `cancel` yaz)",
+    "TIMEOUT": "Zaman aşımına uğradı. Yeniden deneyebilirsiniz.",
+    "CONF_SUC": "Başarıyla yapılandırıldı!",
+    "CAN_SUC": "Başarıyla iptal edildi!"
 }

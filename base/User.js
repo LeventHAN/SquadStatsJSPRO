@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
 
 	/* REQUIRED */
 	id: { type: String }, // Discord ID of the user
+	bio: { type: String }, // Biography of the user
 
 	/* STATS */
 	registeredAt: { type: Number, default: Date.now() }, // Registered date of the user

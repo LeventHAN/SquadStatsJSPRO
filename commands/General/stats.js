@@ -30,7 +30,7 @@ class Stats extends Command {
 				users: this.client.users.cache.size
 			}), true)
 			.addField(message.translate("general/stats:CREDITS"), message.translate("general/stats:CREDIT", {
-				translators: ["`Morph#8610` (:flag_de:)"].join("\n")
+				translators: ["`Morph#8610` (:flag_de:)", "`Harun | CORONA#6035` (:flag_tr:)"].join("\n")
 			}))
 			.addField("Made using core structure of;", "[Atlanta Bot](https://github.com/Androz2091/AtlantaBot/)", false);
 

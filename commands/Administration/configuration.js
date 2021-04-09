@@ -76,11 +76,6 @@ class Configuration extends Command {
 					? `<#${guildData.plugins.modlogs}>`
 					: message.translate("common:NOT_DEFINED")
 			}) + "\n" +
-			message.translate("administration/configuration:FORTNITESHOP", {
-				channel:    guildData.plugins.fortniteshop
-					? `<#${guildData.plugins.fortniteshop}>`
-					: message.translate("common:NOT_DEFINED")
-			}) + "\n" +
 			message.translate("administration/configuration:SUGGESTIONS", {
 				channel:    guildData.plugins.suggestions
 					? `<#${guildData.plugins.suggestions}>`

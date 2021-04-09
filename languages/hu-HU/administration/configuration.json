@@ -16,7 +16,6 @@
     "GOODBYE_DISABLED": "Az elbúcsúzó üzenet le van tíltva.",
     "SPECIAL_CHANNELS": "Speciális csatornák",
     "MODLOGS": "Moderációs naplók: *{{channel}}*",
-    "FORTNITESHOP": "Napi Fortnite bolt: *{{channel}}*",
     "SUGGESTIONS": "Javaslatok *{{channel}}*",
     "REPORTS": "Jelentések: *{{channel}}*",
     "AUTOMOD_TITLE": "Auto-moderálások:",

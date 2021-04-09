@@ -127,23 +127,6 @@
                                                 <% } %>
                                             </select>
                                         </div>
-                                        <div class="form-group">
-                                            <label><%= translate("common:FORTNITESHOP") %></label>
-                                            <select class="form-control" name="fortniteshop">
-                                                <% if(guild.plugins.fortniteshop && bot.channels.cache.has(guild.plugins.fortniteshop)){ %>
-                                                    <option selected="selected">#<%= bot.channels.cache.get(guild.plugins.fortniteshop).name %></option>
-                                                    <% guild.channels.cache.filter((ch) => ch.type === "text" && ch.id !== guild.plugins.fortniteshop).forEach((ch) => { %>
-                                                        <option>#<%= ch.name %></option>
-                                                    <% }); %>
-                                                        <option><%= translate("common:NO_CHANNEL") %></option>
-                                                <% } else { %>
-                                                    <option selected="selected"><%= translate("common:NO_CHANNEL")%></option>
-                                                    <% guild.channels.cache.filter((ch) => ch.type === "text").forEach((ch) => { %>
-                                                        <option>#<%= ch.name %></option>
-                                                    <% }); %>
-                                                <% } %>
-                                            </select>
-                                        </div>
                                     </div>
                                     <!-- /.box-body -->
                                     <div class="box-footer">
