@@ -48,6 +48,9 @@ If a player did missconfigure their profile, they can run: `{prefix}profile re-l
  * [Node.js](https://nodejs.org/en/) (Current) - [Download](https://nodejs.org/en/)
  * NPM
 
+### Postrequisites
+ * Once you have a working bot, you should join [this emoji discord server](https://discord.gg/NPkySYKMkN) to obtain the emojis! (On join you will get how to proceed further, just do what the welcome messages mentions.)
+
 ### Installation
 1. Clone the repository via your terminal/cmd: ```git clone https://github.com/11TStudio/SquadStatsJSPRO```
 2. Configure the `config.example.js` file. And when done SAVE and delete the .example. (At the end the file should look like: `config.js`)
