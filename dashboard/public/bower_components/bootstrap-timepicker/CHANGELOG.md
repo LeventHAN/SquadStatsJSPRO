@@ -1,25 +1,31 @@
 # Changelog
 
-All notable changes will be documented in this file.  This project
+All notable changes will be documented in this file. This project
 sort of conforms to Semantic Versioning. Since we're still pre-1.0,
 it's like the Wild West up in here!
 
 ## Unreleased
+
 ### Added (not started)
+
 - Still planning out how to include i18n data and functionality.
 
 ### Deprecated (not started)
+
 - Incorrect usage of the word "meridian" will be deprecated. It should
   be "meridiem".
 - `showWidgetOnAddonClick`'s current behavior is not intuitive. Clicking
   the input addon should _toggle_ the widget instead of showing it.
 
 ## 0.5.2 - 2016-01-02
+
 ### Added
+
 - Tabbing out of the timepicker widget will now close it.
 - You can specify your own icon classes. See docs for the option.
 
 ### Changed
+
 - Cleaned up `package.json` and `bower.json` files. The npm/bower package
   should be cleaner now.
 - `timepicker.less` now lives in the `css/` directory of the package.
@@ -27,18 +33,23 @@ it's like the Wild West up in here!
   Bootstrap 3
 
 ### Fixed
+
 - Fixed bad interaction between `setTime("12:00 AM")` and `showMeridian`
 - Various documentation issues were fixed.
 
 ## 0.5.1 - 2015-08-06
+
 ### Changed
+
 - Critical fix (#279) for bootstrap initialization. If you happened to
   list your timepicker's classes in an order other than "input-group
   bootstrap-timepicker", you'd be out of luck. Now we use jQuery's
   `hasClass` method correctly. Yay!
 
 ## 0.5 - 2015-07-31
+
 ### Changed
+
 - Bootstrap 3 support. No more Bootstrap 2 support.
 - setTime sets time better
 - more tests, and they exercise Bootstrap 3 support!

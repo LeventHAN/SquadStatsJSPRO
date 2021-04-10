@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 THIS TEMPLATE IS MANDATORY!!
 
@@ -21,6 +21,7 @@ Please note that PRs not following this template may be potentially discarded if
 {Please write here only in case of feature PR or remove the section}
 
 ### Check list
+
 Please mark with `x` inside the `[ ]` for anything that applies to this PR.
 
 - [ ] All tests passed in travis-ci

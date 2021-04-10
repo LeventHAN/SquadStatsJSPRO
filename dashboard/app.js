@@ -2,8 +2,7 @@ const config = require("../config"),
 	utils = require("./utils"),
 	CheckAuth = require("./auth/CheckAuth");
 
-module.exports.load = async(client) => {
-
+module.exports.load = async (client) => {
 	/* Init express app */
 
 	const express = require("express"),
@@ -34,14 +33,25 @@ module.exports.load = async(client) => {
 		// Set the dashboard port
 		.set("port", config.dashboard.port)
 		// Set the express session password and configuration
-		.use(session({ secret: config.dashboard.expressSessionPassword, resave: false, saveUninitialized: false }))
+		.use(
+			session({
+				secret: config.dashboard.expressSessionPassword,
+				resave: false,
+				saveUninitialized: false,
+			})
+		)
 		// Multi languages support
-		.use(async function(req, res, next){
+		.use(async function (req, res, next) {
 			req.user = req.session.user;
 			req.client = client;
-			req.locale = req.user ? (req.user.locale === "fr" ? "fr-FR" : "en-US") : "en-US";
-			if(req.user && req.url !== "/") req.userInfos = await utils.fetchUser(req.user, req.client);
-			if(req.user){
+			req.locale = req.user
+				? req.user.locale === "fr"
+					? "fr-FR"
+					: "en-US"
+				: "en-US";
+			if (req.user && req.url !== "/")
+				req.userInfos = await utils.fetchUser(req.user, req.client);
+			if (req.user) {
 				req.translate = req.client.translations.get(req.locale);
 				req.printDate = (date) => req.client.printDate(date, null, req.locale);
 			}
@@ -53,26 +63,27 @@ module.exports.load = async(client) => {
 		.use("/stats", guildStatsRouter)
 		.use("/settings", settingsRouter)
 		.use("/", mainRouter)
-		.use(CheckAuth, function(req, res){
+		.use(CheckAuth, function (req, res) {
 			res.status(404).render("404", {
 				user: req.userInfos,
 				translate: req.translate,
-				currentURL: `${req.protocol}://${req.get("host")}${req.originalUrl}`
+				currentURL: `${req.protocol}://${req.get("host")}${req.originalUrl}`,
 			});
 		})
-		.use(CheckAuth, function(err, req, res) {
+		.use(CheckAuth, function (err, req, res) {
 			console.error(err.stack);
-			if(!req.user) return res.redirect("/");
+			if (!req.user) return res.redirect("/");
 			res.status(500).render("500", {
 				user: req.userInfos,
 				translate: req.translate,
-				currentURL: `${req.protocol}://${req.get("host")}${req.originalUrl}`
+				currentURL: `${req.protocol}://${req.get("host")}${req.originalUrl}`,
 			});
 		});
 
 	// Listen
 	app.listen(app.get("port"), () => {
-		console.log("SquadStatJS v3 Dashboard is listening on port "+app.get("port"));
+		console.log(
+			"SquadStatJS v3 Dashboard is listening on port " + app.get("port")
+		);
 	});
-
 };

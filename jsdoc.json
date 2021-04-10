@@ -1,0 +1,61 @@
+{
+	"docdash": {
+		"static": true,
+		"sort": true,
+		"sectionOrder": [
+			"Classes",
+			"Modules",
+			"Externals",
+			"Events",
+			"Namespaces",
+			"Mixins",
+			"Tutorials",
+			"Interfaces"
+		],
+		"disqus": "",
+		"openGraph": {
+			"title": "",
+			"type": "website",
+			"image": "",
+			"site_name": "",
+			"url": ""
+		},
+		"meta": {
+			"title": "",
+			"description": "",
+			"keyword": ""
+		},
+		"search": true,
+		"collapse": true,
+		"wrap": true,
+		"typedefs": true,
+		"navLevel": -1,
+		"private": false,
+		"removeQuotes": "none",
+		"scripts": [],
+		"menu": {
+			"Project Website": {
+				"href": "https://github.com/PolyLogiX-Studio/Neos.js",
+				"target": "_blank",
+				"class": "menu-item",
+				"id": "website_link"
+			},
+			"Discussions": {
+				"href": "https://github.com/PolyLogiX-Studio/Neos.js/discussions",
+				"target": "_blank",
+				"class": "menu-item",
+				"id": "forum_link"
+			},
+			"Discord": {
+				"href": "https://discord.gg/6y2A4Pk",
+				"target": "_blank",
+				"class": "menu-item",
+				"id": "discord_link"
+			}
+		},
+		"scopeInOutputPath": true,
+		"nameInOutputPath": true,
+		"versionInOutputPath": true
+	},
+	"plugins": ["node_modules/jsdoc-tsimport-plugin/index.js"]
+}

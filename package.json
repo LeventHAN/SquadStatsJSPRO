@@ -1,112 +1,126 @@
 {
-    "name": "squadstatjs-pro",
-    "version": "1.0.0",
-    "description": "An advanced version of SquadStatJS (tracking your squad stats) with advanced discord commands to manage your discord server.",
-    "main": "index.js",
-    "scripts": {
-        "start": "node .",
-        "lint": "eslint . --ext .js",
-        "testcfg": "node scripts/verify-config.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/11TStudio/SquadStatJS-PRO.git"
-    },
-    "keywords": [
-        "squadstatjs",
-        "squad",
-        "track",
-        "stats",
-        "leventhan",
-        "squadjs",
-        "discord",
-        "bot",
-        "giveaway",
-        "moderation"
-    ],
-    "author": "LeventHAN",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/11TStudio/SquadStatJS-PRO/issues"
-    },
-    "homepage": "https://github.com/11TStudio/SquadStatJS-PRO#readme",
-    "dependencies": {
-        "@discordjs/opus": "^0.5.0",
-        "@sentry/node": "6.2.3",
-        "@sindresorhus/slugify": "^1.1.0",
-        "ascii-table": "0.0.9",
-        "btoa": "^1.2.1",
-        "canvas": "^2.6.1",
-        "chalk": "^4.1.0",
-        "colors-generator": "^0.3.4",
-        "cron": "^1.7.2",
-        "dblapi.js": "^2.3.0",
-        "discord-backup": "^2.1.19",
-        "discord-canvas": "^1.3.2",
-        "discord-giveaways": "^4.4.3",
-        "discord-paginationembed": "^2.1.0",
-        "discord-player": "^3.0.3",
-        "discord.js": "^12.5.1",
-        "ejs": "^3.1.3",
-        "express": "^4.17.1",
-        "express-session": "^1.17.0",
-        "ffmpeg-static": "^4.3.0",
-        "figlet": "^1.5.0",
-        "gamedig": "^3.0.0",
-        "i18next": "^19.6.2",
-        "i18next-node-fs-backend": "^2.1.3",
-        "js-string-cleaner": "^1.0.3",
-        "markdown-table": "^3.0.0",
-        "mathjs": "^9.0.0",
-        "md5": "^2.2.1",
-        "moment": "^2.26.0",
-        "mongoose": "^5.9.25",
-        "ms": "^2.1.3",
-        "mysql": "^2.18.1",
-        "string-sanitizer": "^1.1.1"
-    },
-    "devDependencies": {
-        "eslint": "^7.5.0",
-        "nodemon": "^2.0.7"
-    },
-    "eslintConfig": {
-        "env": {
-            "commonjs": true,
-            "es6": true,
-            "node": true
-        },
-        "extends": "eslint:recommended",
-        "globals": {
-            "Atomics": "readonly",
-            "SharedArrayBuffer": "readonly"
-        },
-        "parserOptions": {
-            "ecmaVersion": 2020
-        },
-        "rules": {
-            "prefer-const": [
-                "error"
-            ],
-            "indent": [
-                "error",
-                "tab",
-                {
-                    "SwitchCase": 1
-                }
-            ],
-            "quotes": [
-                "error",
-                "double"
-            ],
-            "semi": [
-                "error",
-                "always"
-            ],
-            "linebreak-style": 0,
-            "require-atomic-updates": 0
-        }
-    },
-    "eslintIgnore": [
-        "dashboard/public"
-    ]
+	"name": "squadstatjs-pro",
+	"version": "1.0.0",
+	"description": "An advanced version of SquadStatJS (tracking your squad stats) with advanced discord commands to manage your discord server.",
+	"main": "index.js",
+	"scripts": {
+		"start": "node .",
+		"testcfg": "node scripts/verify-config.js",
+		"lint": "npm run prettier && npm run eslint",
+		"prettier": "prettier --use-tabs --write .",
+		"eslint": " eslint -c .eslintrc.json --fix .",
+		"document": "jsdoc -t node_modules/docdash ./base/ ./commands/ ./events/ ./helpers/ -r -c jsdoc.json -d ./docs/",
+		"ready": "npm run document && npm run lint"
+	},
+	"engines": {
+		"node": "^14.x"
+	},
+	"engineStrict": true,
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/11TStudio/SquadStatJS-PRO.git"
+	},
+	"keywords": [
+		"squadstatjs",
+		"squad",
+		"track",
+		"stats",
+		"leventhan",
+		"squadjs",
+		"discord",
+		"bot",
+		"giveaway",
+		"moderation"
+	],
+	"author": "LeventHAN",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/11TStudio/SquadStatJS-PRO/issues"
+	},
+	"homepage": "https://github.com/11TStudio/SquadStatJS-PRO#readme",
+	"dependencies": {
+		"@discordjs/opus": "^0.5.0",
+		"@sentry/node": "6.2.3",
+		"@sindresorhus/slugify": "^1.1.0",
+		"ascii-table": "0.0.9",
+		"btoa": "^1.2.1",
+		"canvas": "^2.6.1",
+		"chalk": "^4.1.0",
+		"colors-generator": "^0.3.4",
+		"cron": "^1.7.2",
+		"dblapi.js": "^2.3.0",
+		"discord-backup": "^2.1.19",
+		"discord-canvas": "^1.3.2",
+		"discord-giveaways": "^4.4.3",
+		"discord-paginationembed": "^2.1.0",
+		"discord-player": "^3.0.3",
+		"discord.js": "^12.5.1",
+		"ejs": "^3.1.3",
+		"express": "^4.17.1",
+		"express-session": "^1.17.0",
+		"ffmpeg-static": "^4.3.0",
+		"figlet": "^1.5.0",
+		"gamedig": "^3.0.0",
+		"i18next": "^19.6.2",
+		"i18next-node-fs-backend": "^2.1.3",
+		"js-string-cleaner": "^1.0.3",
+		"markdown-table": "^3.0.0",
+		"mathjs": "^9.0.0",
+		"md5": "^2.2.1",
+		"moment": "^2.26.0",
+		"mongoose": "^5.9.25",
+		"ms": "^2.1.3",
+		"mysql": "^2.18.1",
+		"string-sanitizer": "^1.1.1"
+	},
+	"devDependencies": {
+		"docdash": "^1.2.0",
+		"document": "^0.4.7",
+		"eslint": "^7.24.0",
+		"eslint-plugin-jsdoc": "^32.3.0",
+		"jsdoc": "^3.6.6",
+		"jsdoc-tsimport-plugin": "^1.0.5",
+		"nodemon": "^2.0.7",
+		"prettier": "^2.2.1"
+	},
+	"eslintConfig": {
+		"env": {
+			"commonjs": true,
+			"es6": true,
+			"node": true
+		},
+		"extends": "eslint:recommended",
+		"globals": {
+			"Atomics": "readonly",
+			"SharedArrayBuffer": "readonly"
+		},
+		"parserOptions": {
+			"ecmaVersion": 2020
+		},
+		"rules": {
+			"prefer-const": [
+				"error"
+			],
+			"indent": [
+				"error",
+				"tab",
+				{
+					"SwitchCase": 1
+				}
+			],
+			"quotes": [
+				"error",
+				"double"
+			],
+			"semi": [
+				"error",
+				"always"
+			],
+			"linebreak-style": 0,
+			"require-atomic-updates": 0
+		}
+	},
+	"eslintIgnore": [
+		"dashboard/public"
+	]
 }

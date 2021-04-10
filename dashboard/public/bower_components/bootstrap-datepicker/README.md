@@ -18,23 +18,23 @@ Please note: It might take a few hours until a new version is available on cdnjs
 
 ## Links
 
-* [Online Demo](https://uxsolutions.github.io/bootstrap-datepicker/)
-* [Online Docs](https://bootstrap-datepicker.readthedocs.org/en/stable/) (ReadTheDocs.com)
-* [Google Group](https://groups.google.com/group/bootstrap-datepicker/)
-* [Travis CI](https://travis-ci.org/uxsolutions/bootstrap-datepicker)
+- [Online Demo](https://uxsolutions.github.io/bootstrap-datepicker/)
+- [Online Docs](https://bootstrap-datepicker.readthedocs.org/en/stable/) (ReadTheDocs.com)
+- [Google Group](https://groups.google.com/group/bootstrap-datepicker/)
+- [Travis CI](https://travis-ci.org/uxsolutions/bootstrap-datepicker)
 
 ## Development
 
 Once you cloned the repo, you'll need to install [grunt](https://gruntjs.com/) and the development dependencies using a package manager:
 
-* [yarn](https://yarnpkg.com/) (recommended):
+- [yarn](https://yarnpkg.com/) (recommended):
 
 ```
 $ [sudo] yarn global add grunt-cli
 $ yarn install
 ```
 
-* [npm](https://www.npmjs.com/):
+- [npm](https://www.npmjs.com/):
 
 ```
 $ [sudo] npm install --global grunt-cli

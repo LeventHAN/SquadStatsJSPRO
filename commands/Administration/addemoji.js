@@ -1,24 +1,22 @@
 const Command = require("../../base/Command.js");
 
 class Addemoji extends Command {
-
-	constructor (client) {
+	constructor(client) {
 		super(client, {
 			name: "addemoji",
 			dirname: __dirname,
 			enabled: true,
 			guildOnly: true,
 			aliases: [],
-			memberPermissions: [ "MANAGE_GUILD" ],
-			botPermissions: [ "SEND_MESSAGES", "EMBED_LINKS" ],
+			memberPermissions: ["MANAGE_GUILD"],
+			botPermissions: ["SEND_MESSAGES", "EMBED_LINKS"],
 			nsfw: false,
 			ownerOnly: false,
-			cooldown: 5000
+			cooldown: 5000,
 		});
 	}
 
-	async run (message, args) {
-
+	async run(message, args) {
 		const URL = args[0];
 		if (!URL) {
 			return message.error("administration/addemoji:MISSING_URL");
@@ -34,18 +32,17 @@ class Addemoji extends Command {
 
 		message.guild.emojis
 			.create(URL, name)
-			.then(emoji => {
+			.then((emoji) => {
 				message.success("administration/addemoji:SUCCESS", {
-					emojiName: emoji.name
+					emojiName: emoji.name,
 				});
 			})
 			.catch(() => {
 				message.error("administration/addemoji:ERROR", {
-					emojiName: name
+					emojiName: name,
 				});
 			});
 	}
-
 }
 
 module.exports = Addemoji;

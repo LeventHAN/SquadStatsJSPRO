@@ -1,0 +1,8 @@
+# Ignore artifacts:
+docs/
+dashboard/
+assets/
+languages/
+node_modules/
+# Ignore all HTML files:
+*.html

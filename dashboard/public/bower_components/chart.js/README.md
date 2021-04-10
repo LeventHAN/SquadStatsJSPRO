@@ -1,9 +1,8 @@
-# Chart.js 
+# Chart.js
 
 [![Build Status](https://travis-ci.org/nnnick/Chart.js.svg?branch=master)](https://travis-ci.org/nnnick/Chart.js) [![Code Climate](https://codeclimate.com/github/nnnick/Chart.js/badges/gpa.svg)](https://codeclimate.com/github/nnnick/Chart.js)
 
-
-*Simple HTML5 Charts using the canvas element* [chartjs.org](http://www.chartjs.org)
+_Simple HTML5 Charts using the canvas element_ [chartjs.org](http://www.chartjs.org)
 
 ## Documentation
 

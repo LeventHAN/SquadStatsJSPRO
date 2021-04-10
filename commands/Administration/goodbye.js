@@ -2,35 +2,30 @@ const Command = require("../../base/Command.js"),
 	Resolvers = require("../../helpers/resolvers");
 
 class Goodbye extends Command {
-
-	constructor (client) {
+	constructor(client) {
 		super(client, {
 			name: "goodbye",
 			dirname: __dirname,
 			enabled: true,
 			guildOnly: true,
-			aliases: [ "au-revoir" ],
-			memberPermissions: [ "MANAGE_GUILD" ],
-			botPermissions: [ "SEND_MESSAGES", "EMBED_LINKS" ],
+			aliases: ["au-revoir"],
+			memberPermissions: ["MANAGE_GUILD"],
+			botPermissions: ["SEND_MESSAGES", "EMBED_LINKS"],
 			nsfw: false,
 			ownerOnly: false,
-			cooldown: 3000
+			cooldown: 3000,
 		});
 	}
 
-	async run (message, args, data) {
-
-		if (
-			args[0] === "test" &&
-            data.guild.plugins.goodbye.enabled
-		) {
+	async run(message, args, data) {
+		if (args[0] === "test" && data.guild.plugins.goodbye.enabled) {
 			this.client.emit("guildMemberRemove", message.member);
 			return message.success("administration/goodbye:TEST_SUCCESS");
 		}
 
 		if (
 			(!args[0] || !["edit", "off"].includes(args[0])) &&
-            data.guild.plugins.goodbye.enabled
+			data.guild.plugins.goodbye.enabled
 		)
 			return message.error("administration/goodbye:MISSING_STATUS");
 
@@ -39,12 +34,12 @@ class Goodbye extends Command {
 				enabled: false,
 				message: null,
 				channelID: null,
-				withImage: null
+				withImage: null,
 			};
 			data.guild.markModified("plugins.goodbye");
 			data.guild.save();
 			return message.error("administration/goodbye:DISABLED", {
-				prefix: data.guild.prefix
+				prefix: data.guild.prefix,
 			});
 		} else {
 			const goodbye = {
@@ -55,26 +50,26 @@ class Goodbye extends Command {
 			};
 
 			message.sendT("administration/goodbye:FORM_1", {
-				author: message.author.toString()
+				author: message.author.toString(),
 			});
 			const collector = message.channel.createMessageCollector(
-				m => m.author.id === message.author.id,
+				(m) => m.author.id === message.author.id,
 				{
-					time: 120000 // 2 minutes
+					time: 120000, // 2 minutes
 				}
 			);
 
-			collector.on("collect", async msg => {
+			collector.on("collect", async (msg) => {
 				// If the message is filled, it means the user sent yes or no for the image
 				if (goodbye.message) {
 					if (
 						msg.content.toLowerCase() ===
-                        message.translate("common:YES").toLowerCase()
+						message.translate("common:YES").toLowerCase()
 					) {
 						goodbye.withImage = true;
 					} else if (
 						msg.content.toLowerCase() ===
-                        message.translate("common:NO").toLowerCase()
+						message.translate("common:NO").toLowerCase()
 					) {
 						goodbye.withImage = false;
 					} else {
@@ -85,7 +80,7 @@ class Goodbye extends Command {
 					await data.guild.save();
 					message.sendT("administration/goodbye:FORM_SUCCESS", {
 						prefix: data.guild.prefix,
-						channel: `<#${goodbye.channel}>`
+						channel: `<#${goodbye.channel}>`,
 					});
 					return collector.stop();
 				}
@@ -103,7 +98,7 @@ class Goodbye extends Command {
 				if (!goodbye.channel) {
 					const channel = await Resolvers.resolveChannel({
 						message: msg,
-						channelType: "text"
+						channelType: "text",
 					});
 					if (!channel) {
 						return message.error("misc:INVALID_CHANNEL");
@@ -112,7 +107,7 @@ class Goodbye extends Command {
 					message.sendT("administration/goodbye:FORM_2", {
 						channel: channel.toString(),
 						author: msg.author.tag,
-						memberCount: msg.guild.memberCount
+						memberCount: msg.guild.memberCount,
 					});
 				}
 			});
@@ -124,7 +119,6 @@ class Goodbye extends Command {
 			});
 		}
 	}
-
 }
 
 module.exports = Goodbye;

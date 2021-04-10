@@ -39,7 +39,7 @@ of the project.
 
 ### Developer quick-start
 
-You'll need [node.js](https://nodejs.org).  I recommend using
+You'll need [node.js](https://nodejs.org). I recommend using
 [nvm](https://github.com/creationix/nvm) for installing node in
 development environments.
 
@@ -51,7 +51,7 @@ Once you're all set up, you can compile, minify and run the tests using `grunt`.
 
 Note: I'm experimenting with using perceptual diffs to catch rendering
 regressions. Due to font rendering differences between platforms, the pdiff
-tests currently *only* pass on OS X.
+tests currently _only_ pass on OS X.
 
 ## Changelog
 
@@ -203,7 +203,7 @@ tests currently *only* pass on OS X.
 
 ### 0.2.1 - 28th Feb 2012
 
-- Accept a DOM element *or* an ID in `options.element`
+- Accept a DOM element _or_ an ID in `options.element`
 - Add `smooth` option
 - Bugfix: clone `@default`
 - Add `ymax` option

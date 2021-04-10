@@ -1,18 +1,22 @@
 const chalk = require("chalk");
 
 module.exports = class {
-
-	constructor (client) {
+	constructor(client) {
 		this.client = client;
 	}
 
-	async run () {
-
+	async run() {
 		const client = this.client;
 
 		// Logs some informations using the logger file
-		client.logger.log(`Loading a total of ${client.commands.size} command(s).`, "log");
-		client.logger.log(`${client.user.tag}, ready to serve ${client.users.cache.size} users in ${client.guilds.cache.size} servers.`, "ready");
+		client.logger.log(
+			`Loading a total of ${client.commands.size} command(s).`,
+			"log"
+		);
+		client.logger.log(
+			`${client.user.tag}, ready to serve ${client.users.cache.size} users in ${client.guilds.cache.size} servers.`,
+			"ready"
+		);
 
 		/* DiscordBots.org STATS */
 		const discordbotsorg = require("../helpers/discordbots.org.js");
@@ -27,7 +31,7 @@ module.exports = class {
 		checkReminds.init(client);
 
 		// Start the dashboard
-		if(client.config.dashboard.enabled){
+		if (client.config.dashboard.enabled) {
 			client.dashboard.load(client);
 		}
 
@@ -35,16 +39,26 @@ module.exports = class {
 		const status = require("../config.js").status,
 			version = require("../package.json").version;
 		let i = 0;
-		setInterval(function(){
-			const toDisplay = status[parseInt(i, 10)].name.replace("{serversCount}", client.guilds.cache.size)+" | v"+version;
-			client.user.setActivity(toDisplay, {type: status[parseInt(i, 10)].type});
-			if(status[parseInt(i+1, 10)]) i++;
+		setInterval(function () {
+			const toDisplay =
+				status[parseInt(i, 10)].name.replace(
+					"{serversCount}",
+					client.guilds.cache.size
+				) +
+				" | v" +
+				version;
+			client.user.setActivity(toDisplay, {
+				type: status[parseInt(i, 10)].type,
+			});
+			if (status[parseInt(i + 1, 10)]) i++;
 			else i = 0;
 		}, 20000); // Every 20 seconds
 
 		setTimeout(() => {
-			console.log(chalk.magenta("\n\nSquadStatJS Ready!"), "Made with ❤️   by LeventHAN https://l-event.studio");
+			console.log(
+				chalk.magenta("\n\nSquadStatJS Ready!"),
+				"Made with ❤️   by LeventHAN https://l-event.studio"
+			);
 		}, 400);
-
 	}
-};  
+};

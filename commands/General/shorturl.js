@@ -3,33 +3,33 @@ const Command = require("../../base/Command.js"),
 	fetch = require("node-fetch");
 
 class ShortURL extends Command {
-
-	constructor (client) {
+	constructor(client) {
 		super(client, {
 			name: "shorturl",
 			dirname: __dirname,
 			enabled: true,
 			guildOnly: false,
-			aliases: [ "minimize" ],
+			aliases: ["minimize"],
 			memberPermissions: [],
-			botPermissions: [ "SEND_MESSAGES", "EMBED_LINKS" ],
+			botPermissions: ["SEND_MESSAGES", "EMBED_LINKS"],
 			nsfw: false,
 			ownerOnly: false,
-			cooldown: 5000
+			cooldown: 5000,
 		});
 	}
 
-	async run (message, args, data) {
-    
+	async run(message, args, data) {
 		const url = args[0];
-		if(!url){
+		if (!url) {
 			return message.error("general/shorturl:MISSING_URL");
 		}
 
-		const res = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURI(url)}`);
+		const res = await fetch(
+			`https://is.gd/create.php?format=simple&url=${encodeURI(url)}`
+		);
 		const body = await res.text();
 
-		if(body === "Error: Please enter a valid URL to shorten"){
+		if (body === "Error: Please enter a valid URL to shorten") {
 			return message.error("general/shorturl:MISSING_URL");
 		}
 
@@ -38,9 +38,7 @@ class ShortURL extends Command {
 			.setFooter(data.config.embed.footer)
 			.setDescription(body);
 		message.channel.send(embed);
-
 	}
-
 }
 
 module.exports = ShortURL;

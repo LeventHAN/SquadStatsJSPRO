@@ -1,9 +1,7 @@
-/* eslint-disable no-mixed-spaces-and-tabs */
 const Command = require("../../base/Command.js"),
 	Discord = require("discord.js");
 
 const mysql = require("mysql");
-
 
 const asyncForEach = async (array, callback) => {
 	for (let index = 0; index < array.length; index++) {
@@ -38,56 +36,61 @@ class Profile extends Command {
 		if (member.user.bot) {
 			return message.error("squad/profile:BOT_USER");
 		}
-		if (!data.guild.squadStatRoles) return message.error("squad/profile:NOT_CONFIGURED");
-		
+		if (!data.guild.squadStatRoles)
+			return message.error("squad/profile:NOT_CONFIGURED");
+
 		// Gets the data of the user whose profile you want to display
 		const memberData =
-     	 member.id === message.author.id
-      	? data.memberData
-      	: await client.findOrCreateMember({
-      		id: member.id,
-      		guildID: message.guild.id,
-      	});
+			member.id === message.author.id
+				? data.memberData
+				: await client.findOrCreateMember({
+					id: member.id,
+					guildID: message.guild.id,
+				  });
 		const userData =
-     	 member.id === message.author.id
-      	? data.userData
-      	: await client.findOrCreateUser({ id: member.id });
+			member.id === message.author.id
+				? data.userData
+				: await client.findOrCreateUser({ id: member.id });
 
 		let con;
 		// Gets the first argument
 		let steamUID;
 
-		if(args[0] === "re" || args[0] === "re-link") {
+		if (args[0] === "re" || args[0] === "re-link") {
 			data.memberData.tracking = false;
 			data.memberData.save();
-			return message.success(
-				"squad/profile:RE_LINKED"
-			);
+			return message.success("squad/profile:RE_LINKED");
 		}
 
-
 		const members = await this.client.membersData
-				.find({ guildID: message.guild.id })
-				.lean(),
+			.find({ guildID: message.guild.id })
+			.lean();
+		/*
 			membersLeaderboard = members
-				.map((m) => {
-					return {
-						id: m.id,
-						value: m.steam64ID,
-					};
-				})
-				.sort((a, b) => b.value - a.value);
+			.map((m) => {
+				return {
+					id: m.id,
+					value: m.steam64ID,
+				};
+			})
+			.sort((a, b) => b.value - a.value);
+			*/
 
 		members.forEach((element) => {
-			if ( element?.steam64ID === args[0] && element.id !== message.member.id) {
+			if (
+				element &&
+				element.steam64ID === args[0] &&
+				element.id !== message.member.id
+			) {
 				claimed = element.id;
 			}
 		});
 
-		if(claimed != ""){
-			return message.error("squad/profile:ALREADY_EXISTING", {username: claimed,});
+		if (claimed != "") {
+			return message.error("squad/profile:ALREADY_EXISTING", {
+				username: claimed,
+			});
 		}
-
 
 		if (data.memberData.tracking) {
 			steamUID = data.memberData.steam64ID;
@@ -118,7 +121,6 @@ class Profile extends Command {
 			client.logger.log(err, "error");
 		}
 
-
 		let dt = new Date();
 		dt = dt.setHours(dt.getHours() + 2);
 		dt = new Date(dt);
@@ -127,15 +129,19 @@ class Profile extends Command {
 		lastUpdate = lastUpdate.setHours(lastUpdate.getHours() + 1);
 		lastUpdate = new Date(lastUpdate);
 
-		async function sendEmbed(){
+		/** //TODO What is this?
+		 *
+		 * @returns {*} //TODO What is this?
+		 */
+		async function sendEmbed() {
 			const commonsGuilds = client.guilds.cache.filter((g) =>
 				g.members.cache.get(member.id)
 			);
-			await asyncForEach(commonsGuilds.array(), async (guild) => {
-				const memberData = await client.findOrCreateMember({
-					id: member.id,
-					guildID: guild.id,
-				});
+			await asyncForEach(commonsGuilds.array(), async (/*guild*/) => {
+				//	const memberData = await client.findOrCreateMember({ // TODO BRUH WHAT IS THIS?
+				//		id: member.id,
+				//		guildID: guild.id,
+				//	});
 			});
 
 			const profileEmbed = new Discord.MessageEmbed()
@@ -146,7 +152,9 @@ class Profile extends Command {
 					member.user.displayAvatarURL()
 				)
 				.setDescription(
-					userData.bio ? userData.bio : message.translate("squad/profile:NO_BIO")
+					userData.bio
+						? userData.bio
+						: message.translate("squad/profile:NO_BIO")
 				)
 				.addField(
 					message.translate("squad/profile:STEAMS"),
@@ -156,7 +164,7 @@ class Profile extends Command {
 					}),
 					false
 				)
-				.addField(`\u200B`, `\u200B`)
+				.addField("\u200B", "\u200B")
 				.addField(
 					message.translate("squad/profile:KDS"),
 					message.translate("squad/profile:KD", {
@@ -213,11 +221,11 @@ class Profile extends Command {
 					}),
 					true
 				)
-				.addField(`\u200B`, `\u200B`)
+				.addField("\u200B", "\u200B")
 				.addField(
 					message.translate("squad/profile:EXPS"),
 					message.translate("squad/profile:EXP", {
-						exp: memberData.exp
+						exp: memberData.exp,
 					}),
 					true
 				)
@@ -236,12 +244,13 @@ class Profile extends Command {
 				.setTimestamp();
 			message.channel.send(profileEmbed);
 		}
-
-
 		if (!data.guild.squadStatRoles) {
 			return message.error("squad/profile:NOT_CONFIGURED");
 		} else {
-			if(!data.memberData.tracking || (data.memberData.tracking && lastUpdate < dt)) {
+			if (
+				!data.memberData.tracking ||
+				(data.memberData.tracking && lastUpdate < dt)
+			) {
 				con.connect((error) => {
 					if (error) {
 						client.logger.log(error, "error");
@@ -264,7 +273,8 @@ class Profile extends Command {
 									if (err) {
 										return client.logger.log(err, "error");
 									}
-									data.memberData.wounds = result[0]["Wounds"] || 0;
+									if (result.length >= 1)
+										data.memberData.wounds = result[0]["Wounds"] || 0;
 									con.query(
 										"SELECT COUNT(*) AS Kills FROM DBLog_Deaths WHERE attacker='" +
 											steamUID +
@@ -273,7 +283,8 @@ class Profile extends Command {
 											if (err) {
 												return client.logger.log(err, "error");
 											}
-											data.memberData.kills = result[0]["Kills"] || 0;
+											if (result.length >= 1)
+												data.memberData.kills = result[0]["Kills"] || 0;
 											con.query(
 												"SELECT COUNT(*) AS Deaths FROM DBLog_Deaths WHERE victim='" +
 													steamUID +
@@ -282,7 +293,8 @@ class Profile extends Command {
 													if (err) {
 														return client.logger.log(err, "error");
 													}
-													data.memberData.deaths = result[0]["Deaths"] || 0;
+													if (result.length >= 1)
+														data.memberData.deaths = result[0]["Deaths"] || 0;
 													con.query(
 														"SELECT COUNT(*) AS Revives FROM DBLog_Revives WHERE reviver='" +
 															steamUID +
@@ -291,7 +303,9 @@ class Profile extends Command {
 															if (err) {
 																return client.logger.log(err, "error");
 															}
-															data.memberData.revives = result[0]["Revives"] || 0;
+															if (result.length >= 1)
+																data.memberData.revives =
+																	result[0]["Revives"] || 0;
 															con.query(
 																"SELECT COUNT(*) AS TeamKills FROM DBLog_Wounds WHERE attacker='" +
 																	steamUID +
@@ -300,7 +314,9 @@ class Profile extends Command {
 																	if (err) {
 																		return client.logger.log(err, "error");
 																	}
-																	data.memberData.tk = result[0]["TeamKills"] || 0;
+																	if (result.length >= 1)
+																		data.memberData.tk =
+																			result[0]["TeamKills"] || 0;
 																	con.query(
 																		"SELECT weapon AS Fav_Gun FROM DBLog_Wounds WHERE attacker='" +
 																			steamUID +
@@ -309,16 +325,24 @@ class Profile extends Command {
 																			if (err) {
 																				return client.logger.log(err, "error");
 																			}
-																			data.memberData.mk_gun = result[0]["Fav_Gun"] || "Undefined";
+																			if (result.length >= 1)
+																				data.memberData.mk_gun =
+																					result[0]["Fav_Gun"] || "Undefined";
+																			else data.memberData.mk_gun = "N/A";
 																			con.query(
 																				"SELECT weapon AS Fav_Role FROM DBLog_Deaths WHERE attacker='" +
 																					steamUID +
 																					"' GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1",
 																				(err, result) => {
 																					if (err) {
-																						return client.logger.log(err, "error");
+																						return client.logger.log(
+																							err,
+																							"error"
+																						);
 																					}
-																					data.memberData.mk_role = result[0]["Fav_Role"] || "Undefined";
+																					data.memberData.mk_role =
+																						result[0]["Fav_Role"] ||
+																						"Undefined";
 																					con.query(
 																						"SELECT (COUNT(*)/(SELECT COUNT(*) FROM DBLog_Deaths WHERE victim = '" +
 																							steamUID +
@@ -327,98 +351,155 @@ class Profile extends Command {
 																							"'",
 																						(err, result) => {
 																							if (err) {
-																								return client.logger.log(err, "error");
+																								return client.logger.log(
+																									err,
+																									"error"
+																								);
 																							}
-																							data.memberData.kd = result[0]["KD"] || 0;
+																							data.memberData.kd =
+																								result[0]["KD"] || 0;
 																							data.memberData.trackDate = dt;
 
-																							if(!data.memberData.tracking){
+																							if (!data.memberData.tracking) {
 																								data.memberData.tracking = true;
 																							}
 																							data.memberData.save();
 
 																							if (data.guild.squadStatRoles) {
 																								const regexKD = /^KD /i;
-																								message.member.roles.cache.some((role) => {
-																									if (regexKD.test(role.name))
-																										message.member.roles.remove(role).catch(console.error);
-																								});
+																								message.member.roles.cache.some(
+																									(role) => {
+																										if (regexKD.test(role.name))
+																											message.member.roles
+																												.remove(role)
+																												.catch(console.error);
+																									}
+																								);
 																								let roleName = "KD 0+";
-																								if (parseFloat(data.memberData.kills) > 50) {
+																								if (
+																									parseFloat(
+																										data.memberData.kills
+																									) > 50
+																								) {
 																									switch (true) {
-																										case parseFloat(data.memberData.kd) < 0.5:
-																											roleName = "KD 0+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 1.0:
-																											roleName = "KD 0.5+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 1.5:
-																											roleName = "KD 1+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 2.0:
-																											roleName = "KD 1.5+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 2.5:
-																											roleName = "KD 2+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 3.0:
-																											roleName = "KD 2.5+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 3.5:
-																											roleName = "KD 3+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 4.0:
-																											roleName = "KD 3.5+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 4.5:
-																											roleName = "KD 4+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 5.0:
-																											roleName = "KD 4.5+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 5.5:
-																											roleName = "KD 5+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 6.0:
-																											roleName = "KD 5.5+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 6.5:
-																											roleName = "KD 6+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 7:
-																											roleName = "KD 6.5+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 7.5:
-																											roleName = "KD 7+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 8:
-																											roleName = "KD 7.5+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 8.5:
-																											roleName = "KD 8+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 9:
-																											roleName = "KD 8.5+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 9.5:
-																											roleName = "KD 9+";
-																											break;
-																										case parseFloat(data.memberData.kd) < 10:
-																											roleName = "KD 9.5+";
-																											break;
-																										default:
-																											roleName = "KD 10+";
-																											break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 0.5:
+																										roleName = "KD 0+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 1.0:
+																										roleName = "KD 0.5+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 1.5:
+																										roleName = "KD 1+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 2.0:
+																										roleName = "KD 1.5+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 2.5:
+																										roleName = "KD 2+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 3.0:
+																										roleName = "KD 2.5+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 3.5:
+																										roleName = "KD 3+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 4.0:
+																										roleName = "KD 3.5+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 4.5:
+																										roleName = "KD 4+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 5.0:
+																										roleName = "KD 4.5+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 5.5:
+																										roleName = "KD 5+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 6.0:
+																										roleName = "KD 5.5+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 6.5:
+																										roleName = "KD 6+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 7:
+																										roleName = "KD 6.5+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 7.5:
+																										roleName = "KD 7+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 8:
+																										roleName = "KD 7.5+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 8.5:
+																										roleName = "KD 8+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 9:
+																										roleName = "KD 8.5+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 9.5:
+																										roleName = "KD 9+";
+																										break;
+																									case parseFloat(
+																										data.memberData.kd
+																									) < 10:
+																										roleName = "KD 9.5+";
+																										break;
+																									default:
+																										roleName = "KD 10+";
+																										break;
 																									}
 																								}
 																								const role = message.guild.roles.cache.find(
 																									(r) => r.name === roleName
 																								);
-																								message.member.roles.add(role).catch(console.error);
-																								message.success("squad/profile:UPDATE", {
-																									creator: message.author.toString(),
-																									steamID: steamUID,
-																								});
+																								message.member.roles
+																									.add(role)
+																									.catch(console.error);
+																								message.success(
+																									"squad/profile:UPDATE",
+																									{
+																										creator: message.author.toString(),
+																										steamID: steamUID,
+																									}
+																								);
 																								sendEmbed();
 																							}
 																						}

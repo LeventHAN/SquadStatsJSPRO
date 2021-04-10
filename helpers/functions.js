@@ -1,26 +1,31 @@
-const languages = require("../languages/language-meta.json").map((l) => l.moment).filter((l) => l !== "en");
+const languages = require("../languages/language-meta.json")
+	.map((l) => l.moment)
+	.filter((l) => l !== "en");
 languages.forEach((l) => {
 	require(`moment/locale/${l}.js`);
 });
 
 module.exports = {
-
-	/**
-     * Gets message prefix
-     * @param {object} message The Discord message
-     * @returns The prefix
-     */
-	getPrefix(message, data){
-		if(message.channel.type !== "dm"){
+	/**Gets message prefix.
+	 *
+	 * @param {object} message The Discord message
+	 * @param {*} data //TODO What is this?
+	 * @returns {string} The prefix
+	 */
+	getPrefix(message, data) {
+		if (message.channel.type !== "dm") {
 			const prefixes = [
 				`<@!${message.client.user.id}> `,
 				`<@${message.client.user.id}> `,
 				message.client.user.username.toLowerCase(),
-				data.guild.prefix
+				data.guild.prefix,
 			];
 			let prefix = null;
 			prefixes.forEach((p) => {
-				if(message.content.startsWith(p) || message.content.toLowerCase().startsWith(p)){
+				if (
+					message.content.startsWith(p) ||
+					message.content.toLowerCase().startsWith(p)
+				) {
 					prefix = p;
 				}
 			});
@@ -31,11 +36,13 @@ module.exports = {
 	},
 
 	// This function return a valid link to the support server
-	async supportLink(client){
+	async supportLink(client) {
 		const guild = client.guilds.cache.get(client.config.support.id);
 		const member = guild.me;
-		const channel = guild.channels.cache.find((ch) => ch.permissionsFor(member.id).has("CREATE_INSTANT_INVITE"));
-		if(channel){
+		const channel = guild.channels.cache.find((ch) =>
+			ch.permissionsFor(member.id).has("CREATE_INSTANT_INVITE")
+		);
+		if (channel) {
 			const invite = await channel.createInvite({ maxAge: 0 }).catch(() => {});
 			return invite ? invite.url : null;
 		} else {
@@ -43,20 +50,22 @@ module.exports = {
 		}
 	},
 
-	// This function sort an array 
+	// This function sort an array
 	sortByKey(array, key) {
-		return array.sort(function(a, b) {
+		return array.sort(function (a, b) {
 			const x = a[key];
 			const y = b[key];
-			return ((x < y) ? 1 : ((x > y) ? -1 : 0));
+			return x < y ? 1 : x > y ? -1 : 0;
 		});
 	},
 
 	// This function return a shuffled array
 	shuffle(pArray) {
 		const array = [];
-		pArray.forEach(element => array.push(element));
-		let currentIndex = array.length, temporaryValue, randomIndex;
+		pArray.forEach((element) => array.push(element));
+		let currentIndex = array.length,
+			temporaryValue,
+			randomIndex;
 		// While there remain elements to shuffle...
 		while (0 !== currentIndex) {
 			// Pick a remaining element...
@@ -109,6 +118,5 @@ module.exports = {
 		if (s) absoluteTime.push(s);
 
 		return absoluteTime.join(", ");
-	}
-
+	},
 };

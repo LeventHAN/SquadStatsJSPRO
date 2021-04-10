@@ -3,6 +3,13 @@ const Backend = require("i18next-node-fs-backend");
 const path = require("path");
 const fs = require("fs").promises;
 
+/** //TODO What does this do.
+ *
+ * @param {*} dir - //TODO What is this?
+ * @param {*}namespaces - //TODO What is this?
+ * @param {*} folderName - //TODO What is this?
+ * @returns {*} //TODO What does this return?
+ */
 async function walkDirectory(dir, namespaces = [], folderName = "") {
 	const files = await fs.readdir(dir);
 
@@ -31,7 +38,7 @@ async function walkDirectory(dir, namespaces = [], folderName = "") {
 module.exports = async () => {
 	const options = {
 		jsonIndent: 2,
-		loadPath: path.resolve(__dirname, "../languages/{{lng}}/{{ns}}.json")
+		loadPath: path.resolve(__dirname, "../languages/{{lng}}/{{ns}}.json"),
 	};
 
 	const { namespaces, languages } = await walkDirectory(
@@ -48,8 +55,8 @@ module.exports = async () => {
 		interpolation: { escapeValue: false },
 		load: "all",
 		ns: namespaces,
-		preload: languages
+		preload: languages,
 	});
 
-	return new Map(languages.map(item => [item, i18next.getFixedT(item)]));
+	return new Map(languages.map((item) => [item, i18next.getFixedT(item)]));
 };

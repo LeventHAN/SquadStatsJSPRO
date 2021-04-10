@@ -1,5 +1,5 @@
-define( function() {
+define(function () {
 	"use strict";
 
-	return [ "Top", "Right", "Bottom", "Left" ];
-} );
+	return ["Top", "Right", "Bottom", "Left"];
+});

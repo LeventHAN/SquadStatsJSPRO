@@ -1,5 +1,5 @@
-define( function() {
+define(function () {
 	"use strict";
 
-	return ( /^(?:checkbox|radio)$/i );
-} );
+	return /^(?:checkbox|radio)$/i;
+});

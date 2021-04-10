@@ -16,10 +16,10 @@ repo:
 # Adding tests
 
 Tests go in js files in the `tests/suites/` directory tree. QUnit organizes
-tests into suites called "modules"; there is one module per js file.  If the
+tests into suites called "modules"; there is one module per js file. If the
 tests you are adding do not fit into an existing module, create a new one at
 `tests/suites/<new module>.js`, where `<new module>` is a broad yet
-descriptive name for the suite.  If tests have many year-specific cases (ie,
+descriptive name for the suite. If tests have many year-specific cases (ie,
 behave differently in leap years vs normal years, or have specific buggy
 behavior in a certain year), create the module in a new directory,
 `tests/suites/<new module>/<year>.js`, where `<new module>` is the decriptive
