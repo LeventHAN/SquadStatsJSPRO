@@ -1,4 +1,5 @@
-.cke_table-faked-selection-editor *::selection, table[data-cke-table-faked-selection-table] *::selection {
+.cke_table-faked-selection-editor *::selection,
+table[data-cke-table-faked-selection-table] *::selection {
 	background: transparent;
 }
 
@@ -18,10 +19,12 @@
 .cke_editable:focus .cke_table-faked-selection a {
 	color: white;
 }
-.cke_table-faked-selection::-moz-selection, .cke_table-faked-selection ::-moz-selection {
+.cke_table-faked-selection::-moz-selection,
+.cke_table-faked-selection ::-moz-selection {
 	background: transparent;
 }
-.cke_table-faked-selection::selection, .cke_table-faked-selection ::selection {
+.cke_table-faked-selection::selection,
+.cke_table-faked-selection ::selection {
 	background: transparent;
 }
 

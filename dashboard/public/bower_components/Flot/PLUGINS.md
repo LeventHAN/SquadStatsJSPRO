@@ -1,4 +1,4 @@
-## Writing plugins ##
+## Writing plugins
 
 All you need to do to make a new plugin is creating an init function
 and a set of options (if needed), stuffing it into an object and
@@ -24,58 +24,57 @@ can write it as
 
 ```js
 (function ($) {
-    // plugin definition
-    // ...
+	// plugin definition
+	// ...
 })(jQuery);
 ```
 
 There's a complete example below, but you should also check out the
 plugins bundled with Flot.
 
+## Complete example
 
-## Complete example ##
-  
 Here is a simple debug plugin which alerts each of the series in the
 plot. It has a single option that control whether it is enabled and
 how much info to output:
 
 ```js
 (function ($) {
-    function init(plot) {
-        var debugLevel = 1;
+	function init(plot) {
+		var debugLevel = 1;
 
-        function checkDebugEnabled(plot, options) {
-            if (options.debug) {
-                debugLevel = options.debug;
-                plot.hooks.processDatapoints.push(alertSeries);
-            }
-        }
+		function checkDebugEnabled(plot, options) {
+			if (options.debug) {
+				debugLevel = options.debug;
+				plot.hooks.processDatapoints.push(alertSeries);
+			}
+		}
 
-        function alertSeries(plot, series, datapoints) {
-            var msg = "series " + series.label;
-            if (debugLevel > 1) {
-                msg += " with " + series.data.length + " points";
-                alert(msg);
-            }
-        }
+		function alertSeries(plot, series, datapoints) {
+			var msg = "series " + series.label;
+			if (debugLevel > 1) {
+				msg += " with " + series.data.length + " points";
+				alert(msg);
+			}
+		}
 
-        plot.hooks.processOptions.push(checkDebugEnabled);
-    }
+		plot.hooks.processOptions.push(checkDebugEnabled);
+	}
 
-    var options = { debug: 0 };
-      
-    $.plot.plugins.push({
-        init: init,
-        options: options,
-        name: "simpledebug",
-        version: "0.1"
-    });
+	var options = { debug: 0 };
+
+	$.plot.plugins.push({
+		init: init,
+		options: options,
+		name: "simpledebug",
+		version: "0.1",
+	});
 })(jQuery);
 ```
 
 We also define "name" and "version". It's not used by Flot, but might
 be helpful for other plugins in resolving dependencies.
-  
+
 Put the above in a file named "jquery.flot.debug.js", include it in an
 HTML page and then it can be used with:
 
@@ -85,16 +84,15 @@ HTML page and then it can be used with:
 
 This simple plugin illustrates a couple of points:
 
- - It uses the anonymous function trick to avoid name pollution.
- - It can be enabled/disabled through an option.
- - Variables in the init function can be used to store plot-specific
-   state between the hooks.
+- It uses the anonymous function trick to avoid name pollution.
+- It can be enabled/disabled through an option.
+- Variables in the init function can be used to store plot-specific
+  state between the hooks.
 
 The two last points are important because there may be multiple plots
 on the same page, and you'd want to make sure they are not mixed up.
 
-
-## Shutting down a plugin ##
+## Shutting down a plugin
 
 Each plot object has a shutdown hook which is run when plot.shutdown()
 is called. This usually mostly happens in case another plot is made on
@@ -111,9 +109,8 @@ but because your event handler is still referencing it, it can't be
 garbage collected yet, and worse, if your handler eventually runs, it
 may overwrite stuff on a completely different plot.
 
- 
-## Some hints on the options ##
-   
+## Some hints on the options
+
 Plugins should always support appropriate options to enable/disable
 them because the plugin user may have several plots on the same page
 where only one should use the plugin. In most cases it's probably a
@@ -126,13 +123,13 @@ the options object, e.g.
 
 ```js
 var options = {
-    series: {
-        downsample: {
-            algorithm: null,
-            maxpoints: 1000
-        }
-    }
-}
+	series: {
+		downsample: {
+			algorithm: null,
+			maxpoints: 1000,
+		},
+	},
+};
 ```
 
 Then they will be copied by Flot into each series, providing default

@@ -1,9 +1,9 @@
-<!-- 
+<!--
 
 THIS TEMPLATE IS MANDATORY!!
 
 Thank you for your contribution to bootstrap-colorpicker! Please replace {Please write here *} with your description.
-Please note that issues not following this template may be potentially discarded if they are not easily reproduceable 
+Please note that issues not following this template may be potentially discarded if they are not easily reproduceable
 with live examples (in case of code issues) and/or the description is not clear enough.
 -->
 
@@ -16,6 +16,7 @@ The following sections are only mandatory for bug reports.
 For feature requests and other kind of tickets, you only need to fill the first section,
 optionally with additional comments and examples.
 -->
+
 ### Which software are you using?
 
 - bootstrap-colorpicker version: {Please write here}
@@ -44,7 +45,8 @@ optionally with additional comments and examples.
 Live examples are MANDATORY for code-related issues
 You have a JsFiddle template here: http://jsfiddle.net/0vopxm13/157/ which is using the latest master version of the library.
 -->
-*Live example*: {Please write here a link to your JsFiddle example}
+
+_Live example_: {Please write here a link to your JsFiddle example}
 
 ### Additional Comments (if any)
 

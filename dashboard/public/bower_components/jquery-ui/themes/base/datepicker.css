@@ -10,12 +10,12 @@
  */
 .ui-datepicker {
 	width: 17em;
-	padding: .2em .2em 0;
+	padding: 0.2em 0.2em 0;
 	display: none;
 }
 .ui-datepicker .ui-datepicker-header {
 	position: relative;
-	padding: .2em 0;
+	padding: 0.2em 0;
 }
 .ui-datepicker .ui-datepicker-prev,
 .ui-datepicker .ui-datepicker-next {
@@ -64,12 +64,12 @@
 }
 .ui-datepicker table {
 	width: 100%;
-	font-size: .9em;
+	font-size: 0.9em;
 	border-collapse: collapse;
-	margin: 0 0 .4em;
+	margin: 0 0 0.4em;
 }
 .ui-datepicker th {
-	padding: .7em .3em;
+	padding: 0.7em 0.3em;
 	text-align: center;
 	font-weight: bold;
 	border: 0;
@@ -81,23 +81,23 @@
 .ui-datepicker td span,
 .ui-datepicker td a {
 	display: block;
-	padding: .2em;
+	padding: 0.2em;
 	text-align: right;
 	text-decoration: none;
 }
 .ui-datepicker .ui-datepicker-buttonpane {
 	background-image: none;
-	margin: .7em 0 0 0;
-	padding: 0 .2em;
+	margin: 0.7em 0 0 0;
+	padding: 0 0.2em;
 	border-left: 0;
 	border-right: 0;
 	border-bottom: 0;
 }
 .ui-datepicker .ui-datepicker-buttonpane button {
 	float: right;
-	margin: .5em .2em .4em;
+	margin: 0.5em 0.2em 0.4em;
 	cursor: pointer;
-	padding: .2em .6em .3em .6em;
+	padding: 0.2em 0.6em 0.3em 0.6em;
 	width: auto;
 	overflow: visible;
 }
@@ -114,7 +114,7 @@
 }
 .ui-datepicker-multi .ui-datepicker-group table {
 	width: 95%;
-	margin: 0 auto .4em;
+	margin: 0 auto 0.4em;
 }
 .ui-datepicker-multi-2 .ui-datepicker-group {
 	width: 50%;

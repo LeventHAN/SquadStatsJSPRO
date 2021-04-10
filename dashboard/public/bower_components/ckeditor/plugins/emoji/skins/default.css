@@ -7,7 +7,8 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-family: sans-serif, Arial, Verdana, "Trebuchet MS", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	font-family: sans-serif, Arial, Verdana, "Trebuchet MS", "Apple Color Emoji",
+		"Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 .cke_emoji-panel {
@@ -68,7 +69,8 @@
 	opacity: 0.4;
 }
 
-.cke_emoji-inner_panel li:hover svg, .cke_emoji-inner_panel li:hover span{
+.cke_emoji-inner_panel li:hover svg,
+.cke_emoji-inner_panel li:hover span {
 	opacity: 1;
 }
 
@@ -108,8 +110,8 @@
 }
 
 .cke_emoji-search span {
-    background-repeat: no-repeat;
-    background-position: -60px -15px;
+	background-repeat: no-repeat;
+	background-position: -60px -15px;
 	background-size: 75px 30px;
 }
 
@@ -120,7 +122,7 @@
 	height: 100%;
 	padding-left: 25px;
 	padding-right: 10px;
-	margin-left: 0
+	margin-left: 0;
 }
 
 .cke_rtl .cke_emoji-search input {
@@ -176,7 +178,7 @@
 }
 
 .cke_emoji-outer_emoji_block .hidden {
-	display: none
+	display: none;
 }
 
 /* STATUS BAR */
@@ -224,6 +226,7 @@ p.cke_emoji-status_full_name {
 	color: #d1d1d1;
 }
 
-.cke_emoji-inner_panel a:focus, .cke_emoji-inner_panel input:focus {
-	outline: 2px solid #139FF7;
+.cke_emoji-inner_panel a:focus,
+.cke_emoji-inner_panel input:focus {
+	outline: 2px solid #139ff7;
 }

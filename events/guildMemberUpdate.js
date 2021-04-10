@@ -1,13 +1,12 @@
 module.exports = class {
-
-	constructor (client) {
+	constructor(client) {
 		this.client = client;
 	}
-  
-	async run (oldMember, newMember) {
-		if(oldMember.guild.id !== this.client.config.support.id) return;
-		if(oldMember.roles.cache.some((r) => r.name === "【💳】Donators")) return;
-		if(newMember.roles.cache.some((r) => r.name === "【💳】Donators")){
+
+	async run(oldMember, newMember) {
+		if (oldMember.guild.id !== this.client.config.support.id) return;
+		if (oldMember.roles.cache.some((r) => r.name === "【💳】Donators")) return;
+		if (newMember.roles.cache.some((r) => r.name === "【💳】Donators")) {
 			// Later maybe use this for donaters...
 			// const userData = await this.client.findOrCreateUser({ id: newMember.id });
 			// userData.achievements.tip.progress.now = 1;

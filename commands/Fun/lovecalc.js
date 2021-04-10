@@ -3,8 +3,7 @@ const Command = require("../../base/Command.js"),
 	md5 = require("md5");
 
 class Lovecalc extends Command {
-
-	constructor (client) {
+	constructor(client) {
 		super(client, {
 			name: "lovecalc",
 			dirname: __dirname,
@@ -12,24 +11,24 @@ class Lovecalc extends Command {
 			guildOnly: true,
 			aliases: ["lc"],
 			memberPermissions: [],
-			botPermissions: [ "SEND_MESSAGES", "EMBED_LINKS" ],
+			botPermissions: ["SEND_MESSAGES", "EMBED_LINKS"],
 			nsfw: false,
 			ownerOnly: false,
-			cooldown: 1000
+			cooldown: 1000,
 		});
 	}
 
-	async run (message) {
-		const firstMember = message.mentions.members.filter(m => m.id !== message.author.id).first();
-		if (!firstMember)
-			return message.error("fun/lovecalc:MISSING");
+	async run(message) {
+		const firstMember = message.mentions.members
+			.filter((m) => m.id !== message.author.id)
+			.first();
+		if (!firstMember) return message.error("fun/lovecalc:MISSING");
 		const secondMember =
 			message.mentions.members
-				.filter(m => m.id !== firstMember.id)
-				.filter(m => m.id !== message.author.id)
+				.filter((m) => m.id !== firstMember.id)
+				.filter((m) => m.id !== message.author.id)
 				.first() || message.member;
-		if (!secondMember)
-			return message.error("fun/lovecalc:MISSING");
+		if (!secondMember) return message.error("fun/lovecalc:MISSING");
 
 		const members = [firstMember, secondMember].sort(
 			(a, b) => parseInt(a.id, 10) - parseInt(b.id, 10)
@@ -40,7 +39,7 @@ class Lovecalc extends Command {
 
 		const string = hash
 			.split("")
-			.filter(e => !isNaN(e))
+			.filter((e) => !isNaN(e))
 			.join("");
 		const percent = parseInt(string.substr(0, 2), 10);
 
@@ -50,16 +49,14 @@ class Lovecalc extends Command {
 				message.translate("fun/lovecalc:CONTENT", {
 					percent,
 					firstUsername: firstMember.user.username,
-					secondUsername: secondMember.user.username
+					secondUsername: secondMember.user.username,
 				})
 			)
 			.setColor(this.client.config.embed.color)
 			.setFooter(this.client.config.embed.footer);
 
 		message.channel.send(embed);
-        
 	}
-
 }
 
 module.exports = Lovecalc;

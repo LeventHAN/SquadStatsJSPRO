@@ -1,5 +1,4 @@
-[jQuery UI](http://jqueryui.com/) - Interactions and Widgets for the web
-================================
+# [jQuery UI](http://jqueryui.com/) - Interactions and Widgets for the web
 
 jQuery UI provides interactions like Drag and Drop and widgets like Autocomplete, Tabs and Slider and makes these as easy to use as jQuery itself.
 

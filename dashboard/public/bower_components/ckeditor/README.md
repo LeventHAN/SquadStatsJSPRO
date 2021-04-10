@@ -1,5 +1,4 @@
-CKEditor 4 - Releases
-=====================
+# CKEditor 4 - Releases
 
 ## Releases Code
 
@@ -10,7 +9,7 @@ They differ in the number of plugins that are compiled into the main `ckeditor.j
 
 See the [comparison](http://ckeditor.com/presets) of the `basic`, `standard`, and `full` installation presets for more details.
 
-The `standard-all` build includes all official CKSource plugins with only those from the `standard` installation preset compiled into the `ckeditor.js` file and enabled in the configuration. 
+The `standard-all` build includes all official CKSource plugins with only those from the `standard` installation preset compiled into the `ckeditor.js` file and enabled in the configuration.
 
 All versions available in this repository were built using [CKBuilder](http://ckeditor.com/builder), so they are optimized and ready to be used in a production environment.
 
@@ -24,15 +23,15 @@ Developer documentation for CKEditor is available online at: <http://docs.ckedit
 
 To install one of the available releases, just clone this repository and switch to the respective branch (see next section):
 
-	git clone -b <release branch> git://github.com/ckeditor/ckeditor-releases.git
-	
+    git clone -b <release branch> git://github.com/ckeditor/ckeditor-releases.git
+
 ### Git submodule
 
 If you are using git for your project and you want to integrate CKEditor, we recommend to add this repository as a
 [submodule](http://git-scm.com/book/en/Git-Tools-Submodules).
 
-	git submodule add -b <release branch> git://github.com/ckeditor/ckeditor-releases.git <clone dir>
-	git commit -m "Added CKEditor submodule in <clone dir> directory."
+    git submodule add -b <release branch> git://github.com/ckeditor/ckeditor-releases.git <clone dir>
+    git commit -m "Added CKEditor submodule in <clone dir> directory."
 
 ### Using Package Managers
 
@@ -44,19 +43,19 @@ See the [Installing CKEditor with Package Managers](http://docs.ckeditor.com/#!/
 
 This repository contains the following branches:
 
-  - `master` and `latest` &ndash; the latest release of the `standard-all` preset (including betas).
-  - `stable` &ndash; the latest stable release of the `standard-all` preset (non-beta).
-  - `A.B.x` (e.g. `4.3.x`) &ndash; the latest release of the `standard-all` preset in the `A.B` branch.
-  - `(basic|standard|full)/stable` &ndash; the latest stable release tag point (non-beta).
-  - `(basic|standard|full)/latest` &ndash; the latest release tag point (including betas).
-  - `(basic|standard|full)/A.B.x` (e.g. `basic/4.0.x`) &ndash; the latest releases in the `A.B` branch.
+- `master` and `latest` &ndash; the latest release of the `standard-all` preset (including betas).
+- `stable` &ndash; the latest stable release of the `standard-all` preset (non-beta).
+- `A.B.x` (e.g. `4.3.x`) &ndash; the latest release of the `standard-all` preset in the `A.B` branch.
+- `(basic|standard|full)/stable` &ndash; the latest stable release tag point (non-beta).
+- `(basic|standard|full)/latest` &ndash; the latest release tag point (including betas).
+- `(basic|standard|full)/A.B.x` (e.g. `basic/4.0.x`) &ndash; the latest releases in the `A.B` branch.
 
 ### Tags
 
 **Since version 4.3.3** this repository uses the following tag naming rules:
 
-  - `x.y.z` &ndash; contains the `standard-all` editor build, e.g. `4.3.3`, `4.4.0` etc.
-  - `(basic|standard|full)/x.y.z` &ndash; contains the editor build with a given preset, e.g. `basic/4.3.3`.
+- `x.y.z` &ndash; contains the `standard-all` editor build, e.g. `4.3.3`, `4.4.0` etc.
+- `(basic|standard|full)/x.y.z` &ndash; contains the editor build with a given preset, e.g. `basic/4.3.3`.
 
 The version numbers follow the [Semantic Versioning 2.0.0](http://semver.org/) scheme.
 
@@ -69,11 +68,11 @@ The editor comes with a sample page that can be used to verify if the installati
 
 To test your installation, just call the following page for your website:
 
-	http://<your site>/<CKEditor installation path>/samples/index.html
+    http://<your site>/<CKEditor installation path>/samples/index.html
 
 For example:
 
-	http://www.example.com/ckeditor/samples/index.html
+    http://www.example.com/ckeditor/samples/index.html
 
 ### License
 

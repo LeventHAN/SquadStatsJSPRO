@@ -53,20 +53,18 @@
 	left: 0;
 	position: absolute;
 	opacity: 0;
-	filter:Alpha(Opacity=0); /* support: IE8 */
+	filter: Alpha(Opacity=0); /* support: IE8 */
 }
 
 .ui-front {
 	z-index: 100;
 }
 
-
 /* Interaction Cues
 ----------------------------------*/
 .ui-state-disabled {
 	cursor: default !important;
 }
-
 
 /* Icons
 ----------------------------------*/
@@ -78,7 +76,6 @@
 	overflow: hidden;
 	background-repeat: no-repeat;
 }
-
 
 /* Misc visuals
 ----------------------------------*/
