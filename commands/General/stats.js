@@ -44,6 +44,7 @@ class Stats extends Command {
 			.addField(
 				message.translate("general/stats:CREDITS"),
 				message.translate("general/stats:CREDIT", {
+					contributors: ["`Bitman#0669`"].join("\n"),
 					translators: [
 						"`Morph#8610` (:flag_de:)",
 						"`Harun | CORONA#6035` (:flag_tr:)",

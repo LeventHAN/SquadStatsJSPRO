@@ -1,17 +1,14 @@
 {
-    "DESCRIPTION": "Megmutatja a bot statisztikáját!",
-    "USAGE": "{{prefix}}stats",
-    "EXAMPLES": "{{prefix}}stats",
-    "COUNTS_TITLE": "• __Statisztika__",
-    "COUNTS_CONTENT": "`Szerverek: {{servers}}`\n`Felhasználók: {{users}}`",
-    "VERSIONS_TITLE": "• __Használata__",
+    "DESCRIPTION": "Shows the bot credits!",
+    "USAGE": "{{prefix}}credits",
+    "EXAMPLES": "{{prefix}}credits",
+    "COUNTS_TITLE": "• __Statistics__",
+    "COUNTS_CONTENT": "`Servers: {{servers}}`\n`Users: {{users}}`",
     "RAM_TITLE": "• __RAM__",
-    "ONLINE_TITLE": "• __Elérhető__",
-    "ONLINE_CONTENT": "Elérhető vagyok {{time}} ideje",
-    "MUSIC_TITLE": "• __Zene__",
-    "MUSIC_CONTENT": "Zene lejátszása `{{count}}` szerveren",
-    "CREDITS_TITLE": ":heart: • __Köszönetnyilvánítások és kreditek__",
-    "CREDITS_CONTENT": "Köszönet az [Icons8](https://icons8.com/)-nak szinte az összes hangulatjeletet!\n__**Támogatók**__:\n{{donators}}\n__**Fordítók**__:\n{{translators}}",
-    "LINKS_TITLE": "• __Linkek__",
-    "MADE": "Az SquadStatJSv3 LeventHAN™#0001 által kifejlesztett nyílt forráskódú bot!"
+    "ONLINE_TITLE": "• __Online__",
+    "ONLINE_CONTENT": "Online for {{time}}",
+    "CREDITS": ":heart: • __SquadStatJSv3 Credits__",
+    "CREDIT": "__**AtlantaBot Core**__:\n`AtlantaBot Translators` (:globe_with_meridians:)\n__**SquadStatJSPRO Contributors**__:\n{{contributors}}\n__**SquadStatJSPRO Translaters**__:\n{{translators}}",
+    "LINKS_TITLE": "• __Links__",
+    "MADE": "SquadStatJSv3 is an open source bot developed by LeventHAN™#0001!"
 }
