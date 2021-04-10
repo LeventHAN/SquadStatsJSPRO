@@ -13,9 +13,8 @@
 		"ready": "npm run document && npm run lint"
 	},
 	"engines": {
-		"node": "^14.x"
+		"node": ">=14.x"
 	},
-	"engineStrict": true,
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/11TStudio/SquadStatJS-PRO.git"
