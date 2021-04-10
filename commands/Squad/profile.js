@@ -501,6 +501,11 @@ class Profile extends Command {
 																									}
 																								);
 																								sendEmbed();
+																								con.end(function(err) {
+																									if (err) {
+																									  return console.error('error:' + err.message);
+																									}
+																								  });
 																							}
 																						}
 																					);
