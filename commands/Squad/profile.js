@@ -385,61 +385,61 @@ class Profile extends Command {
 				let res = new MYSQLPromiseObjectBuilder(pool);
 				res.add(
 					"steamName",
-					`SELECT lastName FROM DBLog_SteamUsers WHERE steamID = ${steamUID}`,
+					`SELECT lastName FROM DBLog_SteamUsers WHERE steamID = "${steamUID}"`,
 					"Undefined",
 					"lastName"
 				);
 				res.add(
 					"kd",
-					`SELECT (COUNT(*)/(SELECT COUNT(*) FROM DBLog_Deaths WHERE victim = ${steamUID})) AS KD FROM DBLog_Deaths WHERE attacker=${steamUID}`,
+					`SELECT (COUNT(*)/(SELECT COUNT(*) FROM DBLog_Deaths WHERE victim = "${steamUID}")) AS KD FROM DBLog_Deaths WHERE attacker="${steamUID}"`,
 					"0",
 					"KD"
 				);
 				res.add(
 					"kills",
-					`SELECT COUNT(*) AS Kills FROM DBLog_Deaths WHERE attacker = ${steamUID}`,
+					`SELECT COUNT(*) AS Kills FROM DBLog_Deaths WHERE attacker = "${steamUID}"`,
 					"0",
 					"Kills"
 				);
 				res.add(
 					"deaths",
-					`SELECT COUNT(*) AS Deaths FROM DBLog_Deaths WHERE victim = ${steamUID}}`,
+					`SELECT COUNT(*) AS Deaths FROM DBLog_Deaths WHERE victim = "${steamUID}"}`,
 					"0",
 					"Deaths"
 				);
 				res.add(
 					"woundsINF",
-					`SELECT COUNT(*) AS Kills_INF FROM DBLog_Wounds WHERE attacker = ${steamUID} AND weapon NOT REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
+					`SELECT COUNT(*) AS Kills_INF FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND weapon NOT REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
 					"0",
 					"Kills_INF"
 				);
 				res.add(
 					"woundsVEH",
-					`SELECT COUNT(*) AS Kills_VEH FROM DBLog_Wounds WHERE attacker = ${steamUID} AND weapon REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
+					`SELECT COUNT(*) AS Kills_VEH FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND weapon REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
 					"0",
 					"Kills_VEH"
 				);
 				res.add(
 					"revives",
-					`SELECT COUNT(*) AS Revives FROM DBLog_Revives WHERE reviver = ${steamUID}`,
+					`SELECT COUNT(*) AS Revives FROM DBLog_Revives WHERE reviver = "${steamUID}"`,
 					"0",
 					"Revives"
 				);
 				res.add(
 					"tk",
-					`SELECT COUNT(*) AS TeamKills FROM DBLog_Wounds WHERE attacker = ${steamUID} AND teamkill=1`,
+					`SELECT COUNT(*) AS TeamKills FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND teamkill=1`,
 					"0",
 					"TeamKills"
 				);
 				res.add(
 					"mk_gun",
-					`SELECT weapon AS Fav_Gun FROM DBLog_Wounds WHERE attacker = ${steamUID} GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`,
+					`SELECT weapon AS Fav_Gun FROM DBLog_Wounds WHERE attacker = "${steamUID}" GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`,
 					"0",
 					"Fav_Gun"
 				);
 				res.add(
 					"mk_role",
-					`SELECT weapon AS Fav_Role FROM DBLog_Deaths WHERE attacker = ${steamUID} GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`,
+					`SELECT weapon AS Fav_Role FROM DBLog_Deaths WHERE attacker = "${steamUID}" GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`,
 					"0",
 					"Fav_Role"
 				);
