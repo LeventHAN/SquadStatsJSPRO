@@ -3,12 +3,6 @@ const Command = require("../../base/Command.js"),
 
 const mysql = require("mysql");
 
-const asyncForEach = async (array, callback) => {
-	for (let index = 0; index < array.length; index++) {
-		await callback(array[index], index, array);
-	}
-};
-
 class Profile extends Command {
 	constructor(client) {
 		super(client, {
@@ -29,6 +23,15 @@ class Profile extends Command {
 	async run(message, args, data) {
 		const client = this.client;
 		let claimed = "";
+		const pool = mysql.createPool({
+			connectionLimit: 5,
+			host: data.guild.squadDB.host,
+			port: data.guild.squadDB.port,
+			user: data.guild.squadDB.user,
+			password: data.guild.squadDB.password,
+			database: data.guild.squadDB.database,
+		});
+
 		let member = await client.resolveMember(args[0], message.guild);
 		if (!member) member = message.member;
 
@@ -52,8 +55,6 @@ class Profile extends Command {
 				? data.userData
 				: await client.findOrCreateUser({ id: member.id });
 
-		let con;
-		// Gets the first argument
 		let steamUID;
 
 		if (args[0] === "re" || args[0] === "re-link") {
@@ -65,16 +66,6 @@ class Profile extends Command {
 		const members = await this.client.membersData
 			.find({ guildID: message.guild.id })
 			.lean();
-		/*
-			membersLeaderboard = members
-			.map((m) => {
-				return {
-					id: m.id,
-					value: m.steam64ID,
-				};
-			})
-			.sort((a, b) => b.value - a.value);
-			*/
 
 		members.forEach((element) => {
 			if (
@@ -109,41 +100,11 @@ class Profile extends Command {
 				steamID: steamUID,
 			});
 		}
-		try {
-			con = mysql.createConnection({
-				host: data.guild.squadDB.host,
-				port: data.guild.squadDB.port,
-				user: data.guild.squadDB.user,
-				password: data.guild.squadDB.password,
-				database: data.guild.squadDB.database,
-			});
-		} catch (err) {
-			client.logger.log(err, "error");
-		}
 
-		let dt = new Date();
-		dt = dt.setHours(dt.getHours() + 2);
-		dt = new Date(dt);
-
-		let lastUpdate = new Date(data.memberData.trackDate);
-		lastUpdate = lastUpdate.setHours(lastUpdate.getHours() + 1);
-		lastUpdate = new Date(lastUpdate);
-
-		/** //TODO What is this?
-		 *
-		 * @returns {*} //TODO What is this?
+		/**
+		 * Send an embed message to the authors channel with the authors squad stats grabbed from MongoDB.
 		 */
-		async function sendEmbed() {
-			const commonsGuilds = client.guilds.cache.filter((g) =>
-				g.members.cache.get(member.id)
-			);
-			await asyncForEach(commonsGuilds.array(), async (/*guild*/) => {
-				//	const memberData = await client.findOrCreateMember({ // TODO BRUH WHAT IS THIS?
-				//		id: member.id,
-				//		guildID: guild.id,
-				//	});
-			});
-
+		function sendEmbed() {
 			const profileEmbed = new Discord.MessageEmbed()
 				.setAuthor(
 					message.translate("squad/profile:TITLE", {
@@ -187,9 +148,16 @@ class Profile extends Command {
 					true
 				)
 				.addField(
-					message.translate("squad/profile:WOUNDS"),
-					message.translate("squad/profile:WOUND", {
-						wounds: memberData.wounds,
+					message.translate("squad/profile:WOUNDS_INF"),
+					message.translate("squad/profile:WOUNDS", {
+						kills: memberData.woundsINF,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/profile:WOUNDS_VEH"),
+					message.translate("squad/profile:WOUNDS", {
+						kills: memberData.woundsVEH,
 					}),
 					true
 				)
@@ -244,6 +212,393 @@ class Profile extends Command {
 				.setTimestamp();
 			message.channel.send(profileEmbed);
 		}
+
+		/**.
+		 * Promise based getter, gets the KD ratio for the steamUID
+		 *
+		 * @param {string} steamUID SteamID is a unique identifier for your Steam account
+		 * @returns {string} row with K/D value of the steamUID
+		 */
+		function getKD(steamUID) {
+			return new Promise(function (resolve, reject) {
+				pool.getConnection(function (err, connection) {
+					var query_str =
+						"SELECT (COUNT(*)/(SELECT COUNT(*)" +
+						"FROM DBLog_Deaths WHERE victim = ?)) AS KD " +
+						"FROM DBLog_Deaths WHERE attacker=?";
+
+					var query_var = [steamUID, steamUID];
+
+					pool.query(query_str, query_var, function (err, rows) {
+						// Call reject on error states,
+						// call resolve with results
+						if (err) return reject(err);
+						resolve(rows);
+					});
+
+					// Release the connection
+					connection.release();
+				});
+			});
+		}
+
+		/**.
+		 * Promise based getter, gets the steamName for the steamUID
+		 *
+		 * @param {string} steamUID SteamID is a unique identifier for your Steam account
+		 * @returns {string} row with steamName of the steamUID
+		 */
+		function getSteamName(steamUID) {
+			return new Promise(function (resolve, reject) {
+				pool.getConnection(function (err, connection) {
+					var query_str =
+						"SELECT lastName FROM DBLog_SteamUsers WHERE steamID = ? ";
+
+					var query_var = [steamUID];
+
+					pool.query(query_str, query_var, function (err, rows) {
+						// Call reject on error states,
+						// call resolve with results
+						if (err) return reject(err);
+						resolve(rows);
+					});
+
+					// Release the connection
+					connection.release();
+				});
+			});
+		}
+
+		/**.
+		 * Promise based getter, gets the infantry wounds count for the steamUID
+		 *
+		 * @param {string} steamUID SteamID is a unique identifier for your Steam account
+		 * @returns {string} the infantry wounds count
+		 */
+		function getInfantryWounds(steamUID) {
+			return new Promise(function (resolve, reject) {
+				pool.getConnection(function (err, connection) {
+					var query_str =
+						"SELECT COUNT(*) AS `Kills INF` FROM DBLog_Wounds WHERE attacker = ?" +
+						" AND weapon NOT REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'";
+
+					var query_var = [steamUID];
+
+					pool.query(query_str, query_var, function (err, rows) {
+						// Call reject on error states,
+						// call resolve with results
+						if (err) return reject(err);
+						resolve(rows);
+					});
+					// Release the connection
+					connection.release();
+				});
+			});
+		}
+
+		/**.
+		 * Promise based getter, gets the vehicle wounds count for the steamUID
+		 *
+		 * @param {string} steamUID SteamID is a unique identifier for your Steam account
+		 * @returns {string} the vehicle wounds count
+		 */
+		function getVehicleWounds(steamUID) {
+			return new Promise(function (resolve, reject) {
+				pool.getConnection(function (err, connection) {
+					var query_str =
+						"SELECT COUNT(*) AS `Kills VEH` FROM DBLog_Wounds WHERE attacker = ?" +
+						" AND weapon REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'";
+
+					var query_var = [steamUID];
+
+					pool.query(query_str, query_var, function (err, rows) {
+						// Call reject on error states,
+						// call resolve with results
+						if (err) return reject(err);
+						resolve(rows);
+					});
+					// Release the connection
+					connection.release();
+				});
+			});
+		}
+
+		/**.
+		 * Promise based getter, gets the kills count for the steamUID
+		 *
+		 * @param {string} steamUID SteamID is a unique identifier for your Steam account
+		 * @returns {string} the kills count
+		 */
+		function getKills(steamUID) {
+			return new Promise(function (resolve, reject) {
+				pool.getConnection(function (err, connection) {
+					var query_str =
+						"SELECT COUNT(*) AS Kills FROM DBLog_Deaths WHERE attacker = ?";
+
+					var query_var = [steamUID];
+
+					pool.query(query_str, query_var, function (err, rows) {
+						// Call reject on error states,
+						// call resolve with results
+						if (err) return reject(err);
+						resolve(rows);
+					});
+					// Release the connection
+					connection.release();
+				});
+			});
+		}
+
+		/**.
+		 * Promise based getter, gets the deaths count for the steamUID
+		 *
+		 * @param {string} steamUID SteamID is a unique identifier for your Steam account
+		 * @returns {string} the deaths count
+		 */
+		function getDeaths(steamUID) {
+			return new Promise(function (resolve, reject) {
+				pool.getConnection(function (err, connection) {
+					var query_str =
+						"SELECT COUNT(*) AS Deaths FROM DBLog_Deaths WHERE victim = ?";
+
+					var query_var = [steamUID];
+
+					pool.query(query_str, query_var, function (err, rows) {
+						// Call reject on error states,
+						// call resolve with results
+						if (err) return reject(err);
+						resolve(rows);
+					});
+					// Release the connection
+					connection.release();
+				});
+			});
+		}
+
+		/**.
+		 * Promise based getter, gets the revives count for the steamUID
+		 *
+		 * @param {string} steamUID SteamID is a unique identifier for your Steam account
+		 * @returns {string} the revives count
+		 */
+		function getRevives(steamUID) {
+			return new Promise(function (resolve, reject) {
+				pool.getConnection(function (err, connection) {
+					var query_str =
+						"SELECT COUNT(*) AS Revives FROM DBLog_Revives WHERE reviver = ?";
+
+					var query_var = [steamUID];
+
+					pool.query(query_str, query_var, function (err, rows) {
+						// Call reject on error states,
+						// call resolve with results
+						if (err) return reject(err);
+						resolve(rows);
+					});
+					// Release the connection
+					connection.release();
+				});
+			});
+		}
+
+		/**.
+		 * Promise based getter, gets the team kills count for the steamUID
+		 *
+		 * @param {string} steamUID SteamID is a unique identifier for your Steam account
+		 * @returns {string} the team kills count
+		 */
+		function getTeamKills(steamUID) {
+			return new Promise(function (resolve, reject) {
+				pool.getConnection(function (err, connection) {
+					var query_str =
+						"SELECT COUNT(*) AS TeamKills FROM DBLog_Wounds WHERE attacker=?" +
+						" AND teamkill=1";
+
+					var query_var = [steamUID];
+
+					pool.query(query_str, query_var, function (err, rows) {
+						// Call reject on error states,
+						// call resolve with results
+						if (err) return reject(err);
+						resolve(rows);
+					});
+					// Release the connection
+					connection.release();
+				});
+			});
+		}
+
+		/**.
+		 * Promise based getter, gets the gun name with most kill count for the steamUID
+		 *
+		 * @param {string} steamUID SteamID is a unique identifier for your Steam account
+		 * @returns {string} the gun name with most kill
+		 */
+		function getGunWithMostKills(steamUID) {
+			return new Promise(function (resolve, reject) {
+				pool.getConnection(function (err, connection) {
+					var query_str =
+						"SELECT weapon AS Fav_Gun FROM DBLog_Wounds WHERE attacker = ?" +
+						" GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1";
+
+					var query_var = [steamUID];
+
+					pool.query(query_str, query_var, function (err, rows) {
+						// Call reject on error states,
+						// call resolve with results
+						if (err) return reject(err);
+						resolve(rows);
+					});
+					// Release the connection
+					connection.release();
+				});
+			});
+		}
+
+		/**.
+		 * Promise based getter, gets the role name with most kill count for the steamUID
+		 *
+		 * @param {string} steamUID SteamID is a unique identifier for your Steam account
+		 * @returns {string} the role name with most kill
+		 */
+		function getRoleWithMostKills(steamUID) {
+			return new Promise(function (resolve, reject) {
+				pool.getConnection(function (err, connection) {
+					var query_str =
+						"SELECT weapon AS Fav_Role FROM DBLog_Deaths WHERE attacker = ?" +
+						" GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1";
+
+					var query_var = [steamUID];
+
+					pool.query(query_str, query_var, function (err, rows) {
+						// Call reject on error states,
+						// call resolve with results
+						if (err) return reject(err);
+						resolve(rows);
+					});
+					// Release the connection
+					connection.release();
+				});
+			});
+		}
+
+		/**
+		 * Saves the current trackdate and tracking status in the mongodb which will be used later to determine if it should refetch new data from MySQL DB or grab it from mongoDB.
+		 *
+		 * @param {number} dt - The dateTime of now in epoch.
+		 */
+		function saveTracking(dt) {
+			data.memberData.trackDate = dt;
+
+			if (!data.memberData.tracking) {
+				data.memberData.tracking = true;
+			}
+		}
+
+		/**
+		 * Gives a K/D role to the message author if the guild/discord server has those roles installed.
+		 */
+		function giveDiscordRoles() {
+			if (data.guild.squadStatRoles) {
+				const regexKD = /^KD /i;
+				message.member.roles.cache.some((role) => {
+					if (regexKD.test(role.name))
+						message.member.roles.remove(role).catch(console.error);
+				});
+				let roleName = "KD 0+";
+				if (parseFloat(data.memberData.kills) > 50) {
+					switch (true) {
+					case parseFloat(data.memberData.kd) < 0.5:
+						roleName = "KD 0+";
+						break;
+					case parseFloat(data.memberData.kd) < 1.0:
+						roleName = "KD 0.5+";
+						break;
+					case parseFloat(data.memberData.kd) < 1.5:
+						roleName = "KD 1+";
+						break;
+					case parseFloat(data.memberData.kd) < 2.0:
+						roleName = "KD 1.5+";
+						break;
+					case parseFloat(data.memberData.kd) < 2.5:
+						roleName = "KD 2+";
+						break;
+					case parseFloat(data.memberData.kd) < 3.0:
+						roleName = "KD 2.5+";
+						break;
+					case parseFloat(data.memberData.kd) < 3.5:
+						roleName = "KD 3+";
+						break;
+					case parseFloat(data.memberData.kd) < 4.0:
+						roleName = "KD 3.5+";
+						break;
+					case parseFloat(data.memberData.kd) < 4.5:
+						roleName = "KD 4+";
+						break;
+					case parseFloat(data.memberData.kd) < 5.0:
+						roleName = "KD 4.5+";
+						break;
+					case parseFloat(data.memberData.kd) < 5.5:
+						roleName = "KD 5+";
+						break;
+					case parseFloat(data.memberData.kd) < 6.0:
+						roleName = "KD 5.5+";
+						break;
+					case parseFloat(data.memberData.kd) < 6.5:
+						roleName = "KD 6+";
+						break;
+					case parseFloat(data.memberData.kd) < 7:
+						roleName = "KD 6.5+";
+						break;
+					case parseFloat(data.memberData.kd) < 7.5:
+						roleName = "KD 7+";
+						break;
+					case parseFloat(data.memberData.kd) < 8:
+						roleName = "KD 7.5+";
+						break;
+					case parseFloat(data.memberData.kd) < 8.5:
+						roleName = "KD 8+";
+						break;
+					case parseFloat(data.memberData.kd) < 9:
+						roleName = "KD 8.5+";
+						break;
+					case parseFloat(data.memberData.kd) < 9.5:
+						roleName = "KD 9+";
+						break;
+					case parseFloat(data.memberData.kd) < 10:
+						roleName = "KD 9.5+";
+						break;
+					default:
+						roleName = "KD 10+";
+						break;
+					}
+				}
+				const role = message.guild.roles.cache.find((r) => r.name === roleName);
+				message.member.roles.add(role).catch(console.error);
+				message.success("squad/profile:UPDATE", {
+					creator: message.author.toString(),
+					steamID: steamUID,
+				});
+			}
+		}
+
+		/**
+		 * End all connections in the pool...
+		 */
+		function endPool() {
+			pool.end(function () {
+				//console.error(err);
+				// all connections in the pool have ended
+			});
+		}
+
+		let dt = new Date();
+		dt = dt.setHours(dt.getHours() + 2);
+		dt = new Date(dt);
+
+		let lastUpdate = new Date(data.memberData.trackDate);
+		lastUpdate = lastUpdate.setHours(lastUpdate.getHours() + 1);
+		lastUpdate = new Date(lastUpdate);
 		if (!data.guild.squadStatRoles) {
 			return message.error("squad/profile:NOT_CONFIGURED");
 		} else {
@@ -251,281 +606,113 @@ class Profile extends Command {
 				!data.memberData.tracking ||
 				(data.memberData.tracking && lastUpdate < dt)
 			) {
-				con.connect((error) => {
-					if (error) {
-						client.logger.log(error, "error");
-					}
-
-					con.query(
-						"SELECT lastName FROM DBLog_SteamUsers WHERE steamID='" +
-							steamUID +
-							"'",
-						(err, result) => {
-							if (err) {
-								return client.logger.log(err, "error");
-							}
-							data.memberData.steamName = result[0]["lastName"] || "Undefined";
-							con.query(
-								"SELECT COUNT(*) AS Wounds FROM DBLog_Wounds WHERE attacker='" +
-									steamUID +
-									"'",
-								(err, result) => {
-									if (err) {
-										return client.logger.log(err, "error");
-									}
-									if (result.length >= 1)
-										data.memberData.wounds = result[0]["Wounds"] || 0;
-									con.query(
-										"SELECT COUNT(*) AS Kills FROM DBLog_Deaths WHERE attacker='" +
-											steamUID +
-											"'",
-										(err, result) => {
-											if (err) {
-												return client.logger.log(err, "error");
-											}
-											if (result.length >= 1)
-												data.memberData.kills = result[0]["Kills"] || 0;
-											con.query(
-												"SELECT COUNT(*) AS Deaths FROM DBLog_Deaths WHERE victim='" +
-													steamUID +
-													"'",
-												(err, result) => {
-													if (err) {
-														return client.logger.log(err, "error");
-													}
-													if (result.length >= 1)
-														data.memberData.deaths = result[0]["Deaths"] || 0;
-													con.query(
-														"SELECT COUNT(*) AS Revives FROM DBLog_Revives WHERE reviver='" +
-															steamUID +
-															"'",
-														(err, result) => {
-															if (err) {
-																return client.logger.log(err, "error");
-															}
-															if (result.length >= 1)
-																data.memberData.revives =
-																	result[0]["Revives"] || 0;
-															con.query(
-																"SELECT COUNT(*) AS TeamKills FROM DBLog_Wounds WHERE attacker='" +
-																	steamUID +
-																	"' AND teamkill=1",
-																(err, result) => {
-																	if (err) {
-																		return client.logger.log(err, "error");
-																	}
-																	if (result.length >= 1)
-																		data.memberData.tk =
-																			result[0]["TeamKills"] || 0;
-																	con.query(
-																		"SELECT weapon AS Fav_Gun FROM DBLog_Wounds WHERE attacker='" +
-																			steamUID +
-																			"' GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1",
-																		(err, result) => {
-																			if (err) {
-																				return client.logger.log(err, "error");
-																			}
-																			if (result.length >= 1)
-																				data.memberData.mk_gun =
-																					result[0]["Fav_Gun"] || "Undefined";
-																			else data.memberData.mk_gun = "N/A";
-																			con.query(
-																				"SELECT weapon AS Fav_Role FROM DBLog_Deaths WHERE attacker='" +
-																					steamUID +
-																					"' GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1",
-																				(err, result) => {
-																					if (err) {
-																						return client.logger.log(
-																							err,
-																							"error"
-																						);
-																					}
-																					data.memberData.mk_role =
-																						result[0]["Fav_Role"] ||
-																						"Undefined";
-																					con.query(
-																						"SELECT (COUNT(*)/(SELECT COUNT(*) FROM DBLog_Deaths WHERE victim = '" +
-																							steamUID +
-																							"')) AS KD FROM DBLog_Deaths WHERE attacker='" +
-																							steamUID +
-																							"'",
-																						(err, result) => {
-																							if (err) {
-																								return client.logger.log(
-																									err,
-																									"error"
-																								);
-																							}
-																							data.memberData.kd =
-																								result[0]["KD"] || 0;
-																							data.memberData.trackDate = dt;
-
-																							if (!data.memberData.tracking) {
-																								data.memberData.tracking = true;
-																							}
-																							data.memberData.save();
-
-																							if (data.guild.squadStatRoles) {
-																								const regexKD = /^KD /i;
-																								message.member.roles.cache.some(
-																									(role) => {
-																										if (regexKD.test(role.name))
-																											message.member.roles
-																												.remove(role)
-																												.catch(console.error);
-																									}
-																								);
-																								let roleName = "KD 0+";
-																								if (
-																									parseFloat(
-																										data.memberData.kills
-																									) > 50
-																								) {
-																									switch (true) {
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 0.5:
-																										roleName = "KD 0+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 1.0:
-																										roleName = "KD 0.5+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 1.5:
-																										roleName = "KD 1+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 2.0:
-																										roleName = "KD 1.5+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 2.5:
-																										roleName = "KD 2+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 3.0:
-																										roleName = "KD 2.5+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 3.5:
-																										roleName = "KD 3+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 4.0:
-																										roleName = "KD 3.5+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 4.5:
-																										roleName = "KD 4+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 5.0:
-																										roleName = "KD 4.5+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 5.5:
-																										roleName = "KD 5+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 6.0:
-																										roleName = "KD 5.5+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 6.5:
-																										roleName = "KD 6+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 7:
-																										roleName = "KD 6.5+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 7.5:
-																										roleName = "KD 7+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 8:
-																										roleName = "KD 7.5+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 8.5:
-																										roleName = "KD 8+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 9:
-																										roleName = "KD 8.5+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 9.5:
-																										roleName = "KD 9+";
-																										break;
-																									case parseFloat(
-																										data.memberData.kd
-																									) < 10:
-																										roleName = "KD 9.5+";
-																										break;
-																									default:
-																										roleName = "KD 10+";
-																										break;
-																									}
-																								}
-																								const role = message.guild.roles.cache.find(
-																									(r) => r.name === roleName
-																								);
-																								message.member.roles
-																									.add(role)
-																									.catch(console.error);
-																								message.success(
-																									"squad/profile:UPDATE",
-																									{
-																										creator: message.author.toString(),
-																										steamID: steamUID,
-																									}
-																								);
-																								sendEmbed();
-																								con.end(function(err) {
-																									if (err) {
-																									  return console.error('error:' + err.message);
-																									}
-																								  });
-																							}
-																						}
-																					);
-																				}
-																			);
-																		}
-																	);
-																}
-															);
-														}
-													);
-												}
-											);
-										}
-									);
-								}
-							);
-						}
+				await getSteamName(steamUID)
+					.then(function (rows) {
+						data.memberData.steamName = rows[0]["lastName"];
+						data.memberData.save();
+					})
+					.catch((err) =>
+						setImmediate(() => {
+							throw err;
+						})
 					);
-				});
+
+				await getKD(steamUID)
+					.then(function (rows) {
+						data.memberData.kd = rows[0]["KD"];
+						data.memberData.save();
+					})
+					.catch((err) =>
+						setImmediate(() => {
+							throw err;
+						})
+					);
+
+				await getKills(steamUID)
+					.then(function (rows) {
+						data.memberData.kills = rows[0]["Kills"];
+						data.memberData.save();
+					})
+					.catch((err) =>
+						setImmediate(() => {
+							throw err;
+						})
+					);
+				await getDeaths(steamUID)
+					.then(function (rows) {
+						data.memberData.deaths = rows[0]["Deaths"];
+						data.memberData.save();
+					})
+					.catch((err) =>
+						setImmediate(() => {
+							throw err;
+						})
+					);
+				await getInfantryWounds(steamUID)
+					.then(function (rows) {
+						data.memberData.woundsINF = rows[0]["Kills INF"];
+						data.memberData.save();
+					})
+					.catch((err) =>
+						setImmediate(() => {
+							throw err;
+						})
+					);
+				await getVehicleWounds(steamUID)
+					.then(function (rows) {
+						data.memberData.woundsVEH = rows[0]["Kills VEH"];
+						data.memberData.save();
+					})
+					.catch((err) =>
+						setImmediate(() => {
+							throw err;
+						})
+					);
+				await getRevives(steamUID)
+					.then(function (rows) {
+						data.memberData.revives = rows[0]["Revives"];
+						data.memberData.save();
+					})
+					.catch((err) =>
+						setImmediate(() => {
+							throw err;
+						})
+					);
+				await getTeamKills(steamUID)
+					.then(function (rows) {
+						data.memberData.tk = rows[0]["TeamKills"];
+						data.memberData.save();
+					})
+					.catch((err) =>
+						setImmediate(() => {
+							throw err;
+						})
+					);
+				await getGunWithMostKills(steamUID)
+					.then(function (rows) {
+						data.memberData.mk_gun = String(rows[0]["Fav_Gun"]);
+						data.memberData.save();
+					})
+					.catch((err) =>
+						setImmediate(() => {
+							throw err;
+						})
+					);
+				await getRoleWithMostKills(steamUID)
+					.then(function (rows) {
+						data.memberData.mk_role = String(rows[0]["Fav_Role"]);
+						data.memberData.save();
+					})
+					.catch((err) =>
+						setImmediate(() => {
+							throw err;
+						})
+					);
+
+				await saveTracking(dt);
+				await giveDiscordRoles();
+				await endPool();
+				await sendEmbed();
 			} else {
 				sendEmbed();
 			}

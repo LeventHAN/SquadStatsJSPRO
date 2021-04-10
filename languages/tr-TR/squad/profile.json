@@ -4,11 +4,15 @@
     "EXAMPLES": "{{prefix}}profile LeventHAN™#0001",
     "TITLE": "{{username}}'ın İstatistikleri",
     "NO_BIO": "",
+    "SUCCESS": "Hesabınız başarı'ile discord hesabınız'ile birleştirildi. Bilgilerinizi yüklüyorum, lütfen bekleyin.",
     "BOT_USER": "Botlar oyun oynamaz! :(",
     "STEAMS": "Profil Bilgileri; ",
     "STEAM": "[{{steamName}}](https://steamcommunity.com/profiles/{{steam64ID}})",
     "KDS": "☠️ K/D",
     "KD": "**{{kd}}**%",
+    "WOUNDS_INF": ":military_helmet: Asker Yaralanmaları",
+    "WOUNDS_VEH": ":person_in_manual_wheelchair: Araç Yaralanmaları",
+    "WOUNDS": "**{{kills}}** yaralanma(s)",
     "KILLS": "<:SquadStatJSv3_kills:598174305599094784> Öldürmeler",
     "KILL": "**{{kills}}** öldürme",
     "REVIVES": "<:SquadStatJSv3_music_category:789030283637948417> Canlandırmalar",
@@ -17,8 +21,6 @@
     "TEAMKILL": "**{{tk}}** TAÖ",
     "DEATHS": "⚰️ Ölümler",
     "DEATH": "**{{deaths}}** ölüm",
-    "WOUNDS": "<:SquadStatJSv3_w:616628945269424158> Yaralanmalar",
-    "WOUND": "**{{wounds}}** yaralanma",
     "MK_GUNS": "💞 En Çok Kullandığı Silah",
     "MK_GUN": "**{{gun}}**",
     "MK_ROLES": "💞 En Çok Oynadığı Rol",
@@ -30,5 +32,6 @@
     "INVALID_MEMBER": "Henüz profilin çıkarılmamış. Profil çıkartma komutundan sonra kendi Steam64ID'ini belirtmen gerek (Örnek Steam64ID: 76561198110941835)!",
     "ALREADY_TRACKED": "Zaten profilin çıkartılmış! Profilini güncellemek için `{{prefix}}update` yazman yeterli.",
     "ALREADY_EXISTING": "Bu Steam hesabı **<@{{username}}>** tarafından sahiplenilmiş!",
-    "UPDATE": "**{{creator}}** bilgilerin güncellendi."
+    "UPDATE": "**{{creator}}** bilgilerin güncellendi.",
+    "RE_LINKED": "Hesabınız sıfırlandı, yeni steam hasabınız'ile bağlantı kurabilirsiniz."
 }

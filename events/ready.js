@@ -57,7 +57,7 @@ module.exports = class {
 		setTimeout(() => {
 			console.log(
 				chalk.magenta("\n\nSquadStatJS Ready!"),
-				"Made with ❤️   by LeventHAN https://l-event.studio"
+				"Made with ❤️   by LeventHAN https://github.com/11TStudio/SquadStatsJSPRO"
 			);
 		}, 400);
 	}

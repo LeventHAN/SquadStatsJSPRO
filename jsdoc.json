@@ -35,19 +35,13 @@
 		"scripts": [],
 		"menu": {
 			"Project Website": {
-				"href": "https://github.com/PolyLogiX-Studio/Neos.js",
+				"href": "https://github.com/11TStudio/SquadStatsJSPRO",
 				"target": "_blank",
 				"class": "menu-item",
 				"id": "website_link"
 			},
-			"Discussions": {
-				"href": "https://github.com/PolyLogiX-Studio/Neos.js/discussions",
-				"target": "_blank",
-				"class": "menu-item",
-				"id": "forum_link"
-			},
 			"Discord": {
-				"href": "https://discord.gg/6y2A4Pk",
+				"href": "https://discord.gg/9F2Ng5C",
 				"target": "_blank",
 				"class": "menu-item",
 				"id": "discord_link"

@@ -9,7 +9,7 @@ module.exports = {
 	/**Gets message prefix.
 	 *
 	 * @param {object} message The Discord message
-	 * @param {*} data //TODO What is this?
+	 * @param {*} data the data coming from mongodb (info about the guild)
 	 * @returns {string} The prefix
 	 */
 	getPrefix(message, data) {

@@ -3,11 +3,12 @@ Logger class for easy and aesthetically pleasing console logging
 */
 const { bgBlue, black, green } = require("chalk");
 
-/** //TODO What is this?
+/**
+ * Returning an padding of wanted digits...
  *
- * @param {*}value - //TODO What is this?
- * @param {*}digits - //TODO What is this?
- * @returns {*} //TODO What is this?
+ * @param {number}value - What should be padded.
+ * @param {number}digits - The amount of padding.
+ * @returns {string}Number the padded version of the value.
  */
 function dateTimePad(value, digits) {
 	let number = value;
@@ -17,10 +18,11 @@ function dateTimePad(value, digits) {
 	return number;
 }
 
-/** //TODO What is this?
+/**.
+ * Formats the date for the logger
  *
- * @param {*} tDate - //TODO What is this?
- * @returns {*} //TODO What is this?
+ * @param {string} tDate - Date of log capture
+ * @returns {string} formated date of the log capture
  */
 function format(tDate) {
 	return (

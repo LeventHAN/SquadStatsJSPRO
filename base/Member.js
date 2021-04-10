@@ -15,7 +15,8 @@ module.exports = mongoose.model(
 		steam64ID: { type: String, default: "" }, // Steam ID of the User
 		kd: { type: String, default: "" }, // K/D of the user
 		kills: { type: String, default: "" }, // Kills of the user
-		wounds: { type: String, default: "" }, // Wounds of the user
+		woundsVEH: { type: String, default: "" }, // Kills of the user for VEHICLES
+		woundsINF: { type: String, default: "" }, // Kills of the user for INFANTRY
 		deaths: { type: String, default: "" }, // Deaths of the user
 		revives: { type: String, default: "" }, // Revives of the user
 		tk: { type: String, default: "" }, // TeamKills of the user

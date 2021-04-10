@@ -3,12 +3,13 @@ const Backend = require("i18next-node-fs-backend");
 const path = require("path");
 const fs = require("fs").promises;
 
-/** //TODO What does this do.
+/**.
+ * Reads the contents of an directory, walks inside the directory
  *
- * @param {*} dir - //TODO What is this?
- * @param {*}namespaces - //TODO What is this?
- * @param {*} folderName - //TODO What is this?
- * @returns {*} //TODO What does this return?
+ * @param {*} dir - the locations
+ * @param {*}namespaces - the namespaces if any
+ * @param {*} folderName - the folder names if any
+ * @returns {*} return an set of found folders with languages
  */
 async function walkDirectory(dir, namespaces = [], folderName = "") {
 	const files = await fs.readdir(dir);
