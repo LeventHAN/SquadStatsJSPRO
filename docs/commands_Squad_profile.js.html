@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>commands/Squad/profile.js - Documentation</title>
+    
+    
+    
+    
+    
+    <meta property="og:title" content=""/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content=""/>
+    
+    <meta property="og:url" content=""/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav class="wrap">
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">commands/Squad/profile.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const Command = require("../../base/Command.js"),
+	Discord = require("discord.js");
+
+const mysql = require("mysql");
+/**
+ * MySQL Response Object Builder.
+ *
+ * @author bombitmanbomb
+ * @class MYSQLPromiseObjectBuilder
+ */
+class MYSQLPromiseObjectBuilder {
+	constructor(/**@type {import("mysql").Pool}*/ pool) {
+		this.keys = [];
+		this.values = [];
+		this.pool = pool;
+	}
+	/**Add a promise to the handler.
+	 * @param {string} key Key in the response object
+	 * @param {string} query SQL Query
+	 * @param {*} def Default Value
+	 * @param {string} DBKey Database Key
+	 * @memberof MYSQLPromiseObjectBuilder
+	 * @returns {true} Done
+	 */
+	async add(key, query, def = null, DBKey) {
+		this.keys.push(key);
+		let response = new Promise((res) => {
+			this.pool.query(query, (err, result) => {
+				// Call from Pool, Auto closes connection
+				if (result &amp;&amp; result[0] != null) {
+					res(DBKey != null ? result[0][DBKey] : result[0]);
+				} else {
+					res(def);
+				}
+			});
+		});
+		this.values.push(response);
+		return response;
+	}
+	/**Build an object based on the responses.
+	 * @returns {Object&lt;*>} Object
+	 * @memberof MYSQLPromiseObjectBuilder
+	 */
+	async waitForAll() {
+		let values = await Promise.all(this.values);
+		let response = {};
+		for (let i = 0; i &lt; values.length; i++) {
+			response[this.keys[i]] = values[i];
+		}
+		return response;
+	}
+}
+module.exports = { MYSQLPromiseObjectBuilder };
+
+class Profile extends Command {
+	constructor(client) {
+		super(client, {
+			name: "profile",
+			dirname: __dirname,
+			enabled: true,
+			guildOnly: true,
+			aliases: ["prof"],
+			memberPermissions: [],
+			botPermissions: ["SEND_MESSAGES", "EMBED_LINKS"],
+			nsfw: false,
+			ownerOnly: false,
+			cooldown: 1000,
+		});
+		this.client = client;
+		this.pool = null;
+	}
+
+	async run(message, args, /**@type {{}}*/ data) {
+		const client = this.client;
+		let claimed = "";
+		if (this.pool == null) {
+			// Only create one instance
+			this.pool = mysql.createPool({
+				connectionLimit: 10, // Call all
+				host: data.guild.squadDB.host,
+				port: data.guild.squadDB.port,
+				user: data.guild.squadDB.user,
+				password: data.guild.squadDB.password,
+				database: data.guild.squadDB.database,
+			});
+		}
+		const pool = this.pool;
+
+		let member = await client.resolveMember(args[0], message.guild);
+		if (!member) member = message.member;
+
+		// Check if the user is a bot
+		if (member.user.bot) {
+			return message.error("squad/profile:BOT_USER");
+		}
+		if (!data.guild.squadStatRoles)
+			return message.error("squad/profile:NOT_CONFIGURED");
+
+		// Gets the data of the user whose profile you want to display
+		const memberData =
+			member.id === message.author.id
+				? data.memberData
+				: await client.findOrCreateMember({
+					id: member.id,
+					guildID: message.guild.id,
+				  });
+		const userData =
+			member.id === message.author.id
+				? data.userData
+				: await client.findOrCreateUser({ id: member.id });
+
+		let steamUID;
+
+		if (args[0] === "re" || args[0] === "re-link") {
+			data.memberData.tracking = false;
+			data.memberData.save();
+			return message.success("squad/profile:RE_LINKED");
+		}
+
+		const members = await this.client.membersData
+			.find({ guildID: message.guild.id })
+			.lean();
+
+		members.forEach((element) => {
+			if (
+				element &amp;&amp;
+				element.steam64ID === args[0] &amp;&amp;
+				element.id !== message.member.id
+			) {
+				claimed = element.id;
+			}
+		});
+
+		if (claimed != "") {
+			return message.error("squad/profile:ALREADY_EXISTING", {
+				username: claimed,
+			});
+		}
+
+		if (data.memberData.tracking) {
+			steamUID = data.memberData.steam64ID;
+		} else {
+			steamUID = args[0];
+			const steamIDpatter = /^[0-9]{17}$/;
+			const uidValid = steamIDpatter.test(steamUID);
+			if (!uidValid) {
+				return message.error("squad/profile:INVALID_MEMBER");
+			}
+
+			data.memberData.steam64ID = steamUID;
+			data.memberData.save();
+			message.success("squad/profile:SUCCESS", {
+				creator: message.author.toString(),
+				steamID: steamUID,
+			});
+		}
+
+		/**
+		 * Send an embed message to the authors channel with the authors squad stats grabbed from MongoDB.
+		 */
+		function sendEmbed() {
+			const profileEmbed = new Discord.MessageEmbed()
+				.setAuthor(
+					message.translate("squad/profile:TITLE", {
+						username: member.user.tag,
+					}),
+					member.user.displayAvatarURL()
+				)
+				.setDescription(
+					userData.bio
+						? userData.bio
+						: message.translate("squad/profile:NO_BIO")
+				)
+				.addField(
+					message.translate("squad/profile:STEAMS"),
+					message.translate("squad/profile:STEAM", {
+						steamName: memberData.steamName,
+						steam64ID: memberData.steam64ID || "#",
+					}),
+					false
+				)
+				.addField("\u200B", "\u200B")
+				.addField(
+					message.translate("squad/profile:KDS"),
+					message.translate("squad/profile:KD", {
+						kd: memberData.kd,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/profile:KILLS"),
+					message.translate("squad/profile:KILL", {
+						kills: memberData.kills,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/profile:DEATHS"),
+					message.translate("squad/profile:DEATH", {
+						deaths: memberData.deaths,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/profile:WOUNDS_INF"),
+					message.translate("squad/profile:WOUNDS", {
+						kills: memberData.woundsINF,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/profile:WOUNDS_VEH"),
+					message.translate("squad/profile:WOUNDS", {
+						kills: memberData.woundsVEH,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/profile:REVIVES"),
+					message.translate("squad/profile:REVIVE", {
+						revives: memberData.revives,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/profile:TEAMKILLS"),
+					message.translate("squad/profile:TEAMKILL", {
+						tk: memberData.tk,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/profile:MK_GUNS"),
+					message.translate("squad/profile:MK_GUN", {
+						gun: memberData.mk_gun,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/profile:MK_ROLES"),
+					message.translate("squad/profile:MK_ROLE", {
+						role: memberData.mk_role,
+					}),
+					true
+				)
+				.addField("\u200B", "\u200B")
+				.addField(
+					message.translate("squad/profile:EXPS"),
+					message.translate("squad/profile:EXP", {
+						exp: memberData.exp,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/profile:HOURS"),
+					"Soon™", //`**${memberData.hours}** hours`,
+					true
+				)
+				.addField(
+					message.translate("squad/profile:ACTIVITY"),
+					"Soon™", //message.printDate(new Date(memberData.lastActivity)),
+					true
+				)
+				.setColor(data.config.embed.color) // Sets the color of the embed
+				.setFooter(data.config.embed.footer) // Sets the footer of the embed
+				.setTimestamp();
+			message.channel.send(profileEmbed);
+		}
+
+		/**
+		 * Saves the current trackdate and tracking status in the mongodb which will be used later to determine if it should refetch new data from MySQL DB or grab it from mongoDB.
+		 *
+		 * @param {number} dt - The dateTime of now in epoch.
+		 */
+		function saveTracking(dt) {
+			data.memberData.trackDate = dt;
+
+			if (!data.memberData.tracking) {
+				data.memberData.tracking = true;
+			}
+		}
+
+		/**
+		 * Gives a K/D role to the message author if the guild/discord server has those roles installed.
+		 */
+		function giveDiscordRoles() {
+			if (data.guild.squadStatRoles) {
+				const regexKD = /^KD /i;
+				message.member.roles.cache.some((role) => {
+					if (regexKD.test(role.name))
+						message.member.roles.remove(role).catch(console.error);
+				});
+				let roleName = "KD 0+";
+				if (parseFloat(data.memberData.kills) > 50) {
+					switch (true) {
+					case parseFloat(data.memberData.kd) &lt; 0.5:
+						roleName = "KD 0+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 1.0:
+						roleName = "KD 0.5+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 1.5:
+						roleName = "KD 1+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 2.0:
+						roleName = "KD 1.5+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 2.5:
+						roleName = "KD 2+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 3.0:
+						roleName = "KD 2.5+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 3.5:
+						roleName = "KD 3+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 4.0:
+						roleName = "KD 3.5+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 4.5:
+						roleName = "KD 4+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 5.0:
+						roleName = "KD 4.5+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 5.5:
+						roleName = "KD 5+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 6.0:
+						roleName = "KD 5.5+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 6.5:
+						roleName = "KD 6+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 7:
+						roleName = "KD 6.5+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 7.5:
+						roleName = "KD 7+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 8:
+						roleName = "KD 7.5+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 8.5:
+						roleName = "KD 8+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 9:
+						roleName = "KD 8.5+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 9.5:
+						roleName = "KD 9+";
+						break;
+					case parseFloat(data.memberData.kd) &lt; 10:
+						roleName = "KD 9.5+";
+						break;
+					default:
+						roleName = "KD 10+";
+						break;
+					}
+				}
+				const role = message.guild.roles.cache.find((r) => r.name === roleName);
+				message.member.roles.add(role).catch(console.error);
+				message.success("squad/profile:UPDATE", {
+					creator: message.author.toString(),
+					steamID: steamUID,
+				});
+			}
+		}
+
+		let dt = new Date();
+		dt = dt.setHours(dt.getHours() + 2);
+		dt = new Date(dt);
+
+		let lastUpdate = new Date(data.memberData.trackDate);
+		lastUpdate = lastUpdate.setHours(lastUpdate.getHours() + 1);
+		lastUpdate = new Date(lastUpdate);
+		if (!data.guild.squadStatRoles) {
+			return message.error("squad/profile:NOT_CONFIGURED");
+		} else {
+			if (
+				!data.memberData.tracking ||
+				(data.memberData.tracking &amp;&amp; lastUpdate &lt; dt)
+			) {
+				//Removed the Callback Hell
+				let res = new MYSQLPromiseObjectBuilder(pool);
+				res.add(
+					"steamName",
+					`SELECT lastName FROM DBLog_SteamUsers WHERE steamID = ${steamUID}`,
+					"Undefined",
+					"lastName"
+				);
+				res.add(
+					"kd",
+					`SELECT (COUNT(*)/(SELECT COUNT(*) FROM DBLog_Deaths WHERE victim = ${steamUID})) AS KD FROM DBLog_Deaths WHERE attacker=${steamUID}`,
+					"0",
+					"KD"
+				);
+				res.add(
+					"kills",
+					`SELECT COUNT(*) AS Kills FROM DBLog_Deaths WHERE attacker = ${steamUID}`,
+					"0",
+					"Kills"
+				);
+				res.add(
+					"deaths",
+					`SELECT COUNT(*) AS Deaths FROM DBLog_Deaths WHERE victim = ${steamUID}}`,
+					"0",
+					"Deaths"
+				);
+				res.add(
+					"woundsINF",
+					`SELECT COUNT(*) AS Kills_INF FROM DBLog_Wounds WHERE attacker = ${steamUID} AND weapon NOT REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
+					"0",
+					"Kills_INF"
+				);
+				res.add(
+					"woundsVEH",
+					`SELECT COUNT(*) AS Kills_VEH FROM DBLog_Wounds WHERE attacker = ${steamUID} AND weapon REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
+					"0",
+					"Kills_VEH"
+				);
+				res.add(
+					"revives",
+					`SELECT COUNT(*) AS Revives FROM DBLog_Revives WHERE reviver = ${steamUID}`,
+					"0",
+					"Revives"
+				);
+				res.add(
+					"tk",
+					`SELECT COUNT(*) AS TeamKills FROM DBLog_Wounds WHERE attacker = ${steamUID} AND teamkill=1`,
+					"0",
+					"TeamKills"
+				);
+				res.add(
+					"mk_gun",
+					`SELECT weapon AS Fav_Gun FROM DBLog_Wounds WHERE attacker = ${steamUID} GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`,
+					"0",
+					"Fav_Gun"
+				);
+				res.add(
+					"mk_role",
+					`SELECT weapon AS Fav_Role FROM DBLog_Deaths WHERE attacker = ${steamUID} GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`,
+					"0",
+					"Fav_Role"
+				);
+
+				data.memberData = await res.waitForAll();
+
+				await saveTracking(dt);
+				await giveDiscordRoles();
+				await sendEmbed();
+			} else {
+				sendEmbed();
+			}
+		}
+	}
+}
+
+module.exports = Profile;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sat Apr 10 2021 17:50:26 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

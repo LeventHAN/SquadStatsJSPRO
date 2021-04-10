@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>Global - Documentation</title>
+    <title>MYSQLPromiseObjectBuilder - Documentation</title>
     
     
     
@@ -43,7 +43,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Global</h1>
+    <h1 class="page-title">MYSQLPromiseObjectBuilder</h1>
     
 
     
@@ -56,7 +56,7 @@
 <header>
     
         <h2>
-        
+        MYSQLPromiseObjectBuilder
         </h2>
         
     
@@ -68,10 +68,22 @@
         
             
 
+    
+
+    <h4 class="name" id="MYSQLPromiseObjectBuilder"><span class="type-signature"></span>new MYSQLPromiseObjectBuilder<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
 
     
-
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="commands_Squad_profile.js.html">commands/Squad/profile.js</a>, <a href="commands_Squad_profile.js.html#line5">line 5</a>
+    </li></ul></dd>
     
 
     
@@ -88,6 +100,15 @@
 
     
 
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>bombitmanbomb</li>
+        </ul>
+    </dd>
     
 
     
@@ -106,9 +127,38 @@
 
 
 
-            
 
-            
+<div class="description usertext">
+    MySQL Response Object Builder.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
         </div>
     
@@ -135,7 +185,7 @@
 
     
 
-    <h4 class="name" id="dateTimePad"><span class="type-signature"></span>dateTimePad<span class="signature">(value, digits)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id="add"><span class="type-signature">(async) </span>add<span class="signature">(key, query, def, DBKey)</span><span class="type-signature"> &rarr; {true}</span></h4>
 
     
 
@@ -147,7 +197,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="helpers_logger.js.html">helpers/logger.js</a>, <a href="helpers_logger.js.html#line13">line 13</a>
+        <a href="commands_Squad_profile.js.html">commands/Squad/profile.js</a>, <a href="commands_Squad_profile.js.html#line25">line 25</a>
     </li></ul></dd>
     
 
@@ -187,7 +237,7 @@
 
 
 <div class="description usertext">
-    Returning an padding of wanted digits...
+    Add a promise to the handler.
 </div>
 
 
@@ -215,6 +265,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -225,13 +277,13 @@
 
         <tr>
             
-                <td class="name"><code>value</code></td>
+                <td class="name"><code>key</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">string</span>
 
 
             
@@ -240,21 +292,25 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
-            <td class="description last">What should be padded.</td>
+            <td class="description last">Key in the response object</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>digits</code></td>
+                <td class="name"><code>query</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">string</span>
 
 
             
@@ -263,8 +319,68 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
-            <td class="description last">The amount of padding.</td>
+            <td class="description last">SQL Query</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>def</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    <code>null</code>
+                
+                </td>
+            
+
+            <td class="description last">Default Value</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>DBKey</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">Database Key</td>
         </tr>
 
     
@@ -290,7 +406,7 @@
 
         
 <div class="param-desc">
-    Number the padded version of the value.
+    Done
 </div>
 
 
@@ -301,7 +417,7 @@
     </dt>
     <dd>
         
-<span class="param-type">string</span>
+<span class="param-type">true</span>
 
 
     </dd>
@@ -316,7 +432,7 @@
 
     
 
-    <h4 class="name" id="format"><span class="type-signature"></span>format<span class="signature">(tDate)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id="waitForAll"><span class="type-signature">(async) </span>waitForAll<span class="signature">()</span><span class="type-signature"> &rarr; {Object.&lt;*>}</span></h4>
 
     
 
@@ -328,7 +444,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="helpers_logger.js.html">helpers/logger.js</a>, <a href="helpers_logger.js.html#line27">line 27</a>
+        <a href="commands_Squad_profile.js.html">commands/Squad/profile.js</a>, <a href="commands_Squad_profile.js.html#line44">line 44</a>
     </li></ul></dd>
     
 
@@ -368,7 +484,7 @@
 
 
 <div class="description usertext">
-    .Formats the date for the logger
+    Build an object based on the responses.
 </div>
 
 
@@ -379,55 +495,6 @@
 
 
 
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>tDate</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Date of log capture</td>
-        </tr>
-
-    
-    </tbody>
-</table>
 
 
 
@@ -448,7 +515,7 @@
 
         
 <div class="param-desc">
-    formated date of the log capture
+    Object
 </div>
 
 
@@ -459,211 +526,7 @@
     </dt>
     <dd>
         
-<span class="param-type">string</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="walkDirectory"><span class="type-signature">(async) </span>walkDirectory<span class="signature">(dir, namespaces, folderName)</span><span class="type-signature"> &rarr; {*}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="helpers_languages.js.html">helpers/languages.js</a>, <a href="helpers_languages.js.html#line14">line 14</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description usertext">
-    .Reads the contents of an directory, walks inside the directory
-</div>
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>dir</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the locations</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>namespaces</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the namespaces if any</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>folderName</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the folder names if any</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    return an set of found folders with languages
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">*</span>
+<span class="param-type">Object.&lt;*></span>
 
 
     </dd>
