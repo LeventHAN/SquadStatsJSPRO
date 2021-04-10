@@ -4,11 +4,12 @@ const Command = require("../../base/Command.js"),
 const mysql = require("mysql");
 /**
  * MySQL Response Object Builder.
+ *
  * @author bombitmanbomb
  * @class MYSQLPromiseObjectBuilder
  */
 class MYSQLPromiseObjectBuilder {
-	constructor(/**@type {import("mysql").Pool}*/pool) {
+	constructor(/**@type {import("mysql").Pool}*/ pool) {
 		this.keys = [];
 		this.values = [];
 		this.pool = pool;
@@ -16,13 +17,16 @@ class MYSQLPromiseObjectBuilder {
 	/**Add a promise to the handler.
 	 * @param {string} key Key in the response object
 	 * @param {string} query SQL Query
+	 * @param {*} def Default Value
+	 * @param {string} DBKey Database Key
 	 * @memberof MYSQLPromiseObjectBuilder
 	 * @returns {true} Done
 	 */
 	async add(key, query, def = null, DBKey) {
 		this.keys.push(key);
-		let response = new Promise((res, rej) => {
-			this.pool.query(query, (err, result) => { // Call from Pool, Auto closes connection
+		let response = new Promise((res) => {
+			this.pool.query(query, (err, result) => {
+				// Call from Pool, Auto closes connection
 				if (result && result[0] != null) {
 					res(DBKey != null ? result[0][DBKey] : result[0]);
 				} else {
@@ -63,13 +67,14 @@ class Profile extends Command {
 			cooldown: 1000,
 		});
 		this.client = client;
-		this.pool = null
+		this.pool = null;
 	}
 
-	async run(message, args, /**@type {{}}*/data) {
+	async run(message, args, /**@type {{}}*/ data) {
 		const client = this.client;
 		let claimed = "";
-		if (this.pool == null){ // Only create one instance
+		if (this.pool == null) {
+			// Only create one instance
 			this.pool = mysql.createPool({
 				connectionLimit: 10, // Call all
 				host: data.guild.squadDB.host,
@@ -79,7 +84,7 @@ class Profile extends Command {
 				database: data.guild.squadDB.database,
 			});
 		}
-		const pool = this.pool
+		const pool = this.pool;
 
 		let member = await client.resolveMember(args[0], message.guild);
 		if (!member) member = message.member;
@@ -373,27 +378,76 @@ class Profile extends Command {
 			return message.error("squad/profile:NOT_CONFIGURED");
 		} else {
 			if (
-				!data.memberData.tracking || 
+				!data.memberData.tracking ||
 				(data.memberData.tracking && lastUpdate < dt)
 			) {
 				//Removed the Callback Hell
 				let res = new MYSQLPromiseObjectBuilder(pool);
-				res.add("steamName", `SELECT lastName FROM DBLog_SteamUsers WHERE steamID = ${steamUID}`, "Undefined", "lastName");
-				res.add("kd", `SELECT (COUNT(*)/(SELECT COUNT(*) FROM DBLog_Deaths WHERE victim = ${steamUID})) AS KD FROM DBLog_Deaths WHERE attacker=${steamUID}`, "0", "KD")
-				res.add("kills", `SELECT COUNT(*) AS Kills FROM DBLog_Deaths WHERE attacker = ${steamUID}`, "0", "Kills");
-				res.add("deaths", `SELECT COUNT(*) AS Deaths FROM DBLog_Deaths WHERE victim = ${steamUID}}`, "0", "Deaths");
-				res.add("woundsINF", `SELECT COUNT(*) AS Kills_INF FROM DBLog_Wounds WHERE attacker = ${steamUID} AND weapon NOT REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`, "0", "Kills_INF");
-				res.add("woundsVEH", `SELECT COUNT(*) AS Kills_VEH FROM DBLog_Wounds WHERE attacker = ${steamUID} AND weapon REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`, "0", "Kills_VEH");
-				res.add("revives", `SELECT COUNT(*) AS Revives FROM DBLog_Revives WHERE reviver = ${steamUID}`, "0", "Revives");
-				res.add("tk", `SELECT COUNT(*) AS TeamKills FROM DBLog_Wounds WHERE attacker = ${steamUID} AND teamkill=1`, "0", "TeamKills");
-				res.add("mk_gun", `SELECT weapon AS Fav_Gun FROM DBLog_Wounds WHERE attacker = ${steamUID} GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`, "0", "Fav_Gun");
-				res.add("mk_role", `SELECT weapon AS Fav_Role FROM DBLog_Deaths WHERE attacker = ${steamUID} GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`, "0", "Fav_Role");
+				res.add(
+					"steamName",
+					`SELECT lastName FROM DBLog_SteamUsers WHERE steamID = ${steamUID}`,
+					"Undefined",
+					"lastName"
+				);
+				res.add(
+					"kd",
+					`SELECT (COUNT(*)/(SELECT COUNT(*) FROM DBLog_Deaths WHERE victim = ${steamUID})) AS KD FROM DBLog_Deaths WHERE attacker=${steamUID}`,
+					"0",
+					"KD"
+				);
+				res.add(
+					"kills",
+					`SELECT COUNT(*) AS Kills FROM DBLog_Deaths WHERE attacker = ${steamUID}`,
+					"0",
+					"Kills"
+				);
+				res.add(
+					"deaths",
+					`SELECT COUNT(*) AS Deaths FROM DBLog_Deaths WHERE victim = ${steamUID}}`,
+					"0",
+					"Deaths"
+				);
+				res.add(
+					"woundsINF",
+					`SELECT COUNT(*) AS Kills_INF FROM DBLog_Wounds WHERE attacker = ${steamUID} AND weapon NOT REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
+					"0",
+					"Kills_INF"
+				);
+				res.add(
+					"woundsVEH",
+					`SELECT COUNT(*) AS Kills_VEH FROM DBLog_Wounds WHERE attacker = ${steamUID} AND weapon REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
+					"0",
+					"Kills_VEH"
+				);
+				res.add(
+					"revives",
+					`SELECT COUNT(*) AS Revives FROM DBLog_Revives WHERE reviver = ${steamUID}`,
+					"0",
+					"Revives"
+				);
+				res.add(
+					"tk",
+					`SELECT COUNT(*) AS TeamKills FROM DBLog_Wounds WHERE attacker = ${steamUID} AND teamkill=1`,
+					"0",
+					"TeamKills"
+				);
+				res.add(
+					"mk_gun",
+					`SELECT weapon AS Fav_Gun FROM DBLog_Wounds WHERE attacker = ${steamUID} GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`,
+					"0",
+					"Fav_Gun"
+				);
+				res.add(
+					"mk_role",
+					`SELECT weapon AS Fav_Role FROM DBLog_Deaths WHERE attacker = ${steamUID} GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`,
+					"0",
+					"Fav_Role"
+				);
 
-				data.memberData = await res.waitForAll(); 
-				
+				data.memberData = await res.waitForAll();
 
 				await saveTracking(dt);
-				await giveDiscordRoles(); 
+				await giveDiscordRoles();
 				await sendEmbed();
 			} else {
 				sendEmbed();
