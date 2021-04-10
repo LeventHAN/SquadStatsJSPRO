@@ -63,19 +63,23 @@ class Profile extends Command {
 			cooldown: 1000,
 		});
 		this.client = client;
+		this.pool = null
 	}
 
-	async run(message, args, data) {
+	async run(message, args, /**@type {{}}*/data) {
 		const client = this.client;
 		let claimed = "";
-		const pool = mysql.createPool({
-			connectionLimit: 5,
-			host: data.guild.squadDB.host,
-			port: data.guild.squadDB.port,
-			user: data.guild.squadDB.user,
-			password: data.guild.squadDB.password,
-			database: data.guild.squadDB.database,
-		});
+		if (this.pool == null){ // Only create one instance
+			this.pool = mysql.createPool({
+				connectionLimit: 10, // Call all
+				host: data.guild.squadDB.host,
+				port: data.guild.squadDB.port,
+				user: data.guild.squadDB.user,
+				password: data.guild.squadDB.password,
+				database: data.guild.squadDB.database,
+			});
+		}
+		const pool = this.pool
 
 		let member = await client.resolveMember(args[0], message.guild);
 		if (!member) member = message.member;
@@ -755,8 +759,7 @@ class Profile extends Command {
 					);
 
 				await saveTracking(dt);
-				await giveDiscordRoles();
-				await endPool();
+				await giveDiscordRoles(); 
 				await sendEmbed();
 			} else {
 				sendEmbed();
