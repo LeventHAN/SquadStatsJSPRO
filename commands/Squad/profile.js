@@ -396,7 +396,8 @@ class Profile extends Command {
 					"Fav_Role"
 				);
 
-				await res.waitForAll(data);
+				await res.waitForAll(data.memberData);
+				await data.memberData.save()
 				await saveTracking(dt);
 				await giveDiscordRoles();
 				await sendEmbed();
