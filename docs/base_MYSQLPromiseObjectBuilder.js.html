@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>helpers/discordbots.org.js - Documentation</title>
+    <title>base/MYSQLPromiseObjectBuilder.js - Documentation</title>
     
     
     
@@ -43,7 +43,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">helpers/discordbots.org.js</h1>
+    <h1 class="page-title">base/MYSQLPromiseObjectBuilder.js</h1>
     
 
     
@@ -53,55 +53,58 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/* THIS POSTS STATS TO DISCORDBOTS.ORG */
-const DBL = require("dblapi.js");
-
-module.exports = {
-	/**.
-	 * Starts to post stats to DBL
-	 *
-	 * @param {object} client The Discord Client instance
+            <pre class="prettyprint source linenums"><code>/**
+ * MySQL Response Object Builder.
+ *
+ * @author bombitmanbomb
+ * @class MYSQLPromiseObjectBuilder
+ */
+class MYSQLPromiseObjectBuilder {
+	constructor(/**@type {import("mysql").Pool}*/ pool) {
+		this.keys = [];
+		this.values = [];
+		this.pool = pool;
+	}
+	/**Add a promise to the handler.
+	 * @param {string} key Key in the response object
+	 * @param {string} query SQL Query
+	 * @param {*} def Default Value
+	 * @param {string} DBKey Database Key
+	 * @memberof MYSQLPromiseObjectBuilder
+	 * @returns {true} Done
 	 */
-	init(client) {
-		if (client.config.apiKeys.dbl &amp;&amp; client.config.apiKeys.dbl !== "") {
-			const stats = new DBL(client.config.apiKeys.dbl, client);
-			setInterval(function () {
-				stats.postStats(client.guilds.cache.size);
-			}, 60000 * 10); // every 10 minutes
-			const dbl = new DBL(client.config.apiKeys.dbl, {
-				webhookPort: client.config.votes.port,
-				webhookAuth: client.config.votes.password,
-			});
-			dbl.webhook.on("vote", async (vote) => {
-				const dUser = await client.users.fetch(vote.user);
-				const member = await client.findOrCreateMember({
-					id: vote.user,
-					guildID: client.config.support.id,
-				});
-				member.money = member.money + 40;
-				member.save();
-				dUser
-					.send(
-						client.translate("misc:VOTE_DM", {
-							user: dUser.tag,
-						})
-					)
-					.catch(() => {});
-				const logsChannel = client.channels.cache.get(
-					client.config.votes.channel
-				);
-				if (logsChannel) {
-					logsChannel.send(
-						client.translate("misc:VOTE_LOGS", {
-							userid: dUser.id,
-							usertag: dUser.tag,
-						})
-					);
+	async add(key, query, def = null, DBKey) {
+		this.keys.push(key);
+		let response = new Promise((res) => {
+			this.pool.query(query, (err, result) => {
+				// Call from Pool, Auto closes connection
+				if (result &amp;&amp; result[0] != null) {
+					res(DBKey != null ? result[0][DBKey] : result[0]);
+				} else {
+					res(def);
 				}
 			});
+		});
+		this.values.push(response);
+		return response;
+	}
+	/**Build an object based on the responses.
+	 * @param {Object} data is data.memberData (the mongoose Member schema)
+	 * @returns {Object&lt;*>} Object
+	 * @memberof MYSQLPromiseObjectBuilder
+	 */
+	async waitForAll(data) {
+		let values = await Promise.all(this.values);
+		let response = {};
+		for (let i = 0; i &lt; values.length; i++) {
+			response[this.keys[i]] = values[i];
+			data.memberData[this.keys[i]] = values[i];
 		}
-	},
-};
+		data.memberData.save();
+		return response;
+	}
+}
+module.exports = MYSQLPromiseObjectBuilder;
 </code></pre>
         </article>
     </section>
