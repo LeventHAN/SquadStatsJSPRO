@@ -3,6 +3,6 @@
     "USAGE": "{{prefix}}setbio [biography]",
     "EXAMPLES": "{{prefix}}setbio Benim adım Osman, Ben 19 Yaşındayım \nve ARTI en sevdigim silah!",
     "MISSING": "Uygun bir biyografi girmelisin!",
-    "MAX_CHARACT": "Biyografin 500 karakterden fazla olamaz!",
+    "MAX_CHARACT": "Biyografin 100 karakterden fazla olamaz!",
     "SUCCESS": "Biyografin düzenlendi!"
 }
