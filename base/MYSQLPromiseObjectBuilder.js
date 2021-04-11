@@ -38,15 +38,13 @@ class MYSQLPromiseObjectBuilder {
 	 * @returns {Object<*>} Object
 	 * @memberof MYSQLPromiseObjectBuilder
 	 */
-	async waitForAll(data) {
+	async waitForAll(data={}) {
 		let values = await Promise.all(this.values);
-		let response = {};
+		
 		for (let i = 0; i < values.length; i++) {
-			response[this.keys[i]] = values[i];
-			data.memberData[this.keys[i]] = values[i];
+			data[this.keys[i]] = values[i];
 		}
-		data.memberData.save();
-		return response;
+		return data;
 	}
 }
 module.exports = MYSQLPromiseObjectBuilder;
