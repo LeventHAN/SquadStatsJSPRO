@@ -355,7 +355,7 @@ class Profile extends Command {
 				);
 				res.add(
 					"deaths",
-					`SELECT COUNT(*) AS Deaths FROM DBLog_Deaths WHERE victim = "${steamUID}"}`,
+					`SELECT COUNT(*) AS Deaths FROM DBLog_Deaths WHERE victim = "${steamUID}"`,
 					"0",
 					"Deaths"
 				);
