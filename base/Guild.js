@@ -13,23 +13,6 @@ module.exports = mongoose.model(
 		membersData: { type: Object, default: {} }, // Members data of the guild
 		members: [{ type: Schema.Types.ObjectId, ref: "Member" }],
 
-		/* SQUAD KD ROLES GIVEN? */
-		squadStatRoles: { type: Number, default: 0 },
-
-		/* DATABASE SETTINGS */
-		squadDB: {
-			type: Object,
-			default: {
-				host: "",
-				port: "3306",
-				database: "",
-				user: "squadjs",
-				password: "",
-				serverID: "1",
-				ignoredMaps: [],
-			},
-		},
-
 		/* CONFIGURATION */
 		language: { type: String, default: languages.find((l) => l.default).name }, // Language of the guild
 		prefix: { type: String, default: config.prefix }, // Default or custom prefix of the guild
@@ -37,6 +20,19 @@ module.exports = mongoose.model(
 			type: Object,
 			default: {
 				// Plugins data
+				/* SQUAD DATABASE SETTINGS */
+				squadDB: {
+					enabled: false,
+					rolesEnabled: false,
+					rolesGiven: false,
+					host: null,
+					port: null,
+					database: null,
+					user: null,
+					password: null,
+					serverID: null,
+					ignoredMaps: [],
+				},
 				// Welcome messages
 				welcome: {
 					enabled: false, // Whether the welcome messages are enabled
