@@ -65,6 +65,7 @@ class Profile extends Command {
 
 		if (args[0] === "re" || args[0] === "re-link") {
 			data.memberData.tracking = false;
+			data.memberData.steam64ID = "";
 			data.memberData.save();
 			return message.success("squad/profile:RE_LINKED");
 		}
@@ -243,8 +244,7 @@ class Profile extends Command {
 						message.member.roles.remove(role).catch(console.error);
 				});
 				let roleName = "KD 0+";
-				if (parseFloat(data.memberData.kills) > 50) {
-					switch (true) {
+				switch (true) {
 					case parseFloat(data.memberData.kd) < 0.5:
 						roleName = "KD 0+";
 						break;
@@ -308,7 +308,6 @@ class Profile extends Command {
 					default:
 						roleName = "KD 10+";
 						break;
-					}
 				}
 				const role = message.guild.roles.cache.find((r) => r.name === roleName);
 				message.member.roles.add(role).catch(console.error);
