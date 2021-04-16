@@ -397,7 +397,7 @@ class Profile extends Command {
 				);
 
 				await res.waitForAll(data.memberData);
-				await data.memberData.save()
+				await data.memberData.save();
 				await saveTracking(dt);
 				await giveDiscordRoles();
 				await sendEmbed();
