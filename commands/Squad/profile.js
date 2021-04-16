@@ -305,8 +305,11 @@ class Profile extends Command {
 					case parseFloat(data.memberData.kd) < 10:
 						roleName = "KD 9.5+";
 						break;
-					default:
+					case parseFloat(data.memberData.kd) > 10:
 						roleName = "KD 10+";
+						break;
+					default:
+						roleName = "KD 0+";
 						break;
 				}
 				const role = message.guild.roles.cache.find((r) => r.name === roleName);
