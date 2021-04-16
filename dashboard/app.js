@@ -44,11 +44,7 @@ module.exports.load = async (client) => {
 		.use(async function (req, res, next) {
 			req.user = req.session.user;
 			req.client = client;
-			req.locale = req.user
-				? req.user.locale === "fr"
-					? "fr-FR"
-					: "en-US"
-				: "en-US";
+			req.locale = "en-US";
 			if (req.user && req.url !== "/")
 				req.userInfos = await utils.fetchUser(req.user, req.client);
 			if (req.user) {
