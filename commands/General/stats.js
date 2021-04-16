@@ -46,7 +46,7 @@ class Stats extends Command {
 				message.translate("general/stats:CREDIT", {
 					contributors: ["`Bitman#0669`"].join("\n"),
 					translators: [
-						"`Morph#8610` (:flag_de:)",
+						/* "`Morph#8610` (:flag_de:)", */
 						"`Harun | CORONA#6035` (:flag_tr:)",
 					].join("\n"),
 				})
