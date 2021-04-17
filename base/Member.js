@@ -11,20 +11,27 @@ module.exports = mongoose.model(
 		exp: { type: Number, default: 0 }, // Exp points of the user
 
 		/* Squad Stats */
-		steamName: { type: String, default: "" }, // Steam Name of the User
-		steam64ID: { type: String, default: "" }, // Steam ID of the User
-		kd: { type: String, default: "" }, // K/D of the user
-		kills: { type: String, default: "" }, // Kills of the user
-		woundsVEH: { type: String, default: "" }, // Kills of the user for VEHICLES
-		woundsINF: { type: String, default: "" }, // Kills of the user for INFANTRY
-		deaths: { type: String, default: "" }, // Deaths of the user
-		revives: { type: String, default: "" }, // Revives of the user
-		tk: { type: String, default: "" }, // TeamKills of the user
-		mk_role: { type: String, default: "" }, // Role that has most kills recorded with of the User
-		mk_gun: { type: String, default: "" }, // Gun that has most kills recorded with of the User
-		tracking: { type: Number, default: 0 },
-		trackDate: { type: Number, default: Date.now() },
-		checkedStats: { type: Number, default: 0 },
+		squad: {
+			type: Object,
+			default: {
+				// Plugins data
+				/* SQUAD DATABASE SETTINGS */
+				steamName: null, // Steam Name of the User
+				steam64ID: null, // Steam ID of the User
+				kd: null, // K/D of the user
+				kills: null, // Kills of the user
+				woundsVEH: null, // Kills of the user for VEHICLES
+				woundsINF: null, // Kills of the user for INFANTRY
+				deaths: null, // Deaths of the user
+				revives: null, // Revives of the user
+				tk: null, // TeamKills of the user
+				mk_role: null, // Role that has most kills recorded with of the User
+				mk_gun: null, // Gun that has most kills recorded with of the User
+				tracking: null,
+				trackDate: null,
+				checkedStats: null,
+			},
+		},
 
 		/* STATS */
 		registeredAt: { type: Number, default: Date.now() }, // Registered date of the member
