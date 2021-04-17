@@ -87,8 +87,145 @@ class AddSquadDB extends Command {
 			"RED",
 			"RED",
 		];
+
+		if(data.guild.plugins.squad.host !== null && data.guild.plugins.squad.port !== null && data.guild.plugins.squad.user !== null && data.guild.plugins.squad.database !== null && data.guild.plugins.squad.serverID !== null && data.guild.plugins.squad.password !== null && !data.guild.plugins.squad.enabled) {
+			data.guild.plugins.squad.enabled = true;
+			data.guild.markModified("plugins.squad");
+			await data.guild.save();
+		}
+
+
+		/**Sends an embed message with the status of the configuration
+		 * @param {boolean} status true for successful connection and false for failed/not yet configured connection
+		 * @returns {Discord.EmbedMessage} profileEmbed, an embed message
+		 */
+		async function sendEmbed(status){
+			let connectionStatusMessage = status ? "squad/addsquadserver:CONNECTION_SUCCESS" : "squad/addsquadserver:CONNECTION_ERROR";
+			const profileEmbed = new Discord.MessageEmbed()
+				.setAuthor(message.translate("squad/addsquadserver:PANE_NAME"))
+				.setDescription(message.translate("squad/addsquadserver:PANE_DESC"))
+				.addField(
+					message.translate("squad/addsquadserver:CONNECTION_TITLE"),
+					message.translate(connectionStatusMessage),
+					false
+				)
+
+				.addField(
+					message.translate("squad/addsquadserver:HOSTS"),
+					message.translate("squad/addsquadserver:HOST", {
+						host: data.guild.plugins.squad.host || ":x:",
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/addsquadserver:PORTS"),
+					message.translate("squad/addsquadserver:PORT", {
+						port: data.guild.plugins.squad.port || ":x:",
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/addsquadserver:USERS"),
+					message.translate("squad/addsquadserver:USER", {
+						user: data.guild.plugins.squad.user || ":x:",
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/addsquadserver:PASSWORDS"),
+					message.translate("squad/addsquadserver:PASSWORD", {
+						password: data.guild.plugins.squad.password === null
+							? ":x:"
+							: ":white_check_mark:",
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/addsquadserver:DATABASES"),
+					message.translate("squad/addsquadserver:DATABASE", {
+						database: data.guild.plugins.squad.database || ":x:",
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/addsquadserver:SERVER_IDS"),
+					message.translate("squad/addsquadserver:SERVER_ID", {
+						id: data.guild.plugins.squad.serverID || ":x:",
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/addsquadserver:ROLES"),
+					message.translate("squad/addsquadserver:ROLE", {
+						stats: data.guild.plugins.squad.rolesGiven ? ":white_check_mark:" : ":x:",
+					}),
+					true
+				)
+				.addField("\u200B", "\u200B")
+				.addField(
+					message.translate("squad/addsquadserver:HOW_TO_SETS"),
+					message.translate("squad/addsquadserver:HOW_TO_SET"),
+					false
+				)
+				.addField(
+					message.translate("squad/addsquadserver:SET_HOSTS"),
+					message.translate("squad/addsquadserver:SET_HOST", {
+						prefix: data.guild.prefix,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/addsquadserver:SET_PORTS"),
+					message.translate("squad/addsquadserver:SET_PORT", {
+						prefix: data.guild.prefix,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/addsquadserver:SET_USERS"),
+					message.translate("squad/addsquadserver:SET_USER", {
+						prefix: data.guild.prefix,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/addsquadserver:SET_PASSWORDS"),
+					message.translate("squad/addsquadserver:SET_PASSWORD", {
+						prefix: data.guild.prefix,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/addsquadserver:SET_DATABASES"),
+					message.translate("squad/addsquadserver:SET_DATABASE", {
+						prefix: data.guild.prefix,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/addsquadserver:SET_SERVER_IDS"),
+					message.translate("squad/addsquadserver:SET_SERVER_ID", {
+						prefix: data.guild.prefix,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/addsquadserver:SET_ROLES"),
+					message.translate("squad/addsquadserver:SET_ROLE", {
+						prefix: data.guild.prefix,
+					}),
+					true
+				)
+				.setColor(data.config.embed.color) // Sets the color of the embed
+				.setFooter(data.config.embed.footer) // Sets the footer of the embed
+				.setTimestamp();
+
+			return message.channel.send(profileEmbed); // Send the embed in the current channel
+		}
+
+
 		let controlPoint = "";
-		if (!data.guild.squadStatRoles) {
+		if (data.guild.plugins.squad.rolesEnabled && !data.guild.plugins.squad.rolesGiven) {
 			chacheRoles.forEach((role) => {
 				if (roles.includes(role.name)) {
 					return (controlPoint = role.id);
@@ -109,8 +246,9 @@ class AddSquadDB extends Command {
 						.catch(console.error);
 					i++;
 				});
-				data.guild.squadStatRoles = true;
-				data.guild.save();
+				data.guild.plugins.squad.rolesGiven = true;
+				data.guild.markModified("plugins.squad");
+				await data.guild.save();
 			} else {
 				return message.error("squad/addsquadserver:DELETEROLES", {
 					role: controlPoint,
@@ -121,272 +259,19 @@ class AddSquadDB extends Command {
 		con = null;
 		try {
 			con = mysql.createConnection({
-				host: data.guild.squadDB.host,
-				port: data.guild.squadDB.port,
-				user: data.guild.squadDB.user,
-				password: data.guild.squadDB.password,
-				database: data.guild.squadDB.database,
+				host: data.guild.plugins.squad.host,
+				port: data.guild.plugins.squad.port,
+				user: data.guild.plugins.squad.user,
+				password: data.guild.plugins.squad.password,
+				database: data.guild.plugins.squad.database,
 			});
 		} catch (err) {
 			client.logger.log(err, "error");
 		}
 
-		con.connect((error) => {
-			if (error) {
-				client.logger.log(error, "error");
-				if (args.length == 0) {
-					const profileEmbed = new Discord.MessageEmbed()
-						.setAuthor(message.translate("squad/addsquadserver:PANE_NAME"))
-						.setDescription(message.translate("squad/addsquadserver:PANE_DESC"))
-						.addField(
-							message.translate("squad/addsquadserver:CONNECTION_TITLE"),
-							message.translate("squad/addsquadserver:CONNECTION_ERROR"),
-							false
-						)
-
-						.addField(
-							message.translate("squad/addsquadserver:HOSTS"),
-							message.translate("squad/addsquadserver:HOST", {
-								host: data.guild.squadDB.host || ":x:",
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:PORTS"),
-							message.translate("squad/addsquadserver:PORT", {
-								port: data.guild.squadDB.port || ":x:",
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:USERS"),
-							message.translate("squad/addsquadserver:USER", {
-								user: data.guild.squadDB.user || ":x:",
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:PASSWORDS"),
-							message.translate("squad/addsquadserver:PASSWORD", {
-								password:
-									data.guild.squadDB.password == ""
-										? ":x:"
-										: ":white_check_mark:",
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:DATABASES"),
-							message.translate("squad/addsquadserver:DATABASE", {
-								database: data.guild.squadDB.database || ":x:",
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:SERVER_IDS"),
-							message.translate("squad/addsquadserver:SERVER_ID", {
-								id: data.guild.squadDB.serverID || ":x:",
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:ROLES"),
-							message.translate("squad/addsquadserver:ROLE", {
-								stats: data.guild.squadStatRoles
-									? ":white_check_mark:"
-									: ":x: ERROR!",
-							}),
-							true
-						)
-						// .addField(message.translate("squad/addsquadserver:IGNORED_MAPS"), message.translate("squad/addsquadserver:IGNORED_MAP", {
-						// 	map: data.guild.squadDB.ignoredMaps || "Not Configured"
-						// }), true)
-						.addField("\u200B", "\u200B")
-						.addField(
-							message.translate("squad/addsquadserver:HOW_TO_SETS"),
-							message.translate("squad/addsquadserver:HOW_TO_SET"),
-							false
-						)
-						.addField(
-							message.translate("squad/addsquadserver:SET_HOSTS"),
-							message.translate("squad/addsquadserver:SET_HOST", {
-								prefix: data.guild.prefix,
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:SET_PORTS"),
-							message.translate("squad/addsquadserver:SET_PORT", {
-								prefix: data.guild.prefix,
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:SET_USERS"),
-							message.translate("squad/addsquadserver:SET_USER", {
-								prefix: data.guild.prefix,
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:SET_PASSWORDS"),
-							message.translate("squad/addsquadserver:SET_PASSWORD", {
-								prefix: data.guild.prefix,
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:SET_DATABASES"),
-							message.translate("squad/addsquadserver:SET_DATABASE", {
-								prefix: data.guild.prefix,
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:SET_SERVER_IDS"),
-							message.translate("squad/addsquadserver:SET_SERVER_ID", {
-								prefix: data.guild.prefix,
-							}),
-							true
-						)
-						// .addField(message.translate("squad/addsquadserver:SET_IGNORED_MAPS"), message.translate("squad/addsquadserver:SET_IGNORED_MAP", {
-						// 	prefix: data.guild.prefix
-						// }), true)
-						.setColor(data.config.embed.color) // Sets the color of the embed
-						.setFooter(data.config.embed.footer) // Sets the footer of the embed
-						.setTimestamp();
-
-					return message.channel.send(profileEmbed); // Send the embed in the current channel
-				}
-				return;
-			} else {
-				if (args.length == 0) {
-					const profileEmbed = new Discord.MessageEmbed()
-						.setAuthor(message.translate("squad/addsquadserver:PANE_NAME"))
-						.setDescription(message.translate("squad/addsquadserver:PANE_DESC"))
-						.addField(
-							message.translate("squad/addsquadserver:CONNECTION_TITLE"),
-							message.translate("squad/addsquadserver:CONNECTION_SUCCESS"),
-							false
-						)
-
-						.addField(
-							message.translate("squad/addsquadserver:HOSTS"),
-							message.translate("squad/addsquadserver:HOST", {
-								host: data.guild.squadDB.host || ":x:",
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:PORTS"),
-							message.translate("squad/addsquadserver:PORT", {
-								port: data.guild.squadDB.port || ":x:",
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:USERS"),
-							message.translate("squad/addsquadserver:USER", {
-								user: data.guild.squadDB.user || ":x:",
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:PASSWORDS"),
-							message.translate("squad/addsquadserver:PASSWORD", {
-								password:
-									data.guild.squadDB.password == ""
-										? ":x:"
-										: ":white_check_mark:",
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:DATABASES"),
-							message.translate("squad/addsquadserver:DATABASE", {
-								database: data.guild.squadDB.database || ":x:",
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:SERVER_IDS"),
-							message.translate("squad/addsquadserver:SERVER_ID", {
-								id: data.guild.squadDB.serverID || ":x:",
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:ROLES"),
-							message.translate("squad/addsquadserver:ROLE", {
-								stats: data.guild.squadStatRoles
-									? ":white_check_mark:"
-									: ":x: ERROR!",
-							}),
-							true
-						)
-						// .addField(message.translate("squad/addsquadserver:IGNORED_MAPS"), message.translate("squad/addsquadserver:IGNORED_MAP", {
-						// 	map: data.guild.squadDB.ignoredMaps || "Not Configured"
-						// }), true)
-						.addField("\u200B", "\u200B")
-						.addField(
-							message.translate("squad/addsquadserver:HOW_TO_SETS"),
-							message.translate("squad/addsquadserver:HOW_TO_SET"),
-							false
-						)
-						.addField(
-							message.translate("squad/addsquadserver:SET_HOSTS"),
-							message.translate("squad/addsquadserver:SET_HOST", {
-								prefix: data.guild.prefix,
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:SET_PORTS"),
-							message.translate("squad/addsquadserver:SET_PORT", {
-								prefix: data.guild.prefix,
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:SET_USERS"),
-							message.translate("squad/addsquadserver:SET_USER", {
-								prefix: data.guild.prefix,
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:SET_PASSWORDS"),
-							message.translate("squad/addsquadserver:SET_PASSWORD", {
-								prefix: data.guild.prefix,
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:SET_DATABASES"),
-							message.translate("squad/addsquadserver:SET_DATABASE", {
-								prefix: data.guild.prefix,
-							}),
-							true
-						)
-						.addField(
-							message.translate("squad/addsquadserver:SET_SERVER_IDS"),
-							message.translate("squad/addsquadserver:SET_SERVER_ID", {
-								prefix: data.guild.prefix,
-							}),
-							true
-						)
-						// .addField(message.translate("squad/addsquadserver:SET_IGNORED_MAPS"), message.translate("squad/addsquadserver:SET_IGNORED_MAP", {
-						// 	prefix: data.guild.prefix
-						// }), true)
-						.setColor(data.config.embed.color) // Sets the color of the embed
-						.setFooter(data.config.embed.footer) // Sets the footer of the embed
-						.setTimestamp();
-					return message.channel.send(profileEmbed); // Send the embed in the current channel
-				}
-			}
+		if (args.length < 1)  return con.connect((error) => {
+			error ? sendEmbed(false) : sendEmbed(true);
 		});
-
-		if (args.length < 1) return;
 
 		let itemToChange;
 		// Update pending requests
@@ -410,6 +295,10 @@ class AddSquadDB extends Command {
 			break;
 		case "serverid":
 			itemToChange = message.translate("squad/addsquadserver:FILL_SERVER_ID");
+			break;
+		case "autoroles":
+			itemToChange = message.translate("squad/addsquadserver:ENABLE_KD_ROLES");
+			break;
 		}
 
 		message.sendT(itemToChange);
@@ -436,28 +325,33 @@ class AddSquadDB extends Command {
 				if (isCanceled) return collector.stop(true);
 				switch (args[0].toLowerCase()) {
 				case "host":
-					data.guild.squadDB.host = msg.content;
-					data.guild.markModified("squadDB.host");
+					data.guild.plugins.squad.host = msg.content;
+					data.guild.markModified("plugins.squad");
 					break;
 				case "port":
-					data.guild.squadDB.port = msg.content;
-					data.guild.markModified("squadDB.port");
+					data.guild.plugins.squad.port = msg.content;
+					data.guild.markModified("plugins.squad");
 					break;
 				case "database":
-					data.guild.squadDB.database = msg.content;
-					data.guild.markModified("squadDB.database");
+					data.guild.plugins.squad.database = msg.content;
+					data.guild.markModified("plugins.squad");
 					break;
 				case "user":
-					data.guild.squadDB.user = msg.content;
-					data.guild.markModified("squadDB.user");
+					data.guild.plugins.squad.user = msg.content;
+					data.guild.markModified("plugins.squad");
 					break;
 				case "password":
-					data.guild.squadDB.password = msg.content;
-					data.guild.markModified("squadDB.password");
+					data.guild.plugins.squad.password = msg.content;
+					data.guild.markModified("plugins.squad");
 					break;
 				case "serverid":
-					data.guild.squadDB.serverID = msg.content;
-					data.guild.markModified("squadDB.serverID");
+					data.guild.plugins.squad.serverID = msg.content;
+					data.guild.markModified("plugins.squad");
+					break;
+				case "autoroles":
+					data.guild.plugins.squad.rolesEnabled = new RegExp("^y.?s$", "i").test(msg.content);
+					data.guild.markModified("plugins.squad");
+					break;
 				}
 				await data.guild.save();
 				return collector.stop(true);
