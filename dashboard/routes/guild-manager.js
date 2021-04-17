@@ -1,27 +1,29 @@
 const express = require("express"),
 	utils = require("../utils"),
 	CheckAuth = require("../auth/CheckAuth"),
-	router = express.Router();
+	router = express.Router(),
+	version = require("../../package.json").version;
 
 router.get("/:serverID", CheckAuth, async(req, res) => {
-
 	// Check if the user has the permissions to edit this guild
 	const guild = req.client.guilds.cache.get(req.params.serverID);
 	if(!guild || !req.userInfos.displayedGuilds || !req.userInfos.displayedGuilds.find((g) => g.id === req.params.serverID)){
 		return res.render("404", {
 			user: req.userInfos,
 			translate: req.translate,
+			repoVersion: version,
 			currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`
 		});
 	}
 
 	// Fetch guild informations
 	const guildInfos = await utils.fetchGuild(guild.id, req.client, req.user.guilds);
-
+	req.translate = req.client.translations.get(guildInfos.language);
 	res.render("manager/guild", {
 		guild: guildInfos,
 		user: req.userInfos,
 		translate: req.translate,
+		repoVersion: version,
 		bot: req.client,
 		currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`
 	});
@@ -51,6 +53,27 @@ router.post("/:serverID", CheckAuth, async(req, res) => {
 		if(data.prefix.length >= 1 && data.prefix.length < 2000){
 			guildData.prefix = data.prefix;
 		}
+		await guildData.save();
+	}
+
+	/**
+	 * Adding/Updating the squad server
+	 */
+	 if(Object.prototype.hasOwnProperty.call(data, "squadEnable") || Object.prototype.hasOwnProperty.call(data, "welcomeUpdate")){
+		const squad = {
+			enabled: true,
+			rolesEnabled: data.roles,
+			host: data.host,
+			port: data.port,
+			database: data.database,
+			user: data.user,
+			password: data.password,
+			serverID: data.serverID
+			// ignoredMaps: data.ignoredMaps,
+			// (TODO: Should I restrict this to one room?) channel: guild.channels.cache.find((ch) => "#"+ch.name === data.channel).id,
+		};
+		guildData.plugins.squad = squad;
+		guildData.markModified("plugins.squad");
 		await guildData.save();
 	}
 
