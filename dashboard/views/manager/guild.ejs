@@ -2,45 +2,44 @@
 <html>
 
 	<%- include('../includes/head') %>
-	
-	<body class="hold-transition skin-blue sidebar-mini">
+    <body>
+	<!-- The sidebar includes the menu -->
+    <%- include('../partials/sidebar') %>
+	<div class="main-content">
+		<!-- Top navbar -->
+		<%- include('../partials/navbar') %>
+		<!-- Header -->
+		<%- include('../partials/header') %>
 
-		<div class="wrapper">
-
-			<!-- The header is the topbar -->
-			<%- include('../includes/header') %>
-
-			<!-- The sidebar includes the menu -->
-			<%- include('../includes/sidebar') %>
-
-			<!-- Content Wrapper. Contains page content -->
-			<div class="content-wrapper">
+		<!-- Content Wrapper. Contains page content -->
+        <div class="container-fluid mt--7">
+            <div class="card bg-gradient-neutral shadow p-5">
 
 				<!-- Content Header (Page header) -->
 				<section class="content-header">
-					<h1> <%= translate("common:CONFIGURATION") %> <small> Version 1.0.0-beta </small> </h1>
+					<h1> <%= translate("common:CONFIGURATION") %> </h1>
 					<ol class="breadcrumb">
-                        <li><a href="/"><i class="fa fa-home"></i> <%= translate("dashboard:SELECTOR") %></a></li>
-                        <li class="active"><%= guild.name %></li>
+                        <li><a href="/"><i class="fa fa-home"></i> <%= translate("dashboard:SELECTOR") %> </a></li>
+                        <li class="active">&nbsp; / &nbsp;<%= guild.name %></li>
 					</ol>
 				</section>
 
 				<section class="content">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="box box-widget widget-user">
+                            <div class="box box-widget widget-user text-center">
                                 <div class="widget-user-header bg-aqua-active">
                                     <h3 class="widget-user-username"><%= guild.name %></h3>
                                 </div>
                                 <div class="widget-user-image">
-                                    <img class="img-circle" src="<%= guild.iconURL %>" alt="Server icon">
+                                    <img class="rounded-circle" src="<%= guild.iconURL %>" alt="Server icon">
                                 </div>
                                 <div class="box-footer">
                                     <div class="row">
                                         <div class="col-sm-12 border-right">
                                             <div class="description-block">
-                                                <h5 class="description-header"><%= guild.memberCount %></h5>
-                                                <span class="description-text"><%= translate("common:MEMBERS") %></span>
+                                                <h5 class="display-3"><%= guild.memberCount %></h5>
+                                                <span class="lead"><%= translate("common:MEMBERS") %></span>
                                             </div>
                                             <!-- /.description-block -->
                                         </div>
@@ -64,7 +63,7 @@
                                             <input type="text" name="prefix" class="form-control" placeholder="<%= guild.prefix %>">
                                         </div>
                                         <!-- select -->
-                                        <div class="form-group">
+                                        <div class="form-group mt--2">
                                             <label><%= translate("common:LANGUAGE") %></label>
                                             <select class="form-control" name="language">
                                                 <% bot.languages.forEach((language) => { %>
@@ -78,14 +77,14 @@
                                         </div>
                                     </div>
                                     <!-- /.box-body -->
-                                    <div class="box-footer">
+                                    <div class="box-footer mt--3">
                                         <button type="submit" class="btn btn-primary"><%= translate("common:UPDATE") %></button>
                                     </div>
                                 </form>
                             </div>
                             <!-- /.box -->
                             <!-- SPECIAL CHANNELS -->
-                            <div class="box box-warning">
+                            <div class="box box-warning mt-4">
                                 <div class="box-header with-border">
                                     <h3 class="box-title"><%= translate("dashboard:CHANNELS_CONF") %></h3>
                                 </div>
@@ -110,7 +109,7 @@
                                                 <% } %>
                                             </select>
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group mt--2">
                                             <label><%= translate("common:MODLOGS") %></label>
                                             <select class="form-control" name="modlogs">
                                                 <% if(guild.plugins.modlogs && bot.channels.cache.has(guild.plugins.modlogs)){ %>
@@ -129,7 +128,7 @@
                                         </div>
                                     </div>
                                     <!-- /.box-body -->
-                                    <div class="box-footer">
+                                    <div class="box-footer mt--3">
                                         <button type="submit" class="btn btn-primary"><%= translate("common:UPDATE") %></button>
                                     </div>
                                 </form>
@@ -151,7 +150,7 @@
                                             <textarea rows="3" name="message" class="form-control" required><%= (guild.plugins.welcome.message || translate("administration/welcome:DEFAULT_MESSAGE")) %></textarea>
                                         </div>
                                         <!-- select -->
-                                        <div class="form-group">
+                                        <div class="form-group mt--2">
                                             <label><%= translate("common:CHANNEL") %></label>
                                             <select class="form-control" name="channel">
                                                 <% if(guild.plugins.welcome.enabled && bot.channels.cache.has(guild.plugins.welcome.channel)){ %>
@@ -167,44 +166,44 @@
                                             </select>
                                         </div>
                                         <!-- select -->
-                                        <div class="form-group">
+                                        <div class="form-group mt--2">
                                             <div class="checkbox">
                                                 <label>
                                                     <% if(guild.plugins.welcome.withImage || !guild.plugins.welcome.enabled) { %>
-                                                        <input type="checkbox" name="withImage" checked><%= translate("dashboard:WELCOME_IMG") %>
+                                                        <input type="checkbox" name="withImage" checked> <%= translate("dashboard:WELCOME_IMG") %>
                                                     <% } else { %>
-                                                        <input type="checkbox" name="withImage"><%= translate("dashboard:WELCOME_IMG") %>
+                                                        <input type="checkbox" name="withImage"> <%= translate("dashboard:WELCOME_IMG") %>
                                                     <% } %>
                                                 </label>
                                             </div>
                                         </div>
                                     </div>
                                     <!-- /.box-body -->
-                                    <div class="box-footer">
+                                    <div class="box-footer mt--3">
                                         <% if(guild.plugins.welcome.enabled){ %>
-                                            <button type="submit" name="welcomeDisable" class="btn btn-danger"><%= translate("dashboard:DISABLE_MESSAGES") %></button>
-                                            <button type="submit" name="welcomeUpdate" class="btn btn-primary pull-right"><%= translate("common:UPDATE") %></button>
+                                            <button type="submit" name="welcomeDisable" class="btn btn-danger"> <%= translate("dashboard:DISABLE_MESSAGES") %></button>
+                                            <button type="submit" name="welcomeUpdate" class="btn btn-primary pull-right"> <%= translate("common:UPDATE") %></button>
                                         <% } else { %>
-                                            <button type="submit" name="welcomeEnable" class="btn btn-success"><%= translate("dashboard:ENABLE_MESSAGES") %></button>
+                                            <button type="submit" name="welcomeEnable" class="btn btn-success"> <%= translate("dashboard:ENABLE_MESSAGES") %></button>
                                         <% } %>
                                     </div>
                                 </form>
                             </div>
                             <!-- GOODBYE CONFIGURATION -->
-                            <div class="box box-danger">
+                            <div class="box box-danger mt-4">
                                 <div class="box-header with-border">
-                                    <h3 class="box-title"><%= translate("dashboard:GOODBYE_CONF") %></h3>
+                                    <h3 class="box-title"> <%= translate("dashboard:GOODBYE_CONF") %></h3>
                                 </div>
                                 <form role="form" action="/manage/<%= guild.id %>/" method="POST">
                                     <!-- /.box-header -->
                                     <div class="box-body">
                                         <!-- text input -->
                                         <div class="form-group">
-                                            <label><%= translate("common:MESSAGE") %></label>
-                                            <textarea rows="3" name="message" class="form-control" required><%= (guild.plugins.goodbye.message || translate("administration/goodbye:DEFAULT_MESSAGE")) %></textarea>
+                                            <label> <%= translate("common:MESSAGE") %></label>
+                                            <textarea rows="3" name="message" class="form-control" required> <%= (guild.plugins.goodbye.message || translate("administration/goodbye:DEFAULT_MESSAGE")) %></textarea>
                                         </div>
                                         <!-- select -->
-                                        <div class="form-group">
+                                        <div class="form-group mt--2">
                                             <label><%= translate("common:CHANNEL") %></label>
                                             <select class="form-control" name="channel">
                                                 <% if(guild.plugins.goodbye.enabled && bot.channels.cache.has(guild.plugins.goodbye.channel)){ %>
@@ -220,20 +219,20 @@
                                             </select>
                                         </div>
                                         <!-- select -->
-                                        <div class="form-group">
+                                        <div class="form-group mt--2">
                                             <div class="checkbox">
                                                 <label>
                                                     <% if(guild.plugins.goodbye.withImage || !guild.plugins.goodbye.enabled) { %>
-                                                        <input type="checkbox" name="withImage" checked><%= translate("dashboard:GOODBYE_IMG") %>
+                                                        <input type="checkbox" name="withImage" checked> <%= translate("dashboard:GOODBYE_IMG") %>
                                                     <% } else { %>
-                                                        <input type="checkbox" name="withImage"><%= translate("dashboard:GOODBYE_IMG") %>
+                                                        <input type="checkbox" name="withImage"> <%= translate("dashboard:GOODBYE_IMG") %>
                                                     <% } %>
                                                 </label>
                                             </div>
                                         </div>
                                     </div>
                                     <!-- /.box-body -->
-                                    <div class="box-footer">
+                                    <div class="box-footer mt--3">
                                         <% if(guild.plugins.goodbye.enabled){ %>
                                             <button type="submit" name="goodbyeDisable" class="btn btn-danger"><%= translate("dashboard:DISABLE_MESSAGES") %></button>
                                             <button type="submit" name="goodbyeUpdate" class="btn btn-primary pull-right"><%= translate("common:UPDATE") %></button>
@@ -244,7 +243,7 @@
                                 </form>
                             </div>
                             <!-- AUTOROLE CONFIGURATION -->
-                            <div class="box box-warning">
+                            <div class="box box-warning mt-4">
                                 <div class="box-header with-border">
                                     <h3 class="box-title"><%= translate("dashboard:AUTOROLE_CONF") %></h3>
                                 </div>
@@ -269,7 +268,7 @@
                                         </div>
                                     </div>
                                     <!-- /.box-body -->
-                                    <div class="box-footer">
+                                    <div class="box-footer mt--3">
                                         <% if(guild.plugins.autorole.enabled){ %>
                                             <button type="submit" name="autoroleDisable" class="btn btn-danger"><%= translate("dashboard:DISABLE_AUTOROLE") %></button>
                                             <button type="submit" name="autoroleUpdate" class="btn btn-primary pull-right"><%= translate("common:UPDATE") %></button>
@@ -288,8 +287,8 @@
 			</div>
             <!-- /.content-wrapper -->
             
-            <%- include('../includes/footer') %>
-		</div>
+            <%- include('../partials/footer') %>
 		<!-- ./wrapper -->
+        <%- include('../partials/scripts') %>
 	</body>
 </html>
