@@ -34,7 +34,7 @@ class MYSQLPromiseObjectBuilder {
 		return response;
 	}
 	/**Build an object based on the responses.
-	 * @param {Object} data is data.memberData (the mongoose Member schema)
+	 * @param {Object} data is data.memberData.squad (the mongoose Member schema)
 	 * @returns {Object<*>} Object
 	 * @memberof MYSQLPromiseObjectBuilder
 	 */
