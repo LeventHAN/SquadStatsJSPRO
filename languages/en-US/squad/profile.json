@@ -5,7 +5,7 @@
     "TITLE": "{{username}}'s profile",
     "NO_BIO": "",
     "SUCCESS": "Profile is linked to your discord account successfully! Please wait while we fetch your data from the DataBase.",
-    "NOT_CONFIGURED": "My owner didn't configure the squad server connection yet.",
+    "NOT_ENABLED": "Squad Stats Track is not configured/enabled. Please run `add-sq` first if you are the owner of this server.",
     "BOT_USER": "Bots don't have profile page!",
     "STEAMS": "Profile info; ",
     "STEAM": "[{{steamName}}](https://steamcommunity.com/profiles/{{steam64ID}})",
