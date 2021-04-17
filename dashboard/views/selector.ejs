@@ -1,48 +1,35 @@
 <!DOCTYPE html>
 <html>
-
 	<%- include('includes/head') %>
-
-	<body class="hold-transition skin-blue sidebar-mini">
-
-		<div class="wrapper">
-
-			<!-- The header is the topbar -->
-			<%- include('includes/header') %>
-
-			<!-- The sidebar includes the menu -->
-			<%- include('includes/sidebar') %>
+	<body>
+		<!-- The sidebar includes the menu -->
+		<%- include('./partials/sidebar') %>
+		<div class="main-content">
+		<!-- Top navbar -->
+		<%- include('./partials/navbar') %>
+		<!-- Header -->
+		<%- include('./partials/header') %>
 
 			<!-- Content Wrapper. Contains page content -->
-			<div class="content-wrapper">
-
-				<!-- Content Header (Page header) -->
-				<section class="content-header">
-					<h1> <%= translate("dashboard:SELECTOR") %> <small> Version 1.0.0-beta </small> </h1>
-					<ol class="breadcrumb">
-						<li class="active"><a href="/"><i class="fa fa-home"></i> <%= translate("dashboard:SELECTOR") %></a></li>
-					</ol>
-				</section>
-
-				<section class="content">
+			<div class="container-fluid mt--7">
+				<div class="card bg-gradient-neutral shadow p-5">
 
 					<div class="row">
 					<% if(user.displayedGuilds){ user.displayedGuilds.forEach(function(guild) { %>
 						<!-- Displays 4 servers by line -->
 						<div class="col-md-3">
-							<div class="box box-solid">
-								<div class="box-header with-border text-center">
-									<i class="fas fa-crown"></i>    
-									<h3 class="box-title server-name"><%= guild.name %></h3>
+							<div class="box box-solid m-2">
+								<div class="box-header text-center">
+									<h3 style="text-align: center !important;" class="box-title server-name"><i class="fas fa-crown"></i> <%= guild.name %></h3>
 								</div>
 								<!-- /.box-header -->
-								<div class="box-body">
+								<div class="box-body m-2">
 									<div class="text-center">
 										<img src="<%= guild.iconURL %>" style="border-radius:100%" width="100" height="100" class="img-fluid">
 									</div>
 								</div>
 								<!-- /.box-body -->
-								<div class="box-footer">
+								<div class="box-footer mb-3">
 									<a href="<%= guild.settingsUrl %>"><button class="btn btn-block btn-success"><%= translate("dashboard:MANAGE") %></button></a>
 								</div>
 								<!-- /.box-footer -->
@@ -70,13 +57,11 @@
 							<!-- /.box -->
 						</div>
 					<% } %>
-					</div>
-				</section>
-                </div>
-
+				</div>
 				<!-- Footer includes credits and version -->
-            <%- include('includes/footer') %>
+			</div>
+			<%- include('./partials/footer') %>
 		</div>
-		<!-- ./wrapper -->
+		<%- include('./partials/scripts') %>
 	</body>
 </html>
