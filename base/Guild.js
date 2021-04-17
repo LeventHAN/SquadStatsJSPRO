@@ -21,7 +21,7 @@ module.exports = mongoose.model(
 			default: {
 				// Plugins data
 				/* SQUAD DATABASE SETTINGS */
-				squadDB: {
+				squad: {
 					enabled: false,
 					rolesEnabled: false,
 					rolesGiven: false,
