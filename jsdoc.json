@@ -21,9 +21,9 @@
 			"url": ""
 		},
 		"meta": {
-			"title": "",
-			"description": "",
-			"keyword": ""
+			"title": "SquadStatJSPRO",
+			"description": "Discord bot and website statistics for your game server (Squad)",
+			"keyword": "squad, squadjs, stats, leaderboard, discord, website"
 		},
 		"search": true,
 		"collapse": true,

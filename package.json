@@ -9,7 +9,7 @@
 		"lint": "npm run prettier && npm run eslint",
 		"prettier": "prettier --use-tabs --write .",
 		"eslint": " eslint -c .eslintrc.json --fix .",
-		"document": "jsdoc -t node_modules/docdash ./base/ ./commands/ ./events/ ./helpers/ -r -c jsdoc.json -d ./docs/",
+		"document": "jsdoc -t node_modules/docdash ./base/ ./commands/ ./events/ ./helpers/ -r -R README.md -c jsdoc.json -d ./docs/ ",
 		"ready": "npm run document && npm run lint"
 	},
 	"engines": {

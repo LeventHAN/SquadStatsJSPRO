@@ -38,9 +38,9 @@ class MYSQLPromiseObjectBuilder {
 	 * @returns {Object<*>} Object
 	 * @memberof MYSQLPromiseObjectBuilder
 	 */
-	async waitForAll(data={}) {
+	async waitForAll(data = {}) {
 		let values = await Promise.all(this.values);
-		
+
 		for (let i = 0; i < values.length; i++) {
 			data[this.keys[i]] = values[i];
 		}

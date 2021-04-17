@@ -3,9 +3,12 @@
 <head>
     
     <meta charset="utf-8">
-    <title>commands/Squad/profile.js - Documentation</title>
+    <title>commands/Squad/profile.js - SquadStatJSPRO</title>
     
+    <meta name="description" content="Discord bot and website statistics for your game server (Squad)" />
     
+        <meta name="keywords" content="squad, squadjs, stats, leaderboard, discord, website" />
+        <meta name="keyword" content="squad, squadjs, stats, leaderboard, discord, website" />
     
     
     
@@ -38,7 +41,7 @@
     
     <input type="text" id="nav-search" placeholder="Search" />
     
-    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li><li><a href="Squad-Configure-Connection.html">Squad-Configure-Connection</a></li><li><a href="Squad-Track-Profile.html">Squad-Track-Profile</a></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li></ul>
 </nav>
 
 <div id="main">
@@ -54,59 +57,26 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>const Command = require("../../base/Command.js"),
-	Discord = require("discord.js");
+	Discord = require("discord.js"),
+	MYSQLPromiseObjectBuilder = require("../../base/MYSQLPromiseObjectBuilder.js");
 
 const mysql = require("mysql");
-/**
- * MySQL Response Object Builder.
- *
- * @author bombitmanbomb
- * @class MYSQLPromiseObjectBuilder
- */
-class MYSQLPromiseObjectBuilder {
-	constructor(/**@type {import("mysql").Pool}*/ pool) {
-		this.keys = [];
-		this.values = [];
-		this.pool = pool;
-	}
-	/**Add a promise to the handler.
-	 * @param {string} key Key in the response object
-	 * @param {string} query SQL Query
-	 * @param {*} def Default Value
-	 * @param {string} DBKey Database Key
-	 * @memberof MYSQLPromiseObjectBuilder
-	 * @returns {true} Done
-	 */
-	async add(key, query, def = null, DBKey) {
-		this.keys.push(key);
-		let response = new Promise((res) => {
-			this.pool.query(query, (err, result) => {
-				// Call from Pool, Auto closes connection
-				if (result &amp;&amp; result[0] != null) {
-					res(DBKey != null ? result[0][DBKey] : result[0]);
-				} else {
-					res(def);
-				}
-			});
-		});
-		this.values.push(response);
-		return response;
-	}
-	/**Build an object based on the responses.
-	 * @returns {Object&lt;*>} Object
-	 * @memberof MYSQLPromiseObjectBuilder
-	 */
-	async waitForAll() {
-		let values = await Promise.all(this.values);
-		let response = {};
-		for (let i = 0; i &lt; values.length; i++) {
-			response[this.keys[i]] = values[i];
-		}
-		return response;
-	}
-}
-module.exports = { MYSQLPromiseObjectBuilder };
 
+/**Command for squad profile stats track.
+ * &lt;h2>Usage: &lt;/h2>
+ * &lt;h3>Linking your account&lt;/h3>
+ * &lt;code>{prefix}profile {Steam64ID}&lt;/code>
+ * &lt;br />
+ * &lt;h3>Removing the link from your account&lt;/h3>
+ * &lt;code>{prefix}profile re&lt;/code> OR &lt;code>{prefix}profile re-link&lt;/code>
+ * &lt;br />
+ * &lt;h6>Note: &lt;/h6>
+ * &lt;sub>&lt;sup>After linking your account you don't need to specify your steam64ID anymore. Just use; &lt;code>{prefix}profile&lt;/code>&lt;/sup>&lt;/sub>
+ *
+ * @author LeventHAN
+ * @class Squad-Track-Profile
+ * @extends Command
+ */
 class Profile extends Command {
 	constructor(client) {
 		super(client, {
@@ -127,7 +97,7 @@ class Profile extends Command {
 
 	async run(message, args, /**@type {{}}*/ data) {
 		const client = this.client;
-		let claimed = "";
+		let claimer = "";
 		if (this.pool == null) {
 			// Only create one instance
 			this.pool = mysql.createPool({
@@ -168,6 +138,7 @@ class Profile extends Command {
 
 		if (args[0] === "re" || args[0] === "re-link") {
 			data.memberData.tracking = false;
+			data.memberData.steam64ID = "";
 			data.memberData.save();
 			return message.success("squad/profile:RE_LINKED");
 		}
@@ -182,13 +153,13 @@ class Profile extends Command {
 				element.steam64ID === args[0] &amp;&amp;
 				element.id !== message.member.id
 			) {
-				claimed = element.id;
+				claimer = element.id;
 			}
 		});
 
-		if (claimed != "") {
+		if (claimer != "") {
 			return message.error("squad/profile:ALREADY_EXISTING", {
-				username: claimed,
+				username: claimer,
 			});
 		}
 
@@ -212,6 +183,8 @@ class Profile extends Command {
 
 		/**
 		 * Send an embed message to the authors channel with the authors squad stats grabbed from MongoDB.
+		 *
+		 * @author LeventHAN
 		 */
 		function sendEmbed() {
 			const profileEmbed = new Discord.MessageEmbed()
@@ -346,72 +319,73 @@ class Profile extends Command {
 						message.member.roles.remove(role).catch(console.error);
 				});
 				let roleName = "KD 0+";
-				if (parseFloat(data.memberData.kills) > 50) {
-					switch (true) {
-					case parseFloat(data.memberData.kd) &lt; 0.5:
-						roleName = "KD 0+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 1.0:
-						roleName = "KD 0.5+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 1.5:
-						roleName = "KD 1+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 2.0:
-						roleName = "KD 1.5+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 2.5:
-						roleName = "KD 2+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 3.0:
-						roleName = "KD 2.5+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 3.5:
-						roleName = "KD 3+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 4.0:
-						roleName = "KD 3.5+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 4.5:
-						roleName = "KD 4+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 5.0:
-						roleName = "KD 4.5+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 5.5:
-						roleName = "KD 5+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 6.0:
-						roleName = "KD 5.5+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 6.5:
-						roleName = "KD 6+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 7:
-						roleName = "KD 6.5+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 7.5:
-						roleName = "KD 7+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 8:
-						roleName = "KD 7.5+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 8.5:
-						roleName = "KD 8+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 9:
-						roleName = "KD 8.5+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 9.5:
-						roleName = "KD 9+";
-						break;
-					case parseFloat(data.memberData.kd) &lt; 10:
-						roleName = "KD 9.5+";
-						break;
-					default:
-						roleName = "KD 10+";
-						break;
-					}
+				switch (true) {
+				case parseFloat(data.memberData.kd) &lt; 0.5:
+					roleName = "KD 0+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 1.0:
+					roleName = "KD 0.5+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 1.5:
+					roleName = "KD 1+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 2.0:
+					roleName = "KD 1.5+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 2.5:
+					roleName = "KD 2+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 3.0:
+					roleName = "KD 2.5+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 3.5:
+					roleName = "KD 3+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 4.0:
+					roleName = "KD 3.5+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 4.5:
+					roleName = "KD 4+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 5.0:
+					roleName = "KD 4.5+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 5.5:
+					roleName = "KD 5+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 6.0:
+					roleName = "KD 5.5+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 6.5:
+					roleName = "KD 6+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 7:
+					roleName = "KD 6.5+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 7.5:
+					roleName = "KD 7+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 8:
+					roleName = "KD 7.5+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 8.5:
+					roleName = "KD 8+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 9:
+					roleName = "KD 8.5+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 9.5:
+					roleName = "KD 9+";
+					break;
+				case parseFloat(data.memberData.kd) &lt; 10:
+					roleName = "KD 9.5+";
+					break;
+				case parseFloat(data.memberData.kd) > 10:
+					roleName = "KD 10+";
+					break;
+				default:
+					roleName = "KD 0+";
+					break;
 				}
 				const role = message.guild.roles.cache.find((r) => r.name === roleName);
 				message.member.roles.add(role).catch(console.error);
@@ -440,67 +414,67 @@ class Profile extends Command {
 				let res = new MYSQLPromiseObjectBuilder(pool);
 				res.add(
 					"steamName",
-					`SELECT lastName FROM DBLog_SteamUsers WHERE steamID = ${steamUID}`,
+					`SELECT lastName FROM DBLog_SteamUsers WHERE steamID = "${steamUID}"`,
 					"Undefined",
 					"lastName"
 				);
 				res.add(
 					"kd",
-					`SELECT (COUNT(*)/(SELECT COUNT(*) FROM DBLog_Deaths WHERE victim = ${steamUID})) AS KD FROM DBLog_Deaths WHERE attacker=${steamUID}`,
+					`SELECT (COUNT(*)/(SELECT COUNT(*) FROM DBLog_Deaths WHERE victim = "${steamUID}")) AS KD FROM DBLog_Deaths WHERE attacker="${steamUID}"`,
 					"0",
 					"KD"
 				);
 				res.add(
 					"kills",
-					`SELECT COUNT(*) AS Kills FROM DBLog_Deaths WHERE attacker = ${steamUID}`,
+					`SELECT COUNT(*) AS Kills FROM DBLog_Deaths WHERE attacker = "${steamUID}"`,
 					"0",
 					"Kills"
 				);
 				res.add(
 					"deaths",
-					`SELECT COUNT(*) AS Deaths FROM DBLog_Deaths WHERE victim = ${steamUID}}`,
+					`SELECT COUNT(*) AS Deaths FROM DBLog_Deaths WHERE victim = "${steamUID}"`,
 					"0",
 					"Deaths"
 				);
 				res.add(
 					"woundsINF",
-					`SELECT COUNT(*) AS Kills_INF FROM DBLog_Wounds WHERE attacker = ${steamUID} AND weapon NOT REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
+					`SELECT COUNT(*) AS Kills_INF FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND weapon NOT REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
 					"0",
 					"Kills_INF"
 				);
 				res.add(
 					"woundsVEH",
-					`SELECT COUNT(*) AS Kills_VEH FROM DBLog_Wounds WHERE attacker = ${steamUID} AND weapon REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
+					`SELECT COUNT(*) AS Kills_VEH FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND weapon REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
 					"0",
 					"Kills_VEH"
 				);
 				res.add(
 					"revives",
-					`SELECT COUNT(*) AS Revives FROM DBLog_Revives WHERE reviver = ${steamUID}`,
+					`SELECT COUNT(*) AS Revives FROM DBLog_Revives WHERE reviver = "${steamUID}"`,
 					"0",
 					"Revives"
 				);
 				res.add(
 					"tk",
-					`SELECT COUNT(*) AS TeamKills FROM DBLog_Wounds WHERE attacker = ${steamUID} AND teamkill=1`,
+					`SELECT COUNT(*) AS TeamKills FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND teamkill=1`,
 					"0",
 					"TeamKills"
 				);
 				res.add(
 					"mk_gun",
-					`SELECT weapon AS Fav_Gun FROM DBLog_Wounds WHERE attacker = ${steamUID} GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`,
+					`SELECT weapon AS Fav_Gun FROM DBLog_Wounds WHERE attacker = "${steamUID}" GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`,
 					"0",
 					"Fav_Gun"
 				);
 				res.add(
 					"mk_role",
-					`SELECT weapon AS Fav_Role FROM DBLog_Deaths WHERE attacker = ${steamUID} GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`,
+					`SELECT weapon AS Fav_Role FROM DBLog_Deaths WHERE attacker = "${steamUID}" GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`,
 					"0",
 					"Fav_Role"
 				);
 
-				data.memberData = await res.waitForAll();
-
+				await res.waitForAll(data.memberData);
+				await data.memberData.save();
 				await saveTracking(dt);
 				await giveDiscordRoles();
 				await sendEmbed();
@@ -526,7 +500,7 @@ module.exports = Profile;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sat Apr 10 2021 17:50:26 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sat Apr 17 2021 15:31:25 GMT+0200 (Orta Avrupa Yaz Saati) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

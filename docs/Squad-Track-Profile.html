@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>helpers/logger.js - SquadStatJSPRO</title>
+    <title>Squad-Track-Profile - SquadStatJSPRO</title>
     
     <meta name="description" content="Discord bot and website statistics for your game server (Squad)" />
     
@@ -46,101 +46,159 @@
 
 <div id="main">
     
-    <h1 class="page-title">helpers/logger.js</h1>
+    <h1 class="page-title">Squad-Track-Profile</h1>
     
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/*
-Logger class for easy and aesthetically pleasing console logging
-*/
-const { bgBlue, black, green } = require("chalk");
+        <h2>
+        Squad-Track-Profile
+        </h2>
+        
+    
+</header>
 
-/**
- * Returning an padding of wanted digits...
- *
- * @param {number}value - What should be padded.
- * @param {number}digits - The amount of padding.
- * @returns {string}Number the padded version of the value.
- */
-function dateTimePad(value, digits) {
-	let number = value;
-	while (number.toString().length &lt; digits) {
-		number = "0" + number;
-	}
-	return number;
-}
+<article>
+    
+        <div class="container-overview">
+        
+            
 
-/**.
- * Formats the date for the logger
- *
- * @param {string} tDate - Date of log capture
- * @returns {string} formated date of the log capture
- */
-function format(tDate) {
-	return (
-		tDate.getFullYear() +
-		"-" +
-		dateTimePad(tDate.getMonth() + 1, 2) +
-		"-" +
-		dateTimePad(tDate.getDate(), 2) +
-		" " +
-		dateTimePad(tDate.getHours(), 2) +
-		":" +
-		dateTimePad(tDate.getMinutes(), 2) +
-		":" +
-		dateTimePad(tDate.getSeconds(), 2) +
-		"." +
-		dateTimePad(tDate.getMilliseconds(), 3)
-	);
-}
+    
 
-module.exports = class Logger {
-	static log(content, type = "log") {
-		const date = `[${format(new Date(Date.now()))}]:`;
-		switch (type) {
-		// Check the message type and then print him in the console
-		case "log": {
-			return console.log(`${date} ${bgBlue(type.toUpperCase())} ${content} `);
-		}
-		case "warn": {
-			return console.log(
-				`${date} ${black.bgYellow(type.toUpperCase())} ${content} `
-			);
-		}
-		case "error": {
-			return console.log(
-				`${date} ${black.bgRed(type.toUpperCase())} ${content} `
-			);
-		}
-		case "debug": {
-			return console.log(`${date} ${green(type.toUpperCase())} ${content} `);
-		}
-		case "cmd": {
-			return console.log(
-				`${date} ${black.bgWhite(type.toUpperCase())} ${content}`
-			);
-		}
-		case "ready": {
-			return console.log(
-				`${date} ${black.bgGreen(type.toUpperCase())} ${content}`
-			);
-		}
-		default:
-			throw new TypeError(
-				"Logger type must be either warn, debug, log, ready, cmd or error."
-			);
-		}
-	}
-};
-</code></pre>
-        </article>
-    </section>
+    <h4 class="name" id="Squad-Track-Profile"><span class="type-signature"></span>new Squad-Track-Profile<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="commands_Squad_profile.js.html">commands/Squad/profile.js</a>, <a href="commands_Squad_profile.js.html#line7">line 7</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>LeventHAN</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Command for squad profile stats track.<h2>Usage: </h2><h3>Linking your account</h3><code>{prefix}profile {Steam64ID}</code><br /><h3>Removing the link from your account</h3><code>{prefix}profile re</code> OR <code>{prefix}profile re-link</code><br /><h6>Note: </h6><sub><sup>After linking your account you don't need to specify your steam64ID anymore. Just use; <code>{prefix}profile</code></sup></sub>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        </div>
+    
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>Command</li>
+    </ul>
+
+
+    
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

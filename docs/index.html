@@ -3,9 +3,12 @@
 <head>
     
     <meta charset="utf-8">
-    <title>Home - Documentation</title>
+    <title>Home - SquadStatJSPRO</title>
     
+    <meta name="description" content="Discord bot and website statistics for your game server (Squad)" />
     
+        <meta name="keywords" content="squad, squadjs, stats, leaderboard, discord, website" />
+        <meta name="keyword" content="squad, squadjs, stats, leaderboard, discord, website" />
     
     
     
@@ -38,7 +41,7 @@
     
     <input type="text" id="nav-search" placeholder="Search" />
     
-    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li><li><a href="Squad-Configure-Connection.html">Squad-Configure-Connection</a></li><li><a href="Squad-Track-Profile.html">Squad-Track-Profile</a></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li></ul>
 </nav>
 
 <div id="main">
@@ -67,6 +70,172 @@
 
 
 
+    <section class="readme usertext">
+        <article><div align="center">
+<img src="https://i.imgur.com/QCxOSK5.png" alt="Logo" width="500"/>
+<h4>SquadStatsJS PRO</h4>
+<p><a href="https://github.com/11TStudio/SquadStatsJSPRO/graphs/contributors"><img src="https://img.shields.io/github/contributors/11TStudio/SquadStatsJSPRO.svg?style=flat-square" alt="GitHub contributors"></a>
+<a href="https://github.com/11TStudio/SquadStatsJSPRO/blob/master/LICENSE"><img src="https://img.shields.io/github/license/11TStudio/SquadStatsJSPRO.svg?style=flat-square" alt="GitHub release"></a></p>
+<br>
+<p><a href="https://github.com/11TStudio/SquadStatsJSPRO/issues"><img src="https://img.shields.io/github/issues/11TStudio/SquadStatsJSPRO.svg?style=flat-square" alt="GitHub issues"></a>
+<a href="https://github.com/11TStudio/SquadStatsJSPRO/pulls"><img src="https://img.shields.io/github/issues-pr-raw/11TStudio/SquadStatsJSPRO.svg?style=flat-square" alt="GitHub pull requests"></a>
+<a href="https://github.com/11TStudio/SquadStatsJSPRO/stargazers"><img src="https://img.shields.io/github/stars/11TStudio/SquadStatsJSPRO.svg?style=flat-square" alt="GitHub issues"></a></p>
+<p><br><br></p>
+</div>
+<h2>About</h2>
+<p>An advanced version of SquadStatJS (tracking your squad stats) with advanced discord commands to manage your discord server.
+Next to squad tracking it uses (some of) Atlanta's basic features/commands to help admins moderate their servers.</p>
+<h2>Using SquadStatsJS PRO</h2>
+<p>The general usage can be found on the help command.</p>
+<p><strong>Configuring the Squad DB Connection</strong>
+Before doing anything, you/the owner of the server, should first configurate the squad DB connection via <code>{prefix}add-sq</code> and read the embed message.
+<br>This will also create KD roles. (Which will be linked to the users once they run the stat command; <code>{prefix}profile &lt;steam64ID&gt;</code>)</p>
+<p><strong>Checking stats</strong>
+An user should first link his steam64ID (17 digits long steam identifier) with his discord account.
+<br>This is simple as doing <code>{prefix}profile &lt;steamID&gt;</code>. Once done, his steamID will be linked with his discord profile and all data will be saved to the mongodb.
+<br>After linking the user can just use <code>{prefix}profile</code> and his stats will be shown (updated every hour)</p>
+<p><strong>Unlinking a steamUID from yourself</strong>
+If a player did missconfigure their profile, they can run: <code>{prefix}profile re-link</code>.
+<br>This will let users make another link by running <code>{prefix}profile &lt;steam64ID&gt;</code></p>
+<p><strong>Important: Experience will be avaible once SquadJS has it, it is in the PR so soon.</strong></p>
+<h3>Prerequisites</h3>
+<ul>
+<li>Git</li>
+<li>MongoDB (<a href="https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/#download-the-installer">Windows</a> || <a href="https://docs.mongodb.com/manual/administration/install-on-linux/">Linux</a>)
+<ul>
+<li>Just download and install it. No need to configure anything. One time install and forget about it.</li>
+</ul>
+</li>
+<li><a href="https://nodejs.org/en/">Node.js</a> (14.X) - <a href="https://nodejs.org/en/">Download</a></li>
+<li>NPM</li>
+</ul>
+<h3>Postrequisites</h3>
+<ul>
+<li>Once you have a working bot, you should join <a href="https://discord.gg/NPkySYKMkN">this emoji discord server</a> to obtain the emojis! (On join you will get how to proceed further, just do what the welcome messages mentions.)</li>
+</ul>
+<h3>Installation</h3>
+<ol>
+<li>Clone the repository via your terminal/cmd: <code>git clone https://github.com/11TStudio/SquadStatsJSPRO</code></li>
+<li>Configure the <code>config.example.js</code> file. And when done SAVE and delete the .example. (At the end the file should look like: <code>config.js</code>)</li>
+<li>Run <code>npm install</code> via the terminal.</li>
+<li>Start your bot: <code>node index.js&amp;</code>. (<strong>I recommend you to use <a href="https://pm2.keymetrics.io">pm2</a></strong>)</li>
+<li>Star this repo if you liked!</li>
+</ol>
+<h3>Configuring ScreenShotJS (GER-SQUAD)</h3>
+<p>ScreenShotJS (GER-SQUAD) can be configured via .env file which by default is called .env.example.</p>
+<p>The config file needs to be called .env at the end and a example can be found below:</p>
+<pre class="prettyprint source lang-js"><code>module.exports = {
+	/* The token of your Discord Bot */
+	token: &quot;XXXXXXXXXXX&quot;,
+	/* For the support server */
+	support: {
+		id: &quot;XXXXXXXXXXX&quot;, // The ID of the support server
+		logs: &quot;XXXXXXXXXXX&quot;, // And the ID of the logs channel of your server (new servers for example)
+	},
+	/* Dashboard configuration */
+	dashboard: {
+		enabled: false, // whether the dashboard is enabled or not
+		secret: &quot;XXXXXXXXXXX&quot;, // Your discord client secret
+		baseURL: &quot;https://localhost&quot;, // The base URl of the dashboard
+		logs: &quot;XXXXXXXXXXX&quot;, // The channel ID of logs
+		port: 8080, // Dashboard port
+		expressSessionPassword: &quot;XXXXXXXXXXX&quot;, // Express session password (it can be what you want)
+		failureURL: &quot;https://l-event.studio&quot;, // url on which users will be redirected if they click the cancel button (discord authentication)
+	},
+	mongoDB: &quot;mongodb://localhost:27017/SquadStatJSv3&quot;, // The URl of the mongodb database
+	prefix: &quot;!&quot;, // The default prefix for the bot
+	/* For the embeds (embeded messages) */
+	embed: {
+		color: &quot;#0091fc&quot;, // The default color for the embeds
+		footer: &quot;LeventHAN | l-event.studio&quot;, // And the default footer for the embeds
+	},
+	/* Bot's owner informations */
+	owner: {
+		id: &quot;152644814146371584&quot;, // The ID of the bot's owner
+		name: &quot;LeventHAN#0001&quot;, // And the name of the bot's owner
+	},
+	/* DBL votes webhook (optional) */
+	votes: {
+		port: 5000, // The port for the server
+		password: &quot;XXXXXXXXXXX&quot;, // The webhook auth that you have defined on discordbots.org
+		channel: &quot;XXXXXXXXXXX&quot;, // The ID of the channel that in you want the votes logs
+	},
+	/* The API keys that are required for certain commands */
+	apiKeys: {
+		// DBL: https://discordbots.org/api/docs#mybots
+		dbl: &quot;&quot;,
+		// SENTRY: https://sentry.io (this is not required and not recommended - you can delete the field)
+		sentryDSN: &quot;&quot;,
+	},
+	/* The others utils links */
+	others: {
+		github: &quot;https://github.com/11TStudio&quot;, // Founder's github account
+		donate: &quot;https://l-event.studio&quot;, // Donate link
+	},
+	/* The Bot status */
+	status: [
+		{
+			name: &quot;SquadStatJSv3 servs on {serversCount} servers&quot;,
+			type: &quot;LISTENING&quot;,
+		},
+		{
+			name: &quot;WebSite: l-event.studio&quot;,
+			type: &quot;PLAYING&quot;,
+		},
+	],
+};
+</code></pre>
+<h2>Commands and Examples</h2>
+<details>
+      <summary>help</summary>
+      <h2>Help Embed</h2>
+      <p>Shows all commands with more info when used as following: `!help <command-name>`</p>
+      <h3>Example image</h3>
+       <div align="center">
+       <img src="https://i.imgur.com/ZCCJV5H.png" alt="Example !profile"/>
+       </div>
+</details>
+<details>
+      <summary>profile</summary>
+      <h2>Search for players statistics</h2>
+      <p>The <code>profile</code> command will show the player stats.</p>
+      <h3>Example after linking your steamUID</h3>
+       <div align="center">
+       <img src="https://i.imgur.com/pSxuO8G.png" alt="Example !profile"/>
+       </div>
+</details>
+<h2>Credits</h2>
+<ul>
+<li>@<a href="https://github.com/Androz2091/AtlantaBot">AtlantaBot</a> for the amazing bot, used the core structure aswell couple of the basic commands.</li>
+<li><a href="https://github.com/Thomas-Smyth/SquadJS">SquadJS</a> - The reason this bot is made.</li>
+<li>My mom for feeding me while I was coding.</li>
+</ul>
+<h2>License</h2>
+<pre class="prettyprint source"><code>MIT License
+
+Copyright (c) 2021 11T Studio
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+</code></pre></article>
+    </section>
+
 
 
 
@@ -79,7 +248,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sun Apr 11 2021 12:47:20 GMT+0200 (Orta Avrupa Yaz Saati) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sat Apr 17 2021 15:31:25 GMT+0200 (Orta Avrupa Yaz Saati) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
