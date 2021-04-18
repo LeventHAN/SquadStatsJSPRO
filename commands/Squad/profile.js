@@ -65,6 +65,13 @@ class Profile extends Command {
 		}
 
 		// Gets the data of the user whose profile you want to display
+		const memberData =
+			member.id === message.author.id
+				? data.memberData
+				: await client.findOrCreateMember({
+					id: member.id,
+					guildID: message.guild.id,
+				  });
 		const userData =
 			member.id === message.author.id
 				? data.userData
@@ -137,8 +144,8 @@ class Profile extends Command {
 				.addField(
 					message.translate("squad/profile:STEAMS"),
 					message.translate("squad/profile:STEAM", {
-						steamName: data.memberData.squad.steamName,
-						steam64ID: data.memberData.squad.steam64ID || "#",
+						steamName: memberData.squad.steamName,
+						steam64ID: memberData.squad.steam64ID || "#",
 					}),
 					false
 				)
@@ -146,63 +153,63 @@ class Profile extends Command {
 				.addField(
 					message.translate("squad/profile:KDS"),
 					message.translate("squad/profile:KD", {
-						kd: data.memberData.squad.kd,
+						kd: memberData.squad.kd,
 					}),
 					true
 				)
 				.addField(
 					message.translate("squad/profile:KILLS"),
 					message.translate("squad/profile:KILL", {
-						kills: data.memberData.squad.kills,
+						kills: memberData.squad.kills,
 					}),
 					true
 				)
 				.addField(
 					message.translate("squad/profile:DEATHS"),
 					message.translate("squad/profile:DEATH", {
-						deaths: data.memberData.squad.deaths,
+						deaths: memberData.squad.deaths,
 					}),
 					true
 				)
 				.addField(
 					message.translate("squad/profile:WOUNDS_INF"),
 					message.translate("squad/profile:WOUNDS", {
-						kills: data.memberData.squad.woundsINF,
+						kills: memberData.squad.woundsINF,
 					}),
 					true
 				)
 				.addField(
 					message.translate("squad/profile:WOUNDS_VEH"),
 					message.translate("squad/profile:WOUNDS", {
-						kills: data.memberData.squad.woundsVEH,
+						kills: memberData.squad.woundsVEH,
 					}),
 					true
 				)
 				.addField(
 					message.translate("squad/profile:REVIVES"),
 					message.translate("squad/profile:REVIVE", {
-						revives: data.memberData.squad.revives,
+						revives: memberData.squad.revives,
 					}),
 					true
 				)
 				.addField(
 					message.translate("squad/profile:TEAMKILLS"),
 					message.translate("squad/profile:TEAMKILL", {
-						tk: data.memberData.squad.tk,
+						tk: memberData.squad.tk,
 					}),
 					true
 				)
 				.addField(
 					message.translate("squad/profile:MK_GUNS"),
 					message.translate("squad/profile:MK_GUN", {
-						gun: data.memberData.squad.mk_gun,
+						gun: memberData.squad.mk_gun,
 					}),
 					true
 				)
 				.addField(
 					message.translate("squad/profile:MK_ROLES"),
 					message.translate("squad/profile:MK_ROLE", {
-						role: data.memberData.squad.mk_role,
+						role: memberData.squad.mk_role,
 					}),
 					true
 				)
@@ -210,7 +217,7 @@ class Profile extends Command {
 				.addField(
 					message.translate("squad/profile:EXPS"),
 					message.translate("squad/profile:EXP", {
-						exp: data.memberData.squad.exp,
+						exp: memberData.squad.exp,
 					}),
 					true
 				)
