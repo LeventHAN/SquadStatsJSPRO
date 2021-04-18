@@ -59,18 +59,36 @@ router.post("/:serverID", CheckAuth, async(req, res) => {
 	/**
 	 * Adding/Updating the squad server
 	 */
-	 if(Object.prototype.hasOwnProperty.call(data, "squadEnable") || Object.prototype.hasOwnProperty.call(data, "welcomeUpdate")){
+	 if(Object.prototype.hasOwnProperty.call(data, "squadEnable") || Object.prototype.hasOwnProperty.call(data, "squadUpdate")){
+		 console.log("Buraya geldi");
+		 console.log(data);
 		const squad = {
 			enabled: true,
-			rolesEnabled: data.roles,
+			rolesEnabled: data.rolesEnabled == 'on' ? true : false,
 			host: data.host,
 			port: data.port,
 			database: data.database,
 			user: data.user,
-			password: data.password,
+			password: data.password === '✔️' ? guildData.plugins.squad.password : data.password,
 			serverID: data.serverID
 			// ignoredMaps: data.ignoredMaps,
 			// (TODO: Should I restrict this to one room?) channel: guild.channels.cache.find((ch) => "#"+ch.name === data.channel).id,
+		};
+		guildData.plugins.squad = squad;
+		guildData.markModified("plugins.squad");
+		await guildData.save();
+	}
+
+	if(Object.prototype.hasOwnProperty.call(data, "squadDisable")){
+		const squad = {
+			enabled: false,
+			rolesEnabled: null,
+			host: null,
+			port: null,
+			database: null,
+			user: null,
+			password: null,
+			serverID: null
 		};
 		guildData.plugins.squad = squad;
 		guildData.markModified("plugins.squad");
