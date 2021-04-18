@@ -17,7 +17,7 @@
     "DATABASES": "Database Name",
     "DATABASE": "{{database}}",
     "ROLES": "KD Role Status",
-    "ROLE": "{{stats}}",
+    "ROLE": "Enabled: {{stats}}\nGiven: {{statsGiven}}",
     "SERVER_IDS": "Server IDs",
     "SERVER_ID": "{{id}}",
     "IGNORED_MAPS": "Ignored Maps",

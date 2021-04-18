@@ -38,7 +38,8 @@ class Profile extends Command {
 	}
 
 	async run(message, args, /**@type {{}}*/ data) {
-		if(!data.guild.plugins.squad.enabled) return message.error("squad/profile:NOT_ENABLED");
+		if (!data.guild.plugins.squad.enabled)
+			return message.error("squad/profile:NOT_ENABLED");
 
 		const client = this.client;
 		let steamUID;
@@ -221,16 +222,8 @@ class Profile extends Command {
 					}),
 					true
 				)
-				.addField(
-					message.translate("squad/profile:HOURS"),
-					"Soon™",
-					true
-				)
-				.addField(
-					message.translate("squad/profile:ACTIVITY"),
-					"Soon™",
-					true
-				)
+				.addField(message.translate("squad/profile:HOURS"), "Soon™", true)
+				.addField(message.translate("squad/profile:ACTIVITY"), "Soon™", true)
 				.setColor(data.config.embed.color) // Sets the color of the embed
 				.setFooter(data.config.embed.footer) // Sets the footer of the embed
 				.setTimestamp();
@@ -349,7 +342,7 @@ class Profile extends Command {
 		lastUpdate = new Date(lastUpdate);
 		if (
 			!data.memberData.squad.tracking ||
-				(data.memberData.squad.tracking && lastUpdate < dt)
+			(data.memberData.squad.tracking && lastUpdate < dt)
 		) {
 			let res = new MYSQLPromiseObjectBuilder(pool);
 			res.add(
@@ -417,7 +410,7 @@ class Profile extends Command {
 			await data.memberData.markModified("squad");
 			await data.memberData.save();
 			await saveTracking(dt);
-			if(!data.guild.plugins.squad.rolesEnabled){
+			if (!data.guild.plugins.squad.rolesEnabled) {
 				await giveDiscordRoles();
 			}
 			await sendEmbed();

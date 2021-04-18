@@ -88,19 +88,28 @@ class AddSquadDB extends Command {
 			"RED",
 		];
 
-		if(data.guild.plugins.squad.host !== null && data.guild.plugins.squad.port !== null && data.guild.plugins.squad.user !== null && data.guild.plugins.squad.database !== null && data.guild.plugins.squad.serverID !== null && data.guild.plugins.squad.password !== null && !data.guild.plugins.squad.enabled) {
+		if (
+			data.guild.plugins.squad.host !== null &&
+			data.guild.plugins.squad.port !== null &&
+			data.guild.plugins.squad.user !== null &&
+			data.guild.plugins.squad.database !== null &&
+			data.guild.plugins.squad.serverID !== null &&
+			data.guild.plugins.squad.password !== null &&
+			!data.guild.plugins.squad.enabled
+		) {
 			data.guild.plugins.squad.enabled = true;
 			data.guild.markModified("plugins.squad");
 			await data.guild.save();
 		}
 
-
 		/**Sends an embed message with the status of the configuration
 		 * @param {boolean} status true for successful connection and false for failed/not yet configured connection
 		 * @returns {Discord.EmbedMessage} profileEmbed, an embed message
 		 */
-		async function sendEmbed(status){
-			let connectionStatusMessage = status ? "squad/addsquadserver:CONNECTION_SUCCESS" : "squad/addsquadserver:CONNECTION_ERROR";
+		async function sendEmbed(status) {
+			let connectionStatusMessage = status
+				? "squad/addsquadserver:CONNECTION_SUCCESS"
+				: "squad/addsquadserver:CONNECTION_ERROR";
 			const profileEmbed = new Discord.MessageEmbed()
 				.setAuthor(message.translate("squad/addsquadserver:PANE_NAME"))
 				.setDescription(message.translate("squad/addsquadserver:PANE_DESC"))
@@ -134,9 +143,10 @@ class AddSquadDB extends Command {
 				.addField(
 					message.translate("squad/addsquadserver:PASSWORDS"),
 					message.translate("squad/addsquadserver:PASSWORD", {
-						password: data.guild.plugins.squad.password === null
-							? ":x:"
-							: ":white_check_mark:",
+						password:
+							data.guild.plugins.squad.password === null
+								? ":x:"
+								: ":white_check_mark:",
 					}),
 					true
 				)
@@ -157,7 +167,12 @@ class AddSquadDB extends Command {
 				.addField(
 					message.translate("squad/addsquadserver:ROLES"),
 					message.translate("squad/addsquadserver:ROLE", {
-						stats: data.guild.plugins.squad.rolesGiven ? ":white_check_mark:" : ":x:",
+						stats: data.guild.plugins.squad.rolesEnabled
+							? ":white_check_mark:"
+							: ":x:",
+						statsGiven: data.guild.plugins.squad.rolesGiven
+							? ":white_check_mark:"
+							: ":x:",
 					}),
 					true
 				)
@@ -223,7 +238,6 @@ class AddSquadDB extends Command {
 			return message.channel.send(profileEmbed); // Send the embed in the current channel
 		}
 
-
 		let controlPoint = "";
 		if (data.guild.plugins.squad.rolesEnabled && !data.guild.plugins.squad.rolesGiven) {
 			chacheRoles.forEach((role) => {
@@ -269,9 +283,10 @@ class AddSquadDB extends Command {
 			client.logger.log(err, "error");
 		}
 
-		if (args.length < 1)  return con.connect((error) => {
-			error ? sendEmbed(false) : sendEmbed(true);
-		});
+		if (args.length < 1)
+			return con.connect((error) => {
+				error ? sendEmbed(false) : sendEmbed(true);
+			});
 
 		let itemToChange;
 		// Update pending requests
@@ -297,7 +312,9 @@ class AddSquadDB extends Command {
 			itemToChange = message.translate("squad/addsquadserver:FILL_SERVER_ID");
 			break;
 		case "autoroles":
-			itemToChange = message.translate("squad/addsquadserver:ENABLE_KD_ROLES");
+			itemToChange = message.translate(
+				"squad/addsquadserver:ENABLE_KD_ROLES"
+			);
 			break;
 		}
 
@@ -349,7 +366,10 @@ class AddSquadDB extends Command {
 					data.guild.markModified("plugins.squad");
 					break;
 				case "autoroles":
-					data.guild.plugins.squad.rolesEnabled = new RegExp("^y.?s$", "i").test(msg.content);
+					data.guild.plugins.squad.rolesEnabled = new RegExp(
+						"^y.?s$",
+						"i"
+					).test(msg.content);
 					data.guild.markModified("plugins.squad");
 					break;
 				}

@@ -60,11 +60,10 @@ router.post("/:serverID", CheckAuth, async(req, res) => {
 	 * Adding/Updating the squad server
 	 */
 	 if(Object.prototype.hasOwnProperty.call(data, "squadEnable") || Object.prototype.hasOwnProperty.call(data, "squadUpdate")){
-		 console.log("Buraya geldi");
-		 console.log(data);
 		const squad = {
 			enabled: true,
 			rolesEnabled: data.rolesEnabled == 'on' ? true : false,
+			rolesGiven: data.rolesGiven == 'on' ? false : true,
 			host: data.host,
 			port: data.port,
 			database: data.database,
@@ -82,7 +81,8 @@ router.post("/:serverID", CheckAuth, async(req, res) => {
 	if(Object.prototype.hasOwnProperty.call(data, "squadDisable")){
 		const squad = {
 			enabled: false,
-			rolesEnabled: null,
+			rolesEnabled: false,
+			rolesGiven: false,
 			host: null,
 			port: null,
 			database: null,

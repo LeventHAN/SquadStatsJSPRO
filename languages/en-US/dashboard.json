@@ -25,5 +25,7 @@
     "SQUAD": "🔫 Squad management",
     "SQUAD_ROLES": "🎖️ Give/Create Auto K/D Roles",
     "DISABLE_SQUAD": "Disable SquadStatsJS PRO",
-    "ENABLE_SQUAD": "Enable SquadStatsJS PRO"
+    "ENABLE_SQUAD": "Enable SquadStatsJS PRO",
+    "SQUAD_ROLES_GIVEN": "Re-Create K/D Roles [Don't check this option if you have the roles]",
+    "SQUAD_ROLES_GIVEN_READY": "!!! You must now run add-sq command in your server to create the roles !!!"
 }
