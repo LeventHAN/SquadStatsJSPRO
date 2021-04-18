@@ -21,5 +21,9 @@
     "DISABLE_AUTOROLE": "Disable autorole",
     "ENABLE_AUTOROLE": "Enable autorole",
     "SELECTOR": "Selector",
-    "MANAGE": "Manage"
+    "MANAGE": "Manage",
+    "SQUAD": "🔫 Squad management",
+    "SQUAD_ROLES": "🎖️ Give/Create Auto K/D Roles",
+    "DISABLE_SQUAD": "Disable SquadStatsJS PRO",
+    "ENABLE_SQUAD": "Enable SquadStatsJS PRO"
 }

@@ -136,8 +136,69 @@
                             <!-- /.box -->
                         </div>
                         <div class="col-md-6">
-                            <!-- WELCOME CONFIGURATION -->
+                            <!-- SQUAD CONFIGURATION -->
                             <div class="box box-success">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title"><%= translate("dashboard:SQUAD") %></h3>
+                                </div>
+                                <form role="form" action="/manage/<%= guild.id %>/" method="POST" autocomplete="off">
+                                    <!-- /.box-header -->
+                                    <div class="box-body">
+                                        <!-- text input -->
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                            <label for="host"><%= translate("squad/addsquadserver:HOSTS") %></label>
+                                            <textarea rows="1" type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="host" name="host" required><%= (translate('squad/addsquadserver:HOST', { host: guild.plugins.squad.host || '❌',})) %></textarea>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                              <label for="port"><%= translate("squad/addsquadserver:PORTS") %></label>
+                                              <textarea rows="1" type="numbers" class="form-control" id="port" name="port" required><%= (translate('squad/addsquadserver:PORT', { port: guild.plugins.squad.port || '❌',})) %></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                            <label for="database"><%= translate("squad/addsquadserver:DATABASES") %></label>
+                                            <textarea rows="1" type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" name="database" id="database" required><%= (translate('squad/addsquadserver:DATABASE', { database: guild.plugins.squad.database || '❌',})) %></textarea>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                              <label for="serverID"><%= translate("squad/addsquadserver:SERVER_IDS") %></label>
+                                              <textarea rows="1" type="text" class="form-control" name="serverID" id="serverID" required><%= (translate('squad/addsquadserver:SERVER_ID', { id: guild.plugins.squad.serverID || '❌',})) %></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                              <label for="user"><%= translate("squad/addsquadserver:USERS") %></label>
+                                              <textarea rows="1" type="numbers" class="form-control" name="user" id="user"><%= (translate('squad/addsquadserver:USER', { user: guild.plugins.squad.user || '❌',})) %></textarea>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="password"><%= translate("squad/addsquadserver:PASSWORDS") %></label>
+                                                <textarea rows="1" type="text" class="form-control" id="password" name="password" ><%= (translate('squad/addsquadserver:PASSWORD', { password: guild.plugins.squad.password ? '✔️' : '❌',})) %></textarea>
+                                          </div>
+                                        </div>
+                                        <div class="form-group mt--2">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <% if(guild.plugins.squad.rolesEnabled) { %>
+                                                        <input type="checkbox" name="rolesEnabled" checked> <%= translate("dashboard:SQUAD_ROLES") %>
+                                                    <% } else { %>
+                                                        <input type="checkbox" name="rolesEnabled"> <%= translate("dashboard:SQUAD_ROLES") %>
+                                                    <% } %>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    <!-- /.box-body -->
+                                    <div class="box-footer mt--3">
+                                        <% if(guild.plugins.squad.enabled){ %>
+                                            <button type="submit" name="squadDisable" class="btn btn-danger"> <%= translate("dashboard:DISABLE_SQUAD") %></button>
+                                            <button type="submit" name="squadUpdate" class="btn btn-primary pull-right"> <%= translate("common:UPDATE") %></button>
+                                        <% } else { %>
+                                            <button type="submit" name="squadEnable" class="btn btn-success"> <%= translate("dashboard:ENABLE_SQUAD") %></button>
+                                        <% } %>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- WELCOME CONFIGURATION -->
+                            <div class="box box-success mt-4">
                                 <div class="box-header with-border">
                                     <h3 class="box-title"><%= translate("dashboard:WELCOME_CONF") %></h3>
                                 </div>
