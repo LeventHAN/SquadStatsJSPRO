@@ -249,88 +249,86 @@ class Profile extends Command {
 		 * Gives a K/D role to the message author if the guild/discord server has those roles installed.
 		 */
 		function giveDiscordRoles() {
-			if (data.guild.squad.rolesEnabled) {
-				const regexKD = /^KD /i;
-				message.member.roles.cache.some((role) => {
-					if (regexKD.test(role.name))
-						message.member.roles.remove(role).catch(console.error);
-				});
-				let roleName = "KD 0+";
-				switch (true) {
-				case parseFloat(data.memberData.squad.kd) < 0.5:
-					roleName = "KD 0+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 1.0:
-					roleName = "KD 0.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 1.5:
-					roleName = "KD 1+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 2.0:
-					roleName = "KD 1.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 2.5:
-					roleName = "KD 2+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 3.0:
-					roleName = "KD 2.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 3.5:
-					roleName = "KD 3+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 4.0:
-					roleName = "KD 3.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 4.5:
-					roleName = "KD 4+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 5.0:
-					roleName = "KD 4.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 5.5:
-					roleName = "KD 5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 6.0:
-					roleName = "KD 5.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 6.5:
-					roleName = "KD 6+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 7:
-					roleName = "KD 6.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 7.5:
-					roleName = "KD 7+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 8:
-					roleName = "KD 7.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 8.5:
-					roleName = "KD 8+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 9:
-					roleName = "KD 8.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 9.5:
-					roleName = "KD 9+";
-					break;
-				case parseFloat(data.memberData.squad.kd) < 10:
-					roleName = "KD 9.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) > 10:
-					roleName = "KD 10+";
-					break;
-				default:
-					roleName = "KD 0+";
-					break;
-				}
-				const role = message.guild.roles.cache.find((r) => r.name === roleName);
-				message.member.roles.add(role).catch(console.error);
-				message.success("squad/profile:UPDATE", {
-					creator: message.author.toString(),
-					steamID: steamUID,
-				});
+			const regexKD = /^KD /i;
+			message.member.roles.cache.some((role) => {
+				if (regexKD.test(role.name))
+					message.member.roles.remove(role).catch(console.error);
+			});
+			let roleName = "KD 0+";
+			switch (true) {
+			case parseFloat(data.memberData.squad.kd) < 0.5:
+				roleName = "KD 0+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 1.0:
+				roleName = "KD 0.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 1.5:
+				roleName = "KD 1+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 2.0:
+				roleName = "KD 1.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 2.5:
+				roleName = "KD 2+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 3.0:
+				roleName = "KD 2.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 3.5:
+				roleName = "KD 3+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 4.0:
+				roleName = "KD 3.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 4.5:
+				roleName = "KD 4+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 5.0:
+				roleName = "KD 4.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 5.5:
+				roleName = "KD 5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 6.0:
+				roleName = "KD 5.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 6.5:
+				roleName = "KD 6+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 7:
+				roleName = "KD 6.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 7.5:
+				roleName = "KD 7+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 8:
+				roleName = "KD 7.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 8.5:
+				roleName = "KD 8+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 9:
+				roleName = "KD 8.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 9.5:
+				roleName = "KD 9+";
+				break;
+			case parseFloat(data.memberData.squad.kd) < 10:
+				roleName = "KD 9.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) > 10:
+				roleName = "KD 10+";
+				break;
+			default:
+				roleName = "KD 0+";
+				break;
 			}
+			const role = message.guild.roles.cache.find((r) => r.name === roleName);
+			message.member.roles.add(role).catch(console.error);
+			message.success("squad/profile:UPDATE", {
+				creator: message.author.toString(),
+				steamID: steamUID,
+			});
 		}
 
 		let dt = new Date();
@@ -410,7 +408,7 @@ class Profile extends Command {
 			await data.memberData.markModified("squad");
 			await data.memberData.save();
 			await saveTracking(dt);
-			if (!data.guild.plugins.squad.rolesEnabled) {
+			if (data.guild.plugins.squad.rolesEnabled) {
 				await giveDiscordRoles();
 			}
 			await sendEmbed();
