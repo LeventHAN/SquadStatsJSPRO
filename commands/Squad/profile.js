@@ -222,8 +222,21 @@ class Profile extends Command {
 					}),
 					true
 				)
+
 				.addField(message.translate("squad/profile:HOURS"), "Soon™", true)
 				.addField(message.translate("squad/profile:ACTIVITY"), "Soon™", true)
+				.addField("\u200B", "\u200B")
+				.addField(
+					client.customEmojis.link +
+						" " +
+						message.translate("general/stats:LINKS_TITLE"),
+					message.translate("misc:STATS_FOOTER", {
+						donateLink: "https://paypal.me/11tstudio?locale.x=en_US",
+						dashboardLink: "https://l-event.studio",
+						githubLink: "https://github.com/11TStudio",
+						supportLink: "https://discord.gg/eF3nYAjhZ9",
+					})
+				)
 				.setColor(data.config.embed.color) // Sets the color of the embed
 				.setFooter(data.config.embed.footer) // Sets the footer of the embed
 				.setTimestamp();
