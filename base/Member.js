@@ -19,7 +19,8 @@ module.exports = mongoose.model(
 				steamName: null, // Steam Name of the User
 				steam64ID: null, // Steam ID of the User
 				kd: null, // K/D of the user
-				kills: null, // Kills of the user
+				killsVEH: null, // Kills of the user
+				killsINF: null, // Kills of the user
 				woundsVEH: null, // Kills of the user for VEHICLES
 				woundsINF: null, // Kills of the user for INFANTRY
 				deaths: null, // Deaths of the user

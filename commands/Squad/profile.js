@@ -158,20 +158,22 @@ class Profile extends Command {
 					}),
 					true
 				)
+				.addField("\u200B", "\u200B")
 				.addField(
-					message.translate("squad/profile:KILLS"),
+					message.translate("squad/profile:KILLS_INF"),
 					message.translate("squad/profile:KILL", {
-						kills: memberData.squad.kills,
+						kills: memberData.squad.killsINF,
 					}),
 					true
 				)
 				.addField(
-					message.translate("squad/profile:DEATHS"),
-					message.translate("squad/profile:DEATH", {
-						deaths: memberData.squad.deaths,
+					message.translate("squad/profile:KILLS_VEH"),
+					message.translate("squad/profile:KILL", {
+						kills: memberData.squad.killsVEH,
 					}),
 					true
 				)
+				.addField("\u200B", "\u200B", true)
 				.addField(
 					message.translate("squad/profile:WOUNDS_INF"),
 					message.translate("squad/profile:WOUNDS", {
@@ -186,10 +188,11 @@ class Profile extends Command {
 					}),
 					true
 				)
+				.addField("\u200B", "\u200B", true)
 				.addField(
-					message.translate("squad/profile:REVIVES"),
-					message.translate("squad/profile:REVIVE", {
-						revives: memberData.squad.revives,
+					message.translate("squad/profile:DEATHS"),
+					message.translate("squad/profile:DEATH", {
+						deaths: memberData.squad.deaths,
 					}),
 					true
 				)
@@ -201,12 +204,20 @@ class Profile extends Command {
 					true
 				)
 				.addField(
+					message.translate("squad/profile:REVIVES"),
+					message.translate("squad/profile:REVIVE", {
+						revives: memberData.squad.revives,
+					}),
+					true
+				)
+				.addField(
 					message.translate("squad/profile:MK_GUNS"),
 					message.translate("squad/profile:MK_GUN", {
 						gun: memberData.squad.mk_gun,
 					}),
 					true
 				)
+				.addField("\u200B", "\u200B", true)
 				.addField(
 					message.translate("squad/profile:MK_ROLES"),
 					message.translate("squad/profile:MK_ROLE", {
@@ -382,15 +393,15 @@ class Profile extends Command {
 			);
 			res.add(
 				"woundsINF",
-				`SELECT COUNT(*) AS Kills_INF FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND weapon NOT REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
+				`SELECT COUNT(*) AS Wounds_INF FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND weapon NOT REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
 				"0",
-				"Kills_INF"
+				"Wounds_INF"
 			);
 			res.add(
 				"woundsVEH",
-				`SELECT COUNT(*) AS Kills_VEH FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND weapon REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
+				`SELECT COUNT(*) AS Wounds_VEH FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND weapon REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
 				"0",
-				"Kills_VEH"
+				"Wounds_VEH"
 			);
 			res.add(
 				"revives",
@@ -415,6 +426,18 @@ class Profile extends Command {
 				`SELECT weapon AS Fav_Role FROM DBLog_Deaths WHERE attacker = "${steamUID}" GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`,
 				"0",
 				"Fav_Role"
+			);
+			res.add(
+				"killsINF",
+				`SELECT COUNT(*) AS Kills_INF FROM DBLog_Deaths WHERE attacker = "${steamUID}" AND weapon NOT REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
+				"0",
+				"Kills_INF"
+			);
+			res.add(
+				"killsVEH",
+				`SELECT COUNT(*) AS Kills_VEH FROM DBLog_Deaths WHERE attacker = "${steamUID}" AND weapon REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
+				"0",
+				"Kills_VEH"
 			);
 
 			await res.waitForAll(data.memberData.squad);
