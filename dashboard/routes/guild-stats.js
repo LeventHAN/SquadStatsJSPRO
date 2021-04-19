@@ -21,15 +21,15 @@ router.get("/:serverID", CheckAuth, async(req, res) => {
 	const membersData = await req.client.membersData.find({ guildID: guild.id }).lean();
     
 	const leaderboards = {
-		money: sortArrayOfObjects("money", membersData),
-		level: sortArrayOfObjects("level", membersData)
+		kd: sortArrayOfObjects("kd", membersData),
+		xp: sortArrayOfObjects("xp", membersData)
 	};
     
 	for(const cat in leaderboards){
 		const e = leaderboards[cat];
 		if(e.length > 10) e.length = 10;
 	}
-	const stats = { money: await utils.fetchUsers(leaderboards.money, req.client), level: await utils.fetchUsers(leaderboards.level, req.client) };
+	const stats = { kd: await utils.fetchUsers(leaderboards.kd, req.client), xp: await utils.fetchUsers(leaderboards.xp, req.client) };
 	res.render("stats/guild", {
 		stats,
 		commands: getCommands(guildInfos.commands.filter((c) => c.date > Date.now()-604800000)),

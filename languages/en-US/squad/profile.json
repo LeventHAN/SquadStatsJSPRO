@@ -1,7 +1,7 @@
 {
     "DESCRIPTION": "Shows the mentioned user or author squad profile",
-    "USAGE": "{{prefix}}profile [user]",
-    "EXAMPLES": "{{prefix}}profile LeventHAN™#0001",
+    "USAGE": "Track your squad account.\n Untrack your squad account. \n Check someone elses squad account.",
+    "EXAMPLES": "**Track your account for first time;**```{{prefix}}profile STEAM64ID```\n**See your stats;**```{{prefix}}profile```\n**Re-Link Steam64ID;**```{{prefix}}profile re-link```\n**Look for other players stats;**```{{prefix}}profile @Username#0001```",
     "TITLE": "{{username}}'s profile",
     "NO_BIO": "",
     "SUCCESS": "Profile is linked to your discord account successfully! Please wait while we fetch your data from the DataBase.",
