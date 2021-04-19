@@ -231,43 +231,93 @@ class AddSquadDB extends Command {
 					}),
 					true
 				)
+				.addField(
+					message.translate("squad/addsquadserver:BYPASS_ROLES"),
+					message.translate("squad/addsquadserver:BYPASS_ROLE", {
+						prefix: data.guild.prefix,
+					}),
+					true
+				)
+				.addField("\u200B", "\u200B")
+				.addField(
+					message.translate("squad/addsquadserver:SET_WIPES"),
+					message.translate("squad/addsquadserver:SET_WIPE", {
+						prefix: data.guild.prefix,
+					}),
+					false
+				)
+				.addField("\u200B", "\u200B")
+				.addField(
+					client.customEmojis.link +
+						" " +
+						message.translate("general/stats:LINKS_TITLE"),
+					message.translate("misc:STATS_FOOTER", {
+						donateLink: "https://paypal.me/11tstudio?locale.x=en_US",
+						dashboardLink: "https://l-event.studio",
+						githubLink: "https://github.com/11TStudio",
+						supportLink: "https://discord.gg/eF3nYAjhZ9",
+					})
+				)
 				.setColor(data.config.embed.color) // Sets the color of the embed
 				.setFooter(data.config.embed.footer) // Sets the footer of the embed
 				.setTimestamp();
 
+			let controlPoint = "";
+			if (data.guild.plugins.squad.rolesEnabled && !data.guild.plugins.squad.rolesGiven) {
+				chacheRoles.forEach((role) => {
+					if (roles.includes(role.name)) {
+						return (controlPoint = role.id);
+					}
+				});
+		
+				if (controlPoint == "") {
+					let i = 0;
+					roles.forEach((role) => {
+						message.guild.roles
+							.create({
+								data: {
+									name: role,
+									color: rolesColors[i],
+								},
+								reason: "Roles will be used by the SquadStatJS",
+							})
+							.catch(console.error);
+						i++;
+					});
+					data.guild.plugins.squad.rolesGiven = true;
+					data.guild.markModified("plugins.squad");
+					await data.guild.save();
+				} else {
+					message.error("squad/addsquadserver:DELETEROLES", {
+						role: controlPoint,
+					});
+				}
+			}
+
 			return message.channel.send(profileEmbed); // Send the embed in the current channel
 		}
-
-		let controlPoint = "";
-		if (data.guild.plugins.squad.rolesEnabled && !data.guild.plugins.squad.rolesGiven) {
-			chacheRoles.forEach((role) => {
-				if (roles.includes(role.name)) {
-					return (controlPoint = role.id);
-				}
-			});
-
-			if (controlPoint == "") {
-				let i = 0;
-				roles.forEach((role) => {
-					message.guild.roles
-						.create({
-							data: {
-								name: role,
-								color: rolesColors[i],
-							},
-							reason: "Roles will be used by the SquadStatJS",
-						})
-						.catch(console.error);
-					i++;
-				});
-				data.guild.plugins.squad.rolesGiven = true;
-				data.guild.markModified("plugins.squad");
-				await data.guild.save();
-			} else {
-				return message.error("squad/addsquadserver:DELETEROLES", {
-					role: controlPoint,
-				});
-			}
+		if (args[0] === "bypass-roles" || args[0] === "fix-roles") {
+			data.guild.plugins.squad.rolesGiven = true;
+			data.guild.markModified("plugins.squad");
+			data.guild.save();
+			return message.success("squad/addsquadserver:BYPASSED");
+		}
+		if (args[0] === "res" || args[0] === "restart") {
+			const squad = {
+				enabled: false,
+				rolesEnabled: false,
+				rolesGiven: false,
+				host: null,
+				port: null,
+				database: null,
+				user: null,
+				password: null,
+				serverID: null
+			};
+			data.guild.plugins.squad = squad;
+			data.guild.markModified("plugins.squad");
+			data.guild.save();
+			return message.success("squad/addsquadserver:CLEARED");
 		}
 
 		con = null;
@@ -317,7 +367,7 @@ class AddSquadDB extends Command {
 			);
 			break;
 		}
-
+		if(!itemToChange) return;
 		message.sendT(itemToChange);
 		const collector = new Discord.MessageCollector(
 			message.channel,
