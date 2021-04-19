@@ -64,9 +64,9 @@ class Stats extends Command {
 			message.translate("misc:STATS_FOOTER", {
 				donateLink: "https://paypal.me/11tstudio?locale.x=en_US",
 				dashboardLink: "https://l-event.studio",
-				inviteLink: await this.client.generateInvite({
-					permissions: ["ADMINISTRATOR"],
-				}),
+				// inviteLink: await this.client.generateInvite({
+				// 	permissions: ["ADMINISTRATOR"],
+				// }),
 				githubLink: "https://github.com/11TStudio",
 				supportLink: "https://discord.gg/eF3nYAjhZ9",
 			})
