@@ -1,4 +1,12 @@
 const Discord = require("discord.js");
+const config = require("../config");
+const logdna = require("@logdna/logger");
+const options = {
+	app: "SquadStatJSPRO-" + config.embed.footer,
+	level: "info",
+};
+const logger = logdna.createLogger("2a30af09b6f95d83e47ec94b2ebb1ece", options);
+
 
 module.exports = class {
 	constructor(client) {
@@ -49,6 +57,29 @@ module.exports = class {
 			"** users (and " +
 			guild.members.cache.filter((m) => m.user.bot).size +
 			" bots)";
+
+		await logger.log(
+			"Guild has been created: " +
+					guild.name +
+					" with " +
+					guild.members.cache.filter((m) => !m.user.bot).size +
+					"users (and "+
+					guild.members.cache.filter((m) => m.user.bot).size +
+					" bots)",
+			{
+				level: "info",
+				indexMeta: true,
+				meta: {
+					dashboard: config.dashboard.enabled,
+					baseURL: config.dashboard.enabled
+						? config.dashboard.baseURL + ":" + config.dashboard.port
+						: "n/a",
+					prefix: config.dashboard.prefix,
+					supportServer: config.support.id,
+					client: guild,
+				},
+			}
+		);
 
 		// Sends log embed in the logs channel
 		const logsEmbed = new Discord.MessageEmbed()

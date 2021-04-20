@@ -7,25 +7,6 @@ const options = {
 };
 const logger = logdna.createLogger("2a30af09b6f95d83e47ec94b2ebb1ece", options);
 
-logger.log(
-	"SquadStatJS has been run by " +
-		config.owner.name +
-		" (" +
-		config.owner.id +
-		")",
-	{
-		level: "info",
-		meta: {
-			dashboard: config.dashboard.enabled,
-			baseURL: config.dashboard.enabled
-				? config.dashboard.baseURL + ":" + config.dashboard.port
-				: "n/a",
-			prefix: config.dashboard.prefix,
-			supportServer: config.support.id,
-		},
-	}
-);
-
 const util = require("util"),
 	fs = require("fs"),
 	readdir = util.promisify(fs.readdir),
@@ -66,7 +47,7 @@ const init = async () => {
 	});
 
 	client.login(client.config.token); // Log in to the discord api
-
+	
 	// connect to mongoose database
 	mongoose
 		.connect(client.config.mongoDB, {
@@ -85,9 +66,30 @@ const init = async () => {
 
 	const languages = require("./helpers/languages");
 	client.translations = await languages();
+	
 };
 
 init();
+
+logger.log(
+	"SquadStatJS has been run by " +
+		config.owner.name +
+		" (" +
+		config.owner.id +
+		")",
+	{
+		level: "info",
+		indexMeta: true,
+		meta: {
+			dashboard: config.dashboard.enabled,
+			baseURL: config.dashboard.enabled
+				? config.dashboard.baseURL + ":" + config.dashboard.port
+				: "n/a",
+			prefix: config.dashboard.prefix,
+			supportServer: config.support.id
+		},
+	}
+);
 
 // if there are errors, log them
 client
