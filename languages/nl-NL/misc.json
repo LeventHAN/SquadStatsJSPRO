@@ -12,8 +12,6 @@
     "BOT_USER": "Deze gebruiker is een bot!",
     "NO_REASON_PROVIDED": "Geen reden opgegeven",
     "NO_USER_FOUND_ID": "Geen enkele gebruiker op Discord heeft de ID `{{id}}`!",
-    "VOTE_DM": "⬆️ Hallo {{{gebruiker}}, bedankt voor het stemmen!\nHier is je beloning: 40 credits (op de support server)!",
-    "VOTE_LOGS": "⬆️ **{{usertag}}** (`{{userid}}`) stemde op **GLXY** en won **40** credits, dank je!\n<https://discordbots.org/bot/557445719892688897/vote>",
     "HELLO_SERVER": "Hallo **{{username}}**, mijn prefix op deze server is `{{prefix}}`. Gebruik `{{prefix}}help` om de lijst met commando's te krijgen!",
     "HELLO_DM": "Hallo **{{username}}**, aangezien u momenteel in direct bericht bent, hoeft u geen prefix toe te voegen voor de opdracht naam.",
     "GUILD_ONLY": "Deze opdracht is alleen beschikbaar op een server!",

@@ -1,25 +1,35 @@
 require("./helpers/extenders");
+const config = require("./config");
+const logdna = require("@logdna/logger");
+const options = {
+	app: "SquadStatJSPRO-" + config.embed.footer,
+	level: "info",
+};
+const logger = logdna.createLogger("2a30af09b6f95d83e47ec94b2ebb1ece", options);
 
-const Sentry = require("@sentry/node"),
-	util = require("util"),
+logger.log(
+	"SquadStatJS has been run by " +
+		config.owner.name +
+		" (" +
+		config.owner.id +
+		")",
+	{
+		level: "info",
+		meta: {
+			dashboard: config.dashboard.enabled,
+			baseURL: config.dashboard.enabled
+				? config.dashboard.baseURL + ":" + config.dashboard.port
+				: "n/a",
+			prefix: config.dashboard.prefix,
+			supportServer: config.support.id,
+		},
+	}
+);
+
+const util = require("util"),
 	fs = require("fs"),
 	readdir = util.promisify(fs.readdir),
-	mongoose = require("mongoose"),
-	chalk = require("chalk");
-
-const config = require("./config");
-if (config.apiKeys.sentryDSN) {
-	try {
-		Sentry.init({ dsn: config.apiKeys.sentryDSN });
-	} catch (e) {
-		console.log(e);
-		console.log(
-			chalk.yellow(
-				"Looks like your Sentry DSN key is invalid. If you do not intend to use Sentry, please remove the key from the configuration file."
-			)
-		);
-	}
-}
+	mongoose = require("mongoose");
 
 // Load SquadStatJSv3 class
 const SquadStatJSv3 = require("./base/SquadStatJSv3"),

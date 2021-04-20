@@ -263,13 +263,16 @@ class AddSquadDB extends Command {
 				.setTimestamp();
 
 			let controlPoint = "";
-			if (data.guild.plugins.squad.rolesEnabled && !data.guild.plugins.squad.rolesGiven) {
+			if (
+				data.guild.plugins.squad.rolesEnabled &&
+				!data.guild.plugins.squad.rolesGiven
+			) {
 				chacheRoles.forEach((role) => {
 					if (roles.includes(role.name)) {
 						return (controlPoint = role.id);
 					}
 				});
-		
+
 				if (controlPoint == "") {
 					let i = 0;
 					roles.forEach((role) => {
@@ -312,7 +315,7 @@ class AddSquadDB extends Command {
 				database: null,
 				user: null,
 				password: null,
-				serverID: null
+				serverID: null,
 			};
 			data.guild.plugins.squad = squad;
 			data.guild.markModified("plugins.squad");
@@ -367,7 +370,7 @@ class AddSquadDB extends Command {
 			);
 			break;
 		}
-		if(!itemToChange) return;
+		if (!itemToChange) return;
 		message.sendT(itemToChange);
 		const collector = new Discord.MessageCollector(
 			message.channel,

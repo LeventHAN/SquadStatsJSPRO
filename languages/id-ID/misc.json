@@ -12,8 +12,6 @@
     "BOT_USER": "Pengguna ini adalah bot!",
     "NO_REASON_PROVIDED": "Tidak ada alasan disediakan",
     "NO_USER_FOUND_ID": "Tidak ada pengguna di Discord yang mempunyai ID `{{id}}`!",
-    "VOTE_DM": "⬆️ Halo {{user}}, terima kasih telah memberikan suara! Ini imbalanmu: 40 kredit (di server bantuan)!",
-    "VOTE_LOGS": "⬆️ **{{usertag}}** (`{{userid}}`) memberikan suara untuk **SquadStatJSv3** dan mendapatkan **40** kredit, terima kasih!\n<https://discordbots.org/bot/557445719892688897/vote>",
     "HELLO_SERVER": "Halo **{{username}}**, prefiks ku server ini adalah `{{prefix}}`. Gunakan `{{prefix}}help` untuk mendapatkan daftar perintah!",
     "HELLO_DM": "Halo **{{username}}**, karena kamu sedang dalam pesan langsung, kamu tidak perlu menambahkan prefiks sebelum nama perintah.",
     "GUILD_ONLY": "Perintah ini hanya tersedia di dalam server!",

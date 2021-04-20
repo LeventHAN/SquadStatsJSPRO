@@ -146,19 +146,28 @@ class AddSquadDB extends Command {
 			"RED",
 		];
 
-		if(data.guild.plugins.squad.host !== null &amp;&amp; data.guild.plugins.squad.port !== null &amp;&amp; data.guild.plugins.squad.user !== null &amp;&amp; data.guild.plugins.squad.database !== null &amp;&amp; data.guild.plugins.squad.serverID !== null &amp;&amp; data.guild.plugins.squad.password !== null &amp;&amp; !data.guild.plugins.squad.enabled) {
+		if (
+			data.guild.plugins.squad.host !== null &amp;&amp;
+			data.guild.plugins.squad.port !== null &amp;&amp;
+			data.guild.plugins.squad.user !== null &amp;&amp;
+			data.guild.plugins.squad.database !== null &amp;&amp;
+			data.guild.plugins.squad.serverID !== null &amp;&amp;
+			data.guild.plugins.squad.password !== null &amp;&amp;
+			!data.guild.plugins.squad.enabled
+		) {
 			data.guild.plugins.squad.enabled = true;
 			data.guild.markModified("plugins.squad");
 			await data.guild.save();
 		}
 
-
 		/**Sends an embed message with the status of the configuration
 		 * @param {boolean} status true for successful connection and false for failed/not yet configured connection
 		 * @returns {Discord.EmbedMessage} profileEmbed, an embed message
 		 */
-		async function sendEmbed(status){
-			let connectionStatusMessage = status ? "squad/addsquadserver:CONNECTION_SUCCESS" : "squad/addsquadserver:CONNECTION_ERROR";
+		async function sendEmbed(status) {
+			let connectionStatusMessage = status
+				? "squad/addsquadserver:CONNECTION_SUCCESS"
+				: "squad/addsquadserver:CONNECTION_ERROR";
 			const profileEmbed = new Discord.MessageEmbed()
 				.setAuthor(message.translate("squad/addsquadserver:PANE_NAME"))
 				.setDescription(message.translate("squad/addsquadserver:PANE_DESC"))
@@ -192,9 +201,10 @@ class AddSquadDB extends Command {
 				.addField(
 					message.translate("squad/addsquadserver:PASSWORDS"),
 					message.translate("squad/addsquadserver:PASSWORD", {
-						password: data.guild.plugins.squad.password === null
-							? ":x:"
-							: ":white_check_mark:",
+						password:
+							data.guild.plugins.squad.password === null
+								? ":x:"
+								: ":white_check_mark:",
 					}),
 					true
 				)
@@ -215,7 +225,12 @@ class AddSquadDB extends Command {
 				.addField(
 					message.translate("squad/addsquadserver:ROLES"),
 					message.translate("squad/addsquadserver:ROLE", {
-						stats: data.guild.plugins.squad.rolesEnabled ? ":white_check_mark:" : ":x:",
+						stats: data.guild.plugins.squad.rolesEnabled
+							? ":white_check_mark:"
+							: ":x:",
+						statsGiven: data.guild.plugins.squad.rolesGiven
+							? ":white_check_mark:"
+							: ":x:",
 					}),
 					true
 				)
@@ -274,44 +289,96 @@ class AddSquadDB extends Command {
 					}),
 					true
 				)
+				.addField(
+					message.translate("squad/addsquadserver:BYPASS_ROLES"),
+					message.translate("squad/addsquadserver:BYPASS_ROLE", {
+						prefix: data.guild.prefix,
+					}),
+					true
+				)
+				.addField("\u200B", "\u200B")
+				.addField(
+					message.translate("squad/addsquadserver:SET_WIPES"),
+					message.translate("squad/addsquadserver:SET_WIPE", {
+						prefix: data.guild.prefix,
+					}),
+					false
+				)
+				.addField("\u200B", "\u200B")
+				.addField(
+					client.customEmojis.link +
+						" " +
+						message.translate("general/stats:LINKS_TITLE"),
+					message.translate("misc:STATS_FOOTER", {
+						donateLink: "https://paypal.me/11tstudio?locale.x=en_US",
+						dashboardLink: "https://l-event.studio",
+						githubLink: "https://github.com/11TStudio",
+						supportLink: "https://discord.gg/eF3nYAjhZ9",
+					})
+				)
 				.setColor(data.config.embed.color) // Sets the color of the embed
 				.setFooter(data.config.embed.footer) // Sets the footer of the embed
 				.setTimestamp();
 
+			let controlPoint = "";
+			if (
+				data.guild.plugins.squad.rolesEnabled &amp;&amp;
+				!data.guild.plugins.squad.rolesGiven
+			) {
+				chacheRoles.forEach((role) => {
+					if (roles.includes(role.name)) {
+						return (controlPoint = role.id);
+					}
+				});
+
+				if (controlPoint == "") {
+					let i = 0;
+					roles.forEach((role) => {
+						message.guild.roles
+							.create({
+								data: {
+									name: role,
+									color: rolesColors[i],
+								},
+								reason: "Roles will be used by the SquadStatJS",
+							})
+							.catch(console.error);
+						i++;
+					});
+					data.guild.plugins.squad.rolesGiven = true;
+					data.guild.markModified("plugins.squad");
+					await data.guild.save();
+				} else {
+					message.error("squad/addsquadserver:DELETEROLES", {
+						role: controlPoint,
+					});
+				}
+			}
+
 			return message.channel.send(profileEmbed); // Send the embed in the current channel
 		}
-
-
-		let controlPoint = "";
-		if (data.guild.plugins.squad.rolesEnabled) {
-			chacheRoles.forEach((role) => {
-				if (roles.includes(role.name)) {
-					return (controlPoint = role.id);
-				}
-			});
-
-			if (controlPoint == "") {
-				let i = 0;
-				roles.forEach((role) => {
-					message.guild.roles
-						.create({
-							data: {
-								name: role,
-								color: rolesColors[i],
-							},
-							reason: "Roles will be used by the SquadStatJS",
-						})
-						.catch(console.error);
-					i++;
-				});
-				data.guild.plugins.squad.rolesGiven = true;
-				data.guild.markModified("plugins.squad");
-				await data.guild.save();
-			} else {
-				return message.error("squad/addsquadserver:DELETEROLES", {
-					role: controlPoint,
-				});
-			}
+		if (args[0] === "bypass-roles" || args[0] === "fix-roles") {
+			data.guild.plugins.squad.rolesGiven = true;
+			data.guild.markModified("plugins.squad");
+			data.guild.save();
+			return message.success("squad/addsquadserver:BYPASSED");
+		}
+		if (args[0] === "res" || args[0] === "restart") {
+			const squad = {
+				enabled: false,
+				rolesEnabled: false,
+				rolesGiven: false,
+				host: null,
+				port: null,
+				database: null,
+				user: null,
+				password: null,
+				serverID: null,
+			};
+			data.guild.plugins.squad = squad;
+			data.guild.markModified("plugins.squad");
+			data.guild.save();
+			return message.success("squad/addsquadserver:CLEARED");
 		}
 
 		con = null;
@@ -327,9 +394,10 @@ class AddSquadDB extends Command {
 			client.logger.log(err, "error");
 		}
 
-		if (args.length &lt; 1)  return con.connect((error) => {
-			error ? sendEmbed(false) : sendEmbed(true);
-		});
+		if (args.length &lt; 1)
+			return con.connect((error) => {
+				error ? sendEmbed(false) : sendEmbed(true);
+			});
 
 		let itemToChange;
 		// Update pending requests
@@ -355,10 +423,12 @@ class AddSquadDB extends Command {
 			itemToChange = message.translate("squad/addsquadserver:FILL_SERVER_ID");
 			break;
 		case "autoroles":
-			itemToChange = message.translate("squad/addsquadserver:ENABLE_KD_ROLES");
+			itemToChange = message.translate(
+				"squad/addsquadserver:ENABLE_KD_ROLES"
+			);
 			break;
 		}
-
+		if (!itemToChange) return;
 		message.sendT(itemToChange);
 		const collector = new Discord.MessageCollector(
 			message.channel,
@@ -407,7 +477,10 @@ class AddSquadDB extends Command {
 					data.guild.markModified("plugins.squad");
 					break;
 				case "autoroles":
-					data.guild.plugins.squad.rolesEnabled = new RegExp("^y.?s$", "i").test(msg.content);
+					data.guild.plugins.squad.rolesEnabled = new RegExp(
+						"^y.?s$",
+						"i"
+					).test(msg.content);
 					data.guild.markModified("plugins.squad");
 					break;
 				}
@@ -445,7 +518,7 @@ module.exports = AddSquadDB;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sun Apr 18 2021 17:40:25 GMT+0200 (Orta Avrupa Yaz Saati) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Tue Apr 20 2021 10:05:07 GMT+0200 (Orta Avrupa Yaz Saati) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

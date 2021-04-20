@@ -12,8 +12,6 @@
     "BOT_USER": "Questo utente è un bot!",
     "NO_REASON_PROVIDED": "Nessun motivo fornito",
     "NO_USER_FOUND_ID": "Nessun utente su Discord ha l'ID `{{id}}`!",
-    "VOTE_DM": "⬆️ Ciao {{user}}, grazie per aver votato!\nEcco la tua ricompensa: 40 credits (sul server di supporto)!",
-    "VOTE_LOGS": "⬆️ **{{usertag}}** (`{{userid}}`) ha votato **SquadStatJSv3** e ha vinto **40** crediti, grazie!\n<https://discordbots.org/bot/557445719892688897/vote>",
     "HELLO_SERVER": "Ciao **{{username}}**, il mio prefisso in questo server è `{{prefix}}`. Usa `{{prefix}}help` per ottenere l'elenco dei comandi!",
     "HELLO_DM": "Ciao **{{username}}**, poiché al momento sei nei messaggi privati non è necessario aggiungere un prefisso prima del nome del comando.",
     "GUILD_ONLY": "Questo comando è disponibile solo su un server!",

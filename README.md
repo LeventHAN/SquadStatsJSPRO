@@ -82,7 +82,7 @@ module.exports = {
 		secret: "XXXXXXXXXXX", // Your discord client secret
 		baseURL: "https://localhost", // The base URl of the dashboard
 		logs: "XXXXXXXXXXX", // The channel ID of logs
-		port: 8080, // Dashboard port
+		port: 80, // Dashboard port
 		expressSessionPassword: "XXXXXXXXXXX", // Express session password (it can be what you want)
 		failureURL: "https://l-event.studio", // url on which users will be redirected if they click the cancel button (discord authentication)
 	},
@@ -98,18 +98,9 @@ module.exports = {
 		id: "152644814146371584", // The ID of the bot's owner
 		name: "LeventHAN#0001", // And the name of the bot's owner
 	},
-	/* DBL votes webhook (optional) */
-	votes: {
-		port: 5000, // The port for the server
-		password: "XXXXXXXXXXX", // The webhook auth that you have defined on discordbots.org
-		channel: "XXXXXXXXXXX", // The ID of the channel that in you want the votes logs
-	},
 	/* The API keys that are required for certain commands */
 	apiKeys: {
-		// DBL: https://discordbots.org/api/docs#mybots
-		dbl: "",
-		// SENTRY: https://sentry.io (this is not required and not recommended - you can delete the field)
-		sentryDSN: "",
+		// Leave this empty for now
 	},
 	/* The others utils links */
 	others: {

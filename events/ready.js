@@ -18,10 +18,6 @@ module.exports = class {
 			"ready"
 		);
 
-		/* DiscordBots.org STATS */
-		const discordbotsorg = require("../helpers/discordbots.org.js");
-		discordbotsorg.init(client);
-
 		/* UNMUTE USERS */
 		const checkUnmutes = require("../helpers/checkUnmutes.js");
 		checkUnmutes.init(client);

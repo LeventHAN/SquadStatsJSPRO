@@ -12,8 +12,6 @@
     "BOT_USER": "Bu kullanıcı bir bot!",
     "NO_REASON_PROVIDED": "Sebep girmeng gerek!",
     "NO_USER_FOUND_ID": "Böyle bir id de üye yok:`{{id}}`!",
-    "VOTE_DM": "⬆️ Merhaaba {{user}}, oy verdiğin için teşekürler!\nişte ödülün: 40 kredi (sadece destek sunucusunda)!",
-    "VOTE_LOGS": "⬆️ **{{usertag}}** (`{{userid}}`) sen **SquadStatJSv3** Botumuza oy verdin ve **40** kredi \n kazandın, teşekkürler\n<https://discordbots.org/bot/557445719892688897/vote>",
     "HELLO_SERVER": "Merhaba **{{username}}**, Benim önekim bu sunucu için `{{prefix}}`. Şunu kullanarak`{{prefix}}help komutların listesini alabilirsin!",
     "HELLO_DM": "Merhaba **{{username}}**, şuanda özel mesaj bölümün desin komutun başına ön ek koymana gerek yok.",
     "GUILD_ONLY": "Bu komut sadece Sunucuda geçerlidir!",

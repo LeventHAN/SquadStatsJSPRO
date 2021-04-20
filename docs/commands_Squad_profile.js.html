@@ -96,7 +96,8 @@ class Profile extends Command {
 	}
 
 	async run(message, args, /**@type {{}}*/ data) {
-		if(!data.guild.plugins.squad.enabled) return message.error("squad/profile:NOT_ENABLED");
+		if (!data.guild.plugins.squad.enabled)
+			return message.error("squad/profile:NOT_ENABLED");
 
 		const client = this.client;
 		let steamUID;
@@ -215,20 +216,22 @@ class Profile extends Command {
 					}),
 					true
 				)
+				.addField("\u200B", "\u200B")
 				.addField(
-					message.translate("squad/profile:KILLS"),
+					message.translate("squad/profile:KILLS_INF"),
 					message.translate("squad/profile:KILL", {
-						kills: memberData.squad.kills,
+						kills: memberData.squad.killsINF,
 					}),
 					true
 				)
 				.addField(
-					message.translate("squad/profile:DEATHS"),
-					message.translate("squad/profile:DEATH", {
-						deaths: memberData.squad.deaths,
+					message.translate("squad/profile:KILLS_VEH"),
+					message.translate("squad/profile:KILL", {
+						kills: memberData.squad.killsVEH,
 					}),
 					true
 				)
+				.addField("\u200B", "\u200B", true)
 				.addField(
 					message.translate("squad/profile:WOUNDS_INF"),
 					message.translate("squad/profile:WOUNDS", {
@@ -243,10 +246,11 @@ class Profile extends Command {
 					}),
 					true
 				)
+				.addField("\u200B", "\u200B", true)
 				.addField(
-					message.translate("squad/profile:REVIVES"),
-					message.translate("squad/profile:REVIVE", {
-						revives: memberData.squad.revives,
+					message.translate("squad/profile:DEATHS"),
+					message.translate("squad/profile:DEATH", {
+						deaths: memberData.squad.deaths,
 					}),
 					true
 				)
@@ -258,12 +262,20 @@ class Profile extends Command {
 					true
 				)
 				.addField(
+					message.translate("squad/profile:REVIVES"),
+					message.translate("squad/profile:REVIVE", {
+						revives: memberData.squad.revives,
+					}),
+					true
+				)
+				.addField(
 					message.translate("squad/profile:MK_GUNS"),
 					message.translate("squad/profile:MK_GUN", {
 						gun: memberData.squad.mk_gun,
 					}),
 					true
 				)
+				.addField("\u200B", "\u200B", true)
 				.addField(
 					message.translate("squad/profile:MK_ROLES"),
 					message.translate("squad/profile:MK_ROLE", {
@@ -279,15 +291,20 @@ class Profile extends Command {
 					}),
 					true
 				)
+
+				.addField(message.translate("squad/profile:HOURS"), "Soon™", true)
+				.addField(message.translate("squad/profile:ACTIVITY"), "Soon™", true)
+				.addField("\u200B", "\u200B")
 				.addField(
-					message.translate("squad/profile:HOURS"),
-					"Soon™",
-					true
-				)
-				.addField(
-					message.translate("squad/profile:ACTIVITY"),
-					"Soon™",
-					true
+					client.customEmojis.link +
+						" " +
+						message.translate("general/stats:LINKS_TITLE"),
+					message.translate("misc:STATS_FOOTER", {
+						donateLink: "https://paypal.me/11tstudio?locale.x=en_US",
+						dashboardLink: "https://l-event.studio",
+						githubLink: "https://github.com/11TStudio",
+						supportLink: "https://discord.gg/eF3nYAjhZ9",
+					})
 				)
 				.setColor(data.config.embed.color) // Sets the color of the embed
 				.setFooter(data.config.embed.footer) // Sets the footer of the embed
@@ -314,88 +331,86 @@ class Profile extends Command {
 		 * Gives a K/D role to the message author if the guild/discord server has those roles installed.
 		 */
 		function giveDiscordRoles() {
-			if (data.guild.squad.rolesEnabled) {
-				const regexKD = /^KD /i;
-				message.member.roles.cache.some((role) => {
-					if (regexKD.test(role.name))
-						message.member.roles.remove(role).catch(console.error);
-				});
-				let roleName = "KD 0+";
-				switch (true) {
-				case parseFloat(data.memberData.squad.kd) &lt; 0.5:
-					roleName = "KD 0+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 1.0:
-					roleName = "KD 0.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 1.5:
-					roleName = "KD 1+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 2.0:
-					roleName = "KD 1.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 2.5:
-					roleName = "KD 2+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 3.0:
-					roleName = "KD 2.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 3.5:
-					roleName = "KD 3+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 4.0:
-					roleName = "KD 3.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 4.5:
-					roleName = "KD 4+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 5.0:
-					roleName = "KD 4.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 5.5:
-					roleName = "KD 5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 6.0:
-					roleName = "KD 5.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 6.5:
-					roleName = "KD 6+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 7:
-					roleName = "KD 6.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 7.5:
-					roleName = "KD 7+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 8:
-					roleName = "KD 7.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 8.5:
-					roleName = "KD 8+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 9:
-					roleName = "KD 8.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 9.5:
-					roleName = "KD 9+";
-					break;
-				case parseFloat(data.memberData.squad.kd) &lt; 10:
-					roleName = "KD 9.5+";
-					break;
-				case parseFloat(data.memberData.squad.kd) > 10:
-					roleName = "KD 10+";
-					break;
-				default:
-					roleName = "KD 0+";
-					break;
-				}
-				const role = message.guild.roles.cache.find((r) => r.name === roleName);
-				message.member.roles.add(role).catch(console.error);
-				message.success("squad/profile:UPDATE", {
-					creator: message.author.toString(),
-					steamID: steamUID,
-				});
+			const regexKD = /^KD /i;
+			message.member.roles.cache.some((role) => {
+				if (regexKD.test(role.name))
+					message.member.roles.remove(role).catch(console.error);
+			});
+			let roleName = "KD 0+";
+			switch (true) {
+			case parseFloat(data.memberData.squad.kd) &lt; 0.5:
+				roleName = "KD 0+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 1.0:
+				roleName = "KD 0.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 1.5:
+				roleName = "KD 1+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 2.0:
+				roleName = "KD 1.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 2.5:
+				roleName = "KD 2+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 3.0:
+				roleName = "KD 2.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 3.5:
+				roleName = "KD 3+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 4.0:
+				roleName = "KD 3.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 4.5:
+				roleName = "KD 4+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 5.0:
+				roleName = "KD 4.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 5.5:
+				roleName = "KD 5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 6.0:
+				roleName = "KD 5.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 6.5:
+				roleName = "KD 6+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 7:
+				roleName = "KD 6.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 7.5:
+				roleName = "KD 7+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 8:
+				roleName = "KD 7.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 8.5:
+				roleName = "KD 8+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 9:
+				roleName = "KD 8.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 9.5:
+				roleName = "KD 9+";
+				break;
+			case parseFloat(data.memberData.squad.kd) &lt; 10:
+				roleName = "KD 9.5+";
+				break;
+			case parseFloat(data.memberData.squad.kd) > 10:
+				roleName = "KD 10+";
+				break;
+			default:
+				roleName = "KD 0+";
+				break;
 			}
+			const role = message.guild.roles.cache.find((r) => r.name === roleName);
+			message.member.roles.add(role).catch(console.error);
+			message.success("squad/profile:UPDATE", {
+				creator: message.author.toString(),
+				steamID: steamUID,
+			});
 		}
 
 		let dt = new Date();
@@ -407,7 +422,7 @@ class Profile extends Command {
 		lastUpdate = new Date(lastUpdate);
 		if (
 			!data.memberData.squad.tracking ||
-				(data.memberData.squad.tracking &amp;&amp; lastUpdate &lt; dt)
+			(data.memberData.squad.tracking &amp;&amp; lastUpdate &lt; dt)
 		) {
 			let res = new MYSQLPromiseObjectBuilder(pool);
 			res.add(
@@ -436,15 +451,15 @@ class Profile extends Command {
 			);
 			res.add(
 				"woundsINF",
-				`SELECT COUNT(*) AS Kills_INF FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND weapon NOT REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
+				`SELECT COUNT(*) AS Wounds_INF FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND weapon NOT REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
 				"0",
-				"Kills_INF"
+				"Wounds_INF"
 			);
 			res.add(
 				"woundsVEH",
-				`SELECT COUNT(*) AS Kills_VEH FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND weapon REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
+				`SELECT COUNT(*) AS Wounds_VEH FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND weapon REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
 				"0",
-				"Kills_VEH"
+				"Wounds_VEH"
 			);
 			res.add(
 				"revives",
@@ -470,12 +485,24 @@ class Profile extends Command {
 				"0",
 				"Fav_Role"
 			);
+			res.add(
+				"killsINF",
+				`SELECT COUNT(*) AS Kills_INF FROM DBLog_Deaths WHERE attacker = "${steamUID}" AND weapon NOT REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
+				"0",
+				"Kills_INF"
+			);
+			res.add(
+				"killsVEH",
+				`SELECT COUNT(*) AS Kills_VEH FROM DBLog_Deaths WHERE attacker = "${steamUID}" AND weapon REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
+				"0",
+				"Kills_VEH"
+			);
 
 			await res.waitForAll(data.memberData.squad);
 			await data.memberData.markModified("squad");
 			await data.memberData.save();
 			await saveTracking(dt);
-			if(!data.guild.plugins.squad.rolesEnabled){
+			if (data.guild.plugins.squad.rolesEnabled) {
 				await giveDiscordRoles();
 			}
 			await sendEmbed();
@@ -500,7 +527,7 @@ module.exports = Profile;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sun Apr 18 2021 17:40:25 GMT+0200 (Orta Avrupa Yaz Saati) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Tue Apr 20 2021 10:05:07 GMT+0200 (Orta Avrupa Yaz Saati) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

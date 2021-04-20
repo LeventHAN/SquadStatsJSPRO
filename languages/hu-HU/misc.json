@@ -12,8 +12,6 @@
     "BOT_USER": "Ez a felhasználó egy bot!",
     "NO_REASON_PROVIDED": "Nincs indok megadva",
     "NO_USER_FOUND_ID": "A Discord egyetlen felhasználója nem rendelkezik {{id}} azonosítóval!",
-    "VOTE_DM": "⬆️ Szia {{user}}, köszi a szavazást!\nNyereményed: 40 kredit (a support szerveren)!",
-    "VOTE_LOGS": "⬆️ **{{usertag}}** (`{{userid}}`) szavazott a **SquadStatJSv3** botra és nyert **40** kreditet,t köszönöm szépen!\n<https://discordbots.org/bot/557445719892688897/vote>",
     "HELLO_SERVER": "Szia**{{username}}**, ezen a szerveren a prefixem: `{{prefix}}`. Használd a `{{prefix}}help` parancsot a parancsok megtekintéséhez!",
     "HELLO_DM": "Szia **{{username}}**, mivel jelenleg közvetlen üzenetben van, nem kell előtagot hozzáadnod a parancsnév előtt.",
     "GUILD_ONLY": "Ez a parancs csak szerveren elérhető!",
