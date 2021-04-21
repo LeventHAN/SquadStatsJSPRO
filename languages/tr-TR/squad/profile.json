@@ -1,10 +1,11 @@
 {
     "DESCRIPTION": "Etiketlenmiş kişinin yada yazan kişinin profilini çıkarır ",
-    "USAGE": "{{prefix}}profile [kullanıcı]",
-    "EXAMPLES": "{{prefix}}profile LeventHAN™#0001",
+    "USAGE": "Track your squad account.\n Untrack your squad account. \n Check someone elses squad account.",
+    "EXAMPLES": "**Track your account for first time;**```{{prefix}}profile STEAM64ID```\n**See your stats;**```{{prefix}}profile```\n**Re-Link Steam64ID;**```{{prefix}}profile re-link```\n**Look for other players stats;**```{{prefix}}profile @Username#0001```",
     "TITLE": "{{username}}'ın İstatistikleri",
     "NO_BIO": "",
     "SUCCESS": "Hesabınız başarı'ile discord hesabınız'ile birleştirildi. Bilgilerinizi yüklüyorum, lütfen bekleyin.",
+    "NOT_ENABLED": "Squad Stats Track is not configured/enabled. Please run `add-sq` first if you are the owner of this server.",
     "BOT_USER": "Botlar oyun oynamaz! :(",
     "STEAMS": "Profil Bilgileri; ",
     "STEAM": "[{{steamName}}](https://steamcommunity.com/profiles/{{steam64ID}})",

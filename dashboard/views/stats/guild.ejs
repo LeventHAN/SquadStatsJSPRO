@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+	<%- include('../includes/head') %>
+    <body>
+	<!-- The sidebar includes the menu -->
+    <%- include('../partials/sidebar') %>
+	<div class="main-content">
+		<!-- Top navbar -->
+		<%- include('../partials/navbar') %>
+		<!-- Header -->
+		<%- include('../partials/header') %>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="container-fluid mt--7">
+            <div class="card bg-gradient-neutral shadow p-5">
+
+				<!-- Content Header (Page header) -->
+				<section class="content-header">
+					<h1> asdasdasd </h1>
+				</section>
+
+				<!-- Main content -->
+                <section class="content">
+                    <!-- Main row -->
+                    <div class="row">
+                        <!-- Left col -->
+                        <section class="col-lg-8 connectedSortable">
+                            <!-- Custom tabs (Charts with tabs)-->
+                            <div class="nav-tabs-custom">
+                                <!-- Tabs within a box -->
+                                <ul class="nav nav-tabs pull-right">
+                                <li class="active"><a href="#rank-money" data-toggle="tab"> </a></li>
+                                <li><a href="#rank-level" data-toggle="tab"> </a></li>
+                                <li><a href="#rank-rep" data-toggle="tab"> asd</a></li>
+                                <li class="pull-left header"><i class="fa fa-trophy"></i>TEST </li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="rank-money" style="position: relative; height: 300px;">
+                                        <div class="chart">
+                                            <canvas id="Crank-money" style="height:230px"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane active" id="rank-level" style="position: relative; height: 300px;">
+                                        <div class="chart">
+                                            <canvas id="Crank-level" style="height:230px"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane active" id="rank-rep" style="position: relative; height: 300px;">
+                                        <div class="chart">
+                                            <canvas id="Crank-rep" style="height:230px"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.nav-tabs-custom -->
+                        </section>
+                        <!-- /.col -->
+                        <div class="col-md-4">
+                            <!-- Widget: user widget style 1 -->
+                            <div class="box box-widget widget-user-2">
+                                <!-- Add the bg color to the header using any of the bg-* classes -->
+                                <div class="widget-user-header bg-yellow">
+                                <div class="widget-user-image">
+                                     
+                                </div>
+                                <!-- /.widget-user-image -->
+                               <h5 class="widget-user-desc">asd</h5>
+                                </div>
+                            </div>
+                            <!-- /.widget-user -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-4">
+                            <!-- Widget: user widget style 1 -->
+                            <div class="box box-widget widget-user-2">
+                                <!-- Add the bg color to the header using any of the bg-* classes -->
+                                <div class="widget-user-header bg-red">
+                                <div class="widget-user-image">
+                                   
+                                </div>
+                                <h5 class="widget-user-desc">asdasd</h5>
+                                </div>
+                            </div>
+                            <!-- /.widget-user -->
+                        </div>
+                        <!-- ./box -->
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                          <!-- AREA CHART -->
+                          <div class="box box-primary">
+                            <div class="box-header with-border">
+                              <h3 class="box-title"> TITLE </h3>
+                              <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                              </div>
+                            </div>
+                            <div class="box-body">
+                              <div class="chart">
+                                <canvas id="commands" style="height:250px"></canvas>
+                              </div>
+                            </div>
+                            <!-- /.box-body -->
+                          </div>
+                          <!-- /.box -->
+                        </div>
+                        <div class="col-md-6">
+                            <!-- DONUT CHART -->
+                            <div class="box box-danger">
+                                <div class="box-header with-border">
+                                <h3 class="box-title">TITLE </h3>
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                </div>
+                                </div>
+                                <div class="box-body">
+                                <canvas id="commandsUsage" style="height:250px"></canvas>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                            <!-- /.box -->
+                        </div>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+		</div>
+        <!-- ./wrapper -->
+        <script>
+            $(function(){
+                $("#datepicker").datepicker({
+                    autoclose: true
+                });
+                
+                /* LEADERBOARD */
+                let values = [ "money", "level" ];
+                values.forEach((value) => {
+                    let members = JSON.parse(`<%- JSON.stringify(guild) %>`)[value];
+                    let data={labels:members.map(a=>a.username),datasets:[{label:"Leaderboard "+value,fillColor:"#00a65a",strokeColor:"#00a65a",pointColor:"#00a65a",pointStrokeColor:"rgba(60,141,188,1)",pointHighlightFill:"#fff",pointHighlightStroke:"rgba(60,141,188,1)",data:members.map(a=>a[value])}]},
+                    leaderboardCanvas = $("#Crank-"+value).get(0).getContext("2d"),
+                    leaderboard = new Chart(leaderboardCanvas),
+                    leaderboardData = data,
+                    leaderboardOptions={scaleBeginAtZero:!0,scaleShowGridLines:!0,scaleGridLineColor:"rgba(0,0,0,.05)",scaleGridLineWidth:1,scaleShowHorizontalLines:!0,scaleShowVerticalLines:!0,barShowStroke:!0,barStrokeWidth:2,barValueSpacing:5,barDatasetSpacing:1,responsive:!0,maintainAspectRatio:!0};
+                    leaderboardOptions.datasetFill = false
+                    leaderboard.Bar(leaderboardData, leaderboardOptions);
+                });
+                /* STATS */
+                /* commands */
+                let commandsStats = JSON.parse(`<%- JSON.stringify(commands) %>`);
+                let dates = [], data = [];
+                for(let date in commandsStats){
+                    dates.push(date);
+                    data.push(commandsStats[date]);
+                };
+                let commandsCanvas = $("#commands").get(0).getContext("2d"),
+                commands = new Chart(commandsCanvas),
+                commandsData={labels:dates,datasets:[{label:"Stats",fillColor:"rgba(60,141,188,0.9)",strokeColor:"rgba(210, 214, 222, 1)",pointColor:"rgba(210, 214, 222, 1)",pointStrokeColor:"#c1c7d1",pointHighlightFill:"#fff",pointHighlightStroke:"rgba(220,220,220,1)",data}]},
+                commandsOptions={showScale:!0,scaleShowGridLines:!1,scaleGridLineColor:"rgba(0,0,0,.05)",scaleGridLineWidth:1,scaleShowHorizontalLines:!0,scaleShowVerticalLines:!0,bezierCurve:!0,bezierCurveTension:.3,pointDot:!1,pointDotRadius:4,pointDotStrokeWidth:1,pointHitDetectionRadius:20,datasetStroke:!0,datasetStrokeWidth:2,datasetFill:!0,maintainAspectRatio:!0,responsive:!0};
+                commands.Line(commandsData, commandsOptions);
+                /* commands usage */
+                let commandsUsage = JSON.parse(`<%- JSON.stringify(commandsUsage) %>`);
+                let commandsUsageCanvas = $("#commandsUsage").get(0).getContext("2d"),
+                commandsUsageChart = new Chart(commandsUsageCanvas)
+                commandsUsageData = commandsUsage.map((e) => {
+                    let color = "#"+Math.floor(Math.random()*16777215).toString(16);
+                    return {
+                        value: e.percentage,
+                        color: e.color,
+                        highlight: e.color,
+                        label: e.key
+                    }
+                });
+                let commandsUsageOptions ={segmentShowStroke:!0,segmentStrokeColor:"#fff",segmentStrokeWidth:2,percentageInnerCutout:50,animationSteps:100,animationEasing:"easeOutBounce",animateRotate:!0,animateScale:!1,responsive:!0,maintainAspectRatio:!0};
+                commandsUsageChart.Doughnut(commandsUsageData, commandsUsageOptions)
+                $(`.tab-content > div[class="tab-pane active"]`).slice(1, 23).removeClass("active");
+            });
+        </script>
+            <!-- /.content-wrapper -->
+            
+            <%- include('../partials/footer') %>
+		<!-- ./wrapper -->
+        <%- include('../partials/scripts') %>
+	</body>
+</html>

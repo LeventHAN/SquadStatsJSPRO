@@ -2,7 +2,8 @@ const express = require("express"),
 	utils = require("../utils"),
 	CheckAuth = require("../auth/CheckAuth"),
 	router = express.Router();
-const generator = require("colors-generator");
+const generator = require("colors-generator"),
+	version = require("../../package.json").version;
 
 router.get("/:serverID", CheckAuth, async(req, res) => {
 	// Check if the user has the permissions to edit this guild
@@ -29,13 +30,16 @@ router.get("/:serverID", CheckAuth, async(req, res) => {
 		const e = leaderboards[cat];
 		if(e.length > 10) e.length = 10;
 	}
-	const stats = { kd: await utils.fetchUsers(leaderboards.kd, req.client), xp: await utils.fetchUsers(leaderboards.xp, req.client) };
+	let stats;/*= { kd: await utils.fetchUsers(leaderboards.kd, req.client), xp: await utils.fetchUsers(leaderboards.xp, req.client) }*/
+
+	req.translate = req.client.translations.get(guildInfos.language);
 	res.render("stats/guild", {
-		stats,
+		guild: guildInfos,
 		commands: getCommands(guildInfos.commands.filter((c) => c.date > Date.now()-604800000)),
 		commandsUsage: getCommandsUsage(guildInfos.commands),
 		user: req.userInfos,
-		language: req.language,
+		repoVersion: version,
+		translate: req.translate,
 		currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`,
 	});
 });
