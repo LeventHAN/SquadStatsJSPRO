@@ -46,8 +46,22 @@ const init = async () => {
 		delete require.cache[require.resolve(`./events/${file}`)];
 	});
 
-	client.login(client.config.token); // Log in to the discord api
-	
+	// DEBUG ONLY
+	if (config.support.debug) client.on("debug", console.log);
+	client.login(client.config.token);
+	// Checking first if the bot has ratelimit
+	client.on("rateLimit", (info) => {
+		console.log(
+			`Rate limit hit ${
+				info.timeDifference
+					? info.timeDifference
+					: info.timeout
+						? info.timeout
+						: "Unknown timeout "
+			}`
+		);
+	});
+
 	// connect to mongoose database
 	mongoose
 		.connect(client.config.mongoDB, {
@@ -66,7 +80,6 @@ const init = async () => {
 
 	const languages = require("./helpers/languages");
 	client.translations = await languages();
-	
 };
 
 init();
@@ -86,7 +99,7 @@ logger.log(
 				? config.dashboard.baseURL + ":" + config.dashboard.port
 				: "n/a",
 			prefix: config.dashboard.prefix,
-			supportServer: config.support.id
+			supportServer: config.support.id,
 		},
 	}
 );
