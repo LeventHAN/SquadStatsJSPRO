@@ -7,7 +7,6 @@ const options = {
 };
 const logger = logdna.createLogger("2a30af09b6f95d83e47ec94b2ebb1ece", options);
 
-
 module.exports = class {
 	constructor(client) {
 		this.client = client;
@@ -60,12 +59,12 @@ module.exports = class {
 
 		await logger.log(
 			"Guild has been created: " +
-					guild.name +
-					" with " +
-					guild.members.cache.filter((m) => !m.user.bot).size +
-					"users (and "+
-					guild.members.cache.filter((m) => m.user.bot).size +
-					" bots)",
+				guild.name +
+				" with " +
+				guild.members.cache.filter((m) => !m.user.bot).size +
+				"users (and " +
+				guild.members.cache.filter((m) => m.user.bot).size +
+				" bots)",
 			{
 				level: "info",
 				indexMeta: true,

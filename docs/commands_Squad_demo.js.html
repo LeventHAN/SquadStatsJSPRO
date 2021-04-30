@@ -1,4 +1,62 @@
-const Command = require("../../base/Command.js"),
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>commands/Squad/demo.js - SquadStatJSPRO</title>
+    
+    <meta name="description" content="Discord bot and website statistics for your game server (Squad)" />
+    
+        <meta name="keywords" content="squad, squadjs, stats, leaderboard, discord, website" />
+        <meta name="keyword" content="squad, squadjs, stats, leaderboard, discord, website" />
+    
+    
+    
+    <meta property="og:title" content=""/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content=""/>
+    
+    <meta property="og:url" content=""/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav class="wrap">
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li><li><a href="Squad-Configure-Connection.html">Squad-Configure-Connection</a></li><li><a href="Squad-Track-Profile.html">Squad-Track-Profile</a></li><li></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#drawText">drawText</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">commands/Squad/demo.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const Command = require("../../base/Command.js"),
 	Discord = require("discord.js");
 
 const stringCleaner = require("@sindresorhus/slugify");
@@ -22,7 +80,7 @@ const applyText = (canvas, text, defaultFontSize) => {
 
 /** Wraps a text in multiple lines. A solution for .fillText() that goes out of the canvas.
  *
- * @param {Object<Canvas>} context - The Canvas Object.
+ * @param {Object&lt;Canvas>} context - The Canvas Object.
  * @param {string} text - The text to be wrapped.
  * @param {number} x - The x-coordinate.
  * @param {number} y - The y-coordinate.
@@ -38,10 +96,10 @@ function wrapText(context, text, x, y, maxWidth, lineHeight) {
 	let testLine;
 	let cars;
 	cars = text.split("\n");
-	for (let ii = 0; ii < cars.length; ii++) {
+	for (let ii = 0; ii &lt; cars.length; ii++) {
 		line = "";
 		words = cars[ii].split(" ");
-		for (let n = 0; n < words.length; n++) {
+		for (let n = 0; n &lt; words.length; n++) {
 			testLine = line + words[n] + " ";
 			metrics = context.measureText(testLine);
 			testWidth = metrics.width;
@@ -98,15 +156,15 @@ function drawText(
 }
 
 /**Command for squad profile stats track.
- * <h2>Usage: </h2>
- * <h3>Linking your account</h3>
- * <code>{prefix}profile {Steam64ID}</code>
- * <br />
- * <h3>Removing the link from your account</h3>
- * <code>{prefix}profile re</code> OR <code>{prefix}profile re-link</code>
- * <br />
- * <h6>Note: </h6>
- * <sub><sup>After linking your account you don't need to specify your steam64ID anymore. Just use; <code>{prefix}profile</code></sup></sub>
+ * &lt;h2>Usage: &lt;/h2>
+ * &lt;h3>Linking your account&lt;/h3>
+ * &lt;code>{prefix}profile {Steam64ID}&lt;/code>
+ * &lt;br />
+ * &lt;h3>Removing the link from your account&lt;/h3>
+ * &lt;code>{prefix}profile re&lt;/code> OR &lt;code>{prefix}profile re-link&lt;/code>
+ * &lt;br />
+ * &lt;h6>Note: &lt;/h6>
+ * &lt;sub>&lt;sup>After linking your account you don't need to specify your steam64ID anymore. Just use; &lt;code>{prefix}profile&lt;/code>&lt;/sup>&lt;/sub>
  *
  * @author LeventHAN
  * @class Squad-Track-Profile
@@ -132,8 +190,8 @@ class Demo extends Command {
 
 	async run(message, args, /**@type {{}}*/ data) {
 		const client = this.client;
-		// If someone is mentioned grab that
 		let member = await client.resolveMember(args[0], message.guild);
+
 		if (!member) member = message.member;
 		const memberData =
 			member.id === message.author.id
@@ -146,7 +204,6 @@ class Demo extends Command {
 			member.id === message.author.id
 				? data.userData
 				: await client.findOrCreateUser({ id: member.id });
-		if(memberData.squad.steam64ID == null) return message.error("squad/profile:INVALID_MEMBER");
 
 		if (data.guild.plugins.squad.rolesEnabled) {
 			if (data.guild.plugins.squad.enabled) {
@@ -167,16 +224,13 @@ class Demo extends Command {
 					decamelize: false,
 					preserveLeadingUnderscore: true,
 				});
-				const bio = stringCleaner(userData.bio || "", {
+				const bio = stringCleaner(userData.bio, {
 					separator: " ",
 					lowercase: false,
 					decamelize: false,
 					preserveLeadingUnderscore: true,
 				});
-
 				ctx.font = applyText(canvas, username, 48);
-
-				// Steam64ID wrapped
 				wrapText(
 					ctx,
 					memberData.squad.steam64ID,
@@ -185,8 +239,6 @@ class Demo extends Command {
 					200,
 					36
 				);
-
-				// Username wrapped
 				wrapText(
 					ctx,
 					username.slice(0, 16),
@@ -195,88 +247,84 @@ class Demo extends Command {
 					350,
 					36
 				);
-
-				// Bio wrapped
-				wrapText(
-					ctx,
-					bio,
-					canvas.width - 1300,
-					canvas.height - 910,
-					920,
-					36
-				);
-
+				// Draw server name
+				// ctx.fillText(userData.bio, canvas.width - 1300, canvas.height - 880);
+				wrapText(ctx, bio, canvas.width - 1300, canvas.height - 910, 920, 36);
 				ctx.font = applyText(
 					canvas,
 					member.guild.translate("squad/profile:KDS"),
 					60
 				);
-				// K/D
 				ctx.fillText(
 					member.guild.translate("squad/profile:KDS"),
-					240,
-					530
-				);
-
-				// Infantry Kills Title
-				ctx.fillText(
-					member.guild.translate("squad/profile:KILLS_INF"),
-					canvas.width - 1000,
+					canvas.width - 1450,
 					canvas.height - 600
 				);
 
-				// Vehicle Kills Title
 				ctx.fillText(
-					member.guild.translate("squad/profile:KILLS_VEH"),
-					canvas.width - 1000,
-					canvas.height - 420
-				);
-
-				// Infantry Wounds Title
-				ctx.fillText(
-					member.guild.translate("squad/profile:WOUNDS_INF"),
-					canvas.width - 560,
+					member.guild.translate("squad/profile:KILLS"),
+					canvas.width - 1120,
 					canvas.height - 600
 				);
 
-				// Vehicle Wounds Title
-				ctx.fillText(
-					member.guild.translate("squad/profile:WOUNDS_VEH"),
-					canvas.width - 560,
-					canvas.height - 420
+				ctx.font = applyText(
+					canvas,
+					member.guild.translate("administration/welcome:IMG_WELCOME", {
+						server: member.guild.name,
+					}),
+					53
 				);
 
-
-
-
+				ctx.fillText(
+					member.guild.translate("administration/welcome:IMG_WELCOME", {
+						server: member.guild.name,
+					}),
+					canvas.width - 690,
+					canvas.height - 65
+				);
+				// Draw discriminator
+				ctx.font = "40px Bold";
+				ctx.fillText(
+					member.user.discriminator,
+					canvas.width - 623,
+					canvas.height - 178
+				);
+				// Draw number
+				ctx.font = "22px Bold";
+				ctx.fillText(
+					member.guild.translate("administration/welcome:IMG_NB", {
+						memberCount: member.guild.memberCount,
+					}),
+					40,
+					canvas.height - 50
+				);
 				// Draw # for discriminator
 				ctx.fillStyle = "#44d14a";
 				ctx.font = "75px SketchMatch";
 				ctx.fillText("#", canvas.width - 690, canvas.height - 165);
 
-				// K/D
 				drawText(
 					ctx,
 					"90px Bold",
 					"#1d2124",
 					15,
 					memberData.squad.kd.toFixed(2) + " %",
-					180,
-					615,
+					canvas.width - 1500,
+					canvas.height - 500,
 					canvas.width - 780,
 					canvas.width - 30,
 					"#e15500",
 					"#e7b121"
 				);
 
-				// Infantry Kills
+				// Kills
 				drawText(
 					ctx,
 					"70 Bold",
 					"#1d2124",
 					15,
-					memberData.squad.killsINF,
-					(memberData.squad.killsINF > 9999) ? canvas.width - 1065 : (memberData.squad.killsINF > 999) ? canvas.width - 1040 : (memberData.squad.killsINF > 99) ? canvas.width - 1015 : (memberData.squad.killsINF > 9) ? canvas.width - 990 : canvas.width - 955,
+					memberData.squad.kills,
+					canvas.width - 1100,
 					canvas.height - 510,
 					canvas.width - 780,
 					canvas.width - 30,
@@ -284,67 +332,6 @@ class Demo extends Command {
 					"#0591EE"
 				);
 
-				// Vehicle Kills
-				drawText(
-					ctx,
-					"70 Bold",
-					"#1d2124",
-					15,
-					memberData.squad.killsVEH,
-					(memberData.squad.killsVEH > 9999) ? canvas.width - 1065 : (memberData.squad.killsVEH > 999) ? canvas.width - 1040 : (memberData.squad.killsVEH > 99) ? canvas.width - 1015 : (memberData.squad.killsVEH > 9) ? canvas.width - 990 : canvas.width - 955,
-					canvas.height - 340,
-					canvas.width - 780,
-					canvas.width - 30,
-					"#EEC005",
-					"#0591EE"
-				);
-
-				// Infantry Wounds
-				drawText(
-					ctx,
-					"70 Bold",
-					"#1d2124",
-					15,
-					memberData.squad.woundsINF,
-					(memberData.squad.woundsINF > 9999) ? canvas.width - 580 : (memberData.squad.woundsINF > 999) ? canvas.width - 555 : (memberData.squad.woundsINF > 99) ? canvas.width - 525 : (memberData.squad.woundsINF > 9) ? canvas.width - 480 : canvas.width - 450,
-					canvas.height - 510,
-					canvas.width - 780,
-					canvas.width - 30,
-					"#EEC005",
-					"#0591EE"
-				);
-
-				// Vehicle Wounds
-				drawText(
-					ctx,
-					"70 Bold",
-					"#1d2124",
-					15,
-					memberData.squad.woundsVEH,
-					(memberData.squad.woundsVEH > 9999) ? canvas.width - 580 : (memberData.squad.woundsVEH > 999) ? canvas.width - 555 : (memberData.squad.woundsVEH > 99) ? canvas.width - 525 : (memberData.squad.woundsVEH > 9) ? canvas.width - 480 : canvas.width - 450,
-					canvas.height - 340,
-					canvas.width - 780,
-					canvas.width - 30,
-					"#EEC005",
-					"#0591EE"
-				);
-
-				// Load the images
-				let imgInfKills = await Canvas.loadImage(
-					"./assets/img/infIcon.png"
-				);
-				let imgVehKills = await Canvas.loadImage(
-					"./assets/img/vehIcon.png"
-				);
-
-				// Draw the images
-				ctx.drawImage(imgVehKills, 520, 572, 120, 120);
-				ctx.drawImage(imgInfKills, 540, 402, 120, 120);
-
-				ctx.drawImage(imgVehKills, 900, 572, 120, 120);
-				ctx.drawImage(imgInfKills, 920, 402, 120, 120);
-
-				
 				// Pick up the pen
 				ctx.beginPath();
 				//Define Stroke Line
@@ -367,12 +354,9 @@ class Demo extends Command {
 				// Move the image downwards vertically and constrain its height to 200, so it"s a square
 				ctx.drawImage(avatar, 45, 90, 270, 270);
 
-
-				
-
 				const attachment = new Discord.MessageAttachment(
 					canvas.toBuffer(),
-					"squad-stats-"+memberData.squad.steam64ID+".png"
+					"welcome-image.png"
 				);
 				message.channel.send(attachment);
 			}
@@ -381,3 +365,32 @@ class Demo extends Command {
 }
 
 module.exports = Demo;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sun Apr 25 2021 23:50:24 GMT+0200 (Orta Avrupa Yaz Saati) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

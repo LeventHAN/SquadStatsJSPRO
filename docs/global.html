@@ -41,7 +41,7 @@
     
     <input type="text" id="nav-search" placeholder="Search" />
     
-    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li><li><a href="Squad-Configure-Connection.html">Squad-Configure-Connection</a></li><li><a href="Squad-Track-Profile.html">Squad-Track-Profile</a></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li><li><a href="Squad-Configure-Connection.html">Squad-Configure-Connection</a></li><li><a href="Squad-Track-Profile.html">Squad-Track-Profile</a></li><li></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#drawText">drawText</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
 </nav>
 
 <div id="main">
@@ -311,6 +311,379 @@
 </dl>
 
     
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="drawText"><span class="type-signature"></span>drawText<span class="signature">(ctx, font, strokeStyle, lineWidth, data, xPos, yPos, gradientWidth, gradientHeight, colorStart, colorEnd)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="commands_Squad_demo.js.html">commands/Squad/demo.js</a>, <a href="commands_Squad_demo.js.html#line75">line 75</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>LeventHAN</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Draws a text to the canvas.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>ctx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The context of the canvas 2D.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>font</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The font size and type, (ex. 70px Bold).</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>strokeStyle</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The color of the outer stroke in HEX.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lineWidth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The width of the letter's line.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Player data (obtained from MongoDB) to be drawn in the canvas.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>xPos</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The postion of the text X-coordinates.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>yPos</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The postion of the text Y-coordinates.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>gradientWidth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The width of the gradient.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>gradientHeight</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The height of the gradient.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>colorStart</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The gradients start color in HEX.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>colorEnd</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The gradients end color in HEX.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -677,6 +1050,264 @@
 
 
         
+            
+
+    
+
+    <h4 class="name" id="wrapText"><span class="type-signature"></span>wrapText<span class="signature">(context, text, x, y, maxWidth, lineHeight)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="commands_Squad_demo.js.html">commands/Squad/demo.js</a>, <a href="commands_Squad_demo.js.html#line33">line 33</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>LeventHAN</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Wraps a text in multiple lines. A solution for .fillText() that goes out of the canvas.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object.&lt;Canvas></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The Canvas Object.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>text</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The text to be wrapped.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>x</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The x-coordinate.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>y</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The y-coordinate.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxWidth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The maximum value of the width of one line.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lineHeight</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The space between multiple lines.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     
 
     
@@ -696,7 +1327,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Tue Apr 20 2021 10:05:07 GMT+0200 (Orta Avrupa Yaz Saati) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sun Apr 25 2021 23:50:24 GMT+0200 (Orta Avrupa Yaz Saati) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
