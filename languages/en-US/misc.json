@@ -22,5 +22,6 @@
     "NSFW_COMMAND": "You must execute this command in a channel that allows NSFW!",
     "OWNER_ONLY": "Only the owner of SquadStatJSv3 can do these commands!",
     "COOLDOWNED": "You must wait **{{seconds}}** second(s) to be able to run this command again!",
-    "CANNOT_DM": "I don't have permission to send you private messages... Please update your privacy settings!"
+    "CANNOT_DM": "I don't have permission to send you private messages... Please update your privacy settings!",
+    "MAP_VOTE_ MODE_TITLE": "Voting for the game mode [VOTING 1 of 2]"
 }

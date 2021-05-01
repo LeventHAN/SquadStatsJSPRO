@@ -16,7 +16,7 @@
 	"rules": {
 		"no-mixed-spaces-and-tabs": ["error", "smart-tabs"],
 		"indent": ["error", "tab"],
-		"linebreak-style": ["error", "windows"],
+		/*"linebreak-style": ["error", "windows"],*/
 		"quotes": ["error", "double"],
 		"semi": ["error", "always"],
 		"jsdoc/check-access": 1, // Recommended

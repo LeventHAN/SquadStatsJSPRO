@@ -32,6 +32,9 @@ module.exports = mongoose.model(
 					password: null,
 					serverID: null,
 					ignoredMaps: [],
+					mapVote: {
+						enabled: false
+					}
 				},
 				// Welcome messages
 				welcome: {
