@@ -146,7 +146,8 @@ class Demo extends Command {
 			member.id === message.author.id
 				? data.userData
 				: await client.findOrCreateUser({ id: member.id });
-		if(memberData.squad.steam64ID == null) return message.error("squad/profile:INVALID_MEMBER");
+		if (memberData.squad.steam64ID == null)
+			return message.error("squad/profile:INVALID_MEMBER");
 
 		if (data.guild.plugins.squad.rolesEnabled) {
 			if (data.guild.plugins.squad.enabled) {
@@ -190,21 +191,14 @@ class Demo extends Command {
 				wrapText(
 					ctx,
 					username.slice(0, 16),
-					canvas.width - 1240,
+					canvas.width - 1040,
 					canvas.height - 729,
 					350,
 					36
 				);
 
 				// Bio wrapped
-				wrapText(
-					ctx,
-					bio,
-					canvas.width - 1300,
-					canvas.height - 910,
-					920,
-					36
-				);
+				wrapText(ctx, bio, canvas.width - 1000, canvas.height - 910, 920, 36);
 
 				ctx.font = applyText(
 					canvas,
@@ -212,11 +206,7 @@ class Demo extends Command {
 					60
 				);
 				// K/D
-				ctx.fillText(
-					member.guild.translate("squad/profile:KDS"),
-					240,
-					530
-				);
+				ctx.fillText(member.guild.translate("squad/profile:KDS"), 240, 530);
 
 				// Infantry Kills Title
 				ctx.fillText(
@@ -246,9 +236,6 @@ class Demo extends Command {
 					canvas.height - 420
 				);
 
-
-
-
 				// Draw # for discriminator
 				ctx.fillStyle = "#44d14a";
 				ctx.font = "75px SketchMatch";
@@ -276,7 +263,15 @@ class Demo extends Command {
 					"#1d2124",
 					15,
 					memberData.squad.killsINF,
-					(memberData.squad.killsINF > 9999) ? canvas.width - 1065 : (memberData.squad.killsINF > 999) ? canvas.width - 1040 : (memberData.squad.killsINF > 99) ? canvas.width - 1015 : (memberData.squad.killsINF > 9) ? canvas.width - 990 : canvas.width - 955,
+					memberData.squad.killsINF > 9999
+						? canvas.width - 1065
+						: memberData.squad.killsINF > 999
+							? canvas.width - 1040
+							: memberData.squad.killsINF > 99
+								? canvas.width - 1015
+								: memberData.squad.killsINF > 9
+									? canvas.width - 990
+									: canvas.width - 955,
 					canvas.height - 510,
 					canvas.width - 780,
 					canvas.width - 30,
@@ -291,7 +286,15 @@ class Demo extends Command {
 					"#1d2124",
 					15,
 					memberData.squad.killsVEH,
-					(memberData.squad.killsVEH > 9999) ? canvas.width - 1065 : (memberData.squad.killsVEH > 999) ? canvas.width - 1040 : (memberData.squad.killsVEH > 99) ? canvas.width - 1015 : (memberData.squad.killsVEH > 9) ? canvas.width - 990 : canvas.width - 955,
+					memberData.squad.killsVEH > 9999
+						? canvas.width - 1065
+						: memberData.squad.killsVEH > 999
+							? canvas.width - 1040
+							: memberData.squad.killsVEH > 99
+								? canvas.width - 1015
+								: memberData.squad.killsVEH > 9
+									? canvas.width - 990
+									: canvas.width - 955,
 					canvas.height - 340,
 					canvas.width - 780,
 					canvas.width - 30,
@@ -306,7 +309,15 @@ class Demo extends Command {
 					"#1d2124",
 					15,
 					memberData.squad.woundsINF,
-					(memberData.squad.woundsINF > 9999) ? canvas.width - 580 : (memberData.squad.woundsINF > 999) ? canvas.width - 555 : (memberData.squad.woundsINF > 99) ? canvas.width - 525 : (memberData.squad.woundsINF > 9) ? canvas.width - 480 : canvas.width - 450,
+					memberData.squad.woundsINF > 9999
+						? canvas.width - 580
+						: memberData.squad.woundsINF > 999
+							? canvas.width - 555
+							: memberData.squad.woundsINF > 99
+								? canvas.width - 525
+								: memberData.squad.woundsINF > 9
+									? canvas.width - 480
+									: canvas.width - 450,
 					canvas.height - 510,
 					canvas.width - 780,
 					canvas.width - 30,
@@ -321,7 +332,15 @@ class Demo extends Command {
 					"#1d2124",
 					15,
 					memberData.squad.woundsVEH,
-					(memberData.squad.woundsVEH > 9999) ? canvas.width - 580 : (memberData.squad.woundsVEH > 999) ? canvas.width - 555 : (memberData.squad.woundsVEH > 99) ? canvas.width - 525 : (memberData.squad.woundsVEH > 9) ? canvas.width - 480 : canvas.width - 450,
+					memberData.squad.woundsVEH > 9999
+						? canvas.width - 580
+						: memberData.squad.woundsVEH > 999
+							? canvas.width - 555
+							: memberData.squad.woundsVEH > 99
+								? canvas.width - 525
+								: memberData.squad.woundsVEH > 9
+									? canvas.width - 480
+									: canvas.width - 450,
 					canvas.height - 340,
 					canvas.width - 780,
 					canvas.width - 30,
@@ -330,12 +349,8 @@ class Demo extends Command {
 				);
 
 				// Load the images
-				let imgInfKills = await Canvas.loadImage(
-					"./assets/img/infIcon.png"
-				);
-				let imgVehKills = await Canvas.loadImage(
-					"./assets/img/vehIcon.png"
-				);
+				let imgInfKills = await Canvas.loadImage("./assets/img/infIcon.png");
+				let imgVehKills = await Canvas.loadImage("./assets/img/vehIcon.png");
 
 				// Draw the images
 				ctx.drawImage(imgVehKills, 520, 572, 120, 120);
@@ -344,7 +359,6 @@ class Demo extends Command {
 				ctx.drawImage(imgVehKills, 900, 572, 120, 120);
 				ctx.drawImage(imgInfKills, 920, 402, 120, 120);
 
-				
 				// Pick up the pen
 				ctx.beginPath();
 				//Define Stroke Line
@@ -367,12 +381,9 @@ class Demo extends Command {
 				// Move the image downwards vertically and constrain its height to 200, so it"s a square
 				ctx.drawImage(avatar, 45, 90, 270, 270);
 
-
-				
-
 				const attachment = new Discord.MessageAttachment(
 					canvas.toBuffer(),
-					"squad-stats-"+memberData.squad.steam64ID+".png"
+					"squad-stats-" + memberData.squad.steam64ID + ".png"
 				);
 				message.channel.send(attachment);
 			}

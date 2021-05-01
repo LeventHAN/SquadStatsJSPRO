@@ -41,7 +41,7 @@
     
     <input type="text" id="nav-search" placeholder="Search" />
     
-    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li><li><a href="Squad-Configure-Connection.html">Squad-Configure-Connection</a></li><li><a href="Squad-Track-Profile.html">Squad-Track-Profile</a></li><li></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#drawText">drawText</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li><li><a href="Squad-Configure-Connection.html">Squad-Configure-Connection</a></li><li><a href="Squad-Track-Profile.html">Squad-Track-Profile</a></li><li></li><li></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#drawText">drawText</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
 </nav>
 
 <div id="main">
@@ -190,8 +190,8 @@ class Demo extends Command {
 
 	async run(message, args, /**@type {{}}*/ data) {
 		const client = this.client;
+		// If someone is mentioned grab that
 		let member = await client.resolveMember(args[0], message.guild);
-
 		if (!member) member = message.member;
 		const memberData =
 			member.id === message.author.id
@@ -204,6 +204,7 @@ class Demo extends Command {
 			member.id === message.author.id
 				? data.userData
 				: await client.findOrCreateUser({ id: member.id });
+		if(memberData.squad.steam64ID == null) return message.error("squad/profile:INVALID_MEMBER");
 
 		if (data.guild.plugins.squad.rolesEnabled) {
 			if (data.guild.plugins.squad.enabled) {
@@ -224,13 +225,16 @@ class Demo extends Command {
 					decamelize: false,
 					preserveLeadingUnderscore: true,
 				});
-				const bio = stringCleaner(userData.bio, {
+				const bio = stringCleaner(userData.bio || "", {
 					separator: " ",
 					lowercase: false,
 					decamelize: false,
 					preserveLeadingUnderscore: true,
 				});
+
 				ctx.font = applyText(canvas, username, 48);
+
+				// Steam64ID wrapped
 				wrapText(
 					ctx,
 					memberData.squad.steam64ID,
@@ -239,92 +243,98 @@ class Demo extends Command {
 					200,
 					36
 				);
+
+				// Username wrapped
 				wrapText(
 					ctx,
 					username.slice(0, 16),
-					canvas.width - 1240,
+					canvas.width - 1040,
 					canvas.height - 729,
 					350,
 					36
 				);
-				// Draw server name
-				// ctx.fillText(userData.bio, canvas.width - 1300, canvas.height - 880);
-				wrapText(ctx, bio, canvas.width - 1300, canvas.height - 910, 920, 36);
+
+				// Bio wrapped
+				wrapText(
+					ctx,
+					bio,
+					canvas.width - 1000,
+					canvas.height - 910,
+					920,
+					36
+				);
+
 				ctx.font = applyText(
 					canvas,
 					member.guild.translate("squad/profile:KDS"),
 					60
 				);
+				// K/D
 				ctx.fillText(
 					member.guild.translate("squad/profile:KDS"),
-					canvas.width - 1450,
+					240,
+					530
+				);
+
+				// Infantry Kills Title
+				ctx.fillText(
+					member.guild.translate("squad/profile:KILLS_INF"),
+					canvas.width - 1000,
 					canvas.height - 600
 				);
 
+				// Vehicle Kills Title
 				ctx.fillText(
-					member.guild.translate("squad/profile:KILLS"),
-					canvas.width - 1120,
+					member.guild.translate("squad/profile:KILLS_VEH"),
+					canvas.width - 1000,
+					canvas.height - 420
+				);
+
+				// Infantry Wounds Title
+				ctx.fillText(
+					member.guild.translate("squad/profile:WOUNDS_INF"),
+					canvas.width - 560,
 					canvas.height - 600
 				);
 
-				ctx.font = applyText(
-					canvas,
-					member.guild.translate("administration/welcome:IMG_WELCOME", {
-						server: member.guild.name,
-					}),
-					53
+				// Vehicle Wounds Title
+				ctx.fillText(
+					member.guild.translate("squad/profile:WOUNDS_VEH"),
+					canvas.width - 560,
+					canvas.height - 420
 				);
 
-				ctx.fillText(
-					member.guild.translate("administration/welcome:IMG_WELCOME", {
-						server: member.guild.name,
-					}),
-					canvas.width - 690,
-					canvas.height - 65
-				);
-				// Draw discriminator
-				ctx.font = "40px Bold";
-				ctx.fillText(
-					member.user.discriminator,
-					canvas.width - 623,
-					canvas.height - 178
-				);
-				// Draw number
-				ctx.font = "22px Bold";
-				ctx.fillText(
-					member.guild.translate("administration/welcome:IMG_NB", {
-						memberCount: member.guild.memberCount,
-					}),
-					40,
-					canvas.height - 50
-				);
+
+
+
 				// Draw # for discriminator
 				ctx.fillStyle = "#44d14a";
 				ctx.font = "75px SketchMatch";
 				ctx.fillText("#", canvas.width - 690, canvas.height - 165);
 
+				// K/D
 				drawText(
 					ctx,
 					"90px Bold",
 					"#1d2124",
 					15,
 					memberData.squad.kd.toFixed(2) + " %",
-					canvas.width - 1500,
-					canvas.height - 500,
+					180,
+					615,
 					canvas.width - 780,
 					canvas.width - 30,
 					"#e15500",
 					"#e7b121"
 				);
 
-				// Kills
+				// Infantry Kills
 				drawText(
 					ctx,
 					"70 Bold",
 					"#1d2124",
 					15,
-					memberData.squad.kills,
-					canvas.width - 1100,
+					memberData.squad.killsINF,
+					(memberData.squad.killsINF > 9999) ? canvas.width - 1065 : (memberData.squad.killsINF > 999) ? canvas.width - 1040 : (memberData.squad.killsINF > 99) ? canvas.width - 1015 : (memberData.squad.killsINF > 9) ? canvas.width - 990 : canvas.width - 955,
 					canvas.height - 510,
 					canvas.width - 780,
 					canvas.width - 30,
@@ -332,6 +342,67 @@ class Demo extends Command {
 					"#0591EE"
 				);
 
+				// Vehicle Kills
+				drawText(
+					ctx,
+					"70 Bold",
+					"#1d2124",
+					15,
+					memberData.squad.killsVEH,
+					(memberData.squad.killsVEH > 9999) ? canvas.width - 1065 : (memberData.squad.killsVEH > 999) ? canvas.width - 1040 : (memberData.squad.killsVEH > 99) ? canvas.width - 1015 : (memberData.squad.killsVEH > 9) ? canvas.width - 990 : canvas.width - 955,
+					canvas.height - 340,
+					canvas.width - 780,
+					canvas.width - 30,
+					"#EEC005",
+					"#0591EE"
+				);
+
+				// Infantry Wounds
+				drawText(
+					ctx,
+					"70 Bold",
+					"#1d2124",
+					15,
+					memberData.squad.woundsINF,
+					(memberData.squad.woundsINF > 9999) ? canvas.width - 580 : (memberData.squad.woundsINF > 999) ? canvas.width - 555 : (memberData.squad.woundsINF > 99) ? canvas.width - 525 : (memberData.squad.woundsINF > 9) ? canvas.width - 480 : canvas.width - 450,
+					canvas.height - 510,
+					canvas.width - 780,
+					canvas.width - 30,
+					"#EEC005",
+					"#0591EE"
+				);
+
+				// Vehicle Wounds
+				drawText(
+					ctx,
+					"70 Bold",
+					"#1d2124",
+					15,
+					memberData.squad.woundsVEH,
+					(memberData.squad.woundsVEH > 9999) ? canvas.width - 580 : (memberData.squad.woundsVEH > 999) ? canvas.width - 555 : (memberData.squad.woundsVEH > 99) ? canvas.width - 525 : (memberData.squad.woundsVEH > 9) ? canvas.width - 480 : canvas.width - 450,
+					canvas.height - 340,
+					canvas.width - 780,
+					canvas.width - 30,
+					"#EEC005",
+					"#0591EE"
+				);
+
+				// Load the images
+				let imgInfKills = await Canvas.loadImage(
+					"./assets/img/infIcon.png"
+				);
+				let imgVehKills = await Canvas.loadImage(
+					"./assets/img/vehIcon.png"
+				);
+
+				// Draw the images
+				ctx.drawImage(imgVehKills, 520, 572, 120, 120);
+				ctx.drawImage(imgInfKills, 540, 402, 120, 120);
+
+				ctx.drawImage(imgVehKills, 900, 572, 120, 120);
+				ctx.drawImage(imgInfKills, 920, 402, 120, 120);
+
+				
 				// Pick up the pen
 				ctx.beginPath();
 				//Define Stroke Line
@@ -354,9 +425,12 @@ class Demo extends Command {
 				// Move the image downwards vertically and constrain its height to 200, so it"s a square
 				ctx.drawImage(avatar, 45, 90, 270, 270);
 
+
+				
+
 				const attachment = new Discord.MessageAttachment(
 					canvas.toBuffer(),
-					"welcome-image.png"
+					"squad-stats-"+memberData.squad.steam64ID+".png"
 				);
 				message.channel.send(attachment);
 			}
@@ -379,7 +453,7 @@ module.exports = Demo;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sun Apr 25 2021 23:50:24 GMT+0200 (Orta Avrupa Yaz Saati) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sat May 01 2021 18:14:24 GMT+0300 (GMT+03:00) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
