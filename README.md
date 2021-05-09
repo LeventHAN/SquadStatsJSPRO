@@ -61,11 +61,8 @@ If a player did missconfigure their profile, they can run: `{prefix}profile re-l
 4. Start your bot: `node index.js&`. (**I recommend you to use [pm2](https://pm2.keymetrics.io)**)
 5. Star this repo if you liked!
 
-### Configuring ScreenShotJS (GER-SQUAD)
+### Configuring - SquadStatsJS PRO
 
-ScreenShotJS (GER-SQUAD) can be configured via .env file which by default is called .env.example.
-
-The config file needs to be called .env at the end and a example can be found below:
 
 ```js
 module.exports = {
