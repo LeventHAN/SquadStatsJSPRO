@@ -56,29 +56,33 @@ module.exports = class {
 			"** users (and " +
 			guild.members.cache.filter((m) => m.user.bot).size +
 			" bots)";
-
-		await logger.log(
-			"Guild has been created: " +
-				guild.name +
-				" with " +
-				guild.members.cache.filter((m) => !m.user.bot).size +
-				"users (and " +
-				guild.members.cache.filter((m) => m.user.bot).size +
-				" bots)",
-			{
-				level: "info",
-				indexMeta: true,
-				meta: {
-					dashboard: config.dashboard.enabled,
-					baseURL: config.dashboard.enabled
-						? config.dashboard.baseURL + ":" + config.dashboard.port
-						: "n/a",
-					prefix: config.dashboard.prefix,
-					supportServer: config.support.id,
-					client: guild,
-				},
-			}
-		);
+		try {
+			await logger.log(
+				"Guild has been created: " +
+						guild.name +
+						" with " +
+						guild.members.cache.filter((m) => !m.user.bot).size +
+						"users (and " +
+						guild.members.cache.filter((m) => m.user.bot).size +
+						" bots)",
+				{
+					level: "info",
+					indexMeta: true,
+					meta: {
+						dashboard: config.dashboard.enabled,
+						baseURL: config.dashboard.enabled
+							? config.dashboard.baseURL + ":" + config.dashboard.port
+							: "n/a",
+						prefix: config.dashboard.prefix,
+						supportServer: config.support.id,
+						client: guild,
+					},
+				}
+			);
+		} catch (error) {
+			console.error(error);
+		}
+		
 
 		// Sends log embed in the logs channel
 		const logsEmbed = new Discord.MessageEmbed()

@@ -23,5 +23,8 @@
     "OWNER_ONLY": "Only the owner of SquadStatJSv3 can do these commands!",
     "COOLDOWNED": "You must wait **{{seconds}}** second(s) to be able to run this command again!",
     "CANNOT_DM": "I don't have permission to send you private messages... Please update your privacy settings!",
-    "MAP_VOTE_ MODE_TITLE": "Voting for the game mode [VOTING 1 of 2]"
+    "MAP_VOTE_MODE_TITLE": "Voting for the game mode [VOTING 1 of 2]",
+    "MAP_VOTE_LAYER_TITLE": "Voting for the game layer [VOTING 2 of 2]",
+    "WINNER_TITLE": "The winner is; {{layer}}",
+    "WINNER_DESC": "**{{layer}}** won the voting with **{{amount}}** votes!"
 }

@@ -40,53 +40,14 @@ class AddSquadDB extends Command {
 		const chacheRoles = message.guild.roles.cache;
 		const sender = message.author.id;
 		const roles = [
-			"--- KD ROLES ---",
-			"KD 0+",
-			"KD 0.5+",
-			"KD 1+",
-			"KD 1.5+",
-			"KD 2+",
-			"KD 2.5+",
-			"KD 3+",
-			"KD 3.5+",
-			"KD 4+",
-			"KD 4.5+",
-			"KD 5+",
-			"KD 5.5+",
-			"KD 6+",
-			"KD 6.5+",
-			"KD 7+",
-			"KD 7.5+",
-			"KD 8+",
-			"KD 8.5+",
-			"KD 9+",
-			"KD 9.5+",
-			"KD 10+",
+			"--- KD ROLES ---"
 		];
-		const rolesColors = [
-			"DEFAULT",
-			"LIGHT_GREY",
-			"GREY",
-			"DARK_GREY",
-			"DARKER_GREY",
-			"DARK_AQUA",
-			"DARK_AQUA",
-			"DARK_BLUE",
-			"DARK_BLUE",
-			"DARK_PURPLE",
-			"DARK_PURPLE",
-			"DARK_VIVID_PINK",
-			"DARK_VIVID_PINK",
-			"DARK_GOLD",
-			"RED",
-			"RED",
-			"RED",
-			"RED",
-			"RED",
-			"RED",
-			"RED",
-			"RED",
-		];
+		for(let i = 0; i < 10; i++){
+			roles.push("KD "+i+"+");
+			roles.push("KD "+i+".5+");
+			if(i == 9) roles.push("KD 10+");
+		}
+		const rolesColors = ["DEFAULT","LIGHT_GREY","GREY","DARK_GREY","DARKER_GREY","DARK_AQUA","DARK_AQUA","DARK_BLUE","DARK_BLUE","DARK_PURPLE","DARK_PURPLE","DARK_VIVID_PINK","DARK_VIVID_PINK","DARK_GOLD","RED","RED","RED","RED","RED","RED","RED","RED",];
 
 		if (
 			data.guild.plugins.squad.host !== null &&
