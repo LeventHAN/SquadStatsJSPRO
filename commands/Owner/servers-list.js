@@ -128,9 +128,9 @@ class ServersList extends Command {
 						.map((r) => r)
 						.map(
 							(r, i) =>
-								`**${i + 1}** - ${r.name} | ${
-									r.memberCount
-								} ${message.translate("common:MEMBERS").toLowerCase()}`
+								`**${i + 1}** - ${r.name} | ${r.memberCount} ${message
+									.translate("common:MEMBERS")
+									.toLowerCase()}`
 						)
 						.slice(i0, i1)
 						.join("\n");

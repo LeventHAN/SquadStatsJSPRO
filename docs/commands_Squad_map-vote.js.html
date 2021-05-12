@@ -41,7 +41,7 @@
     
     <input type="text" id="nav-search" placeholder="Search" />
     
-    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li><li><a href="Squad-Configure-Connection.html">Squad-Configure-Connection</a></li><li><a href="Squad-Track-Profile.html">Squad-Track-Profile</a></li><li></li><li></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#drawText">drawText</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li><li><a href="Squad-Configure-Connection.html">Squad-Configure-Connection</a></li><li><a href="Squad-Track-Profile.html">Squad-Track-Profile</a></li><li></li><li></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#drawMaps">drawMaps</a></li><li><a href="global.html#drawText">drawText</a></li><li><a href="global.html#drawWinner">drawWinner</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#removeMap">removeMap</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
 </nav>
 
 <div id="main">
@@ -57,11 +57,17 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>const Command = require("../../base/Command.js"),
-	Discord = require("discord.js");
+	Discord = require("discord.js"),
+	{ MessageEmbed } = require("discord.js"),
+	axios = require("axios"),
+	io = require("socket.io-client"),
+	Canvas = require("canvas"),
+	{ resolve } = require("path"),
+	random = require("random"),
+	MYSQLPromiseObjectBuilder = require("../../base/MYSQLPromiseObjectBuilder.js");
 
-const stringCleaner = require("@sindresorhus/slugify");
-const Canvas = require("canvas");
-const { resolve } = require("path");
+const wait = require("util").promisify(setTimeout);
+const mysql = require("mysql");
 // Register assets fonts
 Canvas.registerFont(resolve("./assets/fonts/theboldfont.ttf"), {
 	family: "Bold",
@@ -70,106 +76,271 @@ Canvas.registerFont(resolve("./assets/fonts/SketchMatch.ttf"), {
 	family: "SketchMatch",
 });
 
-const applyText = (canvas, text, defaultFontSize) => {
-	const ctx = canvas.getContext("2d");
-	do {
-		ctx.font = `${(defaultFontSize -= 10)}px Bold`;
-	} while (ctx.measureText(text).width > 600);
-	return ctx.font;
+const canvasVotes = Canvas.createCanvas(1680, 1080),
+	ctx = canvasVotes.getContext("2d");
+
+const canvasLayers = Canvas.createCanvas(1680, 1080),
+	ctxLayers = canvasLayers.getContext("2d");
+
+const canvasWinner = Canvas.createCanvas(1680, 1080),
+	ctxWinner = canvasWinner.getContext("2d");
+
+const defEmojiList = [
+	"\u0031\u20E3",
+	"\u0032\u20E3",
+	"\u0033\u20E3",
+	"\u0034\u20E3",
+	"\u0035\u20E3",
+	"\u0036\u20E3",
+];
+let currentPlayers;
+let res;
+let testData;
+let ignoreMaps = [];
+let rotationToUse;
+const seedLayers = [
+	"Yehorivka_Skirmish_v1",
+	"Narva_Skirmish_v1",
+	"Kamdesh_Skirmish_v1",
+	"Yehorivka_Skirmish_v2",
+	"Skorpo_Skirmish_v1",
+	"FoolsRoad_Skirmish_v2",
+	"Kohat_Skirmish_v1",
+	"Belaya_Skirmish_v1",
+	"LashkarValley_Skirmish_v1",
+	"CAF_Manic_Skirmish_v1",
+	"Gorodok_Skirmish_v1",
+	"Fallujah_Skirmish_v2",
+];
+const rotationLayers = [
+	"CAF_GooseBay_AAS_v1",
+	"Gorodok_RAAS_v1",
+	"Chora_Invasion_v1",
+	"Narva_RAAS_v1",
+	"Tallil_AAS_v1",
+	"Sumari_TC_v1",
+	"Mutaha_AAS_v1",
+	"Kokan_RAAS_v1",
+	"Yehorivka_Invasion_v2",
+	"Gorodok_AAS_v2",
+	"Kohat_AAS_v1",
+	"Gorodok_Destruction_v1",
+	"Narva_AAS_v3",
+	"Fallujah_RAAS_v2",
+	"Chora_AAS_v1",
+	"CAF_Yehorivka_RAAS_v1",
+	"Mutaha_RAAS_v1",
+	"Narva_AAS_v2",
+	"Skorpo_AAS_v1",
+	"Yehorivka_AAS_v2",
+	"FoolsRoad_AAS_v2",
+	"Gorodok_Invasion_v1",
+	"Chora_RAAS_v2",
+	"Mestia_RAAS_v1",
+	"Fallujah_RAAS_v1",
+	"Narva_Destruction_v1",
+	"Skorpo_RAAS_v1",
+	"Tallil_RAAS_v4",
+	"Yehorivka_RAAS_v3",
+	"Albasrah_AAS_v1",
+	"Chora_RAAS_v1",
+	"Kokan_RAAS_v2",
+	"Belaya_Invasion_v2",
+	"Gorodok_RAAS_v5",
+	"CAF_AlBasrah_Invasion_v2",
+	"Fallujah_AAS_v2",
+	"Yehorivka_AAS_v1",
+	"Narva_Invasion_v1",
+	"CAF_Gorodok_AAS_v1",
+	"Kohat_RAAS_v4",
+	"Albasrah_RAAS_v1",
+	"CAF_Mestia_RAAS_v1",
+	"Narva_Invasion_v2",
+	"Mutaha_Invasion_v1",
+	"Yehorivka_RAAS_v1",
+	"Kamdesh_RAAS_v2",
+	"Kohat_AAS_v2",
+	"Yehorivka_RAAS_v5",
+	"LashkarValley_AAS_v2",
+	"Narva_AAS_v1",
+	"Tallil_Invasion_v1",
+	"Gorodok_RAAS_v2",
+	"FoolsRoad_Invasion_1",
+	"Belaya_RAAS_v1",
+	"Yehorivka_RAAS_v2",
+	"Kamdesh_RAAS_v1",
+	"Belaya_AAS_v2",
+	"CAF_Lashkar_Valley_RAAS_v1",
+	"Fallujah_Invasion_v1",
+	"Kohat_RAAS_v1",
+	"CAF_Manic_AAS_v1Mutaha_RAAS_v1",
+	"FoolsRoad_AAS_v1",
+	"Sumari_Invasion_v1",
+	"CAF_Manic_RAAS_v1",
+	"LashkarValley_AAS_v1",
+	"Logar_TC_v1",
+	"CAF_Manic_RAAS_v3",
+	"Albasrah_invasion_v1",
+];
+
+let response;
+let text;
+let checkEmojis = [];
+let winner = "";
+let winAmount = 0;
+let loopSize;
+let emojiInfoLayers = {};
+let tempMax;
+let gameLayerImg;
+let voteForLayer;
+let broadcastMessage = "";
+let winnerImg;
+let maps = [];
+let mapsName = [];
+let pickedMaps = [];
+let pickedMapsName = [];
+let layer;
+let layers = [];
+let width = 0;
+let layerName;
+let currentLayer;
+let index;
+
+const embedBuilder = (title) => {
+	return new MessageEmbed().setTitle(`${title}`);
 };
 
-/** Wraps a text in multiple lines. A solution for .fillText() that goes out of the canvas.
+/**Removes the map from the array of maps
  *
- * @param {Object&lt;Canvas>} context - The Canvas Object.
- * @param {string} text - The text to be wrapped.
- * @param {number} x - The x-coordinate.
- * @param {number} y - The y-coordinate.
- * @param {number} maxWidth - The maximum value of the width of one line.
- * @param {number} lineHeight - The space between multiple lines.
- * @author LeventHAN
+ * @param {Array} arr - An array of maps.
+ * @param {String} value - A map.
+ * @returns {Array} - The filtered array.
  */
-function wrapText(context, text, x, y, maxWidth, lineHeight) {
-	let line;
-	let words;
-	let testWidth;
-	let metrics;
-	let testLine;
-	let cars;
-	cars = text.split("\n");
-	for (let ii = 0; ii &lt; cars.length; ii++) {
-		line = "";
-		words = cars[ii].split(" ");
-		for (let n = 0; n &lt; words.length; n++) {
-			testLine = line + words[n] + " ";
-			metrics = context.measureText(testLine);
-			testWidth = metrics.width;
-			if (testWidth > maxWidth) {
-				context.fillText(line, x, y);
-				line = words[n] + " ";
-				y += lineHeight;
-			} else {
-				line = testLine;
-			}
-		}
-		context.fillText(line, x, y);
-		y += lineHeight;
-	}
-}
-/**Draws a text to the canvas.
- *
- * @param {Object} ctx - The context of the canvas 2D.
- * @param {string} font - The font size and type, (ex. 70px Bold).
- * @param {string} strokeStyle - The color of the outer stroke in HEX.
- * @param {number} lineWidth - The width of the letter's line.
- * @param {string} data - Player data (obtained from MongoDB) to be drawn in the canvas.
- * @param {number} xPos - The postion of the text X-coordinates.
- * @param {number} yPos - The postion of the text Y-coordinates.
- * @param {number} gradientWidth - The width of the gradient.
- * @param {number} gradientHeight - The height of the gradient.
- * @param {string} colorStart - The gradients start color in HEX.
- * @param {string} colorEnd - The gradients end color in HEX.
- * @author LeventHAN
- */
-function drawText(
-	ctx,
-	font,
-	strokeStyle,
-	lineWidth,
-	data,
-	xPos,
-	yPos,
-	gradientWidth,
-	gradientHeight,
-	colorStart,
-	colorEnd
-) {
-	// Draw Kills with gradient
-	ctx.font = font;
-	ctx.strokeStyle = strokeStyle;
-	ctx.lineWidth = lineWidth;
-	ctx.strokeText(data, xPos, yPos);
-	let gradient = ctx.createLinearGradient(gradientWidth, 0, gradientHeight, 0);
-	gradient.addColorStop(0, colorStart);
-	gradient.addColorStop(1, colorEnd);
-	ctx.fillStyle = gradient;
-	ctx.fillText(data, xPos, yPos);
+function removeMap(arr, value) {
+	return arr.filter(function (ele) {
+		return ele != value;
+	});
 }
 
-/**Command for squad profile stats track.
+/** Draws layers and their sequence numbers to canvas.
+ *
+ * @param {Array} maps - An array of 6 raw names of the random layers.
+ * @param {Array} names - An array of 6 human readable layer names.
+ * @returns {null} - Logs an error in the console.
+ * @author LeventHAN
+ */
+async function drawMaps(maps, names) {
+	/**Centers the text
+	 *
+	 * @param {String} text - The content to be centered
+	 * @returns {Integer} Width/ Y coordinates
+	 * @author Alverrt
+	 */
+	const alignText = (text) => {
+		const maptxt = ctxLayers.measureText(text);
+		return (400 - maptxt.width) / 2;
+	};
+
+	if (!names) return console.error("No object.");
+	layers = [];
+	for (let i = 0; i &lt; maps.length; i++) {
+		console.log("I TRY TO PUSH THIS: ", maps[i]);
+		layer = await Canvas.loadImage(
+			`https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/images/${maps[i]}.jpg`
+		);
+		console.log(layer);
+		await layers.push(layer);
+	}
+
+	// Draw layer's images
+	width = 0;
+	for (let i = 0; i &lt; names.length; i++) {
+		if (i &lt;= 2) {
+			await ctxLayers.drawImage(layers[i], 120 + width, 90, 400, 400);
+			ctxLayers.font = "42px Bold";
+			ctxLayers.fillStyle = "#fcfc03";
+			await ctxLayers.fillText(
+				names[i],
+				120 + width + alignText(names[i]),
+				540
+			);
+			ctxLayers.font = "64px Sans-serif";
+			ctxLayers.strokeStyle = "black";
+			ctxLayers.lineWidth = 6;
+			ctxLayers.fillStyle = "#f56c42";
+			ctxLayers.strokeText(i + 1, 460 + width, 460);
+			ctxLayers.fillText(i + 1, 460 + width, 460);
+			i == 2 ? (width = 0) : (width += 520);
+		}
+		if (i > 2) {
+			await ctxLayers.drawImage(layers[i], 120 + width, 580, 400, 400);
+			ctxLayers.font = "42px Bold";
+			ctxLayers.fillStyle = "#fcfc03";
+			await ctxLayers.fillText(
+				names[i],
+				120 + width + alignText(names[i]),
+				1030
+			);
+			ctxLayers.font = "64px Sans-serif";
+			ctxLayers.strokeStyle = "black";
+			ctxLayers.lineWidth = 6;
+			ctxLayers.fillStyle = "#f56c42";
+			ctxLayers.strokeText(i + 1, 460 + width, 950);
+			ctxLayers.fillText(i + 1, 460 + width, 950);
+			width += 520;
+		}
+	}
+}
+
+/** Draws the winning layer's image in the canvas.
+ *
+ * @param {string} winner - The layer that has the most votes.
+ * @param {number} winAmount - The amount of votes.
+ */
+async function drawWinner(winner, winAmount) {
+	const alignText = (text) => {
+		const maptxt = ctxWinner.measureText(text);
+		return (400 - maptxt.width) / 2;
+	};
+	layerName = winner;
+	currentLayer = winner.replace(/'/g, "");
+	currentLayer = currentLayer.replace(/ /g, "_");
+	const imgLayer = await Canvas.loadImage(
+		`https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/images/${currentLayer}.jpg`
+	);
+
+	// draw map images
+	ctxWinner.font = "70px Bold";
+	ctxWinner.fillStyle = "#fcfc03";
+
+	await ctxWinner.drawImage(imgLayer, 510, 140, 700, 700);
+
+	await ctxWinner.fillText(layerName, 660 + alignText(layerName), 930);
+
+	ctxWinner.font = "60px Bold";
+	ctxWinner.fillStyle = "#fa9024";
+
+	await ctxWinner.fillText(
+		"Won with " + winAmount + " votes",
+		660 + alignText("Won with " + winAmount + " votes"),
+		1000
+	);
+}
+
+/**Command for map voting.
  * &lt;h2>Usage: &lt;/h2>
- * &lt;h3>Linking your account&lt;/h3>
- * &lt;code>{prefix}profile {Steam64ID}&lt;/code>
+ * &lt;h3>Write once this to the channel you want the voting embeds to show&lt;/h3>
+ * &lt;code>{prefix}mapvote&lt;/code>
  * &lt;br />
- * &lt;h3>Removing the link from your account&lt;/h3>
- * &lt;code>{prefix}profile re&lt;/code> OR &lt;code>{prefix}profile re-link&lt;/code>
- * &lt;br />
- * &lt;h6>Note: &lt;/h6>
- * &lt;sub>&lt;sup>After linking your account you don't need to specify your steam64ID anymore. Just use; &lt;code>{prefix}profile&lt;/code>&lt;/sup>&lt;/sub>
+ * &lt;h3>Disabling mapvote&lt;/h3>
+ * &lt;code>{prefix}mapvote disable&lt;/code>
  *
  * @author LeventHAN
+ * @author Alverrt
  * @class Squad-Track-Profile
  * @extends Command
  */
+
 class MapVote extends Command {
 	constructor(client) {
 		super(client, {
@@ -177,9 +348,14 @@ class MapVote extends Command {
 			dirname: __dirname,
 			enabled: true,
 			guildOnly: true,
-			aliases: ["asdasdasdasd", "qweqweqwe", "qweqweqwewqa"],
+			aliases: [],
 			memberPermissions: [],
-			botPermissions: ["SEND_MESSAGES", "EMBED_LINKS"],
+			botPermissions: [
+				"SEND_MESSAGES",
+				"EMBED_LINKS",
+				"KICK_MEMBERS",
+				"BAN_MEMBERS",
+			],
 			nsfw: false,
 			ownerOnly: false,
 			cooldown: 1000,
@@ -189,156 +365,323 @@ class MapVote extends Command {
 	}
 
 	async run(message, args, /**@type {{}}*/ data) {
+		if (!data.guild.plugins.squad.mapVote.enabled)
+			return message.error("MAP VOTE IS NOT ENABLED");
+
 		const client = this.client;
-		// If someone is mentioned grab that
-		let member = await client.resolveMember(args[0], message.guild);
-		if (!member) member = message.member;
-		const memberData =
-			member.id === message.author.id
-				? data.memberData
-				: await client.findOrCreateMember({
-					id: member.id,
-					guildID: message.guild.id,
-				  });
-		const userData =
-			member.id === message.author.id
-				? data.userData
-				: await client.findOrCreateUser({ id: member.id });
-		if(memberData.squad.steam64ID == null) return message.error("squad/profile:INVALID_MEMBER");
 
-		if (data.guild.plugins.squad.rolesEnabled) {
-			if (data.guild.plugins.squad.enabled) {
-				const canvas = Canvas.createCanvas(1680, 1080),
-					ctx = canvas.getContext("2d");
+		const socket = io.connect("ws://185.255.92.71:7894", {
+			auth: {
+				token: "MySexyPassword123",
+			},
+		});
 
-				// Background language
-				const background = await Canvas.loadImage(
-					"./assets/img/mapvote_background.jpg"
-				);
-				// This uses the canvas dimensions to stretch the image onto the entire canvas
-				ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+		socket.on("connect_error", (err) => {
+			return console.error(err); // { content: "Please retry later" }
+		});
 
-				// example maps array
-				let maps = [
-					{
-						mapName: "AL BASRAH",
-						mapSrc: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/2/20/Squad_Al_Basrah_2.jpg/revision/latest/scale-to-width-down/480?cb=20181117014811")
-					},
-					{
-						mapName: "BELAYA",
-						mapSrc: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/f/f4/Belaya_HighRes.jpg/revision/latest/scale-to-width-down/480?cb=20181117012812")
-					},
-					{
-						mapName: "CHORA",
-						mapSrc: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/3/3c/Chora1_Minimap_V6.jpeg/revision/latest/scale-to-width-down/480?cb=20181117014105")
-					},
-					{
-						mapName: "FALLUJAH",
-						mapSrc: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/1/1e/Fallujah_Minimap.jpg/revision/latest/scale-to-width-down/480?cb=20200912005720")
-					},
-					{
-						mapName: "GORODOK",
-						mapSrc: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/4/4e/Alpha_v9_Gorodok_Map.jpg/revision/latest/scale-to-width-down/480?cb=20200608215632")
-					},
-					{
-						mapName: "KAMDESH",
-						mapSrc: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/5/57/Kamdesh_Minimap_Final.jpg/revision/latest/scale-to-width-down/480?cb=20200608220338")
+		if (!socket) return console.error("Socket connection was not accomplied.");
+
+		const DEBUG = false;
+		// NEW_GAME - PLAYER_CONNECTED
+		socket.on("NEW_GAME", async () => {
+			if (DEBUG) {
+				message.channel.send("Voting Started Firs Broadcast");
+			} else {
+				console.log("NEW GAME STARTED.");
+				await wait(30 * 1000);
+				socket.emit(
+					"rcon.broadcast",
+					"30 SANIYE SONRA HARITA OYLAMA SISTEMI BASLAYACAKTIR. OYLARINIZ DISCORD UZERINDEN VERILIYOR!",
+					(s) => {
+						console.log("Map Voting started message has been send.", s);
 					}
-				];
-
-				/*
-				Other Maps Source Links:
-
-					skorpo: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/3/32/Skorpo_minimap.jpg/revision/latest/scale-to-width-down/480?cb=20200608215033"),
-					fools_road: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/b/b6/Fools_Road_v1_Minimap_V6.jpeg/revision/latest/scale-to-width-down/480?cb=20181117013024"),
-					mestia: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/2/2c/Minimap_Mestia.jpg/revision/latest/scale-to-width-down/480?cb=20200608215932"),
-					yehorivka: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/2/2b/Alpha_v9_Yehorivka_Map.jpg/revision/latest/scale-to-width-down/480?cb=20200608220109"),
-					narva: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/0/04/Narva_Minimap_Alpha_V10.jpg/revision/latest/scale-to-width-down/480?cb=20200703064500"),
-					kohat_toi: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/9/93/Kohat_minimap_V6.jpeg/revision/latest/scale-to-width-down/480?cb=20181117014223"),
-					kokan: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/6/6d/Kokan_minimap_8.jpg/revision/latest/scale-to-width-down/480?cb=20200608220657"),
-					lashkar_valley: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/6/65/Lashkar_Minimap.jpg/revision/latest/scale-to-width-down/480?cb=20200630033145"),
-					logar_valley: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/d/d7/Logarvalley_minimap_V6.jpeg/revision/latest/scale-to-width-down/480?cb=20200608220856"),
-					sumari_bala: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/b/b0/Sumari_minimap_V6.jpeg/revision/latest/scale-to-width-down/480?cb=20181117014542"),
-					mutaha: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/1/15/Mutaha.jpg/revision/latest/scale-to-width-down/480?cb=20191124193304"),
-					talil_outskirts: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/9/9d/Tallil_Outskirts_Minimap.jpg/revision/latest/scale-to-width-down/480?cb=20200608221044"),
-					manic_5: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/3/35/Manic-5_Minimap.jpg/revision/latest/scale-to-width-down/480?cb=20200608200737"),
-					goose_bay: await Canvas.loadImage("https://static.wikia.nocookie.net/squad_gamepedia/images/d/d9/GooseBay_Minimap.jpg/revision/latest/scale-to-width-down/480?cb=20201228075903")
-				*/
-				
-
-				/** Draws maps and their sequence numbers to canvas.
-				 *
-				 *@param {Array} mapArray - Array of map objects. Every element has map name and map source links. 
-				 *@throws Will throw error if argument of array length is not equal to 6.
-				 */
-				const drawMaps = (mapArray) => {
-
-					const alignText = (text) => {
-						const maptxt = ctx.measureText(text);
-						return (400 - maptxt.width) / 2;
-					};
-
-					if (mapArray.length != 6) {
-						throw new Error("Map array must has 6 elements.");
-					}
-
-					// dont touch the rest of the variables they are hardcoded constant coordinate values
-
-					// draw map images
-					ctx.font = "42px Bold";
-					ctx.fillStyle = "#fcfc03";
-					ctx.drawImage(mapArray[0].mapSrc, 120, 90, 400, 400);
-					ctx.fillText(mapArray[0].mapName, 120 + alignText(mapArray[0].mapName), 540);
-
-					ctx.drawImage(mapArray[1].mapSrc, 640, 90, 400, 400);
-					ctx.fillText(mapArray[1].mapName, 640 + alignText(mapArray[1].mapName), 540);
-
-					ctx.drawImage(mapArray[2].mapSrc, 1160, 90, 400, 400);
-					ctx.fillText(mapArray[2].mapName, 1160 + alignText(mapArray[2].mapName), 540);
-
-					ctx.drawImage(mapArray[3].mapSrc, 120, 580, 400, 400);
-					ctx.fillText(mapArray[3].mapName, 120 + alignText(mapArray[3].mapName), 1030);
-
-					ctx.drawImage(mapArray[4].mapSrc, 640, 580, 400, 400);
-					ctx.fillText(mapArray[4].mapName, 640 + alignText(mapArray[4].mapName), 1030);
-
-					ctx.drawImage(mapArray[5].mapSrc, 1160, 580, 400, 400);
-					ctx.fillText(mapArray[5].mapName, 1160 + alignText(mapArray[5].mapName), 1030);
-
-					// draw numbers
-					ctx.font = "64px Sans-serif";
-					ctx.strokeStyle = "black";
-					ctx.lineWidth = 6;
-					ctx.fillStyle = "#f56c42";
-
-					ctx.strokeText("1", 460, 460);
-					ctx.fillText("1", 460, 460);
-
-					ctx.strokeText("2", 980, 460);
-					ctx.fillText("2", 980, 460);
-
-					ctx.strokeText("3", 1500, 460);
-					ctx.fillText("3", 1500, 460);
-
-					ctx.strokeText("4", 460, 950);
-					ctx.fillText("4", 460, 950);
-
-					ctx.strokeText("5", 980, 950);
-					ctx.fillText("5", 980, 950);
-
-					ctx.strokeText("6", 1500, 950);
-					ctx.fillText("6", 1500, 950);
-				};
-
-				drawMaps(maps);
-
-				const attachment = new Discord.MessageAttachment(
-					canvas.toBuffer(),
-					"squad-stats-"+memberData.squad.steam64ID+".png"
 				);
-				message.channel.send(attachment);
 			}
-		}
+
+			if (DEBUG) {
+				message.channel.send("Voting Started Firs Broadcast");
+			} else {
+				await wait(20 * 1000);
+				socket.emit(
+					"rcon.broadcast",
+					"10 SANIYE SONRA HARITA OYLAMA SSITEMI BASLAYACAKTIR. OYLARINIZ DISCORD UZERINDEN VERILIYOR!",
+					(s) => {
+						console.log("Map Voting started message has been send.", s);
+					}
+				);
+			}
+
+			if (DEBUG) {
+				await socket.emit("players", (playerList) => {
+					currentPlayers = playerList.length;
+					console.log("Current Players;", currentPlayers);
+				});
+			} else {
+				await wait(10 * 1000);
+				await socket.emit("players", (playerList) => {
+					currentPlayers = playerList.length;
+				});
+			}
+
+			// TODO: MySQL check last layers
+			if (this.pool == null) {
+				// Only create one instance
+				this.pool = mysql.createPool({
+					connectionLimit: 10, // Call all
+					host: data.guild.plugins.squad.host,
+					port: data.guild.plugins.squad.port,
+					user: data.guild.plugins.squad.user,
+					password: data.guild.plugins.squad.password,
+					database: data.guild.plugins.squad.database,
+				});
+			}
+			const pool = this.pool;
+			res = new MYSQLPromiseObjectBuilder(pool);
+			for (let i = 0; i &lt; 4; i++) {
+				res.add(
+					`ignoreLayer_${i}`,
+					`SELECT map AS MAP
+				FROM DBLog_Matches
+				ORDER BY startTime desc
+				LIMIT 1 OFFSET ${i}`,
+					"Undefined",
+					null
+				);
+			}
+			testData = await res.waitForAll();
+			ignoreMaps = [];
+			ignoreMaps.push(testData.ignoreLayer_0.MAP);
+			ignoreMaps.push(testData.ignoreLayer_1.MAP);
+			ignoreMaps.push(testData.ignoreLayer_2.MAP);
+			ignoreMaps.push(testData.ignoreLayer_3.MAP);
+			// TODO: Toggleable
+
+			// TOOD: event?
+
+			response = await axios.get(
+				"https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/finished.json"
+			);
+
+			// Background language
+			const background = await Canvas.loadImage(
+				"./assets/img/mapvote_background.jpg"
+			);
+			// This uses the canvas dimensions to stretch the image onto the entire canvas
+			await ctx.drawImage(
+				background,
+				0,
+				0,
+				canvasVotes.width,
+				canvasVotes.height
+			);
+
+			if (DEBUG) {
+				message.channel.send("Voting Started");
+			} else {
+				socket.emit(
+					"rcon.broadcast",
+					"[REMINDER] - Harita oylama sistemi aktif, discord uzerinden oylarinizi kullanmayi unutmayin! (120sn sure - 6 RANDOM HARITA)",
+					(s) => {
+						console.log(
+							"REMINDER - Map Voting started message has been send.",
+							s
+						);
+					}
+				);
+			}
+
+			maps = [];
+			mapsName = [];
+			pickedMaps = [];
+			pickedMapsName = [];
+			rotationToUse = currentPlayers > 44 ? rotationLayers : seedLayers;
+
+			response.data.Maps.forEach((map) => {
+				if (
+					!ignoreMaps.includes(map.mapName) &amp;&amp;
+					rotationToUse.includes(map.rawName)
+				) {
+					maps.push(map.Name);
+					mapsName.push(map.rawName);
+					ignoreMaps.push(map.mapName);
+				}
+			});
+			console.log("DEBUG MAPS; ", maps);
+			loopSize = maps.length > 6 ? 6 : maps.length;
+			for (let i = 0; i &lt; loopSize; i++) {
+				index = random.int(0, maps.length - 1);
+				if (!maps[index]) continue;
+				if (!mapsName[index]) continue;
+				pickedMaps.push(mapsName[index]);
+				pickedMapsName.push(maps[index]);
+				mapsName = removeMap(mapsName, mapsName[index]);
+				maps = removeMap(maps, maps[index]);
+			}
+
+			text = "*To vote, react using the correspoding emoji.\nThe voting will end in **60 seconds**.\n\n";
+
+			// This uses the canvas dimensions to stretch the image onto the entire canvas
+			await ctxLayers.drawImage(
+				background,
+				0,
+				0,
+				canvasLayers.width,
+				canvasLayers.height
+			);
+			console.log(pickedMaps, pickedMapsName);
+			await drawMaps(pickedMaps, pickedMapsName);
+			const emojiListLayers = defEmojiList.slice();
+			emojiInfoLayers = {};
+			tempMax = loopSize;
+			for (const option of pickedMapsName) {
+				if (tempMax &lt;= 0) continue;
+				const emoji = emojiListLayers.splice(0, 1);
+				emojiInfoLayers[emoji] = { option: option, votes: 0 };
+				text += `${emoji} : \`${option}\`\n\n`;
+				tempMax--;
+			}
+			gameLayerImg = await new Discord.MessageAttachment(
+				canvasLayers.toBuffer(),
+				"mapGameLayerVote.png"
+			);
+
+			voteForLayer = await message.channel.send(
+				embedBuilder(message.translate("misc:MAP_VOTE_LAYER_TITLE"))
+					.setDescription(text)
+					.setColor(data.config.embed.color)
+					.setFooter(data.config.embed.footer)
+					.setTimestamp()
+					.attachFiles(gameLayerImg)
+					.setImage("attachment://mapGameLayerVote.png")
+			);
+
+			tempMax = loopSize;
+			for (const emoji of [...defEmojiList]) {
+				if (tempMax &lt;= 0) continue;
+				await wait(250);
+				await voteForLayer.react(emoji);
+				tempMax--;
+			}
+
+			const usedEmojisLayers = Object.keys(emojiInfoLayers);
+			const reactionCollectorLayers = voteForLayer.createReactionCollector(
+				(reaction, user) =>
+					usedEmojisLayers.includes(reaction.emoji.name) &amp;&amp; !user.bot,
+				{ time: 120 * 1000 }
+			);
+			const voterInfoLayer = new Map();
+			reactionCollectorLayers.on("collect", async (reaction, user) => {
+				if (usedEmojisLayers.includes(reaction.emoji.name)) {
+					if (!voterInfoLayer.has(user.id))
+						await voterInfoLayer.set(user.id, { emoji: reaction.emoji.name });
+					const votedEmoji = voterInfoLayer.get(user.id).emoji;
+					if (votedEmoji !== reaction.emoji.name) {
+						const lastVote = await voteForLayer.reactions.cache.get(votedEmoji);
+						lastVote.count -= await 1;
+						await lastVote.users.remove(user.id);
+						emojiInfoLayers[votedEmoji].votes -= await 1;
+						await voterInfoLayer.set(user.id, { emoji: reaction.emoji.name });
+					}
+					emojiInfoLayers[reaction.emoji.name].votes += await 1;
+				}
+			});
+			reactionCollectorLayers.on("dispose", (reaction, user) => {
+				if (usedEmojisLayers.includes(reaction.emoji.name)) {
+					voterInfoLayer.delete(user.id);
+					emojiInfoLayers[reaction.emoji.name].votes -= 1;
+				}
+			});
+			reactionCollectorLayers.on("end", async (s) => {
+				checkEmojis = [];
+				console.log(s);
+				s.forEach((emoji) => {
+					checkEmojis.push({
+						emoji: parseInt(emoji._emoji.name.slice(0, 1), 10),
+						amount: emoji.count,
+					});
+				});
+				winner = "";
+				winAmount = 0;
+				checkEmojis.forEach((emoji) => {
+					if (winAmount &lt; emoji.amount) {
+						winner = emoji.emoji;
+						winAmount = emoji.amount;
+					}
+				});
+
+				// message.channel.send(`Winner is; **${winner ? winner : pickedMaps[0]}** with \`${winner ? winAmount : "No One Voted"}\` votes.`);
+				await voteForLayer.delete();
+
+				await ctxWinner.drawImage(
+					background,
+					0,
+					0,
+					canvasWinner.width,
+					canvasWinner.height
+				);
+				broadcastMessage = "";
+				if (winner) {
+					broadcastMessage = pickedMaps[winner - 1];
+				} else {
+					broadcastMessage = pickedMaps[0];
+				}
+				await drawWinner(broadcastMessage, winAmount);
+
+				if (DEBUG) {
+					message.channel.send(`AdminSetNextLayer ${broadcastMessage}`);
+				} else {
+					socket.emit(
+						"rcon.execute",
+						`AdminSetNextLayer ${broadcastMessage}`,
+						(s) => {
+							console.log("DEBUG: ", s);
+						}
+					);
+				}
+
+				winnerImg = await new Discord.MessageAttachment(
+					canvasWinner.toBuffer(),
+					"mapWinner.png"
+				);
+
+				if (DEBUG) {
+					message.channel.send(
+						`BROADCAST Edilcek Mesaj: Kazanan harita ${broadcastMessage} - ${winAmount}`
+					);
+				} else {
+					socket.emit(
+						"rcon.broadcast",
+						`Kazanan harita ${broadcastMessage} - oy sayısı: ${winAmount}`,
+						(s) => {
+							console.log(
+								`Winner map has been selected; ${broadcastMessage} | votes; ${winAmount} `,
+								s
+							);
+						}
+					);
+				}
+
+				await message.channel.send(
+					embedBuilder(
+						message.translate("misc:WINNER_TITLE", {
+							layer: broadcastMessage,
+						})
+					)
+						.setDescription(
+							message.translate("misc:WINNER_DESC", {
+								layer: broadcastMessage,
+								amount: winAmount,
+							})
+						)
+						.setColor(data.config.embed.color)
+						.setFooter(data.config.embed.footer)
+						.setTimestamp()
+						.attachFiles(winnerImg)
+						.setImage("attachment://mapWinner.png")
+				);
+			});
+		});
 	}
 }
 
@@ -357,7 +700,7 @@ module.exports = MapVote;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sat May 01 2021 18:14:24 GMT+0300 (GMT+03:00) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Tue May 11 2021 13:32:28 GMT+0200 (Orta Avrupa Yaz Saati) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

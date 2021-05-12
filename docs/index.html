@@ -41,7 +41,7 @@
     
     <input type="text" id="nav-search" placeholder="Search" />
     
-    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li><li><a href="Squad-Configure-Connection.html">Squad-Configure-Connection</a></li><li><a href="Squad-Track-Profile.html">Squad-Track-Profile</a></li><li></li><li></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#drawText">drawText</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li><li><a href="Squad-Configure-Connection.html">Squad-Configure-Connection</a></li><li><a href="Squad-Track-Profile.html">Squad-Track-Profile</a></li><li></li><li></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#drawMaps">drawMaps</a></li><li><a href="global.html#drawText">drawText</a></li><li><a href="global.html#drawWinner">drawWinner</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#removeMap">removeMap</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
 </nav>
 
 <div id="main">
@@ -121,9 +121,9 @@ If a player did missconfigure their profile, they can run: <code>{prefix}profile
 <li>Start your bot: <code>node index.js&amp;</code>. (<strong>I recommend you to use <a href="https://pm2.keymetrics.io">pm2</a></strong>)</li>
 <li>Star this repo if you liked!</li>
 </ol>
-<h3>Configuring ScreenShotJS (GER-SQUAD)</h3>
-<p>ScreenShotJS (GER-SQUAD) can be configured via .env file which by default is called .env.example.</p>
-<p>The config file needs to be called .env at the end and a example can be found below:</p>
+<h3>Configuring - SquadStatsJS PRO</h3>
+<p>SquadStatsJS PRO can be configured via .js file which by default is called <code>config.example.js</code></p>
+<p>The config file needs to be called <code>config.js</code> at the end and a example can be found below:</p>
 <pre class="prettyprint source lang-js"><code>module.exports = {
 	/* The token of your Discord Bot */
 	token: &quot;XXXXXXXXXXX&quot;,
@@ -138,7 +138,7 @@ If a player did missconfigure their profile, they can run: <code>{prefix}profile
 		secret: &quot;XXXXXXXXXXX&quot;, // Your discord client secret
 		baseURL: &quot;https://localhost&quot;, // The base URl of the dashboard
 		logs: &quot;XXXXXXXXXXX&quot;, // The channel ID of logs
-		port: 80, // Dashboard port
+		port: 8080, // Dashboard port
 		expressSessionPassword: &quot;XXXXXXXXXXX&quot;, // Express session password (it can be what you want)
 		failureURL: &quot;https://l-event.studio&quot;, // url on which users will be redirected if they click the cancel button (discord authentication)
 	},
@@ -154,9 +154,18 @@ If a player did missconfigure their profile, they can run: <code>{prefix}profile
 		id: &quot;152644814146371584&quot;, // The ID of the bot's owner
 		name: &quot;LeventHAN#0001&quot;, // And the name of the bot's owner
 	},
+	/* DBL votes webhook (optional) */
+	votes: {
+		port: 5000, // The port for the server
+		password: &quot;XXXXXXXXXXX&quot;, // The webhook auth that you have defined on discordbots.org
+		channel: &quot;XXXXXXXXXXX&quot;, // The ID of the channel that in you want the votes logs
+	},
 	/* The API keys that are required for certain commands */
 	apiKeys: {
-		// Leave this empty for now
+		// DBL: https://discordbots.org/api/docs#mybots
+		dbl: &quot;&quot;,
+		// SENTRY: https://sentry.io (this is not required and not recommended - you can delete the field)
+		sentryDSN: &quot;&quot;,
 	},
 	/* The others utils links */
 	others: {
@@ -197,7 +206,7 @@ If a player did missconfigure their profile, they can run: <code>{prefix}profile
 </details>
 <h2>Credits</h2>
 <ul>
-<li>@<a href="https://github.com/Androz2091/AtlantaBot">AtlantaBot</a> for the amazing bot, used the core structure aswell couple of the basic commands.</li>
+<li>@<a href="https://github.com/Androz2091/AtlantaBot">AtlantaBot</a> for the amazing bot, used the core base.</li>
 <li><a href="https://github.com/Thomas-Smyth/SquadJS">SquadJS</a> - The reason this bot is made.</li>
 <li>My mom for feeding me while I was coding.</li>
 </ul>
@@ -239,7 +248,7 @@ SOFTWARE.
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sat May 01 2021 18:14:24 GMT+0300 (GMT+03:00) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Tue May 11 2021 13:32:28 GMT+0200 (Orta Avrupa Yaz Saati) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

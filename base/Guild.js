@@ -33,8 +33,8 @@ module.exports = mongoose.model(
 					serverID: null,
 					ignoredMaps: [],
 					mapVote: {
-						enabled: false
-					}
+						enabled: false,
+					},
 				},
 				// Welcome messages
 				welcome: {

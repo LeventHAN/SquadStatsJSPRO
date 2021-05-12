@@ -33,7 +33,7 @@ const defEmojiList = [
 	"\u0033\u20E3",
 	"\u0034\u20E3",
 	"\u0035\u20E3",
-	"\u0036\u20E3"
+	"\u0036\u20E3",
 ];
 let currentPlayers;
 let res;
@@ -52,7 +52,7 @@ const seedLayers = [
 	"LashkarValley_Skirmish_v1",
 	"CAF_Manic_Skirmish_v1",
 	"Gorodok_Skirmish_v1",
-	"Fallujah_Skirmish_v2"
+	"Fallujah_Skirmish_v2",
 ];
 const rotationLayers = [
 	"CAF_GooseBay_AAS_v1",
@@ -122,7 +122,7 @@ const rotationLayers = [
 	"LashkarValley_AAS_v1",
 	"Logar_TC_v1",
 	"CAF_Manic_RAAS_v3",
-	"Albasrah_invasion_v1"
+	"Albasrah_invasion_v1",
 ];
 
 let response;
@@ -149,8 +149,7 @@ let currentLayer;
 let index;
 
 const embedBuilder = (title) => {
-	return new MessageEmbed()
-		.setTitle(`${title}`);
+	return new MessageEmbed().setTitle(`${title}`);
 };
 
 /**Removes the map from the array of maps
@@ -160,7 +159,7 @@ const embedBuilder = (title) => {
  * @returns {Array} - The filtered array.
  */
 function removeMap(arr, value) {
-	return arr.filter(function(ele){
+	return arr.filter(function (ele) {
 		return ele != value;
 	});
 }
@@ -184,10 +183,10 @@ async function drawMaps(maps, names) {
 		return (400 - maptxt.width) / 2;
 	};
 
-	if(!names) return console.error("No object.");
+	if (!names) return console.error("No object.");
 	layers = [];
-	for (let i = 0; i < maps.length; i++){
-		console.log("I TRY TO PUSH THIS: ",maps[i]);
+	for (let i = 0; i < maps.length; i++) {
+		console.log("I TRY TO PUSH THIS: ", maps[i]);
 		layer = await Canvas.loadImage(
 			`https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/images/${maps[i]}.jpg`
 		);
@@ -195,17 +194,11 @@ async function drawMaps(maps, names) {
 		await layers.push(layer);
 	}
 
-
 	// Draw layer's images
 	width = 0;
-	for(let i = 0; i < names.length; i++){
-		if(i <= 2){
-			await ctxLayers.drawImage(
-				layers[i],
-				120 + width,
-				90,
-				400,
-				400);
+	for (let i = 0; i < names.length; i++) {
+		if (i <= 2) {
+			await ctxLayers.drawImage(layers[i], 120 + width, 90, 400, 400);
 			ctxLayers.font = "42px Bold";
 			ctxLayers.fillStyle = "#fcfc03";
 			await ctxLayers.fillText(
@@ -217,17 +210,12 @@ async function drawMaps(maps, names) {
 			ctxLayers.strokeStyle = "black";
 			ctxLayers.lineWidth = 6;
 			ctxLayers.fillStyle = "#f56c42";
-			ctxLayers.strokeText(i+1, 460 + width, 460);
-			ctxLayers.fillText(i+1, 460 + width, 460);
-			(i==2) ? width = 0 : width += 520;
+			ctxLayers.strokeText(i + 1, 460 + width, 460);
+			ctxLayers.fillText(i + 1, 460 + width, 460);
+			i == 2 ? (width = 0) : (width += 520);
 		}
-		if(i > 2){
-			await ctxLayers.drawImage(
-				layers[i],
-				120 + width,
-				580,
-				400,
-				400);
+		if (i > 2) {
+			await ctxLayers.drawImage(layers[i], 120 + width, 580, 400, 400);
 			ctxLayers.font = "42px Bold";
 			ctxLayers.fillStyle = "#fcfc03";
 			await ctxLayers.fillText(
@@ -239,8 +227,8 @@ async function drawMaps(maps, names) {
 			ctxLayers.strokeStyle = "black";
 			ctxLayers.lineWidth = 6;
 			ctxLayers.fillStyle = "#f56c42";
-			ctxLayers.strokeText(i+1, 460 + width, 950);
-			ctxLayers.fillText(i+1, 460 + width, 950);
+			ctxLayers.strokeText(i + 1, 460 + width, 950);
+			ctxLayers.fillText(i + 1, 460 + width, 950);
 			width += 520;
 		}
 	}
@@ -267,25 +255,16 @@ async function drawWinner(winner, winAmount) {
 	ctxWinner.font = "70px Bold";
 	ctxWinner.fillStyle = "#fcfc03";
 
-	await ctxWinner.drawImage(
-		imgLayer,
-		510,
-		140,
-		700,
-		700);
+	await ctxWinner.drawImage(imgLayer, 510, 140, 700, 700);
 
-	await ctxWinner.fillText(
-		layerName,
-		660 + alignText(layerName),
-		930
-	);
+	await ctxWinner.fillText(layerName, 660 + alignText(layerName), 930);
 
 	ctxWinner.font = "60px Bold";
 	ctxWinner.fillStyle = "#fa9024";
 
 	await ctxWinner.fillText(
-		"Won with "+winAmount+" votes",
-		660 + alignText("Won with "+winAmount+" votes"),
+		"Won with " + winAmount + " votes",
+		660 + alignText("Won with " + winAmount + " votes"),
 		1000
 	);
 }
@@ -313,7 +292,12 @@ class MapVote extends Command {
 			guildOnly: true,
 			aliases: [],
 			memberPermissions: [],
-			botPermissions: ["SEND_MESSAGES", "EMBED_LINKS", "KICK_MEMBERS", "BAN_MEMBERS"],
+			botPermissions: [
+				"SEND_MESSAGES",
+				"EMBED_LINKS",
+				"KICK_MEMBERS",
+				"BAN_MEMBERS",
+			],
 			nsfw: false,
 			ownerOnly: false,
 			cooldown: 1000,
@@ -330,45 +314,50 @@ class MapVote extends Command {
 
 		const socket = io.connect("ws://185.255.92.71:7894", {
 			auth: {
-				token: "MySexyPassword123"
-			}
+				token: "MySexyPassword123",
+			},
 		});
 
 		socket.on("connect_error", (err) => {
 			return console.error(err); // { content: "Please retry later" }
 		});
 
-		if(!socket) return console.error("Socket connection was not accomplied.");
+		if (!socket) return console.error("Socket connection was not accomplied.");
 
 		const DEBUG = false;
 		// NEW_GAME - PLAYER_CONNECTED
-		socket.on(("NEW_GAME"), async () => {
-
-			
-			if(DEBUG){
+		socket.on("NEW_GAME", async () => {
+			if (DEBUG) {
 				message.channel.send("Voting Started Firs Broadcast");
 			} else {
-				console.log("NEW GAME STARTED.")
+				console.log("NEW GAME STARTED.");
 				await wait(30 * 1000);
-				socket.emit("rcon.broadcast","30 SANIYE SONRA HARITA OYLAMA SISTEMI BASLAYACAKTIR. OYLARINIZ DISCORD UZERINDEN VERILIYOR!", (s) => {
-					console.log("Map Voting started message has been send.", s);
-				});
-
+				socket.emit(
+					"rcon.broadcast",
+					"30 SANIYE SONRA HARITA OYLAMA SISTEMI BASLAYACAKTIR. OYLARINIZ DISCORD UZERINDEN VERILIYOR!",
+					(s) => {
+						console.log("Map Voting started message has been send.", s);
+					}
+				);
 			}
-			
-			if(DEBUG){
+
+			if (DEBUG) {
 				message.channel.send("Voting Started Firs Broadcast");
 			} else {
 				await wait(20 * 1000);
-				socket.emit("rcon.broadcast","10 SANIYE SONRA HARITA OYLAMA SSITEMI BASLAYACAKTIR. OYLARINIZ DISCORD UZERINDEN VERILIYOR!", (s) => {
-					console.log("Map Voting started message has been send.", s);
-				});
+				socket.emit(
+					"rcon.broadcast",
+					"10 SANIYE SONRA HARITA OYLAMA SSITEMI BASLAYACAKTIR. OYLARINIZ DISCORD UZERINDEN VERILIYOR!",
+					(s) => {
+						console.log("Map Voting started message has been send.", s);
+					}
+				);
 			}
 
-			if(DEBUG){
+			if (DEBUG) {
 				await socket.emit("players", (playerList) => {
 					currentPlayers = playerList.length;
-					console.log("Current Players;",currentPlayers);
+					console.log("Current Players;", currentPlayers);
 				});
 			} else {
 				await wait(10 * 1000);
@@ -376,13 +365,10 @@ class MapVote extends Command {
 					currentPlayers = playerList.length;
 				});
 			}
-			
-
-			
 
 			// TODO: MySQL check last layers
 			if (this.pool == null) {
-			// Only create one instance
+				// Only create one instance
 				this.pool = mysql.createPool({
 					connectionLimit: 10, // Call all
 					host: data.guild.plugins.squad.host,
@@ -394,7 +380,7 @@ class MapVote extends Command {
 			}
 			const pool = this.pool;
 			res = new MYSQLPromiseObjectBuilder(pool);
-			for(let i = 0; i < 4; i++){
+			for (let i = 0; i < 4; i++) {
 				res.add(
 					`ignoreLayer_${i}`,
 					`SELECT map AS MAP
@@ -415,52 +401,58 @@ class MapVote extends Command {
 
 			// TOOD: event?
 
-
-
 			response = await axios.get(
 				"https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/finished.json"
 			);
-
 
 			// Background language
 			const background = await Canvas.loadImage(
 				"./assets/img/mapvote_background.jpg"
 			);
 			// This uses the canvas dimensions to stretch the image onto the entire canvas
-			await ctx.drawImage(background, 0, 0, canvasVotes.width, canvasVotes.height);
+			await ctx.drawImage(
+				background,
+				0,
+				0,
+				canvasVotes.width,
+				canvasVotes.height
+			);
 
-			if(DEBUG){
+			if (DEBUG) {
 				message.channel.send("Voting Started");
 			} else {
-				socket.emit("rcon.broadcast","[REMINDER] - Harita oylama sistemi aktif, discord uzerinden oylarinizi kullanmayi unutmayin! (120sn sure - 6 RANDOM HARITA)", (s) => {
-					console.log("REMINDER - Map Voting started message has been send.", s);
-				});
-
+				socket.emit(
+					"rcon.broadcast",
+					"[REMINDER] - Harita oylama sistemi aktif, discord uzerinden oylarinizi kullanmayi unutmayin! (120sn sure - 6 RANDOM HARITA)",
+					(s) => {
+						console.log(
+							"REMINDER - Map Voting started message has been send.",
+							s
+						);
+					}
+				);
 			}
-
 
 			maps = [];
 			mapsName = [];
 			pickedMaps = [];
 			pickedMapsName = [];
-			rotationToUse = (currentPlayers > 44) ? rotationLayers : seedLayers;
+			rotationToUse = currentPlayers > 44 ? rotationLayers : seedLayers;
 
-			response.data.Maps.forEach(
-				(map) => {
-					if(
-						!ignoreMaps.includes(map.mapName)
-						&&  rotationToUse.includes(map.rawName)
-					) {
-						maps.push(map.Name);
-						mapsName.push(map.rawName);
-						ignoreMaps.push(map.mapName);
-					}
+			response.data.Maps.forEach((map) => {
+				if (
+					!ignoreMaps.includes(map.mapName) &&
+					rotationToUse.includes(map.rawName)
+				) {
+					maps.push(map.Name);
+					mapsName.push(map.rawName);
+					ignoreMaps.push(map.mapName);
 				}
-			);
-			console.log("DEBUG MAPS; ",maps);
-			loopSize = (maps.length > 6) ? 6 : maps.length;
-			for(let i = 0; i < loopSize; i++){
-				index = random.int(0, maps.length-1);
+			});
+			console.log("DEBUG MAPS; ", maps);
+			loopSize = maps.length > 6 ? 6 : maps.length;
+			for (let i = 0; i < loopSize; i++) {
+				index = random.int(0, maps.length - 1);
 				if (!maps[index]) continue;
 				if (!mapsName[index]) continue;
 				pickedMaps.push(mapsName[index]);
@@ -469,21 +461,24 @@ class MapVote extends Command {
 				maps = removeMap(maps, maps[index]);
 			}
 
-
-
-
-
-			text = `*To vote, react using the correspoding emoji.\nThe voting will end in **60 seconds**.\n\n`;
+			text =
+				"*To vote, react using the correspoding emoji.\nThe voting will end in **60 seconds**.\n\n";
 
 			// This uses the canvas dimensions to stretch the image onto the entire canvas
-			await ctxLayers.drawImage(background, 0, 0, canvasLayers.width, canvasLayers.height);
+			await ctxLayers.drawImage(
+				background,
+				0,
+				0,
+				canvasLayers.width,
+				canvasLayers.height
+			);
 			console.log(pickedMaps, pickedMapsName);
 			await drawMaps(pickedMaps, pickedMapsName);
 			const emojiListLayers = defEmojiList.slice();
 			emojiInfoLayers = {};
 			tempMax = loopSize;
 			for (const option of pickedMapsName) {
-				if(tempMax <= 0) continue;
+				if (tempMax <= 0) continue;
 				const emoji = emojiListLayers.splice(0, 1);
 				emojiInfoLayers[emoji] = { option: option, votes: 0 };
 				text += `${emoji} : \`${option}\`\n\n`;
@@ -495,9 +490,7 @@ class MapVote extends Command {
 			);
 
 			voteForLayer = await message.channel.send(
-				embedBuilder(
-					message.translate("misc:MAP_VOTE_LAYER_TITLE")
-				)
+				embedBuilder(message.translate("misc:MAP_VOTE_LAYER_TITLE"))
 					.setDescription(text)
 					.setColor(data.config.embed.color)
 					.setFooter(data.config.embed.footer)
@@ -507,8 +500,8 @@ class MapVote extends Command {
 			);
 
 			tempMax = loopSize;
-			for (const emoji of [...defEmojiList]){
-				if(tempMax <= 0) continue;
+			for (const emoji of [...defEmojiList]) {
+				if (tempMax <= 0) continue;
 				await wait(250);
 				await voteForLayer.react(emoji);
 				tempMax--;
@@ -516,13 +509,15 @@ class MapVote extends Command {
 
 			const usedEmojisLayers = Object.keys(emojiInfoLayers);
 			const reactionCollectorLayers = voteForLayer.createReactionCollector(
-				(reaction, user) => usedEmojisLayers.includes(reaction.emoji.name) && !user.bot,
+				(reaction, user) =>
+					usedEmojisLayers.includes(reaction.emoji.name) && !user.bot,
 				{ time: 120 * 1000 }
 			);
 			const voterInfoLayer = new Map();
 			reactionCollectorLayers.on("collect", async (reaction, user) => {
 				if (usedEmojisLayers.includes(reaction.emoji.name)) {
-					if (!voterInfoLayer.has(user.id)) await voterInfoLayer.set(user.id, { emoji: reaction.emoji.name });
+					if (!voterInfoLayer.has(user.id))
+						await voterInfoLayer.set(user.id, { emoji: reaction.emoji.name });
 					const votedEmoji = voterInfoLayer.get(user.id).emoji;
 					if (votedEmoji !== reaction.emoji.name) {
 						const lastVote = await voteForLayer.reactions.cache.get(votedEmoji);
@@ -544,16 +539,15 @@ class MapVote extends Command {
 				checkEmojis = [];
 				console.log(s);
 				s.forEach((emoji) => {
-					checkEmojis.push(
-						{
-							emoji: parseInt(emoji._emoji.name.slice(0,1), 10),
-							amount: emoji.count
-						});
+					checkEmojis.push({
+						emoji: parseInt(emoji._emoji.name.slice(0, 1), 10),
+						amount: emoji.count,
+					});
 				});
 				winner = "";
 				winAmount = 0;
 				checkEmojis.forEach((emoji) => {
-					if(winAmount < emoji.amount) {
+					if (winAmount < emoji.amount) {
 						winner = emoji.emoji;
 						winAmount = emoji.amount;
 					}
@@ -561,49 +555,68 @@ class MapVote extends Command {
 
 				// message.channel.send(`Winner is; **${winner ? winner : pickedMaps[0]}** with \`${winner ? winAmount : "No One Voted"}\` votes.`);
 				await voteForLayer.delete();
-				
-				await ctxWinner.drawImage(background, 0, 0, canvasWinner.width, canvasWinner.height);
+
+				await ctxWinner.drawImage(
+					background,
+					0,
+					0,
+					canvasWinner.width,
+					canvasWinner.height
+				);
 				broadcastMessage = "";
-				if(winner){
-					broadcastMessage = pickedMaps[winner-1];
+				if (winner) {
+					broadcastMessage = pickedMaps[winner - 1];
 				} else {
 					broadcastMessage = pickedMaps[0];
 				}
 				await drawWinner(broadcastMessage, winAmount);
-					
-				if(DEBUG){
+
+				if (DEBUG) {
 					message.channel.send(`AdminSetNextLayer ${broadcastMessage}`);
 				} else {
-					socket.emit("rcon.execute", `AdminSetNextLayer ${broadcastMessage}`, (s) => {
-						console.log("DEBUG: ", s);
-					});
+					socket.emit(
+						"rcon.execute",
+						`AdminSetNextLayer ${broadcastMessage}`,
+						(s) => {
+							console.log("DEBUG: ", s);
+						}
+					);
 				}
 
-					
-					
 				winnerImg = await new Discord.MessageAttachment(
 					canvasWinner.toBuffer(),
 					"mapWinner.png"
 				);
 
-				if(DEBUG){
-					message.channel.send(`BROADCAST Edilcek Mesaj: Kazanan harita ${broadcastMessage} - ${winAmount}`);
+				if (DEBUG) {
+					message.channel.send(
+						`BROADCAST Edilcek Mesaj: Kazanan harita ${broadcastMessage} - ${winAmount}`
+					);
 				} else {
-					socket.emit("rcon.broadcast",`Kazanan harita ${broadcastMessage} - oy sayısı: ${winAmount}`, (s) => {
-						console.log(`Winner map has been selected; ${broadcastMessage} | votes; ${winAmount} `,s);
-					});
+					socket.emit(
+						"rcon.broadcast",
+						`Kazanan harita ${broadcastMessage} - oy sayısı: ${winAmount}`,
+						(s) => {
+							console.log(
+								`Winner map has been selected; ${broadcastMessage} | votes; ${winAmount} `,
+								s
+							);
+						}
+					);
 				}
 
 				await message.channel.send(
 					embedBuilder(
 						message.translate("misc:WINNER_TITLE", {
-							layer: broadcastMessage
+							layer: broadcastMessage,
 						})
 					)
-						.setDescription(message.translate("misc:WINNER_DESC", {
-							layer: broadcastMessage,
-							amount: winAmount
-						}))
+						.setDescription(
+							message.translate("misc:WINNER_DESC", {
+								layer: broadcastMessage,
+								amount: winAmount,
+							})
+						)
 						.setColor(data.config.embed.color)
 						.setFooter(data.config.embed.footer)
 						.setTimestamp()

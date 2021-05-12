@@ -18,6 +18,18 @@ module.exports = class {
 			"ready"
 		);
 
+		// // setInterval(function () {
+		// client.on("presenceUpdate", (oldPresence, newPresence) => {
+		// 	if (!newPresence.activities) return false;
+		// 	newPresence.activities.forEach(activity => {
+		// 		if (activity.type == "STREAMING" && activity.state == "Squad") {
+		// 			console.log(activity);
+		// 			console.log(`${newPresence.user.tag} is streaming at ${activity.url}.`);
+		// 		}
+		// 	});
+		// });
+		// // }, 20000); // Every 20 seconds
+
 		/* UNMUTE USERS */
 		const checkUnmutes = require("../helpers/checkUnmutes.js");
 		checkUnmutes.init(client);

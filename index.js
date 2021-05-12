@@ -1,11 +1,5 @@
 require("./helpers/extenders");
 const config = require("./config");
-const logdna = require("@logdna/logger");
-const options = {
-	app: "SquadStatJSPRO-" + config.embed.footer,
-	level: "info",
-};
-const logger = logdna.createLogger("2a30af09b6f95d83e47ec94b2ebb1ece", options);
 
 const util = require("util"),
 	fs = require("fs"),
@@ -83,31 +77,6 @@ const init = async () => {
 };
 
 init();
-try {
-	logger.log(
-		"SquadStatJS has been run by " +
-			config.owner.name +
-			" (" +
-			config.owner.id +
-			")",
-		{
-			level: "info",
-			indexMeta: true,
-			meta: {
-				dashboard: config.dashboard.enabled,
-				baseURL: config.dashboard.enabled
-					? config.dashboard.baseURL + ":" + config.dashboard.port
-					: "n/a",
-				prefix: config.dashboard.prefix,
-				supportServer: config.support.id,
-			},
-		}
-	);
-} catch (error) {
-	console.error(error);
-}
-
-
 
 // if there are errors, log them
 client

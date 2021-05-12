@@ -39,7 +39,6 @@
 	"homepage": "https://github.com/11TStudio/SquadStatJS-PRO#readme",
 	"dependencies": {
 		"@discordjs/opus": "^0.5.0",
-		"@logdna/logger": "^2.3.2",
 		"@sindresorhus/slugify": "^1.1.0",
 		"axios": "^0.21.1",
 		"btoa": "^1.2.1",
@@ -79,20 +78,20 @@
 	},
 	"husky": {
 		"hooks": {
-		  "pre-commit": "lint-staged"
+			"pre-commit": "lint-staged"
 		}
-	  },
-	  "lint-staged": {
+	},
+	"lint-staged": {
 		"*.{js,jsx}": [
-		  "prettier --write",
-		  "eslint --fix",
-		  "git add"
+			"prettier --write",
+			"eslint --fix",
+			"git add"
 		],
 		"*.{html,css,less,ejs}": [
-		  "prettier --write",
-		  "git add"
+			"prettier --write",
+			"git add"
 		]
-	  },
+	},
 	"eslintConfig": {
 		"env": {
 			"commonjs": true,
