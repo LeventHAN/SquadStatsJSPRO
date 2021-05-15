@@ -10,7 +10,7 @@
     "STEAMS": "Profile info; ",
     "STEAM": "[{{steamName}}](https://steamcommunity.com/profiles/{{steam64ID}})",
     "KDS": "☠️ K/D",
-    "KD": "**{{kd}}**%",
+    "KD": "**{{kd}}**",
     "WOUNDS_INF": "Wounds",
     "WOUNDS_VEH": "Wounds",
     "WOUNDS": "**{{kills}}** wound(s)",

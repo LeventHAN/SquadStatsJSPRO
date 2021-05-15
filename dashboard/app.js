@@ -78,8 +78,6 @@ module.exports.load = async (client) => {
 
 	// Listen
 	app.listen(app.get("port"), () => {
-		console.log(
-			"SquadStatJS v3 Dashboard is listening on port " + app.get("port")
-		);
+		client.logger.log(`SquadStatJS v3 Dashboard is listening on port ${app.get("port")}`,"READY");
 	});
 };

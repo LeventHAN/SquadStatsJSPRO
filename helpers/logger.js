@@ -45,7 +45,7 @@ function format(tDate) {
 module.exports = class Logger {
 	static log(content, type = "log") {
 		const date = `[${format(new Date(Date.now()))}]:`;
-		switch (type) {
+		switch (type.toLowerCase()) {
 		// Check the message type and then print him in the console
 		case "log": {
 			return console.log(`${date} ${bgBlue(type.toUpperCase())} ${content} `);
