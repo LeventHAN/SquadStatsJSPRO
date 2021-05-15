@@ -1,4 +1,9 @@
 const chalk = require("chalk");
+const status = require("../config.js").status,
+	version = require("../package.json").version,
+	squadVoting = require("../config.js").squadMapVoting.enabled,
+	squadVotingGuild = require("../config.js").squadMapVoting.guildID,
+	squadVotingChannel = require("../config.js").squadMapVoting.channelID;
 
 module.exports = class {
 	constructor(client) {
@@ -13,11 +18,18 @@ module.exports = class {
 			`Loading a total of ${client.commands.size} command(s).`,
 			"log"
 		);
+
+		/* Squad map voting */
+		if (squadVoting) {
+			await client.emit("mapVoting", squadVotingGuild, squadVotingChannel);
+		}
+
 		client.logger.log(
 			`${client.user.tag}, ready to serve ${client.users.cache.size} users in ${client.guilds.cache.size} servers.`,
 			"ready"
 		);
 
+		// STREAMERS PERMS ?
 		// // setInterval(function () {
 		// client.on("presenceUpdate", (oldPresence, newPresence) => {
 		// 	if (!newPresence.activities) return false;
@@ -43,9 +55,6 @@ module.exports = class {
 			client.dashboard.load(client);
 		}
 
-		// Update the game every 20s
-		const status = require("../config.js").status,
-			version = require("../package.json").version;
 		let i = 0;
 		setInterval(function () {
 			const toDisplay =

@@ -26,5 +26,12 @@
     "MAP_VOTE_MODE_TITLE": "Voting for the game mode [VOTING 1 of 2]",
     "MAP_VOTE_LAYER_TITLE": "Voting for the game layer [VOTING 2 of 2]",
     "WINNER_TITLE": "The winner is; {{layer}}",
-    "WINNER_DESC": "**{{layer}}** won the voting with **{{amount}}** votes!"
+    "WINNER_DESC": "**{{layer}}** won the voting with **{{amount}}** votes!",
+    "STATUS_VOTING": "**Map Voting is {{status}}**",
+    "WON_WITH_VOTES": "Won with {{winAmount}} votes",
+    "FIRST_BROADCAST": "The map voting will start in our Discord server after {{seconds}} seconds!",
+    "SECOND_BROADCAST": "The map voting will start in our Discord server after {{seconds}} seconds!!",
+    "VOTING_STARTED_BROADCAST": "!! Map Voting is << LIVE >> !! Go to our DISCORD server to vote!",
+    "WON_MESSAGE": "Winning layer is {{broadcastMessage}} - won with {{winAmount}} votes.",
+    "EMBED_DESC": "*To vote, react using the correspoding emoji.\nThe voting will end in **{{seconds}} seconds**.\n\n"
 }

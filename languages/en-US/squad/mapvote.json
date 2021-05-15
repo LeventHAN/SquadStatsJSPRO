@@ -1,0 +1,5 @@
+{
+    "DESCRIPTION": "Activate auto map vote.",
+    "USAGE": "{{prefix}}mapvote [start/stop]",
+    "EXAMPLES": "{{prefix}}mapvote start \n{{prefix}}mapvote stop"
+}
