@@ -15,6 +15,7 @@ module.exports = {
 			port: "7894", // The port for socket.IO
 			token: "MySexyPassword666", // Password for socket.IO
 		},
+		precondition: 10, // amount of votes to set the next layer.
 		guildID: "676475499538808842", // The bot must be in this guild
 		channelID: "838466150249529395", // The channelID where the map voting message will be send
 		votingTime: 300, // Time that the voting will last. In seconds. Default is 5 minutes.

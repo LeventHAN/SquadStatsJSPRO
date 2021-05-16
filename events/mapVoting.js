@@ -27,7 +27,7 @@ const canvasWinner = Canvas.createCanvas(1680, 1080),
 	ctxWinner = canvasWinner.getContext("2d");
 
 const config = require("../config.js"),
-	DEBUG = config.support.debug,
+	
 	ip = config.squadMapVoting.socketIO.ip,
 	port = config.squadMapVoting.socketIO.port,
 	token = config.squadMapVoting.socketIO.token,
@@ -39,7 +39,7 @@ const config = require("../config.js"),
 	msgSecondTime = config.squadMapVoting.messages.secondTimeOut,
 	msgThirdTime =  config.squadMapVoting.messages.thirdTimeOut,
 	keepHistoryOfLayers = config.squadMapVoting.keepHistoryOfLayers;
-
+let DEBUG = config.support.debug;
 const defEmojiList = [
 	"\u0031\u20E3",
 	"\u0032\u20E3",
@@ -56,6 +56,8 @@ let rotationToUse;
 let response;
 let text;
 let checkEmojis = [];
+let voter = [];
+let votedTo = [];
 let winner = "";
 let winAmount = 0;
 let loopSize;
@@ -63,7 +65,6 @@ let emojiInfoLayers = {};
 let tempMax;
 let gameLayerImg;
 let voteForLayer;
-let broadcastMessage = "";
 let winnerImg;
 let maps = [];
 let mapsName = [];
@@ -169,9 +170,10 @@ async function drawMaps(maps, names) {
  *
  * @param {string} winner - The layer that has the most votes.
  * @param {number} winAmount - The amount of votes.
+ * @param {Object} client - The current client object.
  * @author LeventHAN
  */
-async function drawWinner(winner, winAmount) {
+async function drawWinner(winner, winAmount, client) {
 	const alignText = (text) => {
 		const maptxt = ctxWinner.measureText(text);
 		return (400 - maptxt.width) / 2;
@@ -195,10 +197,10 @@ async function drawWinner(winner, winAmount) {
 	ctxWinner.fillStyle = "#fa9024";
 
 	await ctxWinner.fillText(
-		this.client.translate("misc/WON_WITH_VOTES", {
+		client.translate("misc/WON_WITH_VOTES", {
 			winAmount: winAmount
 		}),
-		660 + alignText(this.client.translate("misc/WON_WITH_VOTES", {
+		660 + alignText(client.translate("misc/WON_WITH_VOTES", {
 			winAmount: winAmount
 		})),
 		1000
@@ -218,9 +220,8 @@ module.exports = class {
 
 		const client = this.client;
 		const channel = client.channels.cache.find(channel => channel.id === channelID)
-
+		const regex = /\d+/gm;
 		const guildData = await this.client.findOrCreateGuild({ id: guildID });
-
 		const socket = io.connect("ws://"+ip+":"+port, {
 			auth: {
 				token: token,
@@ -231,51 +232,23 @@ module.exports = class {
 			return client.logger.log(err,"ERROR");
 		});
 
+		// DEBUG = true;
+
+
 		if (socket) client.logger.log(`Socket.IO is successfully connected with ${ip}:${port}`,"READY");
 
 		//  PLAYER_CONNECTED - NEW_GAME
 		socket.on("NEW_GAME", async () => {
+			await wait(150 * 1000);
 			if(!guildData.plugins.squad.mapVote.enabled) return client.logger.log("Map voting is manually disabled.","DEBUG");
-			await wait(msgFirstTime * 1000); 
+			voter = [];
+			votedTo = [];
 			if (DEBUG) {
-				client.logger.log(`After waiting ${msgFirstTime} seconds, the first broadcast message will be send; ${msgFirstContent}`,"DEBUG");
+				client.logger.log(`Players amount is asked.`,"DEBUG");
 			} else {
-				socket.emit(
-					"rcon.broadcast",
-					this.client.translate("misc/FIRST_BROADCAST", {
-						seconds: msgSecondTime,
-					}),
-					() => {
-						console.log("Broadcast message #1 send.");
-					}
-				);
-			}
-
-			await wait(msgSecondTime * 1000);
-			if (DEBUG) {
-				client.logger.log(`After waiting ${msgThirdTime} seconds, the first broadcast message will be send; ${msgSecondContent}`,"DEBUG");
-			} else {
-				socket.emit(
-					"rcon.broadcast",
-					this.client.translate("misc/SECOND_BROADCAST", {
-						seconds: msgThirdTime,
-					}),
-					() => {
-						console.log("Broadcast message #2 send.");
-					}
-				);
-			}
-			await wait(msgThirdTime * 1000);
-
-			if (DEBUG) {
 				await socket.emit("players", (playerList) => {
 					currentPlayers = playerList.length;
 					client.logger.log(`Current Players after waiting ${msgFirstTime+msgSecondTime+msgThirdTime} seconds is ${currentPlayers}`,"DEBUG");
-
-				});
-			} else {
-				await socket.emit("players", (playerList) => {
-					currentPlayers = playerList.length;
 				});
 			}
 
@@ -292,6 +265,8 @@ module.exports = class {
 			}
 			const pool = this.pool;
 			res = new MYSQLPromiseObjectBuilder(pool);
+			
+			// TODO: make this query dynamic
 			for (let i = 0; i < keepHistoryOfLayers; i++) {
 				res.add(
 					`ignoreLayer_${i}`,
@@ -309,9 +284,6 @@ module.exports = class {
 			ignoreMaps.push(testData.ignoreLayer_1.MAP);
 			ignoreMaps.push(testData.ignoreLayer_2.MAP);
 			ignoreMaps.push(testData.ignoreLayer_3.MAP);
-			// TODO: Toggleable
-
-			// TOOD: event?
 
 			response = await axios.get(
 				"https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/finished.json"
@@ -329,18 +301,6 @@ module.exports = class {
 				canvasVotes.width,
 				canvasVotes.height
 			);
-
-			if (DEBUG) {
-				client.logger.log(`Voting has been started message has been send.`,"DEBUG");
-			} else {
-				socket.emit(
-					"rcon.broadcast",
-					this.client.translate("misc/VOTING_STARTED_BROADCAST"),
-					() => {
-						console.log("Broadcast message voting started has been send.");
-					}
-				);
-			}
 
 			maps = [];
 			mapsName = [];
@@ -369,7 +329,7 @@ module.exports = class {
 				maps = removeMap(maps, maps[index]);
 			}
 
-			text = this.client.translate("misc/EMBED_DESC", {
+			text = client.translate("misc/EMBED_DESC", {
 				seconds: votingTime,
 			});
 
@@ -383,6 +343,22 @@ module.exports = class {
 			);
 
 			await drawMaps(pickedMaps, pickedMapsName);
+			if(DEBUG){
+				console.log(
+					"Voting started message has been send."
+				);
+			} else {
+				socket.emit(
+					"rcon.broadcast",
+					this.client.translate("misc/VOTING_STARTED_BROADCAST"),
+					() => {
+						console.log(
+							"Voting started message has been send."
+						);
+					}
+				);
+			}
+
 			const emojiListLayers = defEmojiList.slice();
 			emojiInfoLayers = {};
 			tempMax = loopSize;
@@ -393,6 +369,7 @@ module.exports = class {
 				text += `${emoji} : \`${option}\`\n\n`;
 				tempMax--;
 			}
+
 			gameLayerImg = await new Discord.MessageAttachment(
 				canvasLayers.toBuffer(),
 				"mapGameLayerVote.png"
@@ -408,131 +385,167 @@ module.exports = class {
 					.setImage("attachment://mapGameLayerVote.png")
 			);
 
-			tempMax = loopSize;
-			for (const emoji of [...defEmojiList]) {
-				if (tempMax <= 0) continue;
-				await wait(250);
-				await voteForLayer.react(emoji);
-				tempMax--;
+			guildData.plugins.squad.mapVote.active = true;
+			guildData.markModified("plugins.squad");
+			await guildData.save();
+			let Layer = {
+				"1": [],
+				"2": [],
+				"3": [],
+				"4": [],
+				"5": [],
+				"6": [],
+			};
+			let string = "";
+			for(let i=1; i<=pickedMapsName.length;i++){
+				string += `| [${i}] ${pickedMapsName[i-1]} |`;
 			}
 
-			const usedEmojisLayers = Object.keys(emojiInfoLayers);
-			const reactionCollectorLayers = voteForLayer.createReactionCollector(
-				(reaction, user) =>
-					usedEmojisLayers.includes(reaction.emoji.name) && !user.bot,
-				{ time: votingTime * 1000 }
+			await socket.emit(
+				"rcon.broadcast",
+				"Voting is starting. Vote by writing ONLY the number of the layer you want to be played next!",
+				() => {
+					console.log(
+						`Voting is starting. Vote by writing ONLY the number of the layer you want to be played next!`
+					);
+				}
 			);
-			const voterInfoLayer = new Map();
-			reactionCollectorLayers.on("collect", async (reaction, user) => {
-				if (usedEmojisLayers.includes(reaction.emoji.name)) {
-					if (!voterInfoLayer.has(user.id))
-						await voterInfoLayer.set(user.id, { emoji: reaction.emoji.name });
-					const votedEmoji = voterInfoLayer.get(user.id).emoji;
-					if (votedEmoji !== reaction.emoji.name) {
-						const lastVote = await voteForLayer.reactions.cache.get(votedEmoji);
-						lastVote.count -= await 1;
-						await lastVote.users.remove(user.id);
-						emojiInfoLayers[votedEmoji].votes -= await 1;
-						await voterInfoLayer.set(user.id, { emoji: reaction.emoji.name });
-					}
-					emojiInfoLayers[reaction.emoji.name].votes += await 1;
-				}
-			});
-			reactionCollectorLayers.on("dispose", (reaction, user) => {
-				if (usedEmojisLayers.includes(reaction.emoji.name)) {
-					voterInfoLayer.delete(user.id);
-					emojiInfoLayers[reaction.emoji.name].votes -= 1;
-				}
-			});
-			reactionCollectorLayers.on("end", async (s) => {
-				checkEmojis = [];
-				s.forEach((emoji) => {
-					checkEmojis.push({
-						emoji: parseInt(emoji._emoji.name.slice(0, 1), 10),
-						amount: emoji.count,
-					});
-				});
-				winner = "";
-				winAmount = 0;
-				checkEmojis.forEach((emoji) => {
-					if (winAmount < emoji.amount) {
-						winner = emoji.emoji;
-						winAmount = emoji.amount;
-					}
-				});
-
-				await voteForLayer.delete();
-
-				await ctxWinner.drawImage(
-					background,
-					0,
-					0,
-					canvasWinner.width,
-					canvasWinner.height
-				);
-				broadcastMessage = "";
-				if (winner) {
-					broadcastMessage = pickedMaps[winner - 1];
-				} else {
-					broadcastMessage = pickedMaps[0];
-				}
-				await drawWinner(broadcastMessage, winAmount);
-
-				if (DEBUG) {
-					channel.send(`AdminSetNextLayer ${broadcastMessage}`);
-				} else {
-					socket.emit(
+			await wait(10 * 1000);
+			await socket.emit(
+				"rcon.broadcast",
+				string,
+				() => {
+					console.log(
+						string
+					);
+				} 
+			);
+			socket.on("CHAT_MESSAGE", async (message) => {
+				if(!guildData.plugins.squad.mapVote.active) return;
+				let found = message.message.match(regex);
+				if(DEBUG) client.logger.log(`[${message.name}] - ${message.message}`,"DEBUG");
+				if(!found) return;
+				switch(found[0]){
+				case "1":
+				case "2":
+				case "3":
+				case "4":
+				case "5":
+				case "6":
+					if(voter.includes(message.name)) return;
+					await voter.push(message.name);
+					await votedTo.push(found);
+					Layer[found].push(message.name || message.steamID)
+					if(DEBUG) client.logger.log(`${message.name} did vote for ${found}`,"DEBUG");
+					await socket.emit(
 						"rcon.execute",
-						`AdminSetNextLayer ${broadcastMessage}`,
+						`AdminWarn ${message.steamID} Voting has been saved. You voted for; ${pickedMapsName[found-1]}. SquadStatsJSPRO™`,
 						(s) => {
 							console.log(s);
 						}
 					);
+					break;
+				default:
+					if(DEBUG) client.logger.log(`Player did write another digit; ${found}`,"DEBUG");
 				}
+			});
 
-				winnerImg = await new Discord.MessageAttachment(
-					canvasWinner.toBuffer(),
-					"mapWinner.png"
+			// Reminder
+			await wait(60 * 1000);
+			await socket.emit(
+				"rcon.broadcast",
+				"[REMINDER] "+string,
+				() => {
+					console.log(
+						"[REMINDER] "+ string
+					);
+				}
+			);
+
+			await wait((votingTime - 60) * 1000);
+			guildData.plugins.squad.mapVote.active = false;
+			guildData.markModified("plugins.squad");
+			await guildData.save();
+			await voteForLayer.delete();
+
+			await ctxWinner.drawImage(
+				background,
+				0,
+				0,
+				canvasWinner.width,
+				canvasWinner.height
+			);
+
+			winAmount=0;
+			for (let i = 1; i <= 6; i++) {
+				if(!Layer[i]) continue;
+				if(winAmount < Layer[i].length){
+					winAmount = Layer[i].length;
+					winner = pickedMaps[i - 1];
+				}
+			}
+			if(!winner){
+				winner = pickedMaps[0];
+			}
+
+			console.log("SON SONUC:",winner, winAmount);
+
+			await drawWinner(winner, winAmount, client);
+
+			if (DEBUG) {
+				channel.send(`AdminSetNextLayer ${winner}`);
+			} else {
+				socket.emit(
+					"rcon.execute",
+					`AdminSetNextLayer ${winner}`,
+					(s) => {
+						console.log(s);
+					}
 				);
+			}
 
-				if (DEBUG) {
-					channel.send(
-						`Winning layer is ${broadcastMessage} - with ${winAmount} votes.`
-					);
-				} else {
-					socket.emit(
-						"rcon.broadcast",
-						this.client.translate("misc/WON_MESSAGE", {
-							broadcastMessage: broadcastMessage,
-							winAmount: winAmount
-						}),
-						() => {
-							console.log(
-								`Winner map has been selected; ${broadcastMessage} | votes; ${winAmount} `
-							);
-						}
-					);
-				}
+			winnerImg = await new Discord.MessageAttachment(
+				canvasWinner.toBuffer(),
+				"mapWinner.png"
+			);
 
-				await channel.send(
-					embedBuilder(
-						client.translate("misc:WINNER_TITLE", {
-							layer: broadcastMessage,
+			if (DEBUG) {
+				channel.send(
+					`Winning layer is ${winner} - with ${winAmount} votes.`
+				);
+			} else {
+				socket.emit(
+					"rcon.broadcast",
+					client.translate("misc/WON_MESSAGE", {
+						winner: winner,
+						winAmount: winAmount
+					}),
+					() => {
+						console.log(
+							`Winner map has been selected; ${winner} | votes; ${winAmount} `
+						);
+					}
+				);
+			}
+
+			await channel.send(
+				embedBuilder(
+					client.translate("misc:WINNER_TITLE", {
+						layer: winner,
+					})
+				)
+					.setDescription(
+						client.translate("misc:WINNER_DESC", {
+							layer: winner,
+							amount: winAmount,
 						})
 					)
-						.setDescription(
-							client.translate("misc:WINNER_DESC", {
-								layer: broadcastMessage,
-								amount: winAmount,
-							})
-						)
-						.setColor(config.embed.color)
-						.setFooter(config.embed.footer)
-						.setTimestamp()
-						.attachFiles(winnerImg)
-						.setImage("attachment://mapWinner.png")
-				);
-			});
+					.setColor(config.embed.color)
+					.setFooter(config.embed.footer)
+					.setTimestamp()
+					.attachFiles(winnerImg)
+					.setImage("attachment://mapWinner.png")
+			);
 		});
 	}
 };
