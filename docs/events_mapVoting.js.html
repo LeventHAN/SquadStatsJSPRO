@@ -1,4 +1,62 @@
-const Discord = require("discord.js"),
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>events/mapVoting.js - SquadStatJSPRO</title>
+    
+    <meta name="description" content="Discord bot and website statistics for your game server (Squad)" />
+    
+        <meta name="keywords" content="squad, squadjs, stats, leaderboard, discord, website" />
+        <meta name="keyword" content="squad, squadjs, stats, leaderboard, discord, website" />
+    
+    
+    
+    <meta property="og:title" content=""/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content=""/>
+    
+    <meta property="og:url" content=""/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav class="wrap">
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MapVote.html">MapVote</a></li><li></li><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li><li><a href="Squad-Configure-Connection.html">Squad-Configure-Connection</a></li><li><a href="Squad-Track-Profile.html">Squad-Track-Profile</a></li><li></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#drawMaps">drawMaps</a></li><li><a href="global.html#drawText">drawText</a></li><li><a href="global.html#drawWinner">drawWinner</a></li><li><a href="global.html#embedBuilder">embedBuilder</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#removeMap">removeMap</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">events/mapVoting.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const Discord = require("discord.js"),
 	{ MessageEmbed } = require("discord.js"),
 	axios = require("axios"),
 	io = require("socket.io-client"),
@@ -127,7 +185,7 @@ async function drawMaps(maps, names) {
 
 	if (!names) return console.error("No object.");
 	layers = [];
-	for (let i = 0; i < maps.length; i++) {
+	for (let i = 0; i &lt; maps.length; i++) {
 		layer = await Canvas.loadImage(
 			`https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/images/${maps[i]}.jpg`
 		);
@@ -136,8 +194,8 @@ async function drawMaps(maps, names) {
 
 	// Draw layer's images
 	width = 0;
-	for (let i = 0; i < names.length; i++) {
-		if (i <= 2) {
+	for (let i = 0; i &lt; names.length; i++) {
+		if (i &lt;= 2) {
 			await ctxLayers.drawImage(layers[i], 120 + width, 90, 400, 400);
 			ctxLayers.font = "42px Bold";
 			ctxLayers.fillStyle = "#fcfc03";
@@ -220,8 +278,8 @@ async function drawWinner(winner, winAmount, totalVotesAmount) {
 }
 
 /**Event for mapvoting.
- * <h2>Usage: </h2>
- * <h3>Catches NEW_GAME event that has been fired via socket-io-server</h3>
+ * &lt;h2>Usage: &lt;/h2>
+ * &lt;h3>Catches NEW_GAME event that has been fired via socket-io-server&lt;/h3>
  *
  * @author LeventHAN
  * @class MapVote
@@ -293,7 +351,7 @@ module.exports = class {
 			res = new MYSQLPromiseObjectBuilder(pool);
 
 			// TODO: make this query dynamic
-			for (let i = 0; i < keepHistoryOfLayers; i++) {
+			for (let i = 0; i &lt; keepHistoryOfLayers; i++) {
 				res.add(
 					`ignoreLayer_${i}`,
 					`SELECT map AS MAP
@@ -337,7 +395,7 @@ module.exports = class {
 
 			response.data.Maps.forEach((map) => {
 				if (
-					!ignoreMaps.includes(map.mapName) &&
+					!ignoreMaps.includes(map.mapName) &amp;&amp;
 					rotationToUse.includes(map.rawName)
 				) {
 					maps.push(map.Name);
@@ -346,7 +404,7 @@ module.exports = class {
 				}
 			});
 			loopSize = maps.length > 6 ? 6 : maps.length;
-			for (let i = 0; i < loopSize; i++) {
+			for (let i = 0; i &lt; loopSize; i++) {
 				index = random.int(0, maps.length - 1);
 				if (!maps[index]) continue;
 				if (!mapsName[index]) continue;
@@ -386,7 +444,7 @@ module.exports = class {
 			emojiInfoLayers = {};
 			tempMax = loopSize;
 			for (const option of pickedMapsName) {
-				if (tempMax <= 0) continue;
+				if (tempMax &lt;= 0) continue;
 				const emoji = emojiListLayers.splice(0, 1);
 				emojiInfoLayers[emoji] = { option: option, votes: 0 };
 				text += `${emoji} : \`${option}\`\n\n`;
@@ -420,7 +478,7 @@ module.exports = class {
 				6: [],
 			};
 			let string = "";
-			for (let i = 1; i <= pickedMapsName.length; i++) {
+			for (let i = 1; i &lt;= pickedMapsName.length; i++) {
 				string += `| [${i}] ${pickedMapsName[i - 1]} |`;
 			}
 
@@ -507,10 +565,10 @@ module.exports = class {
 			winAmount = 0;
 			totalVotesAmount = 0;
 
-			for (let i = 1; i <= 6; i++) {
+			for (let i = 1; i &lt;= 6; i++) {
 				if (!Layer[i]) continue;
 				totalVotesAmount += Layer[i].length;
-				if (winAmount < Layer[i].length) {
+				if (winAmount &lt; Layer[i].length) {
 					winAmount = Layer[i].length;
 					winner = pickedMaps[i - 1];
 				}
@@ -574,3 +632,32 @@ module.exports = class {
 		});
 	}
 };
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sun May 16 2021 21:57:49 GMT+0200 (Orta Avrupa Yaz Saati) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>Squad-Track-Profile - SquadStatJSPRO</title>
+    <title>MapVote - SquadStatJSPRO</title>
     
     <meta name="description" content="Discord bot and website statistics for your game server (Squad)" />
     
@@ -46,7 +46,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Squad-Track-Profile</h1>
+    <h1 class="page-title">MapVote</h1>
     
 
     
@@ -59,8 +59,16 @@
 <header>
     
         <h2>
-        Squad-Track-Profile
+        MapVote
         </h2>
+        
+            <div class="class-description usertext">Command for map voting.
+<h2>Usage: </h2>
+<h3>Write once this to the channel you want the voting embeds to show</h3>
+<code>{prefix}mapvote</code>
+<br />
+<h3>Toggle mapvote</h3>
+<code>{prefix}mapvote stop/start</code></div>
         
     
 </header>
@@ -72,8 +80,10 @@
             
 
     
+    <h2>Constructor</h2>
+    
 
-    <h4 class="name" id="Squad-Track-Profile"><span class="type-signature"></span>new Squad-Track-Profile<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="MapVote"><span class="type-signature"></span>new MapVote<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
@@ -85,7 +95,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="commands_Squad_demo.js.html">commands/Squad/demo.js</a>, <a href="commands_Squad_demo.js.html#line100">line 100</a>
+        <a href="commands_Squad_map-vote.js.html">commands/Squad/map-vote.js</a>, <a href="commands_Squad_map-vote.js.html#line15">line 15</a>
     </li></ul></dd>
     
 
@@ -130,19 +140,6 @@
 
 
 
-
-<div class="description usertext">
-    Command for squad profile stats track.
-<h2>Usage: </h2>
-<h3>Linking your account</h3>
-<code>{prefix}profile {Steam64ID}</code>
-<br />
-<h3>Removing the link from your account</h3>
-<code>{prefix}profile re</code> OR <code>{prefix}profile re-link</code>
-<br />
-<h6>Note: </h6>
-<sub><sup>After linking your account you don't need to specify your steam64ID anymore. Just use; <code>{prefix}profile</code></sup></sub>
-</div>
 
 
 
@@ -220,7 +217,7 @@
 <header>
     
         <h2>
-        Squad-Track-Profile
+        MapVote
         </h2>
         
     
@@ -234,7 +231,7 @@
 
     
 
-    <h4 class="name" id="Squad-Track-Profile"><span class="type-signature"></span>new Squad-Track-Profile<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="MapVote"><span class="type-signature"></span>new MapVote<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
@@ -246,7 +243,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="commands_Squad_profile.js.html">commands/Squad/profile.js</a>, <a href="commands_Squad_profile.js.html#line7">line 7</a>
+        <a href="events_mapVoting.js.html">events/mapVoting.js</a>, <a href="events_mapVoting.js.html#line222">line 222</a>
     </li></ul></dd>
     
 
@@ -293,16 +290,9 @@
 
 
 <div class="description usertext">
-    Command for squad profile stats track.
+    Event for mapvoting.
 <h2>Usage: </h2>
-<h3>Linking your account</h3>
-<code>{prefix}profile {Steam64ID}</code>
-<br />
-<h3>Removing the link from your account</h3>
-<code>{prefix}profile re</code> OR <code>{prefix}profile re-link</code>
-<br />
-<h6>Note: </h6>
-<sub><sup>After linking your account you don't need to specify your steam64ID anymore. Just use; <code>{prefix}profile</code></sup></sub>
+<h3>Catches NEW_GAME event that has been fired via socket-io-server</h3>
 </div>
 
 

@@ -5,12 +5,10 @@ const Command = require("../../base/Command.js");
  * <h3>Write once this to the channel you want the voting embeds to show</h3>
  * <code>{prefix}mapvote</code>
  * <br />
- * <h3>Disabling mapvote</h3>
- * <code>{prefix}mapvote disable</code>
+ * <h3>Toggle mapvote</h3>
+ * <code>{prefix}mapvote stop/start</code>
  *
  * @author LeventHAN
- * @author Alverrt
- * @class Squad-Track-Profile
  * @extends Command
  */
 
@@ -22,14 +20,8 @@ class MapVote extends Command {
 			enabled: true,
 			guildOnly: true,
 			aliases: [],
-			memberPermissions: [
-				"KICK_MEMBERS",
-				"BAN_MEMBERS"
-			],
-			botPermissions: [
-				"SEND_MESSAGES",
-				"EMBED_LINKS"
-			],
+			memberPermissions: ["KICK_MEMBERS", "BAN_MEMBERS"],
+			botPermissions: ["SEND_MESSAGES", "EMBED_LINKS"],
 			nsfw: false,
 			ownerOnly: false,
 			cooldown: 1000,
@@ -40,7 +32,7 @@ class MapVote extends Command {
 
 	async run(message, args, /**@type {{}}*/ data) {
 		let status;
-		switch(args[0]) {
+		switch (args[0]) {
 		case "stop":
 		case "disable":
 			status = false;
@@ -49,19 +41,22 @@ class MapVote extends Command {
 		case "activate":
 			status = true;
 		}
-		if(args[0]){
+		if (args[0]) {
 			data.guild.plugins.squad.mapVote.enabled = status;
 			data.guild.markModified("plugins.squad");
 			data.guild.save();
-			return message.channel.send(message.translate("misc:STATUS_VOTING", {
-				status: ((data.guild.plugins.squad.mapVote.enabled) ? "ON 🟢": "OFF 🔴")
-			}));
+			return message.channel.send(
+				message.translate("misc:STATUS_VOTING", {
+					status: data.guild.plugins.squad.mapVote.enabled ? "ON 🟢" : "OFF 🔴",
+				})
+			);
 		}
 
-		return message.channel.send(message.translate("misc:STATUS_VOTING", {
-			status: ((data.guild.plugins.squad.mapVote.enabled) ? "ON 🟢": "OFF 🔴")
-		}));
-
+		return message.channel.send(
+			message.translate("misc:STATUS_VOTING", {
+				status: data.guild.plugins.squad.mapVote.enabled ? "ON 🟢" : "OFF 🔴",
+			})
+		);
 	}
 }
 

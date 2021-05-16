@@ -41,7 +41,7 @@
     
     <input type="text" id="nav-search" placeholder="Search" />
     
-    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li><li><a href="Squad-Configure-Connection.html">Squad-Configure-Connection</a></li><li><a href="Squad-Track-Profile.html">Squad-Track-Profile</a></li><li></li><li></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#drawMaps">drawMaps</a></li><li><a href="global.html#drawText">drawText</a></li><li><a href="global.html#drawWinner">drawWinner</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#removeMap">removeMap</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="MapVote.html">MapVote</a></li><li></li><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li><li><a href="Squad-Configure-Connection.html">Squad-Configure-Connection</a></li><li><a href="Squad-Track-Profile.html">Squad-Track-Profile</a></li><li></li></ul><h3>Global</h3><ul><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#drawMaps">drawMaps</a></li><li><a href="global.html#drawText">drawText</a></li><li><a href="global.html#drawWinner">drawWinner</a></li><li><a href="global.html#embedBuilder">embedBuilder</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#removeMap">removeMap</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
 </nav>
 
 <div id="main">
@@ -331,7 +331,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="commands_Squad_map-vote.js.html">commands/Squad/map-vote.js</a>, <a href="commands_Squad_map-vote.js.html#line174">line 174</a>
+        <a href="events_mapVoting.js.html">events/mapVoting.js</a>, <a href="events_mapVoting.js.html#line116">line 116</a>
     </li></ul></dd>
     
 
@@ -880,7 +880,7 @@
 
     
 
-    <h4 class="name" id="drawWinner"><span class="type-signature">(async) </span>drawWinner<span class="signature">(winner, winAmount)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="drawWinner"><span class="type-signature">(async) </span>drawWinner<span class="signature">(winner, winAmount, totalVotesAmount)</span><span class="type-signature"></span></h4>
 
     
 
@@ -892,7 +892,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="commands_Squad_map-vote.js.html">commands/Squad/map-vote.js</a>, <a href="commands_Squad_map-vote.js.html#line242">line 242</a>
+        <a href="events_mapVoting.js.html">events/mapVoting.js</a>, <a href="events_mapVoting.js.html#line185">line 185</a>
     </li></ul></dd>
     
 
@@ -912,6 +912,15 @@
 
     
 
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>LeventHAN</li>
+        
+            <li>Alverrt</li>
+        </ul>
+    </dd>
     
 
     
@@ -1013,6 +1022,29 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>totalVotesAmount</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The total votes.</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -1031,6 +1063,164 @@
 
 
 
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="embedBuilder"><span class="type-signature"></span>embedBuilder<span class="signature">(title)</span><span class="type-signature"> &rarr; {MessageEmbed}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="events_mapVoting.js.html">events/mapVoting.js</a>, <a href="events_mapVoting.js.html#line93">line 93</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Builds an embed message.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>title</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The title of the embed message</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Discord embed message
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">MessageEmbed</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -1210,7 +1400,7 @@ Formats the date for the logger
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="commands_Squad_map-vote.js.html">commands/Squad/map-vote.js</a>, <a href="commands_Squad_map-vote.js.html#line161">line 161</a>
+        <a href="events_mapVoting.js.html">events/mapVoting.js</a>, <a href="events_mapVoting.js.html#line103">line 103</a>
     </li></ul></dd>
     
 
@@ -1857,7 +2047,7 @@ Reads the contents of an directory, walks inside the directory
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Tue May 11 2021 13:32:28 GMT+0200 (Orta Avrupa Yaz Saati) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sun May 16 2021 21:57:50 GMT+0200 (Orta Avrupa Yaz Saati) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

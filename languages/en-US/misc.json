@@ -30,6 +30,6 @@
     "STATUS_VOTING": "**Map Voting is {{status}}**",
     "WON_WITH_VOTES": "Won with {{winAmount}} votes",
     "VOTING_STARTED_BROADCAST": "!! Map Voting is << STARTING >> !!",
-    "WON_MESSAGE": "Winning layer is {{broadcastMessage}} - won with {{winAmount}} votes.",
+    "WON_MESSAGE": "Winning layer is {{winner}} - won with {{winAmount}} votes.",
     "EMBED_DESC": "*To vote, react using the correspoding emoji.\nThe voting will end in **{{seconds}} seconds**.\n\n"
 }

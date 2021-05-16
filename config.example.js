@@ -107,13 +107,13 @@ module.exports = {
 				"Logar_TC_v1",
 				"CAF_Manic_RAAS_v3",
 				"Albasrah_invasion_v1",
-			]
+			],
 		},
 		messages: {
 			firstTimeOut: 50, // Will wait exactly X seconds before sending ANY broadcast message...
 			secondTimeOut: 40, // Will wait exactly X seconds before sending the second broadcast message.
-			thirdTimeOut: 10 // Will wait exactly X seconds before counting current active players and sending the VOTING STARTED message.
-		}
+			thirdTimeOut: 10, // Will wait exactly X seconds before counting current active players and sending the VOTING STARTED message.
+		},
 	},
 	/* Dashboard configuration */
 	dashboard: {

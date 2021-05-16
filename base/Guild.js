@@ -34,7 +34,7 @@ module.exports = mongoose.model(
 					ignoredMaps: [],
 					mapVote: {
 						enabled: false,
-						active: false
+						active: false,
 					},
 				},
 				// Welcome messages
