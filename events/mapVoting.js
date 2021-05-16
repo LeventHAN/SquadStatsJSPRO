@@ -27,6 +27,7 @@ const canvasWinner = Canvas.createCanvas(1680, 1080),
 	ctxWinner = canvasWinner.getContext("2d");
 
 const config = require("../config.js"),
+	DEBUG = config.support.debug,
 	ip = config.squadMapVoting.socketIO.ip,
 	port = config.squadMapVoting.socketIO.port,
 	token = config.squadMapVoting.socketIO.token,
@@ -34,11 +35,9 @@ const config = require("../config.js"),
 	rotationLayers = config.squadMapVoting.layers.normalLayers,
 	votingTime = config.squadMapVoting.votingTime,
 	seedThreeshold = config.squadMapVoting.seedThreeshold,
-	msgFirstTime = config.squadMapVoting.messages.firstTimeOut,
-	msgSecondTime = config.squadMapVoting.messages.secondTimeOut,
-	msgThirdTime = config.squadMapVoting.messages.thirdTimeOut,
+	mapBeginTimeout = config.squadMapVoting.messages.mapBeginTimeout,
 	keepHistoryOfLayers = config.squadMapVoting.keepHistoryOfLayers;
-let DEBUG = config.support.debug;
+
 const defEmojiList = [
 	"\u0031\u20E3",
 	"\u0032\u20E3",
@@ -250,17 +249,14 @@ module.exports = class {
 			return client.logger.log(err, "ERROR");
 		});
 
-		// DEBUG = true;
-
 		if (socket)
 			client.logger.log(
 				`Socket.IO is successfully connected with ${ip}:${port}`,
 				"READY"
 			);
 
-		//  PLAYER_CONNECTED - NEW_GAME
 		socket.on("NEW_GAME", async () => {
-			await wait(150 * 1000);
+			await wait(mapBeginTimeout * 1000);
 			if (!guildData.plugins.squad.mapVote.enabled)
 				return client.logger.log("Map voting is manually disabled.", "DEBUG");
 
@@ -271,7 +267,7 @@ module.exports = class {
 					currentPlayers = playerList.length;
 					client.logger.log(
 						`Current Players after waiting ${
-							msgFirstTime + msgSecondTime + msgThirdTime
+							mapBeginTimeout
 						} seconds is ${currentPlayers}`,
 						"DEBUG"
 					);
@@ -371,13 +367,12 @@ module.exports = class {
 
 			await drawMaps(pickedMaps, pickedMapsName);
 			if (DEBUG) {
-				console.log("Voting started message has been send.");
+				client.logger.log("Voting started message has been send..", "DEBUG");
 			} else {
 				socket.emit(
 					"rcon.broadcast",
 					this.client.translate("misc/VOTING_STARTED_BROADCAST"),
 					() => {
-						console.log("Voting started message has been send.");
 					}
 				);
 			}
@@ -424,19 +419,18 @@ module.exports = class {
 				string += `| [${i}] ${pickedMapsName[i - 1]} |`;
 			}
 
-			await socket.emit(
-				"rcon.broadcast",
-				"Voting is starting. Vote by writing ONLY the number of the layer you want to be played next!",
-				() => {
-					console.log(
-						"Voting is starting. Vote by writing ONLY the number of the layer you want to be played next!"
-					);
-				}
-			);
-			await wait(10 * 1000);
-			await socket.emit("rcon.broadcast", string, () => {
-				console.log(string);
-			});
+			if(DEBUG){
+				client.logger.log("Voting is starting. Vote by writing ONLY the number of the layer you want to be played next!", "DEBUG");
+			} else {
+				await socket.emit(
+					"rcon.broadcast",
+					"Voting is starting. Vote by writing ONLY the number of the layer you want to be played next!",
+					() => {
+					}
+				);
+				await wait(5 * 1000);
+				await socket.emit("rcon.broadcast", string, () => {});
+			}
 			voter = [];
 			votedTo = [];
 			winner = "";
@@ -470,8 +464,7 @@ module.exports = class {
 						} Voting has been saved. You voted for; ${
 							pickedMapsName[found - 1]
 						}. SquadStatsJSPRO™`,
-						(s) => {
-							console.log(s);
+						() => {
 						}
 					);
 					break;
@@ -484,13 +477,21 @@ module.exports = class {
 				}
 			});
 
-			// Reminder
-			await wait(60 * 1000);
-			await socket.emit("rcon.broadcast", "[REMINDER] " + string, () => {
-				console.log("[REMINDER] " + string);
-			});
+			if(DEBUG){
+				client.logger.log(
+					"Sending 3 time broadcast message with the layer names.",
+					"DEBUG"
+				);
+			} else {
+				await wait(votingTime/3 * 1000);
+				await socket.emit("rcon.broadcast", string, () => {
+				});
+				await wait(votingTime/3 * 1000);
+				await socket.emit("rcon.broadcast", string, () => {
+				});
+				await wait((votingTime/3) * 1000);
+			}
 
-			await wait((votingTime - 60) * 1000);
 			guildData.plugins.squad.mapVote.active = false;
 			guildData.markModified("plugins.squad");
 			await guildData.save();
@@ -519,15 +520,16 @@ module.exports = class {
 				winner = pickedMaps[0];
 			}
 
-			console.log("SON SONUC:", winner, winAmount);
-
 			await drawWinner(winner, winAmount, totalVotesAmount);
 
 			if (DEBUG) {
 				channel.send(`AdminSetNextLayer ${winner}`);
 			} else {
 				socket.emit("rcon.execute", `AdminSetNextLayer ${winner}`, (s) => {
-					console.log(s);
+					client.logger.log(
+						`${s}`,
+						"DEBUG"
+					);
 				});
 			}
 
@@ -546,8 +548,9 @@ module.exports = class {
 						winAmount: winAmount,
 					}) + `(${totalVotesAmount} total votes)`,
 					() => {
-						console.log(
-							`Winner map has been selected; ${winner} | votes; ${winAmount}. (${totalVotesAmount} total votes) `
+						client.logger.log(
+							`Winner map has been selected; ${winner} | votes; ${winAmount}. (${totalVotesAmount} total votes) `,
+							"DEBUG"
 						);
 					}
 				);
