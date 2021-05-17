@@ -15,8 +15,8 @@ module.exports = {
 			port: "7894", // The port for socket.IO
 			token: "MySexyPassword666", // Password for socket.IO
 		},
-		precondition: 10, // amount of votes to set the next layer.
-		guildID: "676475499538808842", // The bot must be in this guild
+		precondition: 10, // minimum amount of votes to set the next layer.
+		guildID: "676475499538808842", // You Discord Server ID. The bot must be in this guild!
 		channelID: "838466150249529395", // The channelID where the map voting message will be send
 		votingTime: 300, // Time that the voting will last. In seconds. Default is 5 minutes.
 		seedThreeshold: 44, // Players amount for seed mode
@@ -110,9 +110,7 @@ module.exports = {
 			],
 		},
 		messages: {
-			firstTimeOut: 50, // Will wait exactly X seconds before sending ANY broadcast message...
-			secondTimeOut: 40, // Will wait exactly X seconds before sending the second broadcast message.
-			thirdTimeOut: 10, // Will wait exactly X seconds before counting current active players and sending the VOTING STARTED message.
+			mapBeginTimeout: 150 // Will wait exactly X seconds beforse starting the map voting recommended to be more than 80...
 		},
 	},
 	/* Dashboard configuration */
