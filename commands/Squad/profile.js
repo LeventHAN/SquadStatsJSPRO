@@ -118,7 +118,6 @@ class Profile extends Command {
 
 			data.memberData.squad.steam64ID = steamUID;
 			data.memberData.markModified("squad");
-			data.memberData.save();
 			message.success("squad/profile:SUCCESS", {
 				steamID: steamUID,
 			});
@@ -252,21 +251,6 @@ class Profile extends Command {
 				.setFooter(data.config.embed.footer) // Sets the footer of the embed
 				.setTimestamp();
 			message.channel.send(profileEmbed);
-		}
-
-		/**
-		 * Saves the current trackdate and tracking status in the mongodb which will be used later to determine if it should refetch new data from MySQL DB or grab it from mongoDB.
-		 *
-		 * @param {number} dt - The dateTime of now in epoch.
-		 */
-		function saveTracking(dt) {
-			data.memberData.squad.trackDate = dt;
-
-			if (!data.memberData.squad.tracking) {
-				data.memberData.squad.tracking = true;
-			}
-			data.memberData.markModified("squad");
-			data.memberData.save();
 		}
 
 		/**
@@ -441,9 +425,12 @@ class Profile extends Command {
 			);
 
 			await res.waitForAll(data.memberData.squad);
+			data.memberData.squad.trackDate = dt;
+			if (!data.memberData.squad.tracking) {
+				data.memberData.squad.tracking = true;
+			}
 			await data.memberData.markModified("squad");
 			await data.memberData.save();
-			await saveTracking(dt);
 			if (data.guild.plugins.squad.rolesEnabled) {
 				await giveDiscordRoles();
 			}
