@@ -168,7 +168,7 @@ module.exports = class {
 		if (
 			message.guild &&
 			data.guild.ignoredChannels.includes(message.channel.id) &&
-			!message.member.hasPermission("MANAGE_MESSAGES")
+			!message.member.permissions.has("MANAGE_MESSAGES")
 		) {
 			message.delete();
 			message.author.send(

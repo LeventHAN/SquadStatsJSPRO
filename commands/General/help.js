@@ -149,7 +149,7 @@ class Help extends Command {
 				donateLink: "https://paypal.me/11tstudio?locale.x=en_US",
 				dashboardLink: "https://l-event.studio",
 				// inviteLink: await this.client.generateInvite({
-				// 	permissions: ["ADMINISTRATOR"],
+				// 	permissions: [Discord.Permissions.FLAGS.ADMINISTRATOR]
 				// }),
 				githubLink: "https://github.com/11TStudio",
 				supportLink: "https://discord.gg/eF3nYAjhZ9",
@@ -159,7 +159,11 @@ class Help extends Command {
 			message.translate("general/help:TITLE", {
 				name: this.client.user.username,
 			}),
-			this.client.user.displayAvatarURL()
+			this.client.user.displayAvatarURL({
+				size: 512,
+				dynamic: true,
+				format: "png",
+			})
 		);
 		return message.channel.send(embed);
 	}

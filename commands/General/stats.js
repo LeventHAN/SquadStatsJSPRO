@@ -65,7 +65,7 @@ class Stats extends Command {
 				donateLink: "https://paypal.me/11tstudio?locale.x=en_US",
 				dashboardLink: "https://l-event.studio",
 				// inviteLink: await this.client.generateInvite({
-				// 	permissions: ["ADMINISTRATOR"],
+				// 	permissions: [Discord.Permissions.FLAGS.ADMINISTRATOR]
 				// }),
 				githubLink: "https://github.com/11TStudio",
 				supportLink: "https://discord.gg/eF3nYAjhZ9",

@@ -146,9 +146,18 @@ module.exports = class {
 						canvas.toBuffer(),
 						"goodbye-image.png"
 					);
-					channel.send(message, attachment);
+					channel.send(message, {
+						files: [attachment],
+						allowedMentions: {
+							parse: ["users", "everyone", "roles"],
+						},
+					});
 				} else {
-					channel.send(message);
+					channel.send(message, {
+						allowedMentions: {
+							parse: ["users", "everyone", "roles"],
+						},
+					});
 				}
 			}
 		}

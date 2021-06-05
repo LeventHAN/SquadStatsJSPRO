@@ -110,7 +110,7 @@ module.exports = {
 			],
 		},
 		messages: {
-			mapBeginTimeout: 150 // Will wait exactly X seconds beforse starting the map voting recommended to be more than 80...
+			mapBeginTimeout: 150, // Will wait exactly X seconds beforse starting the map voting recommended to be more than 80...
 		},
 	},
 	/* Dashboard configuration */
@@ -123,7 +123,7 @@ module.exports = {
 		expressSessionPassword: "3D02fDf51e!@!#$L!@L#$", // Express session password (it can be what you want)
 		failureURL: "http://MY-IP-OR-DOMAIN", // url on which users will be redirected if they click the cancel button (discord authentication)
 	},
-	mongoDB: "mongodb://localhost:27017/SquadStatJSv3", // The URl of the mongodb database
+	mongoDB: "mongodb://localhost:27017/SquadStatJSv3", // The URl of the mongodb database (SECURE YOUR CONNECTION IF YOU WILL USE IT REMOTELY)
 	prefix: "sq!", // The default prefix for the bot
 	/* For the embeds (embeded messages) */
 	embed: {

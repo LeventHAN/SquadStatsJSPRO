@@ -266,9 +266,7 @@ module.exports = class {
 				await socket.emit("players", (playerList) => {
 					currentPlayers = playerList.length;
 					client.logger.log(
-						`Current Players after waiting ${
-							mapBeginTimeout
-						} seconds is ${currentPlayers}`,
+						`Current Players after waiting ${mapBeginTimeout} seconds is ${currentPlayers}`,
 						"DEBUG"
 					);
 				});
@@ -372,8 +370,7 @@ module.exports = class {
 				socket.emit(
 					"rcon.broadcast",
 					this.client.translate("misc/VOTING_STARTED_BROADCAST"),
-					() => {
-					}
+					() => {}
 				);
 			}
 
@@ -419,14 +416,16 @@ module.exports = class {
 				string += `| [${i}] ${pickedMapsName[i - 1]} |`;
 			}
 
-			if(DEBUG){
-				client.logger.log("Voting is starting. Vote by writing ONLY the number of the layer you want to be played next!", "DEBUG");
+			if (DEBUG) {
+				client.logger.log(
+					"Voting is starting. Vote by writing ONLY the number of the layer you want to be played next!",
+					"DEBUG"
+				);
 			} else {
 				await socket.emit(
 					"rcon.broadcast",
 					"Voting is starting. Vote by writing ONLY the number of the layer you want to be played next!",
-					() => {
-					}
+					() => {}
 				);
 				await wait(5 * 1000);
 				await socket.emit("rcon.broadcast", string, () => {});
@@ -464,8 +463,7 @@ module.exports = class {
 						} Voting has been saved. You voted for; ${
 							pickedMapsName[found - 1]
 						}. SquadStatsJSPRO™`,
-						() => {
-						}
+						() => {}
 					);
 					break;
 				default:
@@ -477,19 +475,17 @@ module.exports = class {
 				}
 			});
 
-			if(DEBUG){
+			if (DEBUG) {
 				client.logger.log(
 					"Sending 3 time broadcast message with the layer names.",
 					"DEBUG"
 				);
 			} else {
-				await wait(votingTime/3 * 1000);
-				await socket.emit("rcon.broadcast", string, () => {
-				});
-				await wait(votingTime/3 * 1000);
-				await socket.emit("rcon.broadcast", string, () => {
-				});
-				await wait((votingTime/3) * 1000);
+				await wait((votingTime / 3) * 1000);
+				await socket.emit("rcon.broadcast", string, () => {});
+				await wait((votingTime / 3) * 1000);
+				await socket.emit("rcon.broadcast", string, () => {});
+				await wait((votingTime / 3) * 1000);
 			}
 
 			guildData.plugins.squad.mapVote.active = false;
@@ -526,10 +522,7 @@ module.exports = class {
 				channel.send(`AdminSetNextLayer ${winner}`);
 			} else {
 				socket.emit("rcon.execute", `AdminSetNextLayer ${winner}`, (s) => {
-					client.logger.log(
-						`${s}`,
-						"DEBUG"
-					);
+					client.logger.log(`${s}`, "DEBUG");
 				});
 			}
 

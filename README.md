@@ -13,7 +13,12 @@
 [![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/11TStudio/SquadStatsJSPRO.svg?style=flat-square)](https://github.com/11TStudio/SquadStatsJSPRO/pulls)
 [![GitHub issues](https://img.shields.io/github/stars/11TStudio/SquadStatsJSPRO.svg?style=flat-square)](https://github.com/11TStudio/SquadStatsJSPRO/stargazers)
 
-<br><br>
+<br>
+
+[![](https://img.shields.io/badge/discord.js-v13.0.0--dev-blue.svg?logo=npm)](https://github.com/discordjs)
+
+<br>
+<br>
 
 </div>
 
