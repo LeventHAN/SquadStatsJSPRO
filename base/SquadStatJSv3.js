@@ -60,6 +60,17 @@ class SquadStatJSv3 extends Client {
 		this.databaseCache.usersReminds = new Collection(); // members with active reminds
 		this.databaseCache.mutedUsers = new Collection(); // members who are currently muted
 
+		if(this.config.socketIO.enabled){
+			const io = require("socket.io-client"); // Load the socket.io client
+			// make socketio connection to an IP address
+			this.socket = io.connect("ws://" + this.config.socketIO.ip + ":" + this.config.socketIO.port, {
+				auth: {
+					token: this.config.socketIO.token,
+				},
+			});
+		}
+
+
 		this.player = new Player(this, {
 			leaveOnEmpty: false,
 		});
@@ -145,6 +156,7 @@ class SquadStatJSv3 extends Client {
 					message.error("music/play:LIVE_VIDEO");
 					break;
 				default:
+					console.log(error);
 					message.error("music/play:ERR_OCCURRED", {
 						error,
 					});
