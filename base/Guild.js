@@ -22,16 +22,19 @@ module.exports = mongoose.model(
 				// Plugins data
 				/* SQUAD DATABASE SETTINGS */
 				squad: {
-					enabled: false,
-					rolesEnabled: false,
-					rolesGiven: false,
-					host: null,
-					port: null,
-					database: null,
-					user: null,
-					password: null,
-					serverID: null,
-					ignoredMaps: [],
+					stats: {
+						enabled: false,
+						rolesEnabled: false,
+						rolesGiven: false,
+					},
+					db: {
+						host: null,
+						port: null,
+						database: null,
+						user: null,
+						password: null,
+						serverID: null,
+					},
 					mapVote: {
 						enabled: false,
 						active: false,
