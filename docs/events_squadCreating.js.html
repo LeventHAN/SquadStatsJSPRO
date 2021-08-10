@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>events/squadCreating.js - SquadStatJSPRO</title>
+    
+    <meta name="description" content="Discord bot and website statistics for your game server (Squad)" />
+    
+        <meta name="keywords" content="squad, squadjs, stats, leaderboard, discord, website" />
+        <meta name="keyword" content="squad, squadjs, stats, leaderboard, discord, website" />
+    
+    
+    
+    <meta property="og:title" content=""/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content=""/>
+    
+    <meta property="og:url" content=""/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav class="wrap">
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/11TStudio/SquadStatsJSPRO" target="_blank" class="menu-item" id="website_link" >Project Website</a></h2><h2><a href="https://discord.gg/9F2Ng5C" target="_blank" class="menu-item" id="discord_link" >Discord</a></h2><h3>Classes</h3><ul><li><a href="CreateSquad.html">CreateSquad</a></li><li><a href="MapVote.html">MapVote</a></li><li></li><li><a href="MYSQLPromiseObjectBuilder.html">MYSQLPromiseObjectBuilder</a><ul class='methods'><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#add">add</a></li><li data-type='method' style='display: none;'><a href="MYSQLPromiseObjectBuilder.html#waitForAll">waitForAll</a></li></ul></li><li><a href="Squad-Configure-Connection.html">Squad-Configure-Connection</a></li><li><a href="Squad-Track-Profile.html">Squad-Track-Profile</a></li></ul><h3>Global</h3><ul><li><a href="global.html#checkCurrentLayer">checkCurrentLayer</a></li><li><a href="global.html#checkSquadRookie">checkSquadRookie</a></li><li><a href="global.html#dateTimePad">dateTimePad</a></li><li><a href="global.html#drawMaps">drawMaps</a></li><li><a href="global.html#drawWinner">drawWinner</a></li><li><a href="global.html#embedBuilder">embedBuilder</a></li><li><a href="global.html#format">format</a></li><li><a href="global.html#removeMap">removeMap</a></li><li><a href="global.html#walkDirectory">walkDirectory</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">events/squadCreating.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const Discord = require("discord.js"),
+	{ MessageEmbed } = require("discord.js"),
+	io = require("socket.io-client"),
+	Canvas = require("canvas"),
+	{ resolve } = require("path"),
+	random = require("random"),
+	MYSQLPromiseObjectBuilder = require("../base/MYSQLPromiseObjectBuilder.js"),
+	SquadCheckers = require("../helpers/squadChecker");
+
+const wait = require("util").promisify(setTimeout);
+const mysql = require("mysql");
+
+
+const config = require("../config.js"),
+	DEBUG = config.support.debug,
+	ip = config.socketIO.ip,
+	port = config.socketIO.port,
+	token = config.socketIO.token,
+	seedLayers = config.squadMapVoting.layers.seedLayers,
+	rotationLayers = config.squadMapVoting.layers.normalLayers,
+	votingTime = config.squadMapVoting.votingTime,
+	seedThreeshold = config.squadMapVoting.seedThreeshold,
+	mapBeginTimeout = config.squadMapVoting.messages.mapBeginTimeout,
+	keepHistoryOfLayers = config.squadMapVoting.keepHistoryOfLayers;
+
+/**Builds an embed message.
+ *
+ * @param {String} title - The title of the embed message
+ * @returns {MessageEmbed} Discord embed message
+ */
+const embedBuilder = (title) => {
+	return new MessageEmbed().setTitle(`${title}`);
+};
+
+
+/**Event for creating squads.
+ * &lt;h2>Usage: &lt;/h2>
+ * &lt;h3>Catches TODO event that has been fired via socket-io-server&lt;/h3>
+ *
+ * @author LeventHAN
+ * @class CreateSquad
+ * @extends Command
+ */
+module.exports = class {
+	constructor(client) {
+		this.client = client;
+		this.pool = null;
+	}
+
+	async run(guildID, channelID, socket) {
+		const client = this.client;
+		const channel = client.channels.cache.find(
+			(channel) => channel.id === channelID
+		);
+		let isRookie;
+		
+		const regex = /\d+/gm;
+		const guildData = await this.client.findOrCreateGuild({ id: guildID });
+
+
+		/**EXAMPLE
+		 *
+		 * {
+			player: {
+				playerID: '16',
+				steamID: '76561198177277337',
+				name: '[Blitz]Generalfeld',
+				teamID: '1',
+				squadID: '3',
+				squad: {
+					squadID: '3',
+					squadName: 'PUSU',
+					size: '3',
+					locked: 'False',
+					teamID: '1',
+					teamName: 'US Brigade Combat Team'
+				},
+				suffix: 'Generalfeld'
+			},
+			oldSquadID: null,
+			newSquadID: '3'
+			}
+		*/
+		socket.on("PLAYER_SQUAD_CHANGE", async (player) => {
+
+			console.log("===========================================");
+			console.log("===========================================");
+			console.log("===========================================");
+			console.log(player);
+			console.log("===========================================");
+			console.log("===========================================");
+			console.log("===========================================");
+
+			if(!player || !player.player.squad) return;
+
+			if(player.player.squad.size === "1") {
+				isRookie = await SquadCheckers.checkSquadRookie({
+					steamID: player.player.steamID,
+					prefTime: 6000 // minutes
+				});
+				if(isRookie.private &amp;&amp; isRookie.rookie){
+					await socket.emit(
+						"rcon.execute",
+						`AdminWarn ${
+							player.player.steamID
+						} It seems you have a private profile! Keep in mind that we don't recommend Rookies to lead squads.`,
+						(info) => {
+							console.log(info);
+						}
+					);
+				}
+				if(isRookie.rookie &amp;&amp; !isRookie.private){
+					await socket.emit(
+						"rcon.execute",
+						`AdminWarn ${
+							player.player.steamID
+						} It seems you are a Rookie! We don't recommend Rookies to lead Squad/Teams.`,
+						(info) => {
+							console.log(info);
+						}
+					);
+				}
+
+				const serverInfo = await SquadCheckers.checkCurrentLayer();
+				await channel.send(
+					embedBuilder(
+						`${player.player.name} has created a new squad!`
+					)
+						.setDescription(
+							"Yani bir squad olusturuldu!"
+						)
+						.addField(
+							"Olusturan Oyuncu:",
+							`\`\`\`-Isim: ${player.player.name}\n-Squad Status: ${(isRookie.private ? "Private Account" : (isRookie.rookie) ? "Rookie":"Not Rookie")}\n-Squad Hours: ${Math.round((isRookie.playHours)/60)} \n\`\`\``,
+							false)
+						.addField(
+							"Takim Ismi:",
+							player.player.squad.teamName,
+							true)
+						.addField(
+							"Squad Ismi:",
+							`**${player.player.squad.squadName}**`,
+							false)
+						.addField(
+							"Harita:",
+							`${serverInfo.details.map}`,
+							true
+						)
+						.addField(
+							"Game Mod:",
+							`${serverInfo.details.gameMode}`,
+							true
+						)
+						.addField(
+							"Anlık Oyuncu:",
+							`${serverInfo.players}`,
+							true
+						)
+						.setColor((isRookie) ? "#fc1d00" : config.embed.color)
+						.setFooter(config.embed.footer)
+						.setTimestamp()
+				);
+			}
+		});
+	}
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Tue Aug 10 2021 11:54:16 GMT+0300 (GMT+03:00) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>
