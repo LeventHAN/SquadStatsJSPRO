@@ -71,7 +71,7 @@ class Stats extends Command {
 				supportLink: "https://discord.gg/eF3nYAjhZ9",
 			})
 		);
-		message.channel.send(statsEmbed);
+		message.channel.send({ embeds: [statsEmbed] });
 	}
 }
 
