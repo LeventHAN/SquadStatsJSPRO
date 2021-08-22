@@ -1,7 +1,7 @@
 {
     "DESCRIPTION": "Shows the mentioned user or author squad profile",
     "USAGE": "Track your squad account.\n Untrack your squad account. \n Check someone elses squad account.",
-    "EXAMPLES": "**Track your account for first time;**```{{prefix}}profile STEAM64ID```\n**See your stats;**```{{prefix}}profile```\n**Re-Link Steam64ID;**```{{prefix}}profile re-link```\n**Look for other players stats;**```{{prefix}}profile @Username#0001```",
+    "EXAMPLES": "**Track your account for first time;**```{{prefix}}profile STEAM64ID```\n**See your stats;**```{{prefix}}profile```\n**Re-Link Your Own Steam64ID;**```{{prefix}}profile re-link```\n**Look for other players stats;**```{{prefix}}profile @Username#0001```\n**(ADMIN ONLY) Re-link by Discord Profile;**```{{prefix}}profile re-link @Username#0001```\n**(ADMIN ONLY) Re-link by Steam64ID (for dead Discord Accounts);**```{{prefix}}profile re-steam <STEAM64ID_HERE>```",
     "TITLE": "{{username}}'s profile",
     "NO_BIO": "",
     "SUCCESS": "Profile is linked to your discord account successfully! Please wait while we fetch your data from the DataBase.",
@@ -35,5 +35,7 @@
     "ALREADY_TRACKED": "You are already been tracked! Please use `{{prefix}}update` to update your stats.",
     "ALREADY_EXISTING": "This Steam account has been claimed already by **<@{{username}}>**!",
     "UPDATE": "**{{creator}}** your stats are updated.",
-    "RE_LINKED": "Your profile link is changed, you can now re-link your steam."
+    "RE_LINKED": "Your profile link is changed, you can now re-link your steam.",
+    "ADMIN_RE_LINKED": "An admin has re-linked {{profile}}'s profile.",
+    "ADMIN_RE_LINKED_STEAM": "An admin has re-linked {{profile}}."
 }

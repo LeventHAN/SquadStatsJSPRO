@@ -38,27 +38,39 @@ class Profile extends Command {
 	}
 
 	async run(message, args, /**@type {{}}*/ data) {
-		if (!data.guild.plugins.squad.enabled)
+		if (!data.guild.plugins.squad.stats.enabled)
 			return message.error("squad/profile:NOT_ENABLED");
 
 		const client = this.client;
+
+		await message.guild.members.fetch();
+		const administrators = message.guild.members.cache.filter(
+			(m) => m.permissions.has("ADMINISTRATOR") && !m.user.bot
+		);
+
 		let steamUID;
 		let claimer = "";
 		if (this.pool == null) {
 			// Only create one instance
 			this.pool = mysql.createPool({
 				connectionLimit: 10, // Call all
-				host: data.guild.plugins.squad.host,
-				port: data.guild.plugins.squad.port,
-				user: data.guild.plugins.squad.user,
-				password: data.guild.plugins.squad.password,
-				database: data.guild.plugins.squad.database,
+				host: data.guild.plugins.squad.db.host,
+				port: data.guild.plugins.squad.db.port,
+				user: data.guild.plugins.squad.db.user,
+				password: data.guild.plugins.squad.db.password,
+				database: data.guild.plugins.squad.db.database,
 			});
 		}
 		const pool = this.pool;
+		const members = await this.client.membersData
+			.find({ guildID: message.guild.id })
+			.lean();
 
 		let member = await client.resolveMember(args[0], message.guild);
-		if (!member) member = message.member;
+
+		if (!member) {
+			member = message.member;
+		}
 
 		// Check if the user is a bot
 		if (member.user.bot) {
@@ -72,7 +84,8 @@ class Profile extends Command {
 				: await client.findOrCreateMember({
 					id: member.id,
 					guildID: message.guild.id,
-				  });
+				});
+
 		const userData =
 			member.id === message.author.id
 				? data.userData
@@ -86,9 +99,58 @@ class Profile extends Command {
 			return message.success("squad/profile:RE_LINKED");
 		}
 
-		const members = await this.client.membersData
-			.find({ guildID: message.guild.id })
-			.lean();
+		if (args[1] === "re" || args[1] === "re-link") {
+			let isAdmin = false;
+			await administrators.forEach((admin) => {
+				if(admin.id === data.memberData.id) {
+					isAdmin = true;
+				}
+			});
+			if(isAdmin) {
+				data.memberData.squad.tracking = false;
+				data.memberData.squad.steam64ID = "";
+				data.memberData.markModified("squad");
+				data.memberData.save();
+				return message.success("squad/profile:ADMIN_RE_LINKED", {
+					profile: member.user.tag
+				});
+			} else {
+				return message.error("You are not an admin!");
+			}
+		}
+
+
+		if (args[0] === "re-steam" || args[0] === "re-s") {
+			let isAdmin = false;
+			await administrators.forEach((admin) => {
+				if(admin.id === data.memberData.id) {
+					isAdmin = true;
+				}
+			});
+			if(isAdmin) {
+				members.forEach(async (member) => {
+					if (
+						member &&
+						member.squad.steam64ID === args[1]
+					) {
+						const memberDataSteam = await this.client.findOrCreateMember({
+							id: member.id,
+							guildID: message.guild.id,
+						});
+						memberDataSteam.squad.tracking = false;
+						memberDataSteam.squad.steam64ID = "";
+						memberDataSteam.markModified("squad");
+						memberDataSteam.save();
+						return message.success("squad/profile:ADMIN_RE_LINKED_STEAM", {
+							profile: args[1]
+						});
+					}
+				});
+			} else {
+				return message.error("You are not an admin!");
+			}
+		}
+
 
 		members.forEach((element) => {
 			if (
@@ -250,7 +312,7 @@ class Profile extends Command {
 				.setColor(data.config.embed.color) // Sets the color of the embed
 				.setFooter(data.config.embed.footer) // Sets the footer of the embed
 				.setTimestamp();
-			message.channel.send(profileEmbed);
+			message.channel.send({ embeds: [profileEmbed] });
 		}
 
 		/**
@@ -264,72 +326,72 @@ class Profile extends Command {
 			});
 			let roleName = "KD 0+";
 			switch (true) {
-			case parseFloat(data.memberData.squad.kd) < 0.5:
-				roleName = "KD 0+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 1.0:
-				roleName = "KD 0.5+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 1.5:
-				roleName = "KD 1+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 2.0:
-				roleName = "KD 1.5+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 2.5:
-				roleName = "KD 2+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 3.0:
-				roleName = "KD 2.5+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 3.5:
-				roleName = "KD 3+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 4.0:
-				roleName = "KD 3.5+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 4.5:
-				roleName = "KD 4+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 5.0:
-				roleName = "KD 4.5+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 5.5:
-				roleName = "KD 5+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 6.0:
-				roleName = "KD 5.5+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 6.5:
-				roleName = "KD 6+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 7:
-				roleName = "KD 6.5+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 7.5:
-				roleName = "KD 7+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 8:
-				roleName = "KD 7.5+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 8.5:
-				roleName = "KD 8+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 9:
-				roleName = "KD 8.5+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 9.5:
-				roleName = "KD 9+";
-				break;
-			case parseFloat(data.memberData.squad.kd) < 10:
-				roleName = "KD 9.5+";
-				break;
-			case parseFloat(data.memberData.squad.kd) > 10:
-				roleName = "KD 10+";
-				break;
-			default:
-				roleName = "KD 0+";
-				break;
+				case parseFloat(data.memberData.squad.kd) < 0.5:
+					roleName = "KD 0+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 1.0:
+					roleName = "KD 0.5+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 1.5:
+					roleName = "KD 1+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 2.0:
+					roleName = "KD 1.5+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 2.5:
+					roleName = "KD 2+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 3.0:
+					roleName = "KD 2.5+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 3.5:
+					roleName = "KD 3+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 4.0:
+					roleName = "KD 3.5+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 4.5:
+					roleName = "KD 4+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 5.0:
+					roleName = "KD 4.5+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 5.5:
+					roleName = "KD 5+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 6.0:
+					roleName = "KD 5.5+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 6.5:
+					roleName = "KD 6+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 7:
+					roleName = "KD 6.5+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 7.5:
+					roleName = "KD 7+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 8:
+					roleName = "KD 7.5+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 8.5:
+					roleName = "KD 8+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 9:
+					roleName = "KD 8.5+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 9.5:
+					roleName = "KD 9+";
+					break;
+				case parseFloat(data.memberData.squad.kd) < 10:
+					roleName = "KD 9.5+";
+					break;
+				case parseFloat(data.memberData.squad.kd) > 10:
+					roleName = "KD 10+";
+					break;
+				default:
+					roleName = "KD 0+";
+					break;
 			}
 			const role = message.guild.roles.cache.find((r) => r.name === roleName);
 			message.member.roles.add(role).catch(console.error);
@@ -350,7 +412,7 @@ class Profile extends Command {
 			!data.memberData.squad.tracking ||
 			(data.memberData.squad.tracking && lastUpdate < dt)
 		) {
-			let res = new MYSQLPromiseObjectBuilder(pool);
+			const res = new MYSQLPromiseObjectBuilder(pool);
 			res.add(
 				"steamName",
 				`SELECT lastName FROM DBLog_SteamUsers WHERE steamID = "${steamUID}"`,
@@ -431,7 +493,7 @@ class Profile extends Command {
 			}
 			await data.memberData.markModified("squad");
 			await data.memberData.save();
-			if (data.guild.plugins.squad.rolesEnabled) {
+			if (data.guild.plugins.squad.stats.rolesEnabled) {
 				await giveDiscordRoles();
 			}
 			await sendEmbed();
