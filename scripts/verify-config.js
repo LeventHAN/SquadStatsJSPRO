@@ -14,10 +14,10 @@ const checks = [
 	() => {
 		console.log("\n\nEnvironnement");
 		return new Promise((res) => {
-			if (parseInt(process.version.split(".")[0].split("v")[1]) >= 12) {
-				success("node.js version should be equal or higher than v12");
+			if (parseInt(process.version.split(".")[0].split("v")[1]) >= 16) {
+				success("node.js version should be equal or higher than v16");
 			} else {
-				error("node.js version should be equal or higher than v12");
+				error("node.js version should be equal or higher than v16");
 			}
 			res();
 		});
@@ -25,8 +25,18 @@ const checks = [
 	() => {
 		console.log("\n\nDiscord Bot");
 		return new Promise((res) => {
-			const Discord = require("discord.js");
-			const client = new Discord.Client();
+			const { Client, Intents } = require("discord.js");
+
+			const client = new Client({
+				intents: [
+					Intents.FLAGS.GUILDS,
+					Intents.FLAGS.GUILD_MEMBERS,
+					Intents.FLAGS.GUILD_MESSAGES,
+					Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+					Intents.FLAGS.GUILD_VOICE_STATES,
+					Intents.FLAGS.DIRECT_MESSAGES,
+				],
+			});
 			let readyResolve;
 			new Promise((resolve) => (readyResolve = resolve));
 			client
@@ -37,7 +47,7 @@ const checks = [
 					if (!client.guilds.cache.has("568120814776614924")) {
 						error(
 							"should be added to the emojis server",
-							"please add your bot on this server: https://emojis.SquadStatJSv3-bot.fr to make the emojis working"
+							"Please add your bot on this server: https://discord.gg/NPkySYKMkN to make the emojis working"
 						);
 					} else {
 						success("should be added to the emojis server");
@@ -79,27 +89,9 @@ const checks = [
 		});
 	},
 	() => {
-		console.log("\n\nAPI keys");
+		console.log("\n\nAPI keys [Not ready yet]");
 		return new Promise(async (resolve) => {
-			if (!config.apiKeys.dbl) {
-				ignore("DBL API is not configured, key should not be checked.");
-			} else {
-				const res = await fetch("https://top.gg/api/bots/check?userId=test", {
-					method: "POST",
-					headers: {
-						Authorization: config.apiKeys.dbl,
-					},
-				});
-				const result = await res.json();
-				if (result.error && result.error === "Unauthorized") {
-					error(
-						"should be a valid DBL key",
-						"get your key here: https://top.gg/ OR delete the key from the config if you don't have a key"
-					);
-				} else {
-					success("should be a valid DBL key");
-				}
-			}
+			// Do some api checks.
 			resolve();
 		});
 	},
@@ -153,7 +145,7 @@ const checks = [
 	}
 	console.log(
 		chalk.yellow(
-			"\n\nThank you for using SquadStatJSv3. If you need more help, join our support server here: https://discord.SquadStatJSv3-bot.fr"
+			"\n\nThank you for using SquadStatJSv3. If you need more help, join our support server here: https://discord.gg/9F2Ng5C"
 		)
 	);
 	process.exit(0);
