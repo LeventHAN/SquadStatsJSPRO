@@ -24,8 +24,13 @@
 
 ## About
 
-An advanced version of SquadStatJS (tracking your squad stats) with advanced discord commands to manage your discord server.
-Next to squad tracking it uses (some of) Atlanta's basic features/commands to help admins moderate their servers.
+All-in-one advanced discord bot and website combo.<br>
+Manage your Squad server from the new dashboard/panel using already existing RCON connection of your SquadJS application, no redundant RCON connections!<br>
+Use in-game map voting ability and squad stats track to entertain your players.<br>
+Make custom suggestions and event registrations from Discord.<br>
+
+<br>
+For squad usage you NEED to have `SquadJS/socket.io` and `SquadJS/dblog` configured.
 
 ## Using SquadStatsJS PRO
 
@@ -51,7 +56,7 @@ If a player did missconfigure their profile, they can run: `{prefix}profile re-l
 - Git
 - MongoDB ([Windows](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/#download-the-installer) || [Linux](https://docs.mongodb.com/manual/administration/install-on-linux/))
   - Just download and install it. No need to configure anything. One time install and forget about it.
-- [Node.js](https://nodejs.org/en/) (14.X) - [Download](https://nodejs.org/en/)
+- [Node.js](https://nodejs.org/en/) (^16.2) - [Download](https://nodejs.org/en/)
 - NPM
 
 ### Postrequisites
