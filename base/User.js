@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-//	Canvas = require("canvas"); Not Required
 
 const genToken = () => {
 	let token = "";
