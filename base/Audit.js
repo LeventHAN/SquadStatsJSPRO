@@ -12,6 +12,7 @@ module.exports = mongoose.model(
 				steam: null,
 			},
 		},
+		ip: { type: String, default: "0.0.0.0" },
 		details: {
 			type: Object,
 			default: {
