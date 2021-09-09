@@ -94,14 +94,14 @@ module.exports = {
 		logs: "XXXXXXXXXXX", // The channel ID of logs
 		port: 8080, // Dashboard port
 		expressSessionPassword: "XXXXXXXXXXX", // Express session password (it can be what you want)
-		failureURL: "https://l-event.studio", // url on which users will be redirected if they click the cancel button (discord authentication)
+		failureURL: "https://leventhan.info", // url on which users will be redirected if they click the cancel button (discord authentication)
 	},
 	mongoDB: "mongodb://localhost:27017/SquadStatJSv3", // The URl of the mongodb database
 	prefix: "!", // The default prefix for the bot
 	/* For the embeds (embeded messages) */
 	embed: {
 		color: "#0091fc", // The default color for the embeds
-		footer: "LeventHAN | l-event.studio", // And the default footer for the embeds
+		footer: "LeventHAN | leventhan.info", // And the default footer for the embeds
 	},
 	/* Bot's owner informations */
 	owner: {
@@ -124,7 +124,7 @@ module.exports = {
 	/* The others utils links */
 	others: {
 		github: "https://github.com/11TStudio", // Founder's github account
-		donate: "https://l-event.studio", // Donate link
+		donate: "https://leventhan.info", // Donate link
 	},
 	/* The Bot status */
 	status: [
@@ -133,7 +133,7 @@ module.exports = {
 			type: "LISTENING",
 		},
 		{
-			name: "WebSite: l-event.studio",
+			name: "WebSite: leventhan.info",
 			type: "PLAYING",
 		},
 	],

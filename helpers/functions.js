@@ -42,14 +42,14 @@ module.exports = {
 		const channel = guild.channels.cache.find(
 			(ch) =>
 				(ch.permissionsFor(member.id).has("CREATE_INSTANT_INVITE") &&
-					ch.type === "text") ||
-				ch.type === "voice"
+					ch.type === "GUILD_TEXT") ||
+				ch.type === "GUILD_VOICE"
 		);
 		if (channel) {
 			const invite = await channel.createInvite({ maxAge: 0 }).catch(() => {});
 			return invite ? invite.url : null;
 		} else {
-			return "https://l-event.studio";
+			return "https://leventhan.info";
 		}
 	},
 
