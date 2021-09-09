@@ -1,0 +1,16 @@
+{
+  "name": "SquadStatsJSPRO",
+  "version": "0.1.0",
+  "description": "API documentation for SquadStatsJSPRO's API",
+  "title": "API Documentation",
+  "withGenerator": false,
+  "sampleUrl": false,
+  "defaultVersion": "0.0.0",
+  "apidoc": "0.3.0",
+  "generator": {
+    "name": "apidoc",
+    "time": "2021-08-28T21:09:12.110Z",
+    "url": "https://apidocjs.com",
+    "version": "0.29.0"
+  }
+}
