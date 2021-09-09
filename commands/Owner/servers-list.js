@@ -51,7 +51,7 @@ class ServersList extends Command {
 			)
 			.setDescription(description);
 
-		const msg = await message.channel.send(embed);
+		const msg = await message.channel.send({ embeds: [embed] });
 
 		await msg.react("⬅");
 		await msg.react("➡");

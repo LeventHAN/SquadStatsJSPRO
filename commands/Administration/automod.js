@@ -33,7 +33,7 @@ class Automod extends Command {
 			if (
 				message.mentions.channels
 					.filter(
-						(ch) => ch.type === "text" && ch.guild.id === message.guild.id
+						(ch) => ch.type === "GUILD_TEXT" && ch.guild.id === message.guild.id
 					)
 					.first()
 			) {

@@ -31,12 +31,6 @@ class Configuration extends Command {
 			guildData.prefix
 		);
 
-		// Squad DB Status
-		embed.addField(
-			message.translate("administration/configuration:SQUAD_HOST"),
-			guildData.squadDB.host
-		);
-
 		// Ignored channels
 		embed.addField(
 			message.translate("administration/configuration:IGNORED_CHANNELS_TITLE"),
@@ -149,7 +143,7 @@ class Configuration extends Command {
 			)}](${this.client.config.supportURL})`
 		);
 
-		message.channel.send(embed);
+		message.channel.send({ embeds: [embed] });
 	}
 }
 

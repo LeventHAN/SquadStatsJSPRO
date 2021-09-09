@@ -63,7 +63,7 @@ class Stats extends Command {
 				message.translate("general/stats:LINKS_TITLE"),
 			message.translate("misc:STATS_FOOTER", {
 				donateLink: "https://paypal.me/11tstudio?locale.x=en_US",
-				dashboardLink: "https://l-event.studio",
+				dashboardLink: "https://leventhan.info",
 				// inviteLink: await this.client.generateInvite({
 				// 	permissions: [Discord.Permissions.FLAGS.ADMINISTRATOR]
 				// }),

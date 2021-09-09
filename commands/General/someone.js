@@ -34,7 +34,7 @@ class Someone extends Command {
 			.addField(message.translate("common:ID"), member.user.id, true)
 			.setThumbnail(member.user.displayAvatarURL())
 			.setColor(data.config.embed.color);
-		message.channel.send(embed);
+		message.channel.send({ embeds: [embed] });
 	}
 }
 

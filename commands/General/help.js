@@ -85,7 +85,7 @@ class Help extends Command {
 				.setFooter(this.client.config.embed.footer);
 
 			// and send the embed in the current channel
-			return message.channel.send(groupEmbed);
+			return message.channel.send({ embeds: [groupEmbed] });
 		}
 
 		const categories = [];
@@ -147,7 +147,7 @@ class Help extends Command {
 			"\u200B",
 			message.translate("misc:STATS_FOOTER", {
 				donateLink: "https://paypal.me/11tstudio?locale.x=en_US",
-				dashboardLink: "https://l-event.studio",
+				dashboardLink: "https://leventhan.info",
 				// inviteLink: await this.client.generateInvite({
 				// 	permissions: [Discord.Permissions.FLAGS.ADMINISTRATOR]
 				// }),
@@ -165,7 +165,7 @@ class Help extends Command {
 				format: "png",
 			})
 		);
-		return message.channel.send(embed);
+		return message.channel.send({ embeds: [embed] });
 	}
 }
 

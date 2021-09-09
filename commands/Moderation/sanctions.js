@@ -47,7 +47,7 @@ class Sanctions extends Command {
 					username: user.tag,
 				})
 			);
-			return message.channel.send(embed);
+			return message.channel.send({ embeds: [embed] });
 		} else {
 			memberData.sanctions.forEach((s) => {
 				embed.addField(
@@ -60,7 +60,7 @@ class Sanctions extends Command {
 			});
 		}
 
-		message.channel.send(embed);
+		message.channel.send({ embeds: [embed] });
 	}
 }
 

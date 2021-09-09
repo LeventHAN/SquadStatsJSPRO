@@ -47,7 +47,7 @@ class Facepalm extends Command {
 		);
 
 		m.delete();
-		message.channel.send(attachment);
+		message.channel.send({ files: [attachment] });
 	}
 }
 

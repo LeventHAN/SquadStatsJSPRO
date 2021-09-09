@@ -157,7 +157,7 @@ class Userinfo extends Command {
 				);
 		}
 
-		message.channel.send(embed);
+		message.channel.send({ embeds: [embed] });
 	}
 }
 

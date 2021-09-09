@@ -36,7 +36,10 @@ class Qrcode extends Command {
 			)
 			.setColor(data.config.embed.color);
 
-		pleaseWait.edit(message.translate("images/qrcode:SUCCESS"), { embed });
+		pleaseWait.edit({
+			embeds: [embed],
+			content: message.translate("images/qrcode:SUCCESS"),
+		});
 	}
 }
 

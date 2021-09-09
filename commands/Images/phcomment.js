@@ -51,7 +51,7 @@ class Phcomment extends Command {
 				json.message,
 				"phcomment.png"
 			);
-			message.channel.send(attachment);
+			message.channel.send({ files: [attachment] });
 			m.delete();
 		} catch (e) {
 			console.log(e);

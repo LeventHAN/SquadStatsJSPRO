@@ -31,7 +31,7 @@ class Avatar extends Command {
 			avatarURL,
 			`avatar.${avatarURL.split(".").pop().split("?")[0]}`
 		);
-		message.channel.send(attachment);
+		message.channel.send({ files: [attachment] });
 	}
 }
 
