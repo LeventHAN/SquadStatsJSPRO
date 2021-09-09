@@ -20,7 +20,7 @@ class MYSQLPromiseObjectBuilder {
 	 */
 	async add(key, query, def = null, DBKey) {
 		this.keys.push(key);
-		let response = new Promise((res) => {
+		const response = new Promise((res) => {
 			this.pool.query(query, (err, result) => {
 				// Call from Pool, Auto closes connection
 				if (result && result[0] != null) {
@@ -39,7 +39,7 @@ class MYSQLPromiseObjectBuilder {
 	 * @memberof MYSQLPromiseObjectBuilder
 	 */
 	async waitForAll(data = {}) {
-		let values = await Promise.all(this.values);
+		const values = await Promise.all(this.values);
 
 		for (let i = 0; i < values.length; i++) {
 			data[this.keys[i]] = values[i];
