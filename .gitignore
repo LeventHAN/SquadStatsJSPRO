@@ -7,10 +7,6 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
-
-# DB
-giveaways.json
-
 # Mac OS files
 .DS_Store
 
