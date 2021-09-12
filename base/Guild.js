@@ -16,6 +16,26 @@ module.exports = mongoose.model(
 		/* CONFIGURATION */
 		language: { type: String, default: languages.find((l) => l.default).name }, // Language of the guild
 		prefix: { type: String, default: config.prefix }, // Default or custom prefix of the guild
+		dashboard: {
+			type: Object, default: {
+				showNotifications: {
+					onConnect: true,
+					onDisconnect: true,
+					onSquadJoin: true,
+					onSquadLeave: true,
+					onSquadUpdate: true,
+					onAdminRequest: true,
+					notifyAboutUpdates: true,
+				},
+				updatePlayersTable: {
+					onConnect: true,
+					onDisconnect: true,
+					onSquadJoin: true,
+					onSquadLeave: true,
+					onSquadUpdate: true,
+				}
+			}
+		},
 		plugins: {
 			type: Object,
 			default: {
@@ -38,36 +58,15 @@ module.exports = mongoose.model(
 					mapVote: {
 						enabled: false,
 						active: false,
+						rotations: {
+							type: Object,
+							default: {
+								"Default": {
+									layers: [],
+								},
+							}
+						},
 					},
-				},
-				// Welcome messages
-				welcome: {
-					enabled: false, // Whether the welcome messages are enabled
-					message: null, // The welcome message
-					channel: null, // The channel to send the welcome messages
-					withImage: null, // Whether the welcome images are enabled
-				},
-				// Goodbye messages
-				goodbye: {
-					enabled: false, // Whether the goodbye messages are enabled
-					message: null, // The goodbye message
-					channel: null, // The channel to send the goodbye messages
-					withImage: null, // Whether the goodbye images are enabled
-				},
-				// Autorole
-				autorole: {
-					enabled: false, // Whether the autorole is enabled
-					role: null, // The role to add when a member join the server
-				},
-				// Auto moderation
-				automod: {
-					enabled: false, // Whether the auto moderation is enabled
-					ignored: [], // The channels in which the auto moderation is disabled
-				},
-				// Auto sanctions
-				warnsSanctions: {
-					kick: false, // The number of warns required to kick the user
-					ban: false, // The number of warns required to ban the user
 				},
 				suggestions: false, // the channel in which the suggestions will be sent
 				modlogs: false, // the channel in which the moderation logs (mute, kick, ban, etc...) will be sent
@@ -75,19 +74,9 @@ module.exports = mongoose.model(
 				logs: false, // the channel in which the logs (message deleted, etc...) will be sent
 			},
 		},
-		slowmode: {
-			type: Object,
-			default: {
-				// Servers slowmode
-				users: [],
-				channels: [],
-			},
-		},
-		casesCount: { type: Number, default: 0 },
 		ignoredChannels: { type: Array, default: [] }, // Channels ignored by the bot
 		customCommands: { type: Array, default: [] }, // Custom commands of the guild
 		commands: { type: Array, default: [] }, // Commands logs
 		autoDeleteModCommands: { type: Boolean, default: false }, // Whether to auto delete moderation commands
-		disabledCategories: { type: Array, default: [] }, // Disabled categories
 	})
 );
