@@ -47,8 +47,6 @@ module.exports = class {
 			client.dashboard.load(client);
 		}
 
-		await console.log(await client.getAllAvaibleAccesLevels());
-
 		let i = 0;
 
 		setInterval(function () {

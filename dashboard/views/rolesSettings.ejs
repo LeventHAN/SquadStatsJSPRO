@@ -139,7 +139,7 @@
                             <div class="row">
                             <div class="col-md-6">
                                <h3>Add WhiteList</h3>
-                                <form id="addWhitelistForm" action="" method="POST">
+                                <form id="addWhitelistForm" action="/squad-api/whitelist/addUserWhitelist" method="POST">
                                     <div class="form-group">
                                         <label for="steamID">SteamID</label>
                                         <input type="text" class="form-control" id="steamID" name="steamID" placeholder="SteamID">
@@ -157,18 +157,20 @@
                                         <input type="text" class="form-control" id="description" name="description" placeholder="Description">
                                     </div>
                                     <button type="submit" class="btn btn-primary">Add</button>
+                                </form>
                             </div>
 
                             <hr>
                             <div class="col-md-6">
                                 <h3>Add Group</h3>
-                                <form id="addGroup" action="/" method="POST">
+                                <form id="addGroup" action="/squad-api/whitelist/addGroup" method="POST">
                                     <div class="form-group">
                                         <label for="group_name">Group Name</label>
-                                        <input type="text" class="form-control" id="group_name" name="steamID" placeholder="GroupName">
+                                        <input type="text" class="form-control" id="group_name" name="group" placeholder="GroupName">
                                         <small class="form-text text-muted">No space or special characters!<br>Permissions can be added later from the right menu.</small>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Add</button>
+                                </form>
                             </div>
                         </div>
                         </div>
@@ -190,7 +192,7 @@
                                 <h3 class="box-title">Importing Your Admin.cfg *</h3>
                                 <h6><span style="color:darkred">* !! IMPORTANT !! </span>This will wipe your existing data away! <br>Must be the orginal admin.cfg from your server!</h6>
                             </div>
-                            <form action="/squad-api/import" method="post" enctype="multipart/form-data">
+                            <form action="/squad-api/whitelist/import" method="post" enctype="multipart/form-data">
                                 <input accept=".cfg" type="file" class="form-control form-control-file" name="whitelistfile"/>
                                 <br>
                                 <div class="box-footer mt--3">
@@ -243,7 +245,7 @@
                         allowOutsideClick: () => !Swal.isLoading()
                         }).then(async (result) => {
                             if (result.isConfirmed) {
-                                await axios.post(`${window.location.origin}/squad-api/players/remove`, {
+                                await axios.post(`${window.location.origin}/squad-api/whitelist/removeUserWhitelist`, {
                                     steamUID: steamID,
                                     reason: result.value
                                 })

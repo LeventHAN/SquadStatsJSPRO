@@ -620,7 +620,7 @@ router.get("/whitelist/:token", async function(req, res){
 });
 
 
-router.post("/import", CheckAuth, async function(req, res, next) {
+router.post("/whitelist/import", CheckAuth, async function(req, res, next) {
 	const userRole = await req.client.getRoles(req.session.user.id);
 	const canSee = await req.client.canAccess("roles", req.userInfos.id);
 	if(!canSee)
@@ -803,7 +803,7 @@ router.get("/url/regenerate", CheckAuth, async function(req, res){
 });
 
 /**
- * @api {post} /roles/players/remove Remove the whitelist from a player
+ * @api {post} /roles/whitelist/removeUserWhitelist Remove the whitelist from a player
  * @apiName RemoveWhitelistPlayer
  * @apiGroup WhiteList
  *
@@ -824,7 +824,7 @@ router.get("/url/regenerate", CheckAuth, async function(req, res){
 		"message": "You are doing something wrong."
 	}
  */
-router.post("/players/remove", CheckAuth, async function(req, res){
+router.post("/whitelist/removeUserWhitelist", CheckAuth, async function(req, res){
 	if(!req.body.steamUID || !req.body.reason) return res.json({ status: "nok", message: "You are doing something wrong." });
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
@@ -897,11 +897,60 @@ router.post("/whitelist/roles/removePermission", CheckAuth, async function(req, 
 		role: req.body.role,
 		permission: req.body.permission,
 	};
-	await req.client.addWhitelistRolePermission(req.body.role, req.body.permission);
+	
 	const log = await req.client.addLog({ action: "WHITELIST_GROUPE_PERM_REMOVE", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: { details: moreDetails}});
 	await log.save();
 	await req.client.removeWhitelistRolePermission(req.body.role, req.body.permission);
 	return res.json({status: "ok", message: "Permission removed!"});
+});
+
+router.post("/whitelist/addGroup", CheckAuth, async function(req, res) {
+	if(!req.body.group) return res.json({ status: "nok", message: "You are doing something wrong." });
+	const steamAccount = {
+		steam64id: req.session?.passport?.user?.id,
+		displayName: req.session?.passport?.user?.displayName,
+		identifier: req.session?.passport?.user?.identifier,
+	};
+	const discordAccount = {
+		id: req.session.user.id,
+		username: req.session?.user?.username,
+		discriminator: req.session?.user?.discriminator,
+	};
+
+	// trim and make sure group is not empty and has no special characters or spaces
+	const group = req.body.group.trim().replace(/[^a-zA-Z0-9_]/g, "");
+	if(!group) return res.json({ status: "nok", message: "You are doing something wrong." });
+
+	const moreDetails = {
+		group: group,
+	};
+	await req.client.addWhitelistGroup(group);
+	const log = await req.client.addLog({ action: "WHITELIST_GROUP_ADD", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: { details: moreDetails}});
+	await log.save();
+	return res.redirect(303, "/roles");
+});
+
+router.post("/whitelist/addUserWhitelist", CheckAuth, async function(req, res){
+	if(!req.body.steamID || !req.body.description || !req.body.role) return res.json({ status: "nok", message: "You are doing something wrong." });
+	const steamAccount = {
+		steam64id: req.session?.passport?.user?.id,
+		displayName: req.session?.passport?.user?.displayName,
+		identifier: req.session?.passport?.user?.identifier,
+	};
+	const discordAccount = {
+		id: req.session.user.id,
+		username: req.session?.user?.username,
+		discriminator: req.session?.user?.discriminator,
+	};
+	const moreDetails = {
+		player: req.body.steamID,
+		description: req.body.description,
+		role: req.body.role,
+	};
+	await req.client.addUserWhitelist(req.body.steamID, req.body.role, req.body.description);
+	const log = await req.client.addLog({ action: "PLAYER_WHITELIST_ADD", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: { details: moreDetails}});
+	await log.save();
+	return res.redirect(303, "/roles");
 });
 
 module.exports = router;

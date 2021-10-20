@@ -383,6 +383,30 @@ class SquadStatsJSv3 extends Client {
 		await whitelists.save();
 	}
 
+	// will add a new group to the whitelist schema 
+	async addWhitelistGroup(group){
+		const whitelists = await this.whitelists.findOne({});
+		if(!whitelists) return;
+		whitelists.roles[group] = {
+			permissions: [],
+			name: group
+		};
+		await whitelists.markModified("roles");
+		await whitelists.save();
+	}
+
+	// will add whitelist to an user
+	async addUserWhitelist(steamID, role, description){
+		const whitelists = await this.whitelists.findOne({});
+		if(!whitelists) return;
+		whitelists.memberData[steamID] = {
+			role: role,
+			description: description
+		};
+		await whitelists.markModified("memberData");
+		await whitelists.save();
+	}
+
 	// Righnot hard coded. Might wanna change this...
 	async getAllAvaibleAccesLevels(){
 		return [
