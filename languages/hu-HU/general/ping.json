@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "Bot pingjének megtekinétsése",
-    "USAGE": "{{prefix}}ping",
-    "EXAMPLES": "{{prefix}}ping",
-    "CONTENT": "Pong! Az én pingem `{{ping}}` ms."
-}

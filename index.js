@@ -6,9 +6,9 @@ const util = require("util"),
 	readdir = util.promisify(fs.readdir),
 	mongoose = require("mongoose");
 
-// Load SquadStatJSv3 class
-const SquadStatJSv3 = require("./base/SquadStatJSv3"),
-	client = new SquadStatJSv3();
+// Load SquadStatsJSv3 class
+const SquadStatsJSv3 = require("./base/SquadStatsJSv3"),
+	client = new SquadStatsJSv3();
 
 const init = async () => {
 	// Search for all commands
@@ -74,6 +74,10 @@ const init = async () => {
 
 	const languages = require("./helpers/languages");
 	client.translations = await languages();
+	// Create the permissions if not existing
+	await client.createPermissions();
+	// Create the whitelist groups if not existing
+	await client.createWhitelist();
 };
 
 init();

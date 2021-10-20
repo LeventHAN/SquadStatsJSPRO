@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Kérd le az összes szűrőt és azok állapotának listáját",
-    "USAGE": "{{prefix}}filters",
-    "EXAMPLES": "{{prefix}}filters",
-    "TITLE": "**Szűrők**",
-    "CONTENT": "Itt található az összes engedélyezett vagy letiltott szűrő listája.\nA (z) `{{prefix}}filter` segítségével megváltoztathatod az állapotát."
-}

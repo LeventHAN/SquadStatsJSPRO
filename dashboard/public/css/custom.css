@@ -4,3 +4,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+
+.navbar {
+    z-index: 999999999;
+}

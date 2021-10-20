@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "Kısa linkler yap!",
-    "USAGE": "{{prefix}}shorturl [url]",
-    "EXAMPLES": "{{prefix}}shorturl https://google.com.tr",
-    "MISSING_URL": "Lütfen uygun bir url giriniz!"
-}

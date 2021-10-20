@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+	<%- include('includes/head') %>
+	<%- include('includes/socketio') %>
+	<link rel="stylesheet" href="//cdn.datatables.net/1.11.0/css/jquery.dataTables.min.css"></link>
+	<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"
+            defer></script>
+	<style>
+		.card-body {
+			padding: 0.4rem !important;
+		}
+		.tippy-box {
+			position: relative;
+			background-color: #33333345 !important;
+			color: #fff;
+			border-radius: 4px;
+			font-size: 14px;
+			line-height: 1.4;
+			outline: 0;
+			transition-property: transform,visibility,opacity;
+		}
+		table, .table {
+			width: 100% !important;
+		}
+		thead input {
+			width: 100%;
+		}
+	</style>
+	<body>
+		<%- include('./partials/sidebar') %>
+		<div class="main-content">
+		<!-- Top navbar -->
+		<%- include('./partials/navbar') %>
+		<!-- Header -->
+		<%- include('./partials/header') %>
+			<!-- Content Wrapper. Contains page content -->
+			<div class="container-fluid mt--7">
+				<div class="card bg-gradient-neutral shadow p-5">
+					<div class="row mt-2">
+                        <!-- Make 2 tables next to each other -->
+						<div class="col-md-6" >
+							<div class="card bg-gradient-neutral shadow p-2">
+								<div class="card-body">
+									<h4 class="card-title">
+										<i class="fas fa-chart-bar"></i>
+										<span id="team1">Team 1 Name</span>
+									</h4>
+									<table class="table datatable" id="team1_players" onmouseover="isHovering(true);" onmouseout="isHovering(false);">
+									</table>
+								</div>
+							</div>
+						</div>
+					<div class="col-md-6">
+						<div class="card bg-gradient-neutral shadow p-2">
+							<div id="team2Table" class="card-body">
+								<h4 class="card-title">
+									<i class="fas fa-chart-bar"></i>
+									<span id="team2">Team 2 Name</span>
+								</h4>
+								<table class="table datatable" id="team2_players" onmouseover="isHovering(true);" onmouseout="isHovering(false);">
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Footer includes credits and version -->
+			</div>
+			<%- include('./partials/footer') %>
+		</div>
+		
+		<%- include('./partials/scripts') %>
+		<%- include('./partials/playersTable') %>
+	</body>
+</html>

@@ -66,7 +66,7 @@ class Report extends Command {
 		).id;
 		const error = Discord.Util.parseEmoji(this.client.customEmojis.error).id;
 
-		repChannel.send(embed).then(async (m) => {
+		repChannel.send({ embeds: [embed]}).then(async (m) => {
 			await m.react(success);
 			await m.react(error);
 		});

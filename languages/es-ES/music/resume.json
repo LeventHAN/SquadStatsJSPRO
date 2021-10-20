@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "¡Pausa la canción actual!",
-    "USAGE": "{{prefix}}resume",
-    "EXAMPLES": "{{prefix}}resume",
-    "SUCCESS": "▶️ ¡Música reanudada!"
-}

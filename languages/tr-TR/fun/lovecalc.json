@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Birbirinizi ne kadar seviyorsunuz?\n*Bu bir şaka komutu, ciddiye almayın*",
-    "USAGE": "{{prefix}}lovecalc [@üye1] (@üye2)",
-    "EXAMPLES": "{{prefix}}lovecalc @LeventHAN™#0001\n{{prefix}}lovecalc @LeventHAN™#0001 @SquadStatJSv3#6770",
-    "MISSING": "Önce iki kişiden bahsetmen gerek!",
-    "CONTENT": "İşte ** {{firstUsername}} ** ile ** {{secondUsername}} ** arasında ** {{percent}}% ** aşk!\n**Tebrikler!**"
-}

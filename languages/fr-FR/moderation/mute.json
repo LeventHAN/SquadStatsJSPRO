@@ -1,9 +1,0 @@
-{
-    "DESCRIPTION": "Empêche un membre d'envoyer des messages et de se connecter à une salle de discussion vocale pendant une période définie !",
-    "USAGE": "{{prefix}}mute [@user] [time]",
-    "EXAMPLES": "{{prefix}}mute @LeventHAN™#0001 10m Spam",
-    "MISSING_MEMBER": "Veuillez préciser un utilisateur valide à mute !",
-    "MUTED_DM": "Bonjour {{username}},\nVous venez d'être mute de **{{server}}** par **{{moderator}}** for **{{time}}** pour **{{reason}}** !",
-    "MUTED": "**{{username}}** est mute pendant **{{time}}** pour **{{reason}}** !",
-    "CASE": "Mute | Cas #{{count}}"
-}

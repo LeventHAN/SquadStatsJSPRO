@@ -1,5 +1,0 @@
-{
-    "DESCRIPTION": "\"Captcha\" képet hozok létre vászon használatával",
-    "USAGE": "{{prefix}}facepalm (@tag)",
-    "EXAMPLES": "{{prefix}}facepalm\n{{prefix}}facepalm LeventHAN™#0001"
-}

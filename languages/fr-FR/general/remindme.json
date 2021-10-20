@@ -1,9 +1,0 @@
-{
-    "DESCRIPTION": "Add a new personal reminder",
-    "USAGE": "{{prefix}}remindme [message]",
-    "EXAMPLES": "{{prefix}}remindme 24h Commande work\n{{prefix}}remindme 3m Sortir les pâtes de la casserole!",
-    "MISSING_MESSAGE": "You must enter a message!",
-    "SAVED": "Rappel enregistré, vous recevez un message à la fin du temps !",
-    "TITLE": "SquadStatJSv3 Rappel",
-    "CREATED": "Message créé {{time}}"
-}

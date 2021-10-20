@@ -1,0 +1,25 @@
+const express = require("express"),
+	CheckAuth = require("../auth/CheckAuth"),
+	router = express.Router(),
+	config = require("../../config");
+
+
+router.get("/", CheckAuth, async(req, res, next) => {
+	//if(req.isAuthenticated()){
+	const userRole = await req.client.getRoles(req.session.user.id);
+	const canSee = await req.client.canAccess("dashboard", req.userInfos.id);
+	if(!canSee)
+		return next(new Error("You can't access this page"));
+	return res.render("squad/mapRotation", {
+		role: userRole,
+		ownerID: config.owner.id,
+		serverID: config.serverID,
+		userDiscord: req.userInfos,
+		userSteam: req.session?.passport?.user || req.userInfos.steam,
+		translate: req.translate,
+		repoVersion: config.version,
+		currentURL: `${config.dashboard.baseURL}/${req.originalUrl}`
+	});
+});
+
+module.exports = router;

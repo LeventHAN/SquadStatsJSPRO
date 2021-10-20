@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+
+	<%- include('./includes/head') %>
+    <link rel="stylesheet" href="//cdn.datatables.net/1.11.0/css/jquery.dataTables.min.css"></link>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"
+            defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <body>
+	<!-- The sidebar includes the menu -->
+    <%- include('./partials/sidebar') %>
+    <div class="main-content">
+		<!-- Top navbar -->
+		<%- include('./partials/navbar') %>
+		<!-- Header -->
+		<%- include('./partials/header') %>
+
+		<!-- Content Wrapper. Contains page content -->
+        <div class="container-fluid mt--7">
+            <div class="card bg-gradient-neutral shadow p-5">
+				<section class="content">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="box box-success table-responsive">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">Whitelist Management</h3>
+                                </div>
+                                
+                                <div class="head heading">Add or Remove permissions from groups</div>
+                                <% let id = 0; %>
+                                <% for(const rol in roles) {%>
+                                    <h3><%= rol %></h3>
+                                    <div id="<%= rol %>">
+                                    <% let permissions = roles[rol].permissions.toString() %>
+                                    <% permissions = permissions.split(',') %>
+                                    <% // loop through allAvaibleRoles %>
+                                    <% for(let i = 0; i < allAvaibleRoles.length; i++){ %>
+                                        <% if(permissions.includes(allAvaibleRoles[i].level)) {%>
+                                            <div class="form-check form-check-inline">
+                                                <button class="btn btn-outline-primary badge rounded-pill m-1 active" onclick="togglePermissionToRole('<%- rol %>', '<%- allAvaibleRoles[i].level %>')"><%- allAvaibleRoles[i].level %></button>
+                                                
+                                            </div>
+                                        <% } else { %>
+                                            <div class="form-check form-check-inline">
+                                                <button class="btn btn-outline-primary badge rounded-pill m-1" onclick="togglePermissionToRole('<%- rol %>', '<%- allAvaibleRoles[i].level %>')"><%-  allAvaibleRoles[i].level %></button>
+                                                
+                                            </div>
+                                        <% } %>
+                                    <% } %>
+                                    </div>
+                                    <!--  <button onclick="removeWhitelist('')" class="btn btn-outline-primary badge rounded-pill active">Add</button> -->
+                                <% }; %>
+                            </div>
+                        </div>
+                        <script>
+                            async function togglePermissionToRole(role, permission) {
+                                let button = $('#' + role + ' button:contains("' + permission + '")').filter(function() {
+                                                                                                        return $(this).text() === permission;
+                                                                                                    });
+                                // check if the button is active
+                                if(button.hasClass('active')) {
+                                    // remove the permission from the role
+                                    await axios.post(`${window.location.origin}/squad-api/whitelist/roles/removePermission`, {
+                                        role: role,
+                                        permission: permission
+                                    })
+                                    .then((response) => {
+                                        if(!response.data.status) return Swal.fire(`Error`,`Error while getting response.`,`error`);
+                                        if(response.data.status === "ok") {
+                                            Toast.fire({
+                                                icon: 'success',
+                                                title: 'Permission removed!'
+                                            })
+                                            // remove the active class from the button inside the div role, and where permission matches exactly with the content of the button
+                                            button.removeClass('active');
+                                        }
+                                        if(response.data.status === "nok") {
+                                            Swal.fire(`There was an error`,response.data.message,`error`);
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        return Swal.fire(`Error`,`${error}`,`error`);
+                                    });
+                                } else {
+                                    await axios.post(`${window.location.origin}/squad-api/whitelist/roles/addPermission`, {
+                                        role: role,
+                                        permission: permission
+                                    })
+                                    .then((response) => {
+                                        if(!response.data.status) return Swal.fire(`Error`,`Error while getting response.`,`error`);
+                                        if(response.data.status === "ok") {
+                                            Toast.fire({
+                                                icon: 'success',
+                                                title: 'Permission added to the role!'
+                                            })
+                                            button.addClass('active');
+                                            
+                                        }
+                                        if(response.data.status === "nok") {
+                                            Swal.fire(`There was an error`,response.data.message,`error`);
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        return Swal.fire(`Error`,`${error}`,`error`);
+                                    });
+                                }
+                            } 
+                        </script>
+                        <div class="col-md-6">
+                            <div>
+                                <div class="widget-user-header bg-aqua-active">
+                                    <h3 class="widget-user-username">Whitelisted Users</h3>
+                                </div>
+                                <table id="datatable" class="table datatable">
+                                    <thead>
+                                        <tr>
+                                            <th>SteamID</th>
+                                            <th>Role</th>
+                                            <th>Description</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% for(const steamID in whitelisted) {%>
+                                            <tr id="<%- steamID %>">
+                                                <td><%- steamID %></td>
+                                                <td><%- whitelisted[steamID].role %></td>
+                                                <td><%- whitelisted[steamID].description %></td>
+                                                <td>
+                                                    <button onclick="removeWhitelist('<%- steamID %>')" class="btn btn-outline-primary badge rounded-pill active">Remove</button>
+                                                </td>
+                                            </tr>
+                                        <% }; %>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <hr>
+                            <div class="row">
+                            <div class="col-md-6">
+                               <h3>Add WhiteList</h3>
+                                <form id="addWhitelistForm" action="" method="POST">
+                                    <div class="form-group">
+                                        <label for="steamID">SteamID</label>
+                                        <input type="text" class="form-control" id="steamID" name="steamID" placeholder="SteamID">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="role">Role</label>
+                                        <select class="form-control" id="role" name="role">
+                                            <% for(const role in roles) {%>
+                                                <option value="<%- role %>"><%- role %></option>
+                                            <% }; %>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="description">Description</label>
+                                        <input type="text" class="form-control" id="description" name="description" placeholder="Description">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+
+                            <hr>
+                            <div class="col-md-6">
+                                <h3>Add Group</h3>
+                                <form id="addGroup" action="/" method="POST">
+                                    <div class="form-group">
+                                        <label for="group_name">Group Name</label>
+                                        <input type="text" class="form-control" id="group_name" name="steamID" placeholder="GroupName">
+                                        <small class="form-text text-muted">No space or special characters!<br>Permissions can be added later from the right menu.</small>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6 content-wrapper">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Modify Group/Role</h3>
+                                <h6>You can modify permissions for existing roles/groups or add/delete roles/groups.</h6>
+                            </div>
+                            // TODO
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6 content-wrapper">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Importing Your Admin.cfg *</h3>
+                                <h6><span style="color:darkred">* !! IMPORTANT !! </span>This will wipe your existing data away! <br>Must be the orginal admin.cfg from your server!</h6>
+                            </div>
+                            <form action="/squad-api/import" method="post" enctype="multipart/form-data">
+                                <input accept=".cfg" type="file" class="form-control form-control-file" name="whitelistfile"/>
+                                <br>
+                                <div class="box-footer mt--3">
+                                    <button type="submit" class="btn btn-primary">Import the Roles</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Show Remote Admins URL</h3>
+                                <h6>Put this URL to your remoteAdmin.cfg file</h6>
+                            </div>
+                            <pre id="urlToWhitelist">*****************************************************</pre>
+                            <button class="btn btn-secondary" onclick="getWhiteListURL()"><i id="eyeURL" class="fa fa-eye-slash"></i></button>
+                            <button class="btn btn-info" onclick="regenToken()">Regenerate Token</button>
+                        </div>
+                    <div>
+				</section>
+				<!-- Footer includes credits and version -->
+			</div>
+            <!-- /.content-wrapper -->
+            <script>
+                let usersTable;
+                // When loading the page, the datatable is created
+                $(document).ready(() => {
+                    usersTable = $('#datatable').DataTable({
+                        destroy: true,
+                        bAutoWidth: false,
+                        "scrollCollapse": true,
+                        "info":           false,
+                        "paging":         true,
+                    } );
+                });
+            </script>
+            <script>
+                
+                let urlShowing = false;
+                let eye = document.getElementById("eyeURL");
+
+
+                async function removeWhitelist(steamID) {
+                    Swal.fire({
+                        title: 'Reason of removal:',
+                        input: 'text',
+                        inputAttributes: {
+                            autocapitalize: 'off'
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: 'Remove',
+                        allowOutsideClick: () => !Swal.isLoading()
+                        }).then(async (result) => {
+                            if (result.isConfirmed) {
+                                await axios.post(`${window.location.origin}/squad-api/players/remove`, {
+                                    steamUID: steamID,
+                                    reason: result.value
+                                })
+                                .then((response) => {
+                                    if(!response.data.status) return Swal.fire(`Error`,`Error while getting response.`,`error`);
+                                    if(response.data.status === "ok") {
+                                        Toast.fire({
+                                            icon: 'success',
+                                            title: 'Player has been removed.'
+                                        })
+                                        // Remove the row and refresh the datatable
+                                        usersTable.row( document.getElementById(steamID) ).remove().draw();
+                                    }
+                                    if(response.data.status === "nok") {
+                                        Swal.fire(`There was an error`,response.data.message,`error`);
+                                    }
+                                })
+                                .catch((error) => {
+                                    return Swal.fire(`Error`,`Error: ${error}`,`error`);
+                                });
+                            }
+                        })
+                }
+
+
+
+
+               async function getWhiteListURL(){
+                    if(urlShowing) {
+                        // remove fa-eye from it
+                        eye.classList.remove("fa-eye");
+                        // add fa-eye-slash to it
+                        eye.classList.add("fa-eye-slash");
+                        $('#urlToWhitelist').text('*****************************************************');
+                        urlShowing = false;
+                        return Toast.fire({
+                                    icon: 'warning',
+                                    title: 'URL is hidden.'
+                                })
+                    }
+                    await axios.get(`${window.location.origin}/squad-api/url`)
+                    .then((response) => {
+                        if(!response.data.status) return Swal.fire(`Error`,`Error while getting response.`,`error`);
+                        if(response.data.status === "ok") {
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'URL is not hidden anymore.'
+                            })
+                            $("#urlToWhitelist").text(response.data.url);
+                            // remove fa-eye-slash from it
+                            eye.classList.remove("fa-eye-slash");
+                            // add fa-eye to it
+                            eye.classList.add("fa-eye");
+                            return urlShowing = true;
+                        }
+                        if(response.data.status === "nok") {
+                            Swal.fire(`There was an error`,response.data.message,`error`);
+                        }
+                    })
+                    .catch((error) => {
+                        return Swal.fire(`Error`,`Error: ${error}`,`error`);
+                    });
+               } 
+               async function regenToken(){
+                    await axios.get(`${window.location.origin}/squad-api/url/regenerate`)
+                    .then((response) => {
+                        if(!response.data.status) return Swal.fire(`Error`,`Error while getting response.`,`error`);
+                        if(response.data.status === "ok") {
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Token is regenerated.'
+                            })
+                            $("#urlToWhitelist").text(response.data.url);
+                            // remove fa-eye-slash from it
+                            eye.classList.remove("fa-eye-slash");
+                            // add fa-eye to it
+                            eye.classList.add("fa-eye");
+                            return urlShowing = true;
+                        }
+                        if(response.data.status === "nok") {
+                            Swal.fire(`There was an error`,response.data.message,`error`);
+                        }
+                    })
+                    .catch((error) => {
+                        return Swal.fire(`Error`,`Error: ${error}`,`error`);
+                    });
+               } 
+            </script>
+
+            <script>
+                $('input[type="checkbox"]').change(function() {
+                    $(`label[for="${this.id}"]`).toggleClass('active');
+                });
+            </script>
+            <%- include('./partials/footer') %>
+		<!-- ./wrapper -->
+        <%- include('./partials/scripts') %>
+	</body>
+</html>

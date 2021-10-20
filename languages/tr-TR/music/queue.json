@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "Sunucudaki müzik listesini gösterir",
-    "USAGE": "{{prefix}}queue",
-    "EXAMPLES": "{{prefix}}queue",
-    "TITLE": "Sunucu Kuyruğu"
-}

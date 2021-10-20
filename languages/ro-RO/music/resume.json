@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "Reluați melodia curentă!",
-    "USAGE": "{{prefix}}resume",
-    "EXAMPLES": "{{prefix}}resume",
-    "SUCCESS": "▶️Muzica a fost reluată!"
-}

@@ -71,16 +71,17 @@ class AddSquadDB extends Command {
 		];
 
 		if (
-			data.guild.plugins.squad.host !== null &&
-			data.guild.plugins.squad.port !== null &&
-			data.guild.plugins.squad.user !== null &&
-			data.guild.plugins.squad.database !== null &&
-			data.guild.plugins.squad.serverID !== null &&
-			data.guild.plugins.squad.password !== null &&
-			!data.guild.plugins.squad.enabled
+			data.guild.plugins.squad.db.host !== null &&
+			data.guild.plugins.squad.db.port !== null &&
+			data.guild.plugins.squad.db.user !== null &&
+			data.guild.plugins.squad.db.database !== null &&
+			data.guild.plugins.squad.db.serverID !== null &&
+			data.guild.plugins.squad.db.password !== null &&
+			!data.guild.plugins.squad.stats.enabled
 		) {
-			data.guild.plugins.squad.enabled = true;
-			data.guild.markModified("plugins.squad");
+			data.guild.plugins.squad.stats.enabled = true;
+			data.guild.markModified("plugins.squad.stats");
+			data.guild.markModified("plugins.squad.db");
 			await data.guild.save();
 		}
 
@@ -89,7 +90,7 @@ class AddSquadDB extends Command {
 		 * @returns {Discord.EmbedMessage} profileEmbed, an embed message
 		 */
 		async function sendEmbed(status) {
-			let connectionStatusMessage = status
+			const connectionStatusMessage = status
 				? "squad/addsquadserver:CONNECTION_SUCCESS"
 				: "squad/addsquadserver:CONNECTION_ERROR";
 			const profileEmbed = new Discord.MessageEmbed()
@@ -104,21 +105,21 @@ class AddSquadDB extends Command {
 				.addField(
 					message.translate("squad/addsquadserver:HOSTS"),
 					message.translate("squad/addsquadserver:HOST", {
-						host: data.guild.plugins.squad.host || ":x:",
+						host: data.guild.plugins.squad.db.host || ":x:",
 					}),
 					true
 				)
 				.addField(
 					message.translate("squad/addsquadserver:PORTS"),
 					message.translate("squad/addsquadserver:PORT", {
-						port: data.guild.plugins.squad.port || ":x:",
+						port: data.guild.plugins.squad.db.port || ":x:",
 					}),
 					true
 				)
 				.addField(
 					message.translate("squad/addsquadserver:USERS"),
 					message.translate("squad/addsquadserver:USER", {
-						user: data.guild.plugins.squad.user || ":x:",
+						user: data.guild.plugins.squad.db.user || ":x:",
 					}),
 					true
 				)
@@ -126,7 +127,7 @@ class AddSquadDB extends Command {
 					message.translate("squad/addsquadserver:PASSWORDS"),
 					message.translate("squad/addsquadserver:PASSWORD", {
 						password:
-							data.guild.plugins.squad.password === null
+							data.guild.plugins.squad.db.password === null
 								? ":x:"
 								: ":white_check_mark:",
 					}),
@@ -135,24 +136,24 @@ class AddSquadDB extends Command {
 				.addField(
 					message.translate("squad/addsquadserver:DATABASES"),
 					message.translate("squad/addsquadserver:DATABASE", {
-						database: data.guild.plugins.squad.database || ":x:",
+						database: data.guild.plugins.squad.db.database || ":x:",
 					}),
 					true
 				)
 				.addField(
 					message.translate("squad/addsquadserver:SERVER_IDS"),
 					message.translate("squad/addsquadserver:SERVER_ID", {
-						id: data.guild.plugins.squad.serverID || ":x:",
+						id: data.guild.plugins.squad.stats.serverID || ":x:",
 					}),
 					true
 				)
 				.addField(
 					message.translate("squad/addsquadserver:ROLES"),
 					message.translate("squad/addsquadserver:ROLE", {
-						stats: data.guild.plugins.squad.rolesEnabled
+						stats: data.guild.plugins.squad.stats.rolesEnabled
 							? ":white_check_mark:"
 							: ":x:",
-						statsGiven: data.guild.plugins.squad.rolesGiven
+						statsGiven: data.guild.plugins.squad.stats.rolesGiven
 							? ":white_check_mark:"
 							: ":x:",
 					}),
@@ -230,14 +231,11 @@ class AddSquadDB extends Command {
 				)
 				.addField("\u200B", "\u200B")
 				.addField(
-					client.customEmojis.link +
-						" " +
-						message.translate("general/stats:LINKS_TITLE"),
+					":link: Links",
 					message.translate("misc:STATS_FOOTER", {
-						donateLink: "https://paypal.me/11tstudio?locale.x=en_US",
-						dashboardLink: "https://l-event.studio",
+						donateLink: "https://github.com/sponsors/11TStudio",
+						dashboardLink: data.config.dashboard.baseURL,
 						githubLink: "https://github.com/11TStudio",
-						supportLink: "https://discord.gg/eF3nYAjhZ9",
 					})
 				)
 				.setColor(data.config.embed.color) // Sets the color of the embed
@@ -246,8 +244,8 @@ class AddSquadDB extends Command {
 
 			let controlPoint = "";
 			if (
-				data.guild.plugins.squad.rolesEnabled &&
-				!data.guild.plugins.squad.rolesGiven
+				data.guild.plugins.squad.stats.rolesEnabled &&
+				!data.guild.plugins.squad.stats.rolesGiven
 			) {
 				chacheRoles.forEach((role) => {
 					if (roles.includes(role.name)) {
@@ -264,13 +262,13 @@ class AddSquadDB extends Command {
 									name: role,
 									color: rolesColors[i],
 								},
-								reason: "Roles will be used by the SquadStatJS",
+								reason: "Roles will be used by the SquadStatsJS",
 							})
 							.catch(console.error);
 						i++;
 					});
-					data.guild.plugins.squad.rolesGiven = true;
-					data.guild.markModified("plugins.squad");
+					data.guild.plugins.squad.stats.rolesGiven = true;
+					data.guild.markModified("plugins.squad.stats");
 					await data.guild.save();
 				} else {
 					message.error("squad/addsquadserver:DELETEROLES", {
@@ -279,11 +277,11 @@ class AddSquadDB extends Command {
 				}
 			}
 
-			return message.channel.send(profileEmbed); // Send the embed in the current channel
+			return message.channel.send({ embeds: [profileEmbed] }); // Send the embed in the current channel
 		}
 		if (args[0] === "bypass-roles" || args[0] === "fix-roles") {
-			data.guild.plugins.squad.rolesGiven = true;
-			data.guild.markModified("plugins.squad");
+			data.guild.plugins.squad.stats.rolesGiven = true;
+			data.guild.markModified("plugins.squad.stats");
 			data.guild.save();
 			return message.success("squad/addsquadserver:BYPASSED");
 		}
@@ -292,6 +290,8 @@ class AddSquadDB extends Command {
 				enabled: false,
 				rolesEnabled: false,
 				rolesGiven: false,
+			};
+			const db = {
 				host: null,
 				port: null,
 				database: null,
@@ -299,8 +299,10 @@ class AddSquadDB extends Command {
 				password: null,
 				serverID: null,
 			};
-			data.guild.plugins.squad = squad;
-			data.guild.markModified("plugins.squad");
+			data.guild.plugins.squad.stats = squad;
+			data.guild.plugins.squad.db = db;
+			data.guild.markModified("plugins.squad.stats");
+			data.guild.markModified("plugins.squad.db");
 			data.guild.save();
 			return message.success("squad/addsquadserver:CLEARED");
 		}
@@ -308,11 +310,11 @@ class AddSquadDB extends Command {
 		con = null;
 		try {
 			con = mysql.createConnection({
-				host: data.guild.plugins.squad.host,
-				port: data.guild.plugins.squad.port,
-				user: data.guild.plugins.squad.user,
-				password: data.guild.plugins.squad.password,
-				database: data.guild.plugins.squad.database,
+				host: data.guild.plugins.squad.db.host,
+				port: data.guild.plugins.squad.db.port,
+				user: data.guild.plugins.squad.db.user,
+				password: data.guild.plugins.squad.db.password,
+				database: data.guild.plugins.squad.db.database,
 			});
 		} catch (err) {
 			client.logger.log(err, "error");
@@ -328,29 +330,29 @@ class AddSquadDB extends Command {
 		pendings[message.author.id] = message.author.id;
 
 		switch (args[0].toLowerCase()) {
-		case "host":
-			itemToChange = message.translate("squad/addsquadserver:FILL_HOST");
-			break;
-		case "port":
-			itemToChange = message.translate("squad/addsquadserver:FILL_PORT");
-			break;
-		case "database":
-			itemToChange = message.translate("squad/addsquadserver:FILL_DATABASE");
-			break;
-		case "user":
-			itemToChange = message.translate("squad/addsquadserver:FILL_USER");
-			break;
-		case "password":
-			itemToChange = message.translate("squad/addsquadserver:FILL_PASSWORD");
-			break;
-		case "serverid":
-			itemToChange = message.translate("squad/addsquadserver:FILL_SERVER_ID");
-			break;
-		case "autoroles":
-			itemToChange = message.translate(
-				"squad/addsquadserver:ENABLE_KD_ROLES"
-			);
-			break;
+			case "host":
+				itemToChange = message.translate("squad/addsquadserver:FILL_HOST");
+				break;
+			case "port":
+				itemToChange = message.translate("squad/addsquadserver:FILL_PORT");
+				break;
+			case "database":
+				itemToChange = message.translate("squad/addsquadserver:FILL_DATABASE");
+				break;
+			case "user":
+				itemToChange = message.translate("squad/addsquadserver:FILL_USER");
+				break;
+			case "password":
+				itemToChange = message.translate("squad/addsquadserver:FILL_PASSWORD");
+				break;
+			case "serverid":
+				itemToChange = message.translate("squad/addsquadserver:FILL_SERVER_ID");
+				break;
+			case "autoroles":
+				itemToChange = message.translate(
+					"squad/addsquadserver:ENABLE_KD_ROLES"
+				);
+				break;
 		}
 		if (!itemToChange) return;
 		message.sendT(itemToChange);
@@ -364,7 +366,7 @@ class AddSquadDB extends Command {
 
 		let isCanceled = false;
 		collector.on("collect", async (msg) => {
-			if (msg.content) {
+			if (msg.content && !msg.author.bot) {
 				if (
 					msg.content === "cancel" ||
 					msg.content === "canceled" ||
@@ -376,37 +378,37 @@ class AddSquadDB extends Command {
 				}
 				if (isCanceled) return collector.stop(true);
 				switch (args[0].toLowerCase()) {
-				case "host":
-					data.guild.plugins.squad.host = msg.content;
-					data.guild.markModified("plugins.squad");
-					break;
-				case "port":
-					data.guild.plugins.squad.port = msg.content;
-					data.guild.markModified("plugins.squad");
-					break;
-				case "database":
-					data.guild.plugins.squad.database = msg.content;
-					data.guild.markModified("plugins.squad");
-					break;
-				case "user":
-					data.guild.plugins.squad.user = msg.content;
-					data.guild.markModified("plugins.squad");
-					break;
-				case "password":
-					data.guild.plugins.squad.password = msg.content;
-					data.guild.markModified("plugins.squad");
-					break;
-				case "serverid":
-					data.guild.plugins.squad.serverID = msg.content;
-					data.guild.markModified("plugins.squad");
-					break;
-				case "autoroles":
-					data.guild.plugins.squad.rolesEnabled = new RegExp(
-						"^y.?s$",
-						"i"
-					).test(msg.content);
-					data.guild.markModified("plugins.squad");
-					break;
+					case "host":
+						data.guild.plugins.squad.db.host = msg.content;
+						data.guild.markModified("plugins.squad.db");
+						break;
+					case "port":
+						data.guild.plugins.squad.db.port = msg.content;
+						data.guild.markModified("plugins.squad.db");
+						break;
+					case "database":
+						data.guild.plugins.squad.db.database = msg.content;
+						data.guild.markModified("plugins.squad.db");
+						break;
+					case "user":
+						data.guild.plugins.squad.db.user = msg.content;
+						data.guild.markModified("plugins.squad.db");
+						break;
+					case "password":
+						data.guild.plugins.squad.db.password = msg.content;
+						data.guild.markModified("plugins.squad.db");
+						break;
+					case "serverid":
+						data.guild.plugins.squad.db.serverID = msg.content;
+						data.guild.markModified("plugins.squad.db");
+						break;
+					case "autoroles":
+						data.guild.plugins.squad.stats.rolesEnabled = new RegExp(
+							"^y.?s$",
+							"i"
+						).test(msg.content);
+						data.guild.markModified("plugins.squad.stats");
+						break;
 				}
 				await data.guild.save();
 				return collector.stop(true);

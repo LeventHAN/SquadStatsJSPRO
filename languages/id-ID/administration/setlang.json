@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Ganti bahasa server!",
-    "USAGE": "{{prefix}}setlang [bahasa]",
-    "EXAMPLES": "{{prefix}}setlang perancis\n{{prefix}}setlang inggris",
-    "MISSING_LANG": "Harap berikan bahasa yang valid diantara daftar berikut: {{list}}",
-    "SUCCESS": ":flag_gb: Bahasa server ini sekarang adalah inggris!"
-}

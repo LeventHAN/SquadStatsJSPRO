@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "İstediğiniz bir mesajı ascii karakter e çevir!",
-    "USAGE": "{{prefix}}ascii [text]",
-    "EXAMPLES": "{{prefix}}ascii Merhaba dünya!",
-    "TEXT_MISSING": "Lütfen uygun bir mesaj giriniz ( 20 karakterden kısa)!"
-}

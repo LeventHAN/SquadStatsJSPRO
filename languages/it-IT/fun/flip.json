@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Lancio i dadi per te!",
-    "USAGE": "{{prefix}}flip",
-    "EXAMPLES": "{{prefix}}flip",
-    "HEADS": "🎲 | Testa!",
-    "TAILS": "🎲 | Croce!"
-}

@@ -146,15 +146,13 @@ class Help extends Command {
 		embed.addField(
 			"\u200B",
 			message.translate("misc:STATS_FOOTER", {
-				donateLink: "https://paypal.me/11tstudio?locale.x=en_US",
-				dashboardLink: "https://leventhan.info",
-				// inviteLink: await this.client.generateInvite({
-				// 	permissions: [Discord.Permissions.FLAGS.ADMINISTRATOR]
-				// }),
+				donateLink: "https://github.com/sponsors/11TStudio",
+				dashboardLink: this.client.config.dashboard.baseURL,
 				githubLink: "https://github.com/11TStudio",
-				supportLink: "https://discord.gg/eF3nYAjhZ9",
 			})
+			
 		);
+		console.log("DENEME", )
 		embed.setAuthor(
 			message.translate("general/help:TITLE", {
 				name: this.client.user.username,

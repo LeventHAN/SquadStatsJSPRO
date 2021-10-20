@@ -46,10 +46,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "Object",
             "optional": false,
-            "field": "content",
-            "description": "<p>The message to be broadcasted to the server.</p>"
+            "field": "status",
+            "description": "<p>The status of the request.</p>"
           }
         ]
       },
@@ -98,10 +98,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "Object",
             "optional": false,
-            "field": "content",
-            "description": "<p>The message to be broadcasted to the server.</p>"
+            "field": "status",
+            "description": "<p>The status of the request.</p>"
           }
         ]
       },
@@ -166,10 +166,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "Object",
             "optional": false,
-            "field": "content",
-            "description": "<p>The message to be broadcasted to the server.</p>"
+            "field": "status",
+            "description": "<p>The status of the request.</p>"
           }
         ]
       },
@@ -234,10 +234,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "Object",
             "optional": false,
-            "field": "content",
-            "description": "<p>The message to be broadcasted to the server.</p>"
+            "field": "status",
+            "description": "<p>The status of the request.</p>"
           }
         ]
       },
@@ -295,10 +295,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "Object",
             "optional": false,
-            "field": "content",
-            "description": "<p>The message to be broadcasted to the server.</p>"
+            "field": "status",
+            "description": "<p>The status of the request.</p>"
           }
         ]
       },
@@ -363,10 +363,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "Object",
             "optional": false,
-            "field": "content",
-            "description": "<p>The message to be broadcasted to the server.</p>"
+            "field": "status",
+            "description": "<p>The status of the request.</p>"
           }
         ]
       },
@@ -583,5 +583,189 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "./dashboard/routes/api.js",
     "groupTitle": "Server"
+  },
+  {
+    "type": "post",
+    "url": "/roles/players/remove",
+    "title": "Remove the whitelist from a player",
+    "name": "RemoveWhitelistPlayer",
+    "group": "WhiteList",
+    "parameter": {
+      "fields": {
+        "Login": [
+          {
+            "group": "Login",
+            "type": "String",
+            "optional": false,
+            "field": "apiToken",
+            "description": "<p>Your api token</p>"
+          }
+        ],
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "steamID",
+            "description": "<p>The steamID of the player to be removed from the whitelist.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "reason",
+            "description": "<p>The reason.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "status",
+            "description": "<p>The status of the request.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "   HTTP/1.1 200 OK\n\t{\n\t\t\"status\": \"ok\",\n\t\t\"message\": \"Whitelist removed from the player!\"\n\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "{\n\t\t\"status\": \"nok\",\n\t\t\"message\": \"You are doing something wrong.\"\n\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./dashboard/routes/roles.js",
+    "groupTitle": "WhiteList"
+  },
+  {
+    "type": "get",
+    "url": "/roles/url",
+    "title": "Regenerate the token for the whitelists",
+    "name": "reGenerateWhitelistURL",
+    "group": "WhiteList",
+    "parameter": {
+      "fields": {
+        "Login": [
+          {
+            "group": "Login",
+            "type": "String",
+            "optional": false,
+            "field": "apiToken",
+            "description": "<p>Your api token</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "url",
+            "description": "<p>The URL of the whitelists</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "   HTTP/1.1 200 OK\n\t{\n\t\t\"status\": \"ok\",\n\t\t\"message\": \"URL sent\",\n\t\t\"url\": \"localhost/whitelist/ThisNewTokenBdc78_457qwe1455sadASD\"\n\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "{\n\t\t\"status\": \"nok\",\n\t\t\"message\": \"You are doing something wrong.\"\n\t}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "{\n\t\t\"status\": \"nok\",\n\t\t\"message\": \"Only the owner can get regenerate the url!\"\n\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "description": "<p>Only the owner can regenerate the url of the whitelists</p>",
+    "version": "0.0.0",
+    "filename": "./dashboard/routes/roles.js",
+    "groupTitle": "WhiteList"
+  },
+  {
+    "type": "get",
+    "url": "/roles/url",
+    "title": "Get the URL of the whitelists",
+    "name": "whitelistURL",
+    "group": "WhiteList",
+    "parameter": {
+      "fields": {
+        "Login": [
+          {
+            "group": "Login",
+            "type": "String",
+            "optional": false,
+            "field": "apiToken",
+            "description": "<p>Your api token</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "url",
+            "description": "<p>The URL of the whitelists</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "   HTTP/1.1 200 OK\n\t{\n\t\t\"status\": \"ok\",\n\t\t\"message\": \"URL sent\",\n\t\t\"url\": \"localhost/whitelist/ABCDabcd1234_56789EfgIkLm\"\n\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "{\n\t\t\"status\": \"nok\",\n\t\t\"message\": \"You are doing something wrong.\"\n\t}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "{\n\t\t\"status\": \"nok\",\n\t\t\"message\": \"Only the owner can get regenerate the url!\"\n\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "description": "<p>Only the owner can get the url of the whitelists</p>",
+    "version": "0.0.0",
+    "filename": "./dashboard/routes/roles.js",
+    "groupTitle": "WhiteList"
   }
 ] });

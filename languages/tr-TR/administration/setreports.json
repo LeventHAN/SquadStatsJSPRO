@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Şikayet kanalını ayarla!",
-    "USAGE": "{{prefix}}setreports (#kanal)",
-    "EXAMPLES": "{{prefix}}setreports #reports\n{{prefix}}setreports",
-    "SUCCESS_ENABLED": "Şikayetler **{{channel}}** kanalına gönderilecek!",
-    "SUCCESS_DISABLED": "Şikayetler kanalı silindi!"
-}

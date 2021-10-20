@@ -1,8 +1,0 @@
-{
-    "DESCRIPTION": "Alihkan auto penghapusan perintah moderasi!",
-    "USAGE": "{{prefix}}deletemod [on/off]",
-    "EXAMPLES": "{{prefix}}deletemod on",
-    "MISSING_STATUS": "Kamu harus menentukan `on` atau `off`",
-    "ENABLED": "Penghapusan otomatis perintah moderasi!",
-    "DISABLED": "Penghapusan otomatis perintah moderasi dinonaktifkan!"
-}

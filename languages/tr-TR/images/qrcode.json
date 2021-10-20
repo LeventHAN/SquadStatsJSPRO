@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Verilen yazıyı QR code a dönüştür",
-    "USAGE": "{{prefix}}qrcode [text]",
-    "EXAMPLES": "{{prefix}}qrcode Merhaba",
-    "MISSING_TEXT": "Lütfen QR code için uygun bir mesaj giriniz!",
-    "SUCCESS": "Işte senin QRCode un!"
-}

@@ -1,5 +1,5 @@
-const Command = require("../../base/Command.js");
-
+const Command = require("../../base/Command.js"),
+	{ MessageEmbed } = require("discord.js");
 class Clear extends Command {
 	constructor(client) {
 		super(client, {
@@ -16,7 +16,7 @@ class Clear extends Command {
 		});
 	}
 
-	async run(message, args) {
+	async run(message, args, data) {
 		if (args[0] === "all") {
 			message.sendT("moderation/clear:ALL_CONFIRM");
 			await message.channel
@@ -35,9 +35,14 @@ class Clear extends Command {
 			const newChannel = await message.channel.clone();
 			await message.channel.delete();
 			newChannel.setPosition(position);
-			return newChannel.send(
-				message.translate("moderation/clear:CHANNEL_CLEARED")
-			);
+			const embed = new MessageEmbed()
+				// title
+				.setTitle(message.translate("moderation/clear:CHANNEL_CLEARED"))
+				.setColor(data.config.embed.color)
+				.setFooter(data.config.embed.footer);
+			return newChannel.send({
+				embeds: [embed]
+			});
 		}
 
 		let amount = args[0];
@@ -50,7 +55,7 @@ class Clear extends Command {
 		const user = message.mentions.users.first();
 
 		let messages = await message.channel.messages.fetch({ limit: 100 });
-		messages = messages.array();
+		//messages = messages.array();
 		if (user) {
 			messages = messages.filter((m) => m.author.id === user.id);
 		}

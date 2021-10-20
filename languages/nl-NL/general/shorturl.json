@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "Maak uw links korter!",
-    "USAGE": "{{prefix}}shorturl [url]",
-    "EXAMPLES": "{{prefix}}shorturl https://google.nl",
-    "MISSING_URL": "Voer een geldige URL in!"
-}

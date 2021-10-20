@@ -1,9 +1,0 @@
-{
-    "DESCRIPTION": "Megakadályozza a tagot, hogy egy bizonyos ideig üzeneteket küldjön és hangos kapcsolatot létesítsen!",
-    "USAGE": "{{prefix}}mute [@tag] [idő]",
-    "EXAMPLES": "{{prefix}}mute @LeventHAN™#0001 Spam",
-    "MISSING_MEMBER": "Kérlek, adj meg egy érvényes tagot a némításhoz!",
-    "MUTED_DM": "Szia {{username}},\nLe lettél némítva a **{{server}}** szerverről **{{moderator}}** álltal **{{time}}** időre **{{reason}}** indokkal!",
-    "MUTED": "**{{username}}** némítva lett **{{time}}** időre **{{reason}}** indokkal!",
-    "CASE": "Némítás | Ügy #{{count}}"
-}

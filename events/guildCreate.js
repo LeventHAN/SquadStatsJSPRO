@@ -5,18 +5,9 @@ module.exports = class {
 	}
 
 	async run(guild) {
-		if (this.client.config.proMode) {
-			if (
-				(!this.client.config.proUsers.includes(guild.ownerID) ||
-					this.guilds.filter((g) => g.ownerID === guild.ownerID) > 1) &&
-				guild.ownerID !== this.client.config.owner.id
-			) {
-				this.client.logger.log(
-					guild.ownerID + " tried to invite SquadStatJS v3 on its server."
-				);
-				return guild.leave();
-			}
-		}
+		const guildOwner = await this.client.users
+			.fetch(guild.ownerID)
+			.catch(() => {});
 
 		guild = await guild.members.fetch();
 
@@ -38,7 +29,7 @@ module.exports = class {
 			.setTimestamp();
 		messageOptions.embed = thanksEmbed;
 
-		guild.owner.send(messageOptions).catch(() => {});
+		guildOwner?.send(messageOptions).catch(() => {});
 
 		const text =
 			"Bot did join to **" +
@@ -56,6 +47,6 @@ module.exports = class {
 			.setDescription(text);
 		this.client.channels.cache
 			.get(this.client.config.support.logs)
-			.send(logsEmbed);
+			.send({ embeds: [logsEmbed] });
 	}
 };

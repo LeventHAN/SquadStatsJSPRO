@@ -1,9 +1,0 @@
-{
-    "DESCRIPTION": "Etiketli üyenin susturulmasını kaldır!",
-    "USAGE": "{{prefix}}unmute [@üye]",
-    "EXAMPLES": "{{prefix}}unmute @LeventHAN™#0001",
-    "MISSING_MEMBER": "Lütfen uygun bir üye giriniz!",
-    "NOT_MUTED": "**{{username}}** zaten susturulmadı!",
-    "SUCCESS": "**{{username}}** susturulma yasağı kaldırıldı!",
-    "SUCCESS_CASE": "{{user}} (`{{usertag}}`) Susturulması kaldırıldı! (susturma durumu: #{{count}})"
-}

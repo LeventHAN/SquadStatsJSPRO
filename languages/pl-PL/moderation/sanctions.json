@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Displays the list of infractions committed by a member!",
-    "USAGE": "{{prefix}}sanctions [@member]",
-    "EXAMPLES": "{{prefix}}sanctions @LeventHAN™#0001",
-    "MISSING_MEMBER": "You must specify a member!",
-    "NO_SANCTION": "**{{username}}** did not receive any sanctions."
-}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<%- include('includes/head') %>
+	<link rel="stylesheet" href="//cdn.datatables.net/1.11.0/css/jquery.dataTables.min.css"></link>
+	<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"
+            defer></script>
+	<style>
+		.card-body {
+			padding: 0.4rem !important;
+		}
+		.tippy-box {
+			position: relative;
+			background-color: #33333345 !important;
+			color: #fff;
+			border-radius: 4px;
+			font-size: 14px;
+			line-height: 1.4;
+			outline: 0;
+			transition-property: transform,visibility,opacity;
+		}
+		table, .table {
+			width: 100% !important;
+		}
+		thead input {
+			width: 100%;
+		}
+	</style>
+	<body>
+		<%- include('./partials/sidebar') %>
+		<div class="main-content">
+		<!-- Top navbar -->
+		<%- include('./partials/navbar') %>
+		<!-- Header -->
+		<%- include('./partials/header') %>
+			<!-- Content Wrapper. Contains page content -->
+			
+			<%- include('./partials/footer') %>
+		</div>
+		
+		<%- include('./partials/scripts') %>
+	</body>
+</html>

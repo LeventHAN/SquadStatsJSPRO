@@ -6,14 +6,14 @@
         <div class="col-xl-3 col-lg-6">
           <div class="card card-stats mb-4 mb-xl-0">
             <div class="card-body">
-              <div class="row">
+              <div id="headerDiv1" class="row">
                 <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">RAM Usage</h5>
-                  <span class="h2 font-weight-bold mb-0"><%- (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2) %> MB</span>
+                  <h5 id="headerTitle1" class="card-title text-uppercase text-muted mb-0">RAM Usage</h5>
+                  <span id="headerDesc1" class="h2 font-weight-bold mb-0"><%- (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2) %> MB</span>
                 </div>
                 <div class="col-auto">
                   <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
-                    <i class="fas fa-chart-bar"></i>
+                    <i id="headerIcon1" class="fas fa-chart-bar"></i>
                   </div>
                 </div>
               </div>
@@ -23,14 +23,14 @@
         <div class="col-xl-3 col-lg-6">
           <div class="card card-stats mb-4 mb-xl-0">
             <div class="card-body">
-              <div class="row">
+              <div id="headerDiv2" class="row">
                 <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">Version</h5>
-                  <span class="h2 font-weight-bold mb-0"><%- repoVersion %></span>
+                  <h5 id="headerTitle2" class="card-title text-uppercase text-muted mb-0"></h5>
+                  <span id="headerDesc2" class="h2 font-weight-bold mb-0"><%- repoVersion %></span>
                 </div>
                 <div class="col-auto">
                   <div class="icon icon-shape bg-warning text-white rounded-circle shadow">
-                    <i class="fas fa-chart-pie"></i>
+                    <i id="headerIcon2" class="fas fa-chart-pie"></i>
                   </div>
                 </div>
               </div>
@@ -40,14 +40,14 @@
         <div class="col-xl-3 col-lg-6">
           <div class="card card-stats mb-4 mb-xl-0">
             <div class="card-body">
-              <div class="row">
+              <div id="headerDiv3" class="row">
                 <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">Soon™</h5>
-                  <span class="h2 font-weight-bold mb-0">Soon™</span>
+                  <h5 id="headerTitle3" class="card-title text-uppercase text-muted mb-0"></h5>
+                  <span id="headerDesc3" class="h2 font-weight-bold mb-0"></span>
                 </div>
                 <div class="col-auto">
-                  <div class="icon icon-shape bg-yellow text-white rounded-circle shadow">
-                    <i class="fas fa-users"></i>
+                  <div class="icon icon-shape bg-warning text-white rounded-circle shadow">
+                    <i id="headerIcon3" class="fas fa-chart-pie"></i>
                   </div>
                 </div>
               </div>
@@ -57,14 +57,14 @@
         <div class="col-xl-3 col-lg-6">
           <div class="card card-stats mb-4 mb-xl-0">
             <div class="card-body">
-              <div class="row">
+              <div id="headerDiv4" class="row">
                 <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">Soon™</h5>
-                  <span class="h2 font-weight-bold mb-0">Soon™</span>
+                  <h5 id="headerTitle4" class="card-title text-uppercase text-muted mb-0"></h5>
+                  <span id="headerDesc4" class="h2 font-weight-bold mb-0"></span>
                 </div>
                 <div class="col-auto">
-                  <div class="icon icon-shape bg-info text-white rounded-circle shadow">
-                    <i class="fas fa-percent"></i>
+                  <div class="icon icon-shape bg-warning text-white rounded-circle shadow">
+                    <i id="headerIcon4" class="fas fa-chart-pie"></i>
                   </div>
                 </div>
               </div>

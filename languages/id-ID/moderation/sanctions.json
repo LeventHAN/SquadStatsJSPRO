@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Menampilkan daftar pelanggaran yang dilakukan oleh anggota!",
-    "USAGE": "{{prefix}}sanctions [@anggota]",
-    "EXAMPLES": "{{prefix}}sanctions @LeventHAN™#0001",
-    "MISSING_MEMBER": "Kamu harus menentukan anggota!",
-    "NO_SANCTION": "**{{username}}** tidak menerima sanksi apapun."
-}

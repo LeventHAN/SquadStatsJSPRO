@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Üye önerilerini temizle!",
-    "USAGE": "{{prefix}}clear-sanctions [@üye]",
-    "EXAMPLES": "{{prefix}}clear-sanctions @LeventHAN™#0001",
-    "MISSING_MEMBER": "Lütfen önerisini silmek istediğiniz üyeyi etiketleyin!",
-    "SUCCESS": "**{{username}}** Önerileri silindi!"
-}

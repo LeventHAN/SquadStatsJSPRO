@@ -1,9 +1,6 @@
 const chalk = require("chalk");
 const status = require("../config.js").status,
-	version = require("../package.json").version,
-	squadVoting = require("../config.js").squadMapVoting.enabled,
-	squadVotingGuild = require("../config.js").squadMapVoting.guildID,
-	squadVotingChannel = require("../config.js").squadMapVoting.channelID;
+	version = require("../package.json").version;
 
 module.exports = class {
 	constructor(client) {
@@ -12,6 +9,7 @@ module.exports = class {
 
 	async run() {
 		const client = this.client;
+		const socket = client.socket;
 
 		// Logs some informations using the logger file
 		client.logger.log(
@@ -19,13 +17,16 @@ module.exports = class {
 			"log"
 		);
 
-		/* Squad map voting */
-		if (squadVoting) {
-			await client.emit("mapVoting", squadVotingGuild, squadVotingChannel);
-		}
+		socket.on("connect_error", (err) => {
+			return client.logger.log(err, "ERROR");
+		});
+
+		// /* Squad Creating Plugin */
+		// 	await client.emit("squadCreating", squadVotingGuild, "851451690020110346", socket);
+		//
 
 		client.logger.log(
-			`${client.user.tag}, ready to serve ${client.users.cache.size} users in ${client.guilds.cache.size} servers.`,
+			`${client.user.tag}, ready to serve ${client.users.cache.size}.`,
 			"ready"
 		);
 
@@ -41,27 +42,18 @@ module.exports = class {
 		// 	});
 		// });
 		// // }, 20000); // Every 20 seconds
-
-		/* UNMUTE USERS */
-		const checkUnmutes = require("../helpers/checkUnmutes.js");
-		checkUnmutes.init(client);
-
-		/* SEND REMINDS */
-		const checkReminds = require("../helpers/checkReminds.js");
-		checkReminds.init(client);
-
 		// Start the dashboard
 		if (client.config.dashboard.enabled) {
 			client.dashboard.load(client);
 		}
 
+		await console.log(await client.getAllAvaibleAccesLevels());
+
 		let i = 0;
+
 		setInterval(function () {
 			const toDisplay =
-				status[parseInt(i, 10)].name.replace(
-					"{serversCount}",
-					client.guilds.cache.size
-				) +
+				status[parseInt(i, 10)].name +
 				" | v" +
 				version;
 			client.user.setActivity(toDisplay, {
@@ -73,7 +65,7 @@ module.exports = class {
 
 		setTimeout(() => {
 			console.log(
-				chalk.magenta("\n\nSquadStatJS Ready!"),
+				chalk.magenta("\n\nSquadStatsJS Ready!"),
 				"Made with ❤️   by LeventHAN https://github.com/11TStudio/SquadStatsJSPRO"
 			);
 		}, 400);

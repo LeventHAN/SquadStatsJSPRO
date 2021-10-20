@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Alihkan perintah di saluran",
-    "USAGE": "{{prefix}}ignore [saluran]",
-    "EXAMPLES": "{{prefix}}ignore #saluran",
-    "ALLOWED": "Sekarang perintah tidak diperbolehkan di {{channel}}!",
-    "IGNORED": "Sekarang perintah dilarang di {{channel}}!"
-}

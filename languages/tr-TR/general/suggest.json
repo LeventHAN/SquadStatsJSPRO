@@ -1,9 +1,0 @@
-{
-    "DESCRIPTION": "Sunucu için önerinizi gönderin!",
-    "USAGE": "{{prefix}}suggest [message]",
-    "EXAMPLES": "{{prefix}}suggest Yeni kanal #konudisi lütfen",
-    "MISSING_CHANNEL": "Öneri kanalı ayarlanmamış!",
-    "MISSING_CONTENT": "Lütfen öneri giriniz!",
-    "TITLE": "Öneri - {{user}}",
-    "SUCCESS": "Öneri oylamaya {{channel}} kanalında sunuldu!"
-}

@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Bir kanalda komutları devredışı bırak",
-    "USAGE": "{{prefix}}ignore [kanal]",
-    "EXAMPLES": "{{prefix}}ignore #kanal",
-    "ALLOWED": "{{channel}} Kanalında komutlar devredışı!",
-    "IGNORED": "Komutlar artık {{channel}} kanalında yasak!"
-}

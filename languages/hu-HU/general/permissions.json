@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "A tag engedélyének megtekintése a csatornán",
-    "USAGE": "{{prefix}}permissions (@tag)",
-    "EXAMPLES": "{{prefix}}permissions\n{{prefix}}permissions @LeventHAN™#0001",
-    "TITLE": "{{user}} engedélyei a {{channel}} csatornában"
-}

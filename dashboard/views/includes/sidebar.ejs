@@ -5,11 +5,11 @@
         <!-- Sidebar user panel -->
         <div class="user-panel">
         <div class="pull-left image">
-            <img src="<%= user.displayAvatarURL %>" class="img-circle" alt="User Image">
+            <img src="<%= userDiscord.displayAvatarURL %>" class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
-            <p><%= user.username %></p>
-            <a href="#"><i class="fa fa-circle text-<%= user.status === 'dnd' ? 'danger' : user.status === 'idle' ? 'warning' : user.status === 'online' ? 'success' : ''%>"></i> <%= translate("common:STATUS_"+user.status.toUpperCase()) %></a>
+            <p><%= userDiscord.username %></p>
+            <a href="#"><i class="fa fa-circle text-<%= userDiscord.status === 'dnd' ? 'danger' : userDiscord.status === 'idle' ? 'warning' : userDiscord.status === 'online' ? 'success' : ''%>"></i> <%= translate("common:STATUS_"+userDiscord.status.toUpperCase()) %></a>
         </div>
         </div>
         <!-- search form -->
@@ -38,9 +38,9 @@
                     <i class="fa fa-angle-left pull-right"></i>
                 </span>
                 </a>
-                <% if(user.displayedGuilds){ %>
+                <% if(userDiscord.displayedGuilds){ %>
                     <ul class="treeview-menu">
-                        <% user.displayedGuilds.forEach((guild) => { %>
+                        <% userDiscord.displayedGuilds.forEach((guild) => { %>
                             <li><a href="<%= guild.settingsUrl %>"><i class="fa fa-circle-o text-<%= guild.owner ? 'blue' : 'grey' %>"></i> <%= guild.name %></a></li>
                         <% }); %>
                     </ul> 

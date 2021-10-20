@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<%- include('../includes/head') %>
+	<body>
+		<!-- The sidebar includes the menu -->
+		<%- include('../partials/sidebar') %>
+		<div class="main-content">
+		<!-- Top navbar -->
+		<%- include('../partials/navbar') %>
+		<!-- Header -->
+		<%- include('../partials/header') %>
+		<style>
+			img { 
+				-webkit-user-drag: none; 
+				-khtml-user-drag: none; 
+				-moz-user-drag: none; 
+				-o-user-drag: none; 
+				user-drag: none; 
+			}
+
+			.sortable-chosen, sortable-chosen.sortable-ghost {
+				opacity: 0;
+			}
+			.sortable-ghost {
+				background-color: #dadada;
+				opacity: 1;
+			}
+
+		</style>
+
+			<!-- Content Wrapper. Contains page content -->
+			<div class="container-fluid mt--7">
+				<div class="card bg-gradient-neutral shadow p-5">
+					<h4><span class="badge badge-primary">BETA</span> Layer Rotation</h4>
+					<div class="row"  id="sortablelist" data-id="1">
+					<% for(let i = 0; i < 20; i++) { %>
+						<!-- Displays 4 servers by line -->
+						<div class="col-md-3" data-id="<%= i %>">
+							<div class="box box-solid m-2">
+								<div class="box-header text-center">
+									<h3 style="text-align: center !important;" class="box-title server-name"><i class="fas fa-map"></i> Al Basrah Test <%- i %></h3>
+								</div>
+								<!-- /.box-header -->
+								<div class="box-body m-2">
+									<div  draggable="true" class="text-center">
+										<li style="list-style-type: none;" data-value="Al_Basrah_Test_<%- i %>">
+											<img draggable="false" src="https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/images/Albasrah_AAS_v1.jpg" style="border-radius:10%" width="200" height="200" class="img-fluid">
+										</li>
+									</div>
+								</div>
+								<!-- /.box-footer -->
+							</div>
+							<!-- /.box -->
+						</div>
+						<!-- /.col -->
+					<% } %>
+				</div>
+				<!-- Footer includes credits and version -->
+			</div>
+			<%- include('../partials/footer') %>
+		</div>
+		<%- include('../partials/scripts') %>
+		<!-- SortableJS CDN -->
+		<script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
+		<script>
+			new Sortable(sortablelist, {
+				animation: 150,
+				ghostClass: 'sortable-ghost'
+			});
+		</script>
+	</body>
+</html>

@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Dobom a kockát neked!",
-    "USAGE": "{{prefix}}flip",
-    "EXAMPLES": "{{prefix}}flip",
-    "HEADS": "🎲 | Fej!",
-    "TAILS": "🎲 | Írás!"
-}

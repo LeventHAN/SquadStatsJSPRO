@@ -1,8 +1,5 @@
 const Command = require("../../base/Command.js"),
-	Discord = require("discord.js"),
-	MYSQLPromiseObjectBuilder = require("../../base/MYSQLPromiseObjectBuilder.js");
-
-const mysql = require("mysql");
+	Discord = require("discord.js");
 
 /**Command for squad profile stats track.
  * <h2>Usage: </h2>
@@ -34,7 +31,6 @@ class Profile extends Command {
 			cooldown: 1000,
 		});
 		this.client = client;
-		this.pool = null;
 	}
 
 	async run(message, args, /**@type {{}}*/ data) {
@@ -44,27 +40,8 @@ class Profile extends Command {
 		const client = this.client;
 
 		await message.guild.members.fetch();
-		const administrators = message.guild.members.cache.filter(
-			(m) => m.permissions.has("ADMINISTRATOR") && !m.user.bot
-		);
 
 		let steamUID;
-		let claimer = "";
-		if (this.pool == null) {
-			// Only create one instance
-			this.pool = mysql.createPool({
-				connectionLimit: 10, // Call all
-				host: data.guild.plugins.squad.db.host,
-				port: data.guild.plugins.squad.db.port,
-				user: data.guild.plugins.squad.db.user,
-				password: data.guild.plugins.squad.db.password,
-				database: data.guild.plugins.squad.db.database,
-			});
-		}
-		const pool = this.pool;
-		const members = await this.client.membersData
-			.find({ guildID: message.guild.id })
-			.lean();
 
 		let member = await client.resolveMember(args[0], message.guild);
 
@@ -77,112 +54,25 @@ class Profile extends Command {
 			return message.error("squad/profile:BOT_USER");
 		}
 
-		// Gets the data of the user whose profile you want to display
-		const memberData =
-			member.id === message.author.id
-				? data.memberData
-				: await client.findOrCreateMember({
-					id: member.id,
-					guildID: message.guild.id,
-				});
 
 		const userData =
 			member.id === message.author.id
 				? data.userData
 				: await client.findOrCreateUser({ id: member.id });
 
-		if (args[0] === "re" || args[0] === "re-link") {
-			data.memberData.squad.tracking = false;
-			data.memberData.squad.steam64ID = "";
-			data.memberData.markModified("squad");
-			data.memberData.save();
-			return message.success("squad/profile:RE_LINKED");
-		}
 
-		if (args[1] === "re" || args[1] === "re-link") {
-			let isAdmin = false;
-			await administrators.forEach((admin) => {
-				if(admin.id === data.memberData.id) {
-					isAdmin = true;
-				}
-			});
-			if(isAdmin) {
-				data.memberData.squad.tracking = false;
-				data.memberData.squad.steam64ID = "";
-				data.memberData.markModified("squad");
-				data.memberData.save();
-				return message.success("squad/profile:ADMIN_RE_LINKED", {
-					profile: member.user.tag
-				});
-			} else {
-				return message.error("You are not an admin!");
-			}
-		}
-
-
-		if (args[0] === "re-steam" || args[0] === "re-s") {
-			let isAdmin = false;
-			await administrators.forEach((admin) => {
-				if(admin.id === data.memberData.id) {
-					isAdmin = true;
-				}
-			});
-			if(isAdmin) {
-				members.forEach(async (member) => {
-					if (
-						member &&
-						member.squad.steam64ID === args[1]
-					) {
-						const memberDataSteam = await this.client.findOrCreateMember({
-							id: member.id,
-							guildID: message.guild.id,
-						});
-						memberDataSteam.squad.tracking = false;
-						memberDataSteam.squad.steam64ID = "";
-						memberDataSteam.markModified("squad");
-						memberDataSteam.save();
-						return message.success("squad/profile:ADMIN_RE_LINKED_STEAM", {
-							profile: args[1]
-						});
-					}
-				});
-			} else {
-				return message.error("You are not an admin!");
-			}
-		}
-
-
-		members.forEach((element) => {
-			if (
-				element &&
-				element.squad.steam64ID === args[0] &&
-				element.id !== message.member.id
-			) {
-				claimer = element.id;
-			}
-		});
-
-		if (claimer != "") {
-			return message.error("squad/profile:ALREADY_EXISTING", {
-				username: claimer,
+		if(!userData.steam?.steamid || userData.id !== message.author.id){
+			return message.error("squad/profile:NOT_LOGGED_TAG", {
+				dashboard: data.config.dashboard.baseURL,
+				user: userData.id
 			});
 		}
 
-		if (data.memberData.squad.tracking) {
-			steamUID = data.memberData.squad.steam64ID;
+		if (data.userData.squad.tracking) {
+			message.success("YOU ARE GETTING TRACKED?");
+			steamUID = data.userData.steam.steamid;
 		} else {
-			steamUID = args[0];
-			const steamIDpatter = /^[0-9]{17}$/;
-			const uidValid = steamIDpatter.test(steamUID);
-			if (!uidValid) {
-				return message.error("squad/profile:INVALID_MEMBER");
-			}
-
-			data.memberData.squad.steam64ID = steamUID;
-			data.memberData.markModified("squad");
-			message.success("squad/profile:SUCCESS", {
-				steamID: steamUID,
-			});
+			message.success("YOU ARE NOT GETTING TRACKED?");
 		}
 
 		/**
@@ -201,13 +91,15 @@ class Profile extends Command {
 				.setDescription(
 					userData.bio
 						? userData.bio
-						: message.translate("squad/profile:NO_BIO")
+						: message.translate("squad/profile:NO_BIO", {
+							prefix: data.guild.prefix,
+						})
 				)
 				.addField(
 					message.translate("squad/profile:STEAMS"),
 					message.translate("squad/profile:STEAM", {
-						steamName: memberData.squad.steamName,
-						steam64ID: memberData.squad.steam64ID || "#",
+						steamName: ( userData.squad.steamName === "Undefined" ? "Not Recorded Profile": userData.squad.steamName ),
+						steam64ID: userData.squad.steam64ID || "#",
 					}),
 					false
 				)
@@ -215,74 +107,66 @@ class Profile extends Command {
 				.addField(
 					message.translate("squad/profile:KDS"),
 					message.translate("squad/profile:KD", {
-						kd: memberData.squad.kd,
+						kd: userData.squad.kd,
 					}),
 					true
 				)
 				.addField("\u200B", "\u200B")
 				.addField(
-					message.translate("squad/profile:KILLS_INF"),
+					message.translate("squad/profile:Kills_ALL"),
 					message.translate("squad/profile:KILL", {
-						kills: memberData.squad.killsINF,
+						kills: userData.squad.Kills_ALL || 0,
 					}),
 					true
 				)
-				.addField(
-					message.translate("squad/profile:KILLS_VEH"),
-					message.translate("squad/profile:KILL", {
-						kills: memberData.squad.killsVEH,
-					}),
-					true
-				)
-				.addField("\u200B", "\u200B", true)
 				.addField(
 					message.translate("squad/profile:WOUNDS_INF"),
 					message.translate("squad/profile:WOUNDS", {
-						kills: memberData.squad.woundsINF,
+						kills: userData.squad.woundsINF,
 					}),
 					true
 				)
 				.addField(
 					message.translate("squad/profile:WOUNDS_VEH"),
 					message.translate("squad/profile:WOUNDS", {
-						kills: memberData.squad.woundsVEH,
-					}),
-					true
-				)
-				.addField("\u200B", "\u200B", true)
-				.addField(
-					message.translate("squad/profile:DEATHS"),
-					message.translate("squad/profile:DEATH", {
-						deaths: memberData.squad.deaths,
-					}),
-					true
-				)
-				.addField(
-					message.translate("squad/profile:TEAMKILLS"),
-					message.translate("squad/profile:TEAMKILL", {
-						tk: memberData.squad.tk,
+						kills: userData.squad.woundsVEH,
 					}),
 					true
 				)
 				.addField(
 					message.translate("squad/profile:REVIVES"),
 					message.translate("squad/profile:REVIVE", {
-						revives: memberData.squad.revives,
+						revives: userData.squad.revives,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/profile:DEATHS"),
+					message.translate("squad/profile:DEATH", {
+						deaths: userData.squad.deaths,
+					}),
+					true
+				)
+				.addField(
+					message.translate("squad/profile:TEAMKILLS"),
+					message.translate("squad/profile:TEAMKILL", {
+						tk: userData.squad.tk,
 					}),
 					true
 				)
 				.addField(
 					message.translate("squad/profile:MK_GUNS"),
 					message.translate("squad/profile:MK_GUN", {
-						gun: memberData.squad.mk_gun,
+						gun: userData.squad.mk_gun,
 					}),
 					true
 				)
+				
 				.addField("\u200B", "\u200B", true)
 				.addField(
 					message.translate("squad/profile:MK_ROLES"),
 					message.translate("squad/profile:MK_ROLE", {
-						role: memberData.squad.mk_role,
+						role: userData.squad.mk_role,
 					}),
 					true
 				)
@@ -290,7 +174,7 @@ class Profile extends Command {
 				.addField(
 					message.translate("squad/profile:EXPS"),
 					message.translate("squad/profile:EXP", {
-						exp: memberData.squad.exp,
+						exp: userData.squad.exp || 0,
 					}),
 					true
 				)
@@ -299,14 +183,11 @@ class Profile extends Command {
 				.addField(message.translate("squad/profile:ACTIVITY"), "Soon™", true)
 				.addField("\u200B", "\u200B")
 				.addField(
-					client.customEmojis.link +
-						" " +
-						message.translate("general/stats:LINKS_TITLE"),
+					":link: Links",
 					message.translate("misc:STATS_FOOTER", {
-						donateLink: "https://paypal.me/11tstudio?locale.x=en_US",
-						dashboardLink: "https://l-event.studio",
+						donateLink: "https://github.com/sponsors/11TStudio",
+						dashboardLink: data.config.dashboard.baseURL,
 						githubLink: "https://github.com/11TStudio",
-						supportLink: "https://discord.gg/eF3nYAjhZ9",
 					})
 				)
 				.setColor(data.config.embed.color) // Sets the color of the embed
@@ -326,67 +207,67 @@ class Profile extends Command {
 			});
 			let roleName = "KD 0+";
 			switch (true) {
-				case parseFloat(data.memberData.squad.kd) < 0.5:
+				case parseFloat(data.userData.squad.kd) < 0.5:
 					roleName = "KD 0+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 1.0:
+				case parseFloat(data.userData.squad.kd) < 1.0:
 					roleName = "KD 0.5+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 1.5:
+				case parseFloat(data.userData.squad.kd) < 1.5:
 					roleName = "KD 1+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 2.0:
+				case parseFloat(data.userData.squad.kd) < 2.0:
 					roleName = "KD 1.5+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 2.5:
+				case parseFloat(data.userData.squad.kd) < 2.5:
 					roleName = "KD 2+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 3.0:
+				case parseFloat(data.userData.squad.kd) < 3.0:
 					roleName = "KD 2.5+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 3.5:
+				case parseFloat(data.userData.squad.kd) < 3.5:
 					roleName = "KD 3+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 4.0:
+				case parseFloat(data.userData.squad.kd) < 4.0:
 					roleName = "KD 3.5+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 4.5:
+				case parseFloat(data.userData.squad.kd) < 4.5:
 					roleName = "KD 4+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 5.0:
+				case parseFloat(data.userData.squad.kd) < 5.0:
 					roleName = "KD 4.5+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 5.5:
+				case parseFloat(data.userData.squad.kd) < 5.5:
 					roleName = "KD 5+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 6.0:
+				case parseFloat(data.userData.squad.kd) < 6.0:
 					roleName = "KD 5.5+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 6.5:
+				case parseFloat(data.userData.squad.kd) < 6.5:
 					roleName = "KD 6+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 7:
+				case parseFloat(data.userData.squad.kd) < 7:
 					roleName = "KD 6.5+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 7.5:
+				case parseFloat(data.userData.squad.kd) < 7.5:
 					roleName = "KD 7+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 8:
+				case parseFloat(data.userData.squad.kd) < 8:
 					roleName = "KD 7.5+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 8.5:
+				case parseFloat(data.userData.squad.kd) < 8.5:
 					roleName = "KD 8+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 9:
+				case parseFloat(data.userData.squad.kd) < 9:
 					roleName = "KD 8.5+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 9.5:
+				case parseFloat(data.userData.squad.kd) < 9.5:
 					roleName = "KD 9+";
 					break;
-				case parseFloat(data.memberData.squad.kd) < 10:
+				case parseFloat(data.userData.squad.kd) < 10:
 					roleName = "KD 9.5+";
 					break;
-				case parseFloat(data.memberData.squad.kd) > 10:
+				case parseFloat(data.userData.squad.kd) > 10:
 					roleName = "KD 10+";
 					break;
 				default:
@@ -404,95 +285,14 @@ class Profile extends Command {
 		let dt = new Date();
 		dt = dt.setHours(dt.getHours() + 2);
 		dt = new Date(dt);
-
-		let lastUpdate = new Date(data.memberData.squad.trackDate);
+		let lastUpdate = new Date(data.userData.squad.trackDate);
 		lastUpdate = lastUpdate.setHours(lastUpdate.getHours() + 1);
 		lastUpdate = new Date(lastUpdate);
 		if (
-			!data.memberData.squad.tracking ||
-			(data.memberData.squad.tracking && lastUpdate < dt)
+			!data.userData.squad.tracking ||
+			(data.userData.squad.tracking && lastUpdate < dt)
 		) {
-			const res = new MYSQLPromiseObjectBuilder(pool);
-			res.add(
-				"steamName",
-				`SELECT lastName FROM DBLog_SteamUsers WHERE steamID = "${steamUID}"`,
-				"Undefined",
-				"lastName"
-			);
-			res.add(
-				"kd",
-				`SELECT (COUNT(*)/(SELECT COUNT(*) FROM DBLog_Deaths WHERE victim = "${steamUID}")) AS KD FROM DBLog_Deaths WHERE attacker="${steamUID}"`,
-				"0",
-				"KD"
-			);
-			res.add(
-				"kills",
-				`SELECT COUNT(*) AS Kills FROM DBLog_Deaths WHERE attacker = "${steamUID}"`,
-				"0",
-				"Kills"
-			);
-			res.add(
-				"deaths",
-				`SELECT COUNT(*) AS Deaths FROM DBLog_Deaths WHERE victim = "${steamUID}"`,
-				"0",
-				"Deaths"
-			);
-			res.add(
-				"woundsINF",
-				`SELECT COUNT(*) AS Wounds_INF FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND weapon NOT REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
-				"0",
-				"Wounds_INF"
-			);
-			res.add(
-				"woundsVEH",
-				`SELECT COUNT(*) AS Wounds_VEH FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND weapon REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
-				"0",
-				"Wounds_VEH"
-			);
-			res.add(
-				"revives",
-				`SELECT COUNT(*) AS Revives FROM DBLog_Revives WHERE reviver = "${steamUID}"`,
-				"0",
-				"Revives"
-			);
-			res.add(
-				"tk",
-				`SELECT COUNT(*) AS TeamKills FROM DBLog_Wounds WHERE attacker = "${steamUID}" AND teamkill=1`,
-				"0",
-				"TeamKills"
-			);
-			res.add(
-				"mk_gun",
-				`SELECT weapon AS Fav_Gun FROM DBLog_Wounds WHERE attacker = "${steamUID}" GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`,
-				"0",
-				"Fav_Gun"
-			);
-			res.add(
-				"mk_role",
-				`SELECT weapon AS Fav_Role FROM DBLog_Deaths WHERE attacker = "${steamUID}" GROUP BY weapon ORDER BY COUNT(weapon) DESC LIMIT 1`,
-				"0",
-				"Fav_Role"
-			);
-			res.add(
-				"killsINF",
-				`SELECT COUNT(*) AS Kills_INF FROM DBLog_Deaths WHERE attacker = "${steamUID}" AND weapon NOT REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
-				"0",
-				"Kills_INF"
-			);
-			res.add(
-				"killsVEH",
-				`SELECT COUNT(*) AS Kills_VEH FROM DBLog_Deaths WHERE attacker = "${steamUID}" AND weapon REGEXP '(kord|stryker|uh60|projectile|mortar|btr80|btr82|deployable|kornet|s5|s8|tow|crows|50cal|warrior|coax|L30A1|_hesh|_AP|technical|shield|DShK|brdm|2A20|LAV|M1126|T72|bmp2|SPG9|FV4034|Truck|logi|FV432|2A46|Tigr)'`,
-				"0",
-				"Kills_VEH"
-			);
-
-			await res.waitForAll(data.memberData.squad);
-			data.memberData.squad.trackDate = dt;
-			if (!data.memberData.squad.tracking) {
-				data.memberData.squad.tracking = true;
-			}
-			await data.memberData.markModified("squad");
-			await data.memberData.save();
+			await client.updateStats(userData.id);
 			if (data.guild.plugins.squad.stats.rolesEnabled) {
 				await giveDiscordRoles();
 			}

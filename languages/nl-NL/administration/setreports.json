@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Stel het report kanaal in!",
-    "USAGE": "{{prefix}}setreports (#channel)",
-    "EXAMPLES": "{{prefix}}setreports #reports\n{{prefix}}setreports",
-    "SUCCESS_ENABLED": "Rapporten worden verzonden in **{{channel}}**!",
-    "SUCCESS_DISABLED": "Kanaal voor rapporten verwijderd!"
-}

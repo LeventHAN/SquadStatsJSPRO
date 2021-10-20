@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Állítsd be a moderálási naplók csatornáját!",
-    "USAGE": "{{prefix}}setmodlogs (#csatorna)",
-    "EXAMPLES": "{{prefix}}setmodlogs #modlogs\n{{prefix}}setmodlogs",
-    "SUCCESS_ENABLED": "A moderációs naplókat a **{{channel}}** csatornába küldöm el!",
-    "SUCCESS_DISABLED": "A moderálási naplók csatorna törölve!"
-}

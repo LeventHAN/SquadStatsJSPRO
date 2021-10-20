@@ -2,6 +2,7 @@
 <html>
 
 	<%- include('../includes/head') %>
+    
     <body>
 	<!-- The sidebar includes the menu -->
     <%- include('../partials/sidebar') %>
@@ -97,13 +98,13 @@
                                             <select class="form-control" name="suggestions">
                                                 <% if(guild.plugins.suggestions && bot.channels.cache.has(guild.plugins.suggestions)){ %>
                                                     <option selected="selected">#<%= bot.channels.cache.get(guild.plugins.suggestions).name %></option>
-                                                    <% guild.channels.cache.filter((ch) => ch.type === "text" && ch.id !== guild.plugins.suggestions).forEach((ch) => { %>
+                                                    <% guild.channels.cache.filter((ch) => ch.type === "GUILD_TEXT" && ch.id !== guild.plugins.suggestions).forEach((ch) => { %>
                                                         <option>#<%= ch.name %></option>
                                                     <% }); %>
                                                         <option><%= translate("common:NO_CHANNEL") %></option>
                                                 <% } else { %>
                                                     <option selected="selected"><%= translate("common:NO_CHANNEL") %></option>
-                                                    <% guild.channels.cache.filter((ch) => ch.type === "text").forEach((ch) => { %>
+                                                    <% guild.channels.cache.filter((ch) => ch.type === "GUILD_TEXT").forEach((ch) => { %>
                                                         <option>#<%= ch.name %></option>
                                                     <% }); %>
                                                 <% } %>
@@ -114,13 +115,13 @@
                                             <select class="form-control" name="modlogs">
                                                 <% if(guild.plugins.modlogs && bot.channels.cache.has(guild.plugins.modlogs)){ %>
                                                     <option selected="selected">#<%= bot.channels.cache.get(guild.plugins.modlogs).name %></option>
-                                                    <% guild.channels.cache.filter((ch) => ch.type === "text" && ch.id !== guild.plugins.modlogs).forEach((ch) => { %>
+                                                    <% guild.channels.cache.filter((ch) => ch.type === "GUILD_TEXT" && ch.id !== guild.plugins.modlogs).forEach((ch) => { %>
                                                         <option>#<%= ch.name %></option>
                                                     <% }); %>
                                                         <option><%= translate("common:NO_CHANNEL") %></option>
                                                 <% } else { %>
                                                     <option selected="selected"><%= translate("common:NO_CHANNEL")%></option>
-                                                    <% guild.channels.cache.filter((ch) => ch.type === "text").forEach((ch) => { %>
+                                                    <% guild.channels.cache.filter((ch) => ch.type === "GUILD_TEXT").forEach((ch) => { %>
                                                         <option>#<%= ch.name %></option>
                                                     <% }); %>
                                                 <% } %>
@@ -148,27 +149,28 @@
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                             <label for="host"><%= translate("squad/addsquadserver:HOSTS") %></label>
-                                            <textarea rows="1" type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="host" name="host" required><%= (translate('squad/addsquadserver:HOST', { host: guild.plugins.squad.host || '❌',})) %></textarea>
+                                            <textarea rows="1" type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" id="host" name="host" required><%= (translate('squad/addsquadserver:HOST', { host: guild.plugins.squad.db.host || '❌',})) %></textarea>
                                             <small class="text-muted">
                                                 Example; <code>localhost</code>
                                               </small>
                                         </div>
                                             <div class="form-group col-md-6">
                                               <label for="port"><%= translate("squad/addsquadserver:PORTS") %></label>
-                                              <textarea rows="1" type="numbers" class="form-control" id="port" name="port" required><%= (translate('squad/addsquadserver:PORT', { port: guild.plugins.squad.port || '❌',})) %></textarea>
+                                              <textarea rows="1" type="numbers" class="form-control" id="port" name="port" required><%= (translate('squad/addsquadserver:PORT', { port: guild.plugins.squad.db.port || '❌',})) %></textarea>
                                               <small class="text-muted">
                                                 Example; <code>3306</code>
                                               </small>
                                             </div>
                                         </div>
+                                        
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                             <label for="database"><%= translate("squad/addsquadserver:DATABASES") %></label>
-                                            <textarea rows="1" type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" name="database" id="database" required><%= (translate('squad/addsquadserver:DATABASE', { database: guild.plugins.squad.database || '❌',})) %></textarea>
+                                            <textarea rows="1" type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" name="database" id="database" required><%= (translate('squad/addsquadserver:DATABASE', { database: guild.plugins.squad.db.database || '❌',})) %></textarea>
                                             </div>
                                             <div class="form-group col-md-6">
                                               <label for="serverID"><%= translate("squad/addsquadserver:SERVER_IDS") %></label>
-                                              <textarea rows="1" type="text" class="form-control" name="serverID" id="serverID" required><%= (translate('squad/addsquadserver:SERVER_ID', { id: guild.plugins.squad.serverID || '❌',})) %></textarea>
+                                              <textarea rows="1" type="text" class="form-control" name="serverID" id="serverID" required><%= (translate('squad/addsquadserver:SERVER_ID', { id: guild.plugins.squad.db.serverID || '❌',})) %></textarea>
                                               <small class="text-muted">
                                                 Example; <code>1,2,3</code>
                                               </small>
@@ -177,25 +179,22 @@
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                               <label for="user"><%= translate("squad/addsquadserver:USERS") %></label>
-                                              <textarea rows="1" type="numbers" class="form-control" name="user" id="user"><%= (translate('squad/addsquadserver:USER', { user: guild.plugins.squad.user || '❌',})) %></textarea>
+                                              <textarea rows="1" type="numbers" class="form-control" name="user" id="user"><%= (translate('squad/addsquadserver:USER', { user: guild.plugins.squad.db.user || '❌',})) %></textarea>
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label for="password"><%= translate("squad/addsquadserver:PASSWORDS") %></label>
-                                                <textarea rows="1" type="text" class="form-control" id="password" name="password" ><%= (translate('squad/addsquadserver:PASSWORD', { password: guild.plugins.squad.password ? '✔️' : '❌',})) %></textarea>
-                                                <% if (guild.plugins.squad.password) { %>
+                                                <textarea rows="1" type="text" class="form-control" id="password" name="password" ><%= (translate('squad/addsquadserver:PASSWORD', { password: guild.plugins.squad.db.password ? '✔️' : '❌',})) %></textarea>
+                                                <% if (guild.plugins.squad.db.password) { %>
                                                     <small class="text-muted text-green">
                                                         You can update without re-writing this if you want to hold the old password.
                                                     </small>
-                                                <% } %>
-                                                
-                                                    
-                                                  
+                                                <% } %>  
                                             </div>
                                         </div>
                                         <div class="form-group mt--2">
                                             <div class="checkbox">
                                                 <label>
-                                                    <% if(guild.plugins.squad.rolesEnabled) { %>
+                                                    <% if(guild.plugins.squad.stats.rolesEnabled) { %>
                                                         <input type="checkbox" name="rolesEnabled" checked> <%= translate("dashboard:SQUAD_ROLES") %>
                                                     <% } else { %>
                                                         <input type="checkbox" name="rolesEnabled"> <%= translate("dashboard:SQUAD_ROLES") %>
@@ -204,7 +203,7 @@
                                             </div>
                                             <div class="checkbox">
                                                 <label>
-                                                    <% if(guild.plugins.squad.rolesGiven) { %>
+                                                    <% if(guild.plugins.squad.stats.rolesGiven) { %>
                                                         <input type="checkbox" name="rolesGiven" checked> <%= translate("dashboard:SQUAD_ROLES_GIVEN") %>
                                                     <% } else { %>
                                                         <span class="text-red badge badge-danger"><%= translate("dashboard:SQUAD_ROLES_GIVEN_READY") %></span>
@@ -214,7 +213,7 @@
                                         </div>
                                     <!-- /.box-body -->
                                     <div class="box-footer mt--3">
-                                        <% if(guild.plugins.squad.enabled){ %>
+                                        <% if(guild.plugins.squad.stats.enabled){ %>
                                             <button type="submit" name="squadDisable" class="btn btn-danger"> <%= translate("dashboard:DISABLE_SQUAD") %></button>
                                             <button type="submit" name="squadUpdate" class="btn btn-primary pull-right"> <%= translate("common:UPDATE") %></button>
                                         <% } else { %>
@@ -223,150 +222,13 @@
                                     </div>
                                 </form>
                             </div>
-                            <!-- WELCOME CONFIGURATION -->
-                            <div class="box box-success mt-4">
-                                <div class="box-header with-border">
-                                    <h3 class="box-title"><%= translate("dashboard:WELCOME_CONF") %></h3>
-                                </div>
-                                <form role="form" action="/manage/<%= guild.id %>/" method="POST">
-                                    <!-- /.box-header -->
-                                    <div class="box-body">
-                                        <!-- text input -->
-                                        <div class="form-group">
-                                            <label><%= translate("common:MESSAGE") %></label>
-                                            <textarea rows="3" name="message" class="form-control" required><%= (guild.plugins.welcome.message || translate("administration/welcome:DEFAULT_MESSAGE")) %></textarea>
-                                        </div>
-                                        <!-- select -->
-                                        <div class="form-group mt--2">
-                                            <label><%= translate("common:CHANNEL") %></label>
-                                            <select class="form-control" name="channel">
-                                                <% if(guild.plugins.welcome.enabled && bot.channels.cache.has(guild.plugins.welcome.channel)){ %>
-                                                    <option selected="selected">#<%= bot.channels.cache.get(guild.plugins.welcome.channel).name %></option>
-                                                    <% guild.channels.cache.filter((ch) => ch.id !== guild.plugins.welcome.channel && ch.type === "text").forEach((ch) => { %>
-                                                        <option>#<%= ch.name %></option>
-                                                    <% }); } else { %>
-                                                    <option selected="selected">#<%= guild.channels.cache.filter((ch) => ch.type === "text").first().name %></option>
-                                                    <% guild.channels.cache.filter((ch) => ch.id !== guild.channels.cache.first().id && ch.type === "text").forEach((ch) => { %>
-                                                        <option>#<%= ch.name %></option>
-                                                    <% }); %>
-                                                <% } %>
-                                            </select>
-                                        </div>
-                                        <!-- select -->
-                                        <div class="form-group mt--2">
-                                            <div class="checkbox">
-                                                <label>
-                                                    <% if(guild.plugins.welcome.withImage || !guild.plugins.welcome.enabled) { %>
-                                                        <input type="checkbox" name="withImage" checked> <%= translate("dashboard:WELCOME_IMG") %>
-                                                    <% } else { %>
-                                                        <input type="checkbox" name="withImage"> <%= translate("dashboard:WELCOME_IMG") %>
-                                                    <% } %>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- /.box-body -->
-                                    <div class="box-footer mt--3">
-                                        <% if(guild.plugins.welcome.enabled){ %>
-                                            <button type="submit" name="welcomeDisable" class="btn btn-danger"> <%= translate("dashboard:DISABLE_MESSAGES") %></button>
-                                            <button type="submit" name="welcomeUpdate" class="btn btn-primary pull-right"> <%= translate("common:UPDATE") %></button>
-                                        <% } else { %>
-                                            <button type="submit" name="welcomeEnable" class="btn btn-success"> <%= translate("dashboard:ENABLE_MESSAGES") %></button>
-                                        <% } %>
-                                    </div>
-                                </form>
-                            </div>
-                            <!-- GOODBYE CONFIGURATION -->
-                            <div class="box box-danger mt-4">
-                                <div class="box-header with-border">
-                                    <h3 class="box-title"> <%= translate("dashboard:GOODBYE_CONF") %></h3>
-                                </div>
-                                <form role="form" action="/manage/<%= guild.id %>/" method="POST">
-                                    <!-- /.box-header -->
-                                    <div class="box-body">
-                                        <!-- text input -->
-                                        <div class="form-group">
-                                            <label> <%= translate("common:MESSAGE") %></label>
-                                            <textarea rows="3" name="message" class="form-control" required> <%= (guild.plugins.goodbye.message || translate("administration/goodbye:DEFAULT_MESSAGE")) %></textarea>
-                                        </div>
-                                        <!-- select -->
-                                        <div class="form-group mt--2">
-                                            <label><%= translate("common:CHANNEL") %></label>
-                                            <select class="form-control" name="channel">
-                                                <% if(guild.plugins.goodbye.enabled && bot.channels.cache.has(guild.plugins.goodbye.channel)){ %>
-                                                    <option selected="selected">#<%= bot.channels.cache.get(guild.plugins.goodbye.channel).name %></option>
-                                                    <% guild.channels.cache.filter((ch) => ch.id !== guild.plugins.goodbye.channel && ch.type === "text").forEach((ch) => { %>
-                                                        <option>#<%= ch.name %></option>
-                                                    <% }); } else { %>
-                                                    <option selected="selected">#<%= guild.channels.cache.filter((ch) => ch.type === "text").first().name %></option>
-                                                    <% guild.channels.cache.filter((ch) => ch.id !== guild.channels.cache.first().id && ch.type === "text").forEach((ch) => { %>
-                                                        <option>#<%= ch.name %></option>
-                                                    <% }); %>
-                                                <% } %>
-                                            </select>
-                                        </div>
-                                        <!-- select -->
-                                        <div class="form-group mt--2">
-                                            <div class="checkbox">
-                                                <label>
-                                                    <% if(guild.plugins.goodbye.withImage || !guild.plugins.goodbye.enabled) { %>
-                                                        <input type="checkbox" name="withImage" checked> <%= translate("dashboard:GOODBYE_IMG") %>
-                                                    <% } else { %>
-                                                        <input type="checkbox" name="withImage"> <%= translate("dashboard:GOODBYE_IMG") %>
-                                                    <% } %>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- /.box-body -->
-                                    <div class="box-footer mt--3">
-                                        <% if(guild.plugins.goodbye.enabled){ %>
-                                            <button type="submit" name="goodbyeDisable" class="btn btn-danger"><%= translate("dashboard:DISABLE_MESSAGES") %></button>
-                                            <button type="submit" name="goodbyeUpdate" class="btn btn-primary pull-right"><%= translate("common:UPDATE") %></button>
-                                        <% } else { %>
-                                            <button type="submit" name="goodbyeEnable" class="btn btn-success"><%= translate("dashboard:ENABLE_MESSAGES") %></button>
-                                        <% } %>
-                                    </div>
-                                </form>
-                            </div>
-                            <!-- AUTOROLE CONFIGURATION -->
-                            <div class="box box-warning mt-4">
-                                <div class="box-header with-border">
-                                    <h3 class="box-title"><%= translate("dashboard:AUTOROLE_CONF") %></h3>
-                                </div>
-                                <form role="form" action="/manage/<%= guild.id %>/" method="POST">
-                                    <!-- /.box-header -->
-                                    <div class="box-body">
-                                        <!-- select -->
-                                        <div class="form-group">
-                                            <label><%= translate("common:ROLE") %></label>
-                                            <select class="form-control" name="role">
-                                                <% if(guild.plugins.autorole.enabled && guild.roles.cache.has(guild.plugins.autorole.role)){ %>
-                                                    <option selected="selected">@<%= guild.roles.cache.get(guild.plugins.autorole.role).name %></option>
-                                                    <% guild.roles.cache.filter((r) => r.id !== guild.plugins.autorole.role && r.name !== "@everyone").forEach((r) => { %>
-                                                        <option>@<%= r.name %></option>
-                                                    <% }); } else { %>
-                                                    <option selected="selected">@<%= guild.roles.cache.filter((r) => r.name !== "@everyone").first().name %></option>
-                                                    <% guild.roles.cache.filter((r) => r.id !== guild.roles.cache.filter((r) => r.name !== "@everyone").first().id && r.name !== "@everyone").forEach((r) => { %>
-                                                        <option>@<%= r.name %></option>
-                                                    <% }); %>
-                                                <% } %>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <!-- /.box-body -->
-                                    <div class="box-footer mt--3">
-                                        <% if(guild.plugins.autorole.enabled){ %>
-                                            <button type="submit" name="autoroleDisable" class="btn btn-danger"><%= translate("dashboard:DISABLE_AUTOROLE") %></button>
-                                            <button type="submit" name="autoroleUpdate" class="btn btn-primary pull-right"><%= translate("common:UPDATE") %></button>
-                                        <% } else { %>
-                                            <button type="submit" name="autoroleEnable" class="btn btn-success"><%= translate("dashboard:ENABLE_AUTOROLE") %></button>
-                                        <% } %>
-                                    </div>
-                                </form>
-                            </div>
-                            <!-- /.box -->
                         </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                              <label for="toggle-test">Test</label>
+                              <input name="toggle-test" type="checkbox" data-style="ios" data-toggle="toggle" data-size="xs" data-on="Enabled" data-off="Disabled" checked>
+                            </div>
+                        </div>  
                     <div>
 				</section>
 				

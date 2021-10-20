@@ -1,49 +1,45 @@
 {
-	"name": "squadstatjs-pro",
+	"name": "SquadStatsJS-pro",
 	"version": "2.1.0",
-	"description": "An advanced version of SquadStatJS (tracking your squad stats) with advanced discord commands to manage your discord server.",
+	"description": "An advanced version of SquadStatsJS (tracking your squad stats) with advanced discord commands to manage your discord server.",
 	"main": "index.js",
 	"scripts": {
 		"start": "node .",
+		"dev": "nodemon node . ",
 		"lint": "eslint . --ext .js --fix",
 		"testcfg": "node scripts/verify-config.js",
 		"prettier": "prettier --use-tabs --write .",
-		"ready": "yarn run prettier && yarn run lint"
+		"ready": "yarn run genApiDoc && yarn run prettier && yarn run lint",
+		"genApiDoc": "apidoc -f \"./dashboard/routes/\" -i ./ -o \"dashboard/public/apidoc/\""
 	},
 	"engines": {
 		"node": ">=16.6"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/11TStudio/SquadStatJS-PRO.git"
+		"url": "git+https://github.com/11TStudio/SquadStatsJS-PRO.git"
 	},
 	"keywords": [
-		"squadstatjs",
+		"SquadStatsJS",
 		"squad",
-		"track",
-		"stats",
+		"stats track",
 		"squadjs",
 		"discord",
-		"bot",
-		"giveaway",
 		"moderation"
 	],
 	"author": "LeventHAN",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/11TStudio/SquadStatJS-PRO/issues"
+		"url": "https://github.com/11TStudio/SquadStatsJS-PRO/issues"
 	},
-	"homepage": "https://github.com/11TStudio/SquadStatJS-PRO#readme",
+	"homepage": "https://github.com/11TStudio/SquadStatsJS-PRO#readme",
 	"dependencies": {
-		"@sindresorhus/slugify": "^1.1.0",
 		"axios": "^0.21.1",
 		"btoa": "^1.2.1",
 		"canvas": "^2.8.0",
 		"chalk": "^4.1.0",
-		"combined-stream": "^1.0.8",
+		"cors": "^2.8.5",
 		"cron": "^1.7.2",
-		"discord-backup": "^2.1.19",
-		"discord-giveaways": "^4.4.3",
 		"discord.js": "discordjs/discord.js",
 		"ejs": "^3.1.3",
 		"express": "^4.17.1",
@@ -56,16 +52,18 @@
 		"moment": "^2.26.0",
 		"mongoose": "^5.9.25",
 		"ms": "^2.1.3",
+		"multiparty": "^4.2.2",
 		"mysql": "^2.18.1",
 		"passport": "^0.4.1",
 		"passport-steam": "^1.0.15",
 		"random": "^3.0.6",
+		"socket.io": "^4.2.0",
 		"socket.io-client": "^4.0.1"
 	},
 	"devDependencies": {
+		"eslint": "^7.5.0",
 		"nodemon": "^2.0.7",
-		"prettier": "^2.2.1",
-		"eslint": "^7.5.0"
+		"prettier": "^2.2.1"
 	},
 	"eslintConfig": {
 		"env": {

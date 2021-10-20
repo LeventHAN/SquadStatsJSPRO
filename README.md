@@ -96,7 +96,7 @@ module.exports = {
 		expressSessionPassword: "XXXXXXXXXXX", // Express session password (it can be what you want)
 		failureURL: "https://leventhan.info", // url on which users will be redirected if they click the cancel button (discord authentication)
 	},
-	mongoDB: "mongodb://localhost:27017/SquadStatJSv3", // The URl of the mongodb database
+	mongoDB: "mongodb://localhost:27017/SquadStatsJSv3", // The URl of the mongodb database
 	prefix: "!", // The default prefix for the bot
 	/* For the embeds (embeded messages) */
 	embed: {
@@ -129,7 +129,7 @@ module.exports = {
 	/* The Bot status */
 	status: [
 		{
-			name: "SquadStatJSv3 servs on {serversCount} servers",
+			name: "SquadStatsJSv3 servs on {serversCount} servers",
 			type: "LISTENING",
 		},
 		{

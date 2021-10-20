@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Menghasilkan gambar kode QR dari teks yang diberikan",
-    "USAGE": "{{prefix}}qrcode [teks]",
-    "EXAMPLES": "{{prefix}}qrcode Halo",
-    "MISSING_TEXT": "Harap tentukan teks sumber kode QR!",
-    "SUCCESS": "Berikut kode QR-mu!"
-}

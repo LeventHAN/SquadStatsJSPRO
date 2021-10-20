@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "Senin için LMGTFY linki yapıyorum",
-    "USAGE": "{{prefix}}lmg [search]",
-    "EXAMPLES": "{{prefix}}lmg Nasıl bir discord botu yapabilirim?",
-    "MISSING": "Uygun bir arama girermisin!"
-}

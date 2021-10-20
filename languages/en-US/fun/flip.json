@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "I roll the dice for you!",
-    "USAGE": "{{prefix}}flip",
-    "EXAMPLES": "{{prefix}}flip",
-    "HEADS": "🎲 | Heads!",
-    "TAILS": "🎲 | Tails!"
-}

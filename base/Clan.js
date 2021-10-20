@@ -16,9 +16,8 @@ module.exports = mongoose.model(
 			default: "undefined",
 		},
 		size: {
-			type: String,
-			enum: ["member", "clanMember", "clanLeader", "admin", "owner"],
-			default: "member",
+			type: Number,
+			default: 0,
 		},
 		recruitStatus: {
 			type: Boolean,

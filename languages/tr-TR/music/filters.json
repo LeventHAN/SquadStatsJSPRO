@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Tüm filtrelerin listesini ve durumlarına bakın",
-    "USAGE": "{{prefix}}filters",
-    "EXAMPLES": "{{prefix}}filters",
-    "TITLE": "**Filtreler**",
-    "CONTENT": "İşte filtrelerin listesi.\n`{{prefix}}filter` komutunu kullanarak filtre durumunu değiştirin."
-}

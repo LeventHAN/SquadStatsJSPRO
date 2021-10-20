@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Ik gooi de dobbelstenen voor je!",
-    "USAGE": "{{prefix}}flip",
-    "EXAMPLES": "{{prefix}}flip",
-    "HEADS": "🎲 | Hoofd!",
-    "TAILS": "🎲 | Kop!"
-}

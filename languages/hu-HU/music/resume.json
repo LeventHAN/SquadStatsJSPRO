@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "Folytasd az aktuális dalt!",
-    "USAGE": "{{prefix}}resume",
-    "EXAMPLES": "{{prefix}}resume",
-    "SUCCESS": "▶️ Zene folytatva!"
-}

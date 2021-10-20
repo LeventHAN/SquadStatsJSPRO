@@ -1,8 +1,0 @@
-{
-    "DESCRIPTION": "Üyenin yasağını kaldır!",
-    "USAGE": "{{prefix}}unban [userID/user#0000]",
-    "EXAMPLES": "{{prefix}}unban 422820341791064085\n{{prefix}}unban LeventHAN™#0001",
-    "MISSING_ID": "Lütfen yasak kaldırmak için uygun bir ID girin!",
-    "NOT_BANNED": "**{{username}}** yasaklı değil!",
-    "UNBANNED": "**{{username}}** yasağı kaldırıldı **{{server}}** sunucusundan!"
-}

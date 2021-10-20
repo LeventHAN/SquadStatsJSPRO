@@ -1,8 +1,0 @@
-{
-    "DESCRIPTION": "Özel Komut ekle!",
-    "USAGE": "{{prefix}}addcommand [name] [answer]",
-    "EXAMPLES": "{{prefix}}addcommand merhaba Merhaba {user}! Nasılsın?",
-    "MISSING_NAME": "Lütfen bir komut adı girin!",
-    "MISSING_ANSWER": "Lütfen komut için bir cevap girin!",
-    "SUCCESS": "Komut **{{prefix}}{{commandName}}** eklendi!"
-}

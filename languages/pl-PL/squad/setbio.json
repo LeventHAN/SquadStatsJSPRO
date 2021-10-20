@@ -1,8 +1,0 @@
-{
-    "DESCRIPTION": "Change your biography!",
-    "USAGE": "{{prefix}}setbio [biography]",
-    "EXAMPLES": "{{prefix}}setbio My name is Jake, I'm 19 and I love ARTILLERY !",
-    "MISSING": "You must specify a biography!",
-    "MAX_CHARACT": "Your biography must not exceed 100 characters!",
-    "SUCCESS": "Your biography has been modified!"
-}

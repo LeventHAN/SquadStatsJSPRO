@@ -145,7 +145,7 @@ const checks = [
 	}
 	console.log(
 		chalk.yellow(
-			"\n\nThank you for using SquadStatJSv3. If you need more help, join our support server here: https://discord.gg/9F2Ng5C"
+			"\n\nThank you for using SquadStatsJSv3. If you need more help, join our support server here: https://discord.gg/9F2Ng5C"
 		)
 	);
 	process.exit(0);

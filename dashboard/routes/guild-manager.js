@@ -2,14 +2,18 @@ const express = require("express"),
 	utils = require("../utils"),
 	CheckAuth = require("../auth/CheckAuth"),
 	router = express.Router(),
-	version = require("../../package.json").version;
+	version = require("../../package.json").version,
+	config = require("../../config");
 
 router.get("/:serverID", CheckAuth, async(req, res) => {
 	// Check if the user has the permissions to edit this guild
 	const guild = req.client.guilds.cache.get(req.params.serverID);
 	if(!guild || !req.userInfos.displayedGuilds || !req.userInfos.displayedGuilds.find((g) => g.id === req.params.serverID)){
 		return res.render("404", {
-			user: req.userInfos,
+			role: await req.client.getRoles(req.session.user.id),
+			ownerID: config.owner.id,
+			serverID: config.serverID,
+			userDiscord: req.userInfos,
 			translate: req.translate,
 			repoVersion: version,
 			currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`
@@ -18,16 +22,18 @@ router.get("/:serverID", CheckAuth, async(req, res) => {
 
 	// Fetch guild informations
 	const guildInfos = await utils.fetchGuild(guild.id, req.client, req.user.guilds);
-	req.translate = req.client.translations.get(guildInfos.language);
+	await guildInfos.channels.cache.filter((ch) => ch.type === "GUILD_TEXT");
 	res.render("manager/guild", {
+		role: await req.client.getRoles(req.session.user.id),
+		ownerID: config.owner.id,
+		serverID: config.serverID,
 		guild: guildInfos,
-		user: req.userInfos,
+		userDiscord: req.userInfos,
 		translate: req.translate,
 		repoVersion: version,
 		bot: req.client,
 		currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`
 	});
-
 });
 
 router.post("/:serverID", CheckAuth, async(req, res) => {
@@ -36,7 +42,10 @@ router.post("/:serverID", CheckAuth, async(req, res) => {
 	const guild = req.client.guilds.cache.get(req.params.serverID);
 	if(!guild || !req.userInfos.displayedGuilds || !req.userInfos.displayedGuilds.find((g) => g.id === req.params.serverID)){
 		return res.render("404", {
-			user: req.userInfos,
+			role: await req.client.getRoles(req.session.user.id),
+			ownerID: config.owner.id,
+			serverID: config.serverID,
+			userDiscord: req.userInfos,
 			translate: req.translate,
 			currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`
 		});
@@ -62,19 +71,22 @@ router.post("/:serverID", CheckAuth, async(req, res) => {
 	 if(Object.prototype.hasOwnProperty.call(data, "squadEnable") || Object.prototype.hasOwnProperty.call(data, "squadUpdate")){
 		const squad = {
 			enabled: true,
-			rolesEnabled: data.rolesEnabled == 'on' ? true : false,
-			rolesGiven: data.rolesGiven == 'on' ? false : true,
+			rolesEnabled: data.rolesEnabled == "on" ? true : false,
+			rolesGiven: data.rolesGiven == "on" ? false : true,
+		};
+		const db = {
 			host: data.host,
 			port: data.port,
 			database: data.database,
-			user: data.user,
-			password: data.password === '✔️' ? guildData.plugins.squad.password : data.password,
+			userDiscord: data.user,
+			password: data.password === "✔️" ? guildData.plugins.squad.db.password : data.password,
 			serverID: data.serverID
-			// ignoredMaps: data.ignoredMaps,
 			// (TODO: Should I restrict this to one room?) channel: guild.channels.cache.find((ch) => "#"+ch.name === data.channel).id,
 		};
-		guildData.plugins.squad = squad;
-		guildData.markModified("plugins.squad");
+		guildData.plugins.squad.stats = squad;
+		guildData.markModified("plugins.squad.stats");
+		guildData.plugins.squad.db = db;
+		guildData.markModified("plugins.squad.db");
 		await guildData.save();
 	}
 
@@ -86,80 +98,23 @@ router.post("/:serverID", CheckAuth, async(req, res) => {
 			host: null,
 			port: null,
 			database: null,
-			user: null,
+			userDiscord: null,
 			password: null,
 			serverID: null
 		};
-		guildData.plugins.squad = squad;
-		guildData.markModified("plugins.squad");
-		await guildData.save();
-	}
-
-	if(Object.prototype.hasOwnProperty.call(data, "welcomeEnable") || Object.prototype.hasOwnProperty.call(data, "welcomeUpdate")){
-		const welcome = {
-			enabled: true,
-			message: data.message,
-			channel: guild.channels.cache.find((ch) => "#"+ch.name === data.channel).id,
-			withImage: data.withImage === "on"
+		const db = {
+			host: null,
+			port: null,
+			database: null,
+			userDiscord: null,
+			password: null,
+			serverID: null
+			// (TODO: Should I restrict this to one room?) channel: guild.channels.cache.find((ch) => "#"+ch.name === data.channel).id,
 		};
-		guildData.plugins.welcome = welcome;
-		guildData.markModified("plugins.welcome");
-		await guildData.save();
-	}
-
-	if(Object.prototype.hasOwnProperty.call(data, "welcomeDisable")){
-		const welcome = {
-			enabled: false,
-			message: null,
-			channel: null,
-			withImage: null
-		};
-		guildData.plugins.welcome = welcome;
-		guildData.markModified("plugins.welcome");
-		await guildData.save();
-	}
-
-	if(Object.prototype.hasOwnProperty.call(data, "goodbyeEnable") || Object.prototype.hasOwnProperty.call(data, "goodbyeUpdate")){
-		const goodbye = {
-			enabled: true,
-			message: data.message,
-			channel: guild.channels.cache.find((ch) => "#"+ch.name === data.channel).id,
-			withImage: data.withImage === "on"
-		};
-		guildData.plugins.goodbye = goodbye;
-		guildData.markModified("plugins.goodbye");
-		await guildData.save();
-	}
-
-	if(Object.prototype.hasOwnProperty.call(data, "goodbyeDisable")){
-		const goodbye = {
-			enabled: false,
-			message: null,
-			channel: null,
-			withImage: null
-		};
-		guildData.plugins.goodbye = goodbye;
-		guildData.markModified("plugins.goodbye");
-		await guildData.save();
-	}
-
-	if(Object.prototype.hasOwnProperty.call(data, "autoroleEnable") || Object.prototype.hasOwnProperty.call(data, "autoroleUpdate")){
-		const autorole = {
-			enabled: true,
-			role: guild.roles.cache.find((r) => "@"+r.name === data.role).id
-		};
-		guildData.plugins.autorole = autorole;
-		guildData.markModified("plugins.autorole");
-		await guildData.save();
-	}
-
-	if(Object.prototype.hasOwnProperty.call(data, "autoroleDisable")){
-		const autorole = {
-			enabled: false,
-			role: null
-		};
-		guildData.plugins.autorole = autorole;
-		guildData.markModified("plugins.autorole");
+		guildData.plugins.squad.stats = squad;
+		guildData.markModified("plugins.squad.stats");
+		guildData.plugins.squad.db = db;
+		guildData.markModified("plugins.squad.db");
 		await guildData.save();
 	}
 

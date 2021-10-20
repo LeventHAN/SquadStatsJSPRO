@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<%- include('includes/head') %>
+	<%- include('includes/socketio') %>
+	<body>
+		<!-- The sidebar includes the menu -->
+		<%- include('./partials/sidebar') %>
+		<div class="main-content">
+		<!-- Top navbar -->
+		<%- include('./partials/navbar') %>
+		<!-- Header -->
+		<%- include('./partials/header') %>
+		
+
+			<!-- Content Wrapper. Contains page content -->
+			<div class="container-fluid mt--7">
+				<div class="card bg-gradient-neutral shadow p-5">
+					<div class="row mt-2">
+                        <!-- Make 2 tables next to each other -->
+						<div class="col-md-6">
+							<div class="card bg-gradient-neutral shadow p-2">
+								<div class="card-body">
+									<h4 class="card-title">
+										<i class="fas fa-chart-bar"></i>
+										<span>Send Admin BroadCast</span>
+									</h4>
+									<textarea rows="4" type="text" class="form-control" placeholder="Type your message..." id="messageToBroadCast"></textarea>
+									<button type="button" class="btn btn-primary mt-2" onclick="sendBroadCast()">Send</button>
+								</div>
+							</div>
+						</div>
+					<div class="col-md-6">
+							<div class="card bg-gradient-neutral shadow p-2">
+								<div class="card-body">
+									<h4 class="card-title">
+										<i class="fas fa-chart-bar"></i>
+										<span>Sended BroadCast Messages (Not Saved Yet)</span>
+									</h4>
+									<span id="BroadCastedMessages"></span>
+								</div>
+							</div>
+					</div>
+						<script>
+						function sendBroadCast(){
+							// TODO: Save this via logger class (ALSO TODO: Add a way to save this message to the database)
+							let message = document.getElementById("messageToBroadCast").value;
+							socket.emit("rcon.broadcast", message, () => {
+								Swal.fire({
+									title: 'Sending your message',
+									html: `<pre><code>${message}</code></pre>`,
+									timer: 2000,
+									timerProgressBar: true,
+									didOpen: () => {
+										Swal.showLoading()
+									},
+								}).then((result) => {
+								/* Read more about handling dismissals below */
+									if (result.dismiss === Swal.DismissReason.timer) {
+										Swal.fire(
+											'Broadcast has been send.',
+											'success'
+										)
+									}
+								})
+								let xhr = new XMLHttpRequest();
+								xhr.open("POST", `${window.location.origin}/squad-api/broadcast`, true);
+								xhr.setRequestHeader('Content-Type', 'application/json');
+								xhr.send(JSON.stringify({
+									content: message,
+								}));
+							});
+							document.getElementById("messageToBroadCast").value = "";
+						}
+							</script>
+				</div>
+				<!-- Footer includes credits and version -->
+			</div>
+			<%- include('./partials/footer') %>
+		</div>
+		<%- include('./partials/scripts') %>
+	</body>
+</html>

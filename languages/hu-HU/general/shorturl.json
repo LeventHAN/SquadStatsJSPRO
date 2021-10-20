@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "Rövidítsd linkeidet!",
-    "USAGE": "{{prefix}}shorturl [url]",
-    "EXAMPLES": "{{prefix}}shorturl https://google.hu",
-    "MISSING_URL": "Adj meg egy érvényes URL-t!"
-}

@@ -1,0 +1,251 @@
+<script>
+    let delay = 2000;
+    const totPlayers = document.createElement("span");
+    totPlayers.classList.add("h2","font-weight-bold", "mb-0");
+    totPlayers.innerHTML = `/100`;
+
+    function addNewLines(str) { 
+        return str.replace(/(?!$|\n)([^\n]{19}(?!\n))/g, '$1<br>');
+    }
+
+    // let lastClick = 0;
+    function updatePlayers(option = 3) {
+        // simple spam prevention
+        // if (lastClick >= (Date.now() - delay))
+        //     return;
+        // lastClick = Date.now();
+        let team1 = [];
+        let team2 = [];
+        let teamNames = [];
+        socket.emit("players", async (players) => {
+            const headerTitle2 = document.getElementById("headerTitle2");
+            const headerDesc2 = document.getElementById("headerDesc2");
+            const headerIcon2 = document.getElementById("headerIcon2");
+            headerTitle2.innerHTML = "Players Amount";
+            headerIcon2.className = "fas fa-users";
+            headerDesc2.innerHTML = players.length;
+            headerDesc2.parentNode.insertBefore(totPlayers, headerDesc2.nextSibling);
+
+            players.forEach(player => {
+                if(player.teamID === "1") team1.push(player);
+                if(player.teamID === "2") team2.push(player);
+                if(player?.squad?.teamName && !teamNames.includes(player?.squad?.teamID + ":" + player?.squad?.teamName)) teamNames.push(player?.squad?.teamID + ":" + player?.squad?.teamName);
+            });
+
+            async function createTable1() {
+                let table = document.getElementById("team1_players");
+                table.innerHTML = '';
+                let thead = document.createElement("thead");
+                table.appendChild(thead);
+                let title = document.createElement("tr");
+                title.innerHTML =   `<th scope="col">Player</th>
+                                    <th scope="col">🔒/🔓</th>
+                                    <th scope="col">#👥</th>
+                                    <th scope="col">Squad</th>
+                                    <th scope="col">Actions</th>`;
+                thead.appendChild(title);
+                let tbody = document.createElement("tbody");
+                table.appendChild(tbody);
+                team1.forEach(async player => {
+                    let row = document.createElement("tr");
+                    row.id = `${player?.steamID}`;
+                    if(player.squadID){
+                        row.innerHTML = `<td class="name font-weight-bold">${addNewLines(player.name)}<br><span class="badge bg-warning text-dark player-toggle="tooltip" player-placement="top" title="${player.possessClassname || "No Role Selected Yet"}" "><span id="${player.playerID}"></span>${player.steamID}</span></td>
+                                        <td><span ${player.squadID ? 'id='+(player.squadID + player.squad.teamID) : ""}>${player.squad?.locked !== "False" ? "<span class='badge bg-danger text-dark'><span style='font-size: 0.1px'>locked</span>🔒</span></td>" : player.squadID ? "<span class='badge bg-success text-dark'><span style='font-size: 0.1px'>unlocked</span>🔓</span></td>" : "<td><span class='badge bg-danger text-dark'>not in squad</span></td>"}<td><span class="badge bg-secondary text-dark">${player.squad?.size ? "👥 " + player.squad?.size : "" }</span></td><td><span class="badge bg-primary text-dark">${addNewLines(player.squad?.squadName) || "<span class='badge bg-danger text-dark'>not in squad</span>"}</span></td>
+                                        <td class="squadName"><button class="badge btn btn-secondary" id="settings${player.steamID}" aria-describedby="Actions">Actions</button></td>
+                                        `;
+                    } else {
+                        row.innerHTML = `<td class="name font-weight-bold">${addNewLines(player.name)}<br><span class="badge bg-warning text-dark player-toggle="tooltip" player-placement="top" title="${player.possessClassname || "No Role Selected Yet"}" "><span id="${player.playerID}"></span>${player.steamID}</span></td>
+                                        <td></td><td></td><td><span class='badge bg-danger text-dark'>not in squad</span></td>
+                                        <td class="squadName"><button class="badge btn btn-secondary" id="settings${player.steamID}" aria-describedby="Actions">Actions</button></td>
+                                        `;
+                    }
+
+
+                    await tbody.appendChild(row);
+                    tippy(document.getElementById(`settings${player.steamID}`), {
+                        content: `
+                        <button style="font-size: 10px !important;" type="button" class="badge btn btn-secondary" onclick="warn('${player.steamID}')">Warn</button>
+                        <button style="font-size: 10px !important;" type="button" class="badge btn btn-warning" onclick="kick('${player.steamID}')">Kick</button>
+                        <button style="font-size: 10px !important;" type="button" class="badge btn btn-danger" onclick="ban('${player.steamID}')">Ban</button>
+                        ${player.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('2', '${player.squadID}')">Disband the Squad</button>` : ''}
+                        ${player.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-info" onclick="removeFromSquad('${player.steamID}')">Kick From Squad</button>` : ''}
+                        `,
+                        allowHTML: true,
+                        zIndex: 1,
+                        maxWidth: 'none',
+                        trigger: 'click',
+                        interactive: true,
+                    });
+
+                });
+                let team1Title = document.getElementById("team1");
+                let teamTitle1 = teamNames.filter(team => team.includes("1:")).toString().substring(2) || "Nothing";
+                // Convert teamTitle2 to camel case
+                team1Title.innerHTML = teamTitle1.replace(/\b\w/g, l => l.toUpperCase());
+            }
+
+            async function createTable2() {
+                let table2 = document.getElementById("team2_players");
+                table2.innerHTML = '';
+                let thead = document.createElement("thead");
+                table2.appendChild(thead);
+                let title = document.createElement("tr");
+                title.innerHTML =   `<th scope="col">Player</th>
+                                    <th scope="col">🔒/🔓</th>
+                                    <th scope="col">#👥</th>
+                                    <th scope="col">Squad</th>
+                                    <th scope="col">Actions</th>`;
+                thead.appendChild(title);
+                let tbody2 = document.createElement("tbody");
+                table2.appendChild(tbody2);
+                team2.forEach(player => {
+                    let row = document.createElement("tr");
+                    row.id = `${player?.steamID}`;
+                    if(player.squadID){
+                        row.innerHTML = `<td class="name font-weight-bold">${addNewLines(player.name)}<br><span class="badge bg-warning text-dark player-toggle="tooltip" player-placement="top" title="${player.possessClassname || "No Role Selected Yet"}" "><span id="${player.playerID}"></span>${player.steamID}</span></td>
+                                        <td><span ${player.squadID ? 'id='+(player.squadID + player.squad.teamID) : ""}>${player.squad?.locked !== "False" ? "<span class='badge bg-danger text-dark'><span style='font-size: 0.1px'>locked</span>🔒</span></td>" : player.squadID ? "<span class='badge bg-success text-dark'><span style='font-size: 0.1px'>unlocked</span>🔓</span></td>" : "<td><span class='badge bg-danger text-dark'>not in squad</span></td>"}<td><span class="badge bg-secondary text-dark">${player.squad?.size ? "👥 " + player.squad?.size : "" }</span></td><td><span class="badge bg-primary text-dark">${addNewLines(player.squad?.squadName) || ""}</span></td>                                
+                                        <td class="squadName"><button class="badge btn btn-secondary" id="settings${player.steamID}" aria-describedby="Actions">Actions</button></td>
+                                        `;
+                    } else {
+                        row.innerHTML = `<td class="name font-weight-bold">${addNewLines(player.name)}<br><span class="badge bg-warning text-dark player-toggle="tooltip" player-placement="top" title="${player.possessClassname || "No Role Selected Yet"}" "><span id="${player.playerID}"></span>${player.steamID}</span></td>
+                                        <td></td><td></td><td><span class='badge bg-danger text-dark'>not in squad</span></td>
+                                        <td class="squadName"><button class="badge btn btn-secondary" id="settings${player.steamID}" aria-describedby="Actions">Actions</button></td>
+                                        `;
+                    }
+                    tbody2.appendChild(row);
+                    tippy(document.getElementById(`settings${player.steamID}`), {
+                        theme: 'leventhan',
+                        content: `
+                        <button style="font-size: 10px !important;" type="button" class="badge btn btn-secondary" onclick="warn('${player.steamID}')">Warn</button>
+                        <button style="font-size: 10px !important;" type="button" class="badge btn btn-warning" onclick="kick('${player.steamID}')">Kick</button>
+                        <button style="font-size: 10px !important;" type="button" class="badge btn btn-danger" onclick="ban('${player.steamID}')">Ban</button>
+                        ${player.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('2', '${player.squadID}')">Disband the Squad</button>` : ''}
+                        ${player.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-info" onclick="removeFromSquad('${player.steamID}')">Kick From Squad</button>` : ''}`,
+                        allowHTML: true,
+                        zIndex: 1,
+                        maxWidth: 'none',
+                        trigger: 'click',
+                        interactive: true,
+                    });
+                });
+                let team2Title = document.getElementById("team2");
+                let teamTitle2 = teamNames.filter(team => team.includes("2:")).toString().substring(2) || "Nothing";
+                // Convert teamTitle2 to camel case
+                team2Title.innerHTML = teamTitle2.replace(/\b\w/g, l => l.toUpperCase());
+            }
+            createTable1();
+            createTable2();
+            filterTable1();
+            filterTable2();
+        });
+    }
+
+    async function addPlayer(data) {
+        const headerDesc2 = document.getElementById("headerDesc2");
+        headerDesc2.innerHTML = parseInt(headerDesc2.innerHTML) + 1;
+        let table;
+        let row = document.createElement("tr");
+        switch(data.player?.teamID) {
+            case "1":
+                table = document.getElementById("team1_players");
+                break;
+            case "2":
+                table = document.getElementById("team2_players");
+        }
+        if(!table) return;
+        row.id=data.player?.steamID;
+        console.log(data);
+        if(data.squadID){
+            row.innerHTML = `<td class="name font-weight-bold">${addNewLines(data.name)}<br><span class="badge bg-warning text-dark data-toggle="tooltip" data-placement="top" title="${data.possessClassname || "No Role Selected Yet"}" "><span id="${data.dataID}"></span>${data.steamID}</span></td>
+                            <td><span ${data.squadID ? 'id='+(data.squadID + data.squad.teamID) : ""}>${data.squad?.locked !== "False" ? "<span class='badge bg-danger text-dark'><span style='font-size: 0.1px'>locked</span>🔒</span></td>" : data.squadID ? "<span class='badge bg-success text-dark'><span style='font-size: 0.1px'>unlocked</span>🔓</span></td>" : "<td><span class='badge bg-danger text-dark'>not in squad</span></td>"}<td><span class="badge bg-secondary text-dark">${data.squad?.size ? "👥 " + data.squad?.size : "" }</span></td><td><span class="badge bg-primary text-dark">${addNewLines(data.squad?.squadName)}</span></td>
+                            <td class="squadName"><button class="badge btn btn-secondary" id="settings${data.steamID}" aria-describedby="Actions">Actions</button></td>
+                            `;
+        } else {
+            row.innerHTML = `<td class="name font-weight-bold">${addNewLines(data.name)}<br><span class="badge bg-warning text-dark data-toggle="tooltip" data-placement="top" title="${data.possessClassname || "No Role Selected Yet"}" "><span id="${data.dataID}"></span>${data.steamID}</span></td>
+                            <td></td><td></td><td><span class='badge bg-danger text-dark'>not in squad</span></td>
+                            <td class="squadName"><button class="badge btn btn-secondary" id="settings${data.steamID}" aria-describedby="Actions">Actions</button></td>
+                            `;
+        }
+        table.appendChild(row);
+        tippy(document.getElementById(`settings${data.player?.steamID}`), {
+            theme: 'leventhan',
+            content: `
+            <button style="font-size: 10px !important;" type="button" class="badge btn btn-secondary" onclick="warn('${data.steamID}')">Warn</button>
+            <button style="font-size: 10px !important;" type="button" class="badge btn btn-warning" onclick="kick('${data.steamID}')">Kick</button>
+            <button style="font-size: 10px !important;" type="button" class="badge btn btn-danger" onclick="ban('${data.steamID}')">Ban</button>
+            ${data.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('2', '${data.squadID}')">Disband the Squad</button>` : ''}
+            ${data.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-info" onclick="removeFromSquad('${data.steamID}')">Kick From Squad</button>` : ''}`,
+            allowHTML: true,
+            zIndex: 1,
+            maxWidth: 'none',
+            trigger: 'click',
+            interactive: true,
+        });
+        switch(data.player?.teamID) {
+            case "1":
+                filterTable1();
+                break;
+            case "2":
+                filterTable2();
+        }
+
+    }
+
+    async function removePlayer(data) {
+        const headerDesc2 = document.getElementById("headerDesc2");
+        headerDesc2.innerHTML = parseInt(headerDesc2.innerHTML) - 1;
+        let table;
+        let rows;
+        switch(data.player?.teamID) {
+            case "1":
+                table = document.getElementById("team1_players");
+                rows = document.querySelectorAll("#team1_players tr");
+                break;
+            case "2":
+                table = document.getElementById("team2_players");
+                rows = document.querySelectorAll("#team2_players tr");
+        }
+        if(!table) return updatePlayers();
+        rows.forEach((row) => {
+            if(row.id === data.player?.steamID) {
+                row.remove();
+            }
+        })
+        switch(data.player?.teamID) {
+            case "1":
+                filterTable1();
+                break;
+            case "2":
+                filterTable2();
+        }
+    }
+
+    function filterTable1() {
+        $('#team1_players').DataTable( {
+            destroy: true,
+            bAutoWidth: false,
+            aoColumns: [ { sWidth: "1%",  },  { sWidth: "1%" },  { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" } ],
+            
+            "scrollCollapse": true,
+            "info":           false,
+            "paging":         false
+        } );
+    }
+
+    function filterTable2() {
+        $('#team2_players').DataTable( {
+            destroy: true,
+            bAutoWidth: false,
+            aoColumns: [ { sWidth: "1%",  },  { sWidth: "1%" },  { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" } ],
+            
+            "scrollCollapse": true,
+            "info":           false,
+            "paging":         false
+        } );
+    }
+
+
+    updatePlayers();
+
+</script>

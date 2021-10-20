@@ -1,5 +1,0 @@
-{
-    "DESCRIPTION": "Sunucu listesini gösterir!",
-    "USAGE": "{{prefix}}servers-list",
-    "EXAMPLES": "{{prefix}}servers-list"
-}

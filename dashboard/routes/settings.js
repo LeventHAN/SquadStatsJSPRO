@@ -1,10 +1,14 @@
 const express = require("express"),
 	CheckAuth = require("../auth/CheckAuth"),
-	router = express.Router();
+	router = express.Router(),
+	config = require("../../config");
 
 // Gets profile page
 router.get("/", CheckAuth, async function(req, res) {
 	res.render("settings", {
+		role: await req.client.getRoles(req.session.user.id),
+		ownerID: config.owner.id,
+		serverID: config.serverID,
 		user: req.userInfos,
 		translate: req.translate,
 		printDate: req.printDate,

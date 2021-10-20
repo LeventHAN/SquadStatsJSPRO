@@ -1,5 +1,0 @@
-{
-    "DESCRIPTION": "A megemlített tag avatárjának megtekintése",
-    "USAGE": "{{prefix}}avatar (@tag)",
-    "EXAMPLES": "{{prefix}}avatar\n{{prefix}}avatar @LeventHAN™#0001"
-}

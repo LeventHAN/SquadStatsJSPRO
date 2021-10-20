@@ -7,3 +7,22 @@
 <script src="/vendor/chart.js/dist/Chart.extension.js"></script>
 <!-- Argon JS -->
 <script src="/js/argon.min.js?v=1.0.0"></script>
+<!-- SweetAlerts 2 -->
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
+</script>
+
+<!-- Production -->
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>

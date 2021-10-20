@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Para la música",
-    "USAGE": "{{prefix}}stop",
-    "EXAMPLES": "{{prefix}}stop",
-    "VOTE_CONTENT": "React with 👍 to stop the music! {{requiredCount}} more votes are required.",
-    "SUCCESS": "¡La música se detuvo!"
-}

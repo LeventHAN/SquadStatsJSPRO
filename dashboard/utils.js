@@ -1,4 +1,5 @@
 const Discord = require("discord.js");
+const axios = require("axios");
 
 /**
  * Fetch guild informations
@@ -38,8 +39,13 @@ async function fetchUser(userData, client, query){
 	}
 	const user = await client.users.fetch(userData.id);
 	const userDb = await client.findOrCreateUser({ id: user.id }, true);
-	const userInfos = { ...user.toJSON(), ...userDb, ...userData, ...user.presence };
+	const userInfos = { apiToken: userDb.apiToken, ...user.toJSON(), ...userDb, ...userData, ...user.presence };
 	return userInfos;
 }
 
-module.exports = { fetchUser, fetchGuild };
+async function getBMStats(bmServer){
+	const res = await axios.get(`https://api.battlemetrics.com/servers/${bmServer}`);
+	return res.data;
+}
+
+module.exports = { fetchUser, fetchGuild, getBMStats };

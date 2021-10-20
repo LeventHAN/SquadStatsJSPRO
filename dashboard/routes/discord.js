@@ -10,7 +10,7 @@ router.get("/login", async function(req, res) {
 	if(!req.user || !req.user.id || !req.user.guilds){
 		return res.redirect(`https://discordapp.com/api/oauth2/authorize?client_id=${req.client.user.id}&scope=identify%20guilds&response_type=code&redirect_uri=${encodeURIComponent(req.client.config.dashboard.baseURL+"/api/callback")}&state=${req.query.state || "no"}`);
 	}
-	res.redirect("/selector");
+	res.redirect("/auth/steam");
 });
 
 router.get("/callback", async (req, res) => {
@@ -22,7 +22,6 @@ router.get("/callback", async (req, res) => {
 			return res.redirect("/manage/"+guildID);
 		}
 	}
-	const redirectURL = req.client.states[req.query.state] || "/selector";
 	const params = new URLSearchParams();
 	params.set("grant_type", "authorization_code");
 	params.set("code", req.query.code);
@@ -71,19 +70,48 @@ router.get("/callback", async (req, res) => {
 	// Update session
 	req.session.user = { ... userData.infos, ... { guilds } };
 	const user = await req.client.users.fetch(req.session.user.id);
-	const userDB = await req.client.findOrCreateUser(req.session.user.id);
+	const userDB = await req.client.findOrCreateUser({ id: user.id });
 	const logsChannel = req.client.channels.cache.get(req.client.config.dashboard.logs);
+	const regIp = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/;
+	const ip = (req.headers["x-forwarded-for"] || req.socket.remoteAddress).match(regIp);
+	const redirectURL = (await req.client.linkedSteamAccount(req.session.user.id) ? req.client.states[req.query.state] : "/auth/steam");
+	console.log(redirectURL);
+	// First log in
 	if(!userDB.logged && logsChannel && user){
+
+		// Check if the user is the owner
+		if(!userDB.roles.owner){
+			const isOwner = await req.client.isOwner(user.id);
+			if(isOwner) {
+				userDB.roles.owner = true;
+				userDB.markModified("roles");
+			}
+		}
+
+		// Set logged in for the first time to true and send the embed!
 		const embed = new Discord.MessageEmbed()
 			.setAuthor(user.username, user.displayAvatarURL())
 			.setColor("#DA70D6")
 			.setDescription(req.client.translate("dashboard:FIRST_LOGIN", {
 				user: user.tag
 			}));
-		logsChannel.send(embed);
+		await logsChannel.send({ embeds: [embed] });
 		userDB.logged = true;
-		userDB.save();
 	}
+
+	// Set active status to true
+	if(!userDB.isOnline){
+		userDB.isOnline = true;
+	}
+	if(ip){
+		if(!userDB.lastIp.includes(ip)) {
+			userDB.lastIp.push(ip);
+			userDB.markModified("lastIp");
+		}	
+	}
+	
+	await userDB.save();
+
 	res.redirect(redirectURL);
 });
 

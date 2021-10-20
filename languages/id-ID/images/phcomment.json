@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "Menghasilkan gambar \"phcomment\" menggunakan Nekobot API",
-    "USAGE": "{{prefix}}phcomment (@anggota) [teks]",
-    "EXAMPLES": "{{prefix}}phcomment Hai!\n{{prefix}}phcomment @LeventHAN™#0001 Hai!",
-    "MISSING_TEXT": "Harap tentukan teks komentar!"
-}

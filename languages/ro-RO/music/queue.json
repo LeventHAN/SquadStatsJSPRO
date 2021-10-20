@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "Afișează coada serverului",
-    "USAGE": "{{prefix}}queue",
-    "EXAMPLES": "{{prefix}}queue",
-    "TITLE": "Server Queue"
-}

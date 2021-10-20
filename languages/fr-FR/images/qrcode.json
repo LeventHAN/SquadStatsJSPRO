@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "Génère une image de code QR à partir de votre message",
-    "USAGE": "{{prefix}}qrcode [texte]",
-    "EXAMPLES": "{{prefix}}qrcode Salut",
-    "MISSING_TEXT": "Veuillez spécifier le texte source du code QR !",
-    "SUCCESS": "Voilà votre code QR !"
-}

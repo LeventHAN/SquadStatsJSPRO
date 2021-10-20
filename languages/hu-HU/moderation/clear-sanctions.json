@@ -1,7 +1,0 @@
-{
-    "DESCRIPTION": "A tag szankcióinak törlése!",
-    "USAGE": "{{prefix}}clear-sanctions [@tag]",
-    "EXAMPLES": "{{prefix}}clear-sanctions @LeventHAN™#0001",
-    "MISSING_MEMBER": "Kérlek, említsd meg azt a tagot, akinek a szankcióit el akarod törölni!",
-    "SUCCESS": "**{{username}}** szankciói törölve lettek!"
-}

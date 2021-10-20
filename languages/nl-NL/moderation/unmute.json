@@ -1,9 +1,0 @@
-{
-    "DESCRIPTION": "Unmute het genoemde lid op!",
-    "USAGE": "{{prefix}}unmute [@member]",
-    "EXAMPLES": "{{prefix}}unmute @LeventHAN™#0001",
-    "MISSING_MEMBER": "Geef het lid op dat u wilt unmuten!",
-    "NOT_MUTED": "**{{username}}** is not muted on this server!",
-    "SUCCESS": "**{{username}}** is ge unmute!",
-    "SUCCESS_CASE": "{{user}} (`{{usertag}}`) has just been unmuted! (mute case: #{{count}})"
-}

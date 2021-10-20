@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "Şuan ki şarkıyı durdur!",
-    "USAGE": "{{prefix}}pause",
-    "EXAMPLES": "{{prefix}}pause",
-    "SUCCESS": "⏸️ Müzik Durduruldu."
-}

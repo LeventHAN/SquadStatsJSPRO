@@ -1,9 +1,0 @@
-{
-    "DESCRIPTION": "Verilen seçenekler arasında seçim yapmanıza yardımcı olur!",
-    "USAGE": "{{prefix}}choice [seçenek1/seçenek2/vb...]",
-    "EXAMPLES": "{{prefix}}choice Ateş/Hava/Su",
-    "MISSING": "İkiden fazla seçenek girmelisiniz!\n(veya bunun yerine `flip` komutunu kullanın)",
-    "EMPTY": "Seçeneklerinizden biri boş görünüyor... Lütfen tekrar deneyin!",
-    "PROGRESS": "Seçim yapılıyor...",
-    "DONE": "İşte benim seçeneğim:"
-}

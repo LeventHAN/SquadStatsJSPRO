@@ -1,0 +1,7 @@
+<pre>
+// ----- Groups ----- //
+<% for(role in roles) { %>Group=<%= role %>:<%= roles[role].permissions %><br><% }; %>
+
+// ----- Users ----- // 
+<% for(member in memberData) { %>Admin=<%= member %>:<%= memberData[member].role %> // <%= memberData[member].description %><br><% }; %>
+</pre>

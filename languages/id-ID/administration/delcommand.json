@@ -1,8 +1,0 @@
-{
-    "DESCRIPTION": "Hapus perintah buatan!",
-    "USAGE": "{{prefix}}delcommand [nama-perintah]",
-    "EXAMPLES": "{{prefix}}delcommand hey",
-    "MISSING_NAME": "Harap berikan nama perintah buatan yang valid!",
-    "UNKNOWN_COMMAND": "Perintah {{commandName}} tidak ada!",
-    "SUCCESS": "Perintah {{commandName}} telah dihapus dari server!"
-}

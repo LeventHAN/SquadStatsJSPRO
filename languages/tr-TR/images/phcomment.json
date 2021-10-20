@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "Nekobot API yı kullanarak \"phcomment\" yorumu yap",
-    "USAGE": "{{prefix}}phcomment (@üye) [text]",
-    "EXAMPLES": "{{prefix}}phcomment Merhaba!\n{{prefix}}phcomment @LeventHAN™#0001 Merhaba!",
-    "MISSING_TEXT": "Lütfen uygun bir yorum gir!"
-}

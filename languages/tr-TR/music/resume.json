@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "Şuan ki şarkıyı dinlemeye devam et!",
-    "USAGE": "{{prefix}}resume",
-    "EXAMPLES": "{{prefix}}resume",
-    "SUCCESS": "▶️ Müzik Devam ediyor!"
-}

@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "Botun pingini gösterir",
-    "USAGE": "{{prefix}}ping",
-    "EXAMPLES": "{{prefix}}ping",
-    "CONTENT": "Pong! Benim pingim `{{ping}}` ms."
-}

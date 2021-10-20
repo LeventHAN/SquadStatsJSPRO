@@ -58,66 +58,6 @@ module.exports = class {
 		data.userData = userData;
 
 		if (message.guild) {
-			if (
-				!message.channel
-					.permissionsFor(message.member)
-					.has("MANAGE_MESSAGES") &&
-				!message.editedAt
-			) {
-				const channelSlowmode = data.guild.slowmode.channels.find(
-					(ch) => ch.id === message.channel.id
-				);
-				if (channelSlowmode) {
-					const uSlowmode = data.guild.slowmode.users.find(
-						(d) => d.id === message.author.id + message.channel.id
-					);
-					if (uSlowmode) {
-						if (uSlowmode.time > Date.now()) {
-							message.delete();
-							const delay = message.convertTime(uSlowmode.time, "to", true);
-							return message.author.send(
-								message.translate("administration/slowmode:PLEASE_WAIT", {
-									time: delay,
-									channel: message.channel.toString(),
-								})
-							);
-						} else {
-							uSlowmode.time = channelSlowmode.time + Date.now();
-						}
-					} else {
-						data.guild.slowmode.users.push({
-							id: message.author.id + message.channel.id,
-							time: channelSlowmode.time + Date.now(),
-						});
-					}
-					data.guild.markModified("slowmode.users");
-					await data.guild.save();
-				}
-			}
-
-			if (
-				data.guild.plugins.automod.enabled &&
-				!data.guild.plugins.automod.ignored.includes(message.channel.id)
-			) {
-				if (
-					/(discord\.(gg|io|me|li)\/.+|discordapp\.com\/invite\/.+)/i.test(
-						message.content
-					)
-				) {
-					if (
-						!message.channel
-							.permissionsFor(message.member)
-							.has("MANAGE_MESSAGES")
-					) {
-						message.delete();
-						message.author.send("```" + message.content + "```");
-						return message.error("administration/automod:DELETED", {
-							username: message.author.tag,
-						});
-					}
-				}
-			}
-
 			const afkReason = data.userData.afk;
 			if (afkReason) {
 				data.userData.afk = null;
@@ -271,7 +211,7 @@ module.exports = class {
 		try {
 			cmd.run(message, args, data);
 			if (
-				cmd.help.category === "Moderation" &&
+				(cmd.help.category === "Moderation" || cmd.help.category === "Squad") &&
 				data.guild.autoDeleteModCommands
 			) {
 				message.delete();

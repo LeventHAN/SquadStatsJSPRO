@@ -1,8 +1,0 @@
-{
-    "DESCRIPTION": "Şuanki kanalda bir anket başlat!",
-    "USAGE": "{{prefix}}poll [question]",
-    "EXAMPLES": "{{prefix}}poll Dünya Düzmü?",
-    "MISSING_QUESTION": "Lütfen uygun bir soru girin!",
-    "REACT": "Tepki ver! {{success}} veya {{error}}!",
-    "TITLE": "📊 Anket:"
-}

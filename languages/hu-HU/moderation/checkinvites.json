@@ -1,6 +1,0 @@
-{
-    "DESCRIPTION": "Ellenőrizd, hogy a tagok állapotában van-e Discord szerver link!",
-    "USAGE": "{{prefix}}checkinvites",
-    "EXAMPLES": "{{prefix}}checkinvites",
-    "NOBODY": "Egyik tag sem hirdet az állapotukban!"
-}

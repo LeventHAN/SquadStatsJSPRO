@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<%- include('includes/head') %>
+	<body>
+		<!-- The sidebar includes the menu -->
+		<%- include('./partials/sidebar') %>
+		<div class="main-content">
+		<!-- Top navbar -->
+		<%- include('./partials/navbar') %>
+		<!-- Header -->
+		<%- include('./partials/header') %>
+
+			<!-- Content Wrapper. Contains page content -->
+			<div class="container-fluid mt--7">
+				<div class="card bg-gradient-neutral shadow p-5">
+
+					<div class="row">
+                        <p><img src='userSteam.photos[2].value' alt='Your Avatar Image' /></p>
+                        <p>ID: <%= userSteam.id %></p>
+                        <p>Name: <%= userSteam.displayName %></p>
+                    </div>
+                </div>
+                <!-- Footer includes credits and version -->
+            </div>
+            <%- include('./partials/footer') %>
+        </div>
+        <%- include('./partials/scripts') %>
+    </body>
+</html>
