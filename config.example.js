@@ -22,6 +22,7 @@ module.exports = {
 	dashboard: {
 		enabled: true, // whether the dashboard is enabled or not
 		secret: "MyDiscordBotSecret", // Your discord client secret
+		/* don't forget to add "<baseURL>/api/callback" at the discord bot whitelisted url's/OAuth2 */
 		baseURL: "http://my-domain.com", // The base URl of the dashboard without "/" at the end
 		logs: "827885263438217226", // The channel ID of logs
 		port: 80, // Dashboard port
