@@ -362,6 +362,14 @@ class SquadStatsJSv3 extends Client {
 		await whitelist.save();
 	}
 
+	async removeWhitelistRole(role){
+		const whitelist = await this.whitelists.findOne({});
+		if(!whitelist) return;
+		delete whitelist.roles[role];
+		await whitelist.markModified("roles");
+		await whitelist.save();
+	}
+
 	// Add a single role (Groupe) to a permission groupe or if not exist make it.
 	async addWhitelistRolePermission(role, permission){
 		// Normally there is only one, but might want to change it to .find({}) later
@@ -672,6 +680,11 @@ class SquadStatsJSv3 extends Client {
 				squad: user.squad
 			};
 		});
+	}
+
+	async getAllUsers(){
+		const users = await this.usersData.find({});
+		return users;
 	}
 
 	// This function is used to resolve a user from a string (his name or id for example when searching it)

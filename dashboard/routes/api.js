@@ -653,7 +653,7 @@ router.post("/whitelist/import", CheckAuth, async function(req, res, next) {
 			return next(new Error("File name should be admins."));
 		const fileContent = fs.readFileSync(file.path);
 		// Regex to get the string between Group= and :
-		const regex = /Group=(.*?):(.*)/gm;
+		const regex = /^Group=(.*?):(.*)/gm;
 		// make object roles to include group and permissions
 		const roles = {};
 		let match;
@@ -662,7 +662,7 @@ router.post("/whitelist/import", CheckAuth, async function(req, res, next) {
 			const tempArray = [];
 			const permissions = match[2].split(",");
 			for(const permission of permissions) {
-				tempArray.push(permission);
+				tempArray.push(permission.trim());
 			}
 			roles[match[1]] = {
 				permissions: tempArray
@@ -951,6 +951,28 @@ router.post("/whitelist/addUserWhitelist", CheckAuth, async function(req, res){
 	const log = await req.client.addLog({ action: "PLAYER_WHITELIST_ADD", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: { details: moreDetails}});
 	await log.save();
 	return res.redirect(303, "/roles");
+});
+
+router.post("/whitelist/removeGroup", CheckAuth, async function(req, res) {
+	if(!req.body.group) return res.json({ status: "nok", message: "You are doing something wrong." });
+	const steamAccount = {
+		steam64id: req.session?.passport?.user?.id,
+		displayName: req.session?.passport?.user?.displayName,
+		identifier: req.session?.passport?.user?.identifier,
+	};
+	const discordAccount = {
+		id: req.session.user.id,
+		username: req.session?.user?.username,
+		discriminator: req.session?.user?.discriminator,
+	};
+	const moreDetails = {
+		group: req.body.group,
+	};
+	await req.client.removeWhitelistRole(req.body.group);
+	const log = await req.client.addLog({ action: "WHITELIST_GROUP_REMOVE", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: { details: moreDetails}});
+	await log.save();
+	// return ok status
+	return res.json({status: "ok", message: "Group removed!"});
 });
 
 module.exports = router;

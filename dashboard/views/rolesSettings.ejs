@@ -30,7 +30,8 @@
                                 <div class="head heading">Add or Remove permissions from groups</div>
                                 <% let id = 0; %>
                                 <% for(const rol in roles) {%>
-                                    <h3><%= rol %></h3>
+                                    <h3 class="<%= rol %>"><%= rol %> <i style="cursor: pointer" onclick="removeGroup('<%- rol %>')" class="<%= rol %> fa fa-trash" aria-hidden="true"></i></h3>
+                                    
                                     <div id="<%= rol %>">
                                     <% let permissions = roles[rol].permissions.toString() %>
                                     <% permissions = permissions.split(',') %>
@@ -106,6 +107,30 @@
                                     });
                                 }
                             } 
+
+                            async function removeGroup(role) {
+                                await axios.post(`${window.location.origin}/squad-api/whitelist/removeGroup`, {
+                                    group: role
+                                })
+                                .then((response) => {
+                                    if(!response.data.status) return Swal.fire(`Error`,`Error while getting response.`,`error`);
+                                    if(response.data.status === "ok") {
+                                        Toast.fire({
+                                            icon: 'success',
+                                            title: 'Group removed!'
+                                        })
+                                        // remove the attributes with class "role"
+                                        $(`.${role}`).remove();
+                                        $(`#${role}`).remove();
+                                    }
+                                    if(response.data.status === "nok") {
+                                        Swal.fire(`There was an error`,response.data.message,`error`);
+                                    }
+                                })
+                                .catch((error) => {
+                                    return Swal.fire(`Error`,`${error}`,`error`);
+                                });
+                            }
                         </script>
                         <div class="col-md-6">
                             <div>

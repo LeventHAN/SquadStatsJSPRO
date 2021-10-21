@@ -34,6 +34,7 @@ module.exports.load = async (client) => {
 		rolesRouter = require("./routes/roles"),
 		steamRouter = require("./routes/steam"),
 		guildManagerRouter = require("./routes/guild-manager"),
+		logsRouter = require("./routes/logs"),
 		mapRotationRouter = require("./routes/mapRotation.js");
 
 	const eventsToBroadcast = [
@@ -173,6 +174,7 @@ module.exports.load = async (client) => {
 		.use("/dashboard", dashboardRouter)
 		.use("/auth", authRoutes)
 		.use("/rotation", mapRotationRouter)
+		.use("/logs", logsRouter)
 		.use(CheckAuth, function (req, res) {
 			res.status(404).render("404", {
 				userDiscord: req.userInfos,
