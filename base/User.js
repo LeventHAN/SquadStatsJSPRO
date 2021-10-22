@@ -26,12 +26,7 @@ const userSchema = new mongoose.Schema({
 	roles: {
 		type: Object,
 		default: {
-			owner: false, // Is the user an owner?
-			admin: false, // Is the user an admin?
-			moderator: false , // Is the user a moderator?
-			user: false, // Is the user a regular user?
-			donator: false, // Is the user donator?
-			vip: false , // Is the user a VIP?
+			user: true,
 		}
 	},
 	

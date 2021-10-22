@@ -83,6 +83,7 @@ router.get("/callback", async (req, res) => {
 		if(!userDB.roles.owner){
 			const isOwner = await req.client.isOwner(user.id);
 			if(isOwner) {
+				// put owner key inside the roles and make it true
 				userDB.roles.owner = true;
 				userDB.markModified("roles");
 			}
