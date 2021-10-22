@@ -7,9 +7,11 @@ const express = require("express"),
 
 router.get("/:serverID", CheckAuth, async(req, res) => {
 	// Check if the user has the permissions to edit this guild
+	const canSeeArray = await req.client.getAllCanSee();
 	const guild = req.client.guilds.cache.get(req.params.serverID);
 	if(!guild || !req.userInfos.displayedGuilds || !req.userInfos.displayedGuilds.find((g) => g.id === req.params.serverID)){
 		return res.render("404", {
+			allCanSee: canSeeArray,
 			role: await req.client.getRoles(req.session.user.id),
 			ownerID: config.owner.id,
 			serverID: config.serverID,
@@ -24,6 +26,7 @@ router.get("/:serverID", CheckAuth, async(req, res) => {
 	const guildInfos = await utils.fetchGuild(guild.id, req.client, req.user.guilds);
 	await guildInfos.channels.cache.filter((ch) => ch.type === "GUILD_TEXT");
 	res.render("manager/guild", {
+		allCanSee: canSeeArray,
 		role: await req.client.getRoles(req.session.user.id),
 		ownerID: config.owner.id,
 		serverID: config.serverID,
@@ -68,7 +71,7 @@ router.post("/:serverID", CheckAuth, async(req, res) => {
 	/**
 	 * Adding/Updating the squad server
 	 */
-	 if(Object.prototype.hasOwnProperty.call(data, "squadEnable") || Object.prototype.hasOwnProperty.call(data, "squadUpdate")){
+	if(Object.prototype.hasOwnProperty.call(data, "squadEnable") || Object.prototype.hasOwnProperty.call(data, "squadUpdate")){
 		const squad = {
 			enabled: true,
 			rolesEnabled: data.rolesEnabled == "on" ? true : false,

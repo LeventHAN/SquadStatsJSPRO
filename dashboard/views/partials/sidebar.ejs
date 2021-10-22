@@ -73,19 +73,20 @@
       <ul class="navbar-nav">
           <li class="nav-item">
             <a class="nav-link" href="/dashboard">
-              <i class="ni ni-tv-2 text-primary"></i> wtf is dis
+              <i class="ni ni-tv-2 text-primary"></i> Dashboard
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/players">
-              <i class="ni ni-tv-2 text-primary"></i> Players ?
+              <i class="ni ni-tv-2 text-primary"></i> Live Players™️
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/profile">
-              <i class="ni ni-single-02 text-yellow"></i> User profile ??
+              <i class="ni ni-single-02 text-yellow"></i> My Profile
             </a>
           </li>
+          
 
         <!-- <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-server text-yellow"></i>  <%= translate("dashboard:SERVERS_LIST") %></a>
@@ -152,14 +153,22 @@
       <!-- Heading -->
       
       <li class="nav-item">
-          <% if(userDiscord.id === ownerID || role.includes("owner")){ %>
-            <a class="nav-link" href="/manage/<%= serverID %>">
-              <i class="ni ni-ui-04 text-black"></i> Configure Server
-            </a>
-            <a class="nav-link" href="/roles %>">
-              <i class="ni ni-badge text-blue"></i> Server Whitelists
-            </a>
-          <% } %>
+        <% if(allCanSee.manage.some(e => role.includes(e))){ %>
+          <a class="nav-link" href="/manage/<%= serverID %>">
+            <i class="ni ni-ui-04 text-black"></i> Configure Server
+          </a>
+        <% } %>
+        <% if(allCanSee.roles.some(e => role.includes(e))){ %>
+          <a class="nav-link" href="/roles">
+            <i class="ni ni-badge text-blue"></i> Server Whitelists
+          </a>
+        <% } %>
+        <% if(allCanSee.logs.some(e => role.includes(e))){ %>
+          <a class="nav-link" href="/logs">
+            <i class="ni ni-archive-2 text-yellow"></i> Dashboard Logs
+          </a>
+        <% } %>
+        
       </li>
       <!-- Navigation -->
       <!-- <ul class="navbar-nav mb-md-3">

@@ -33,9 +33,11 @@ router.get("/index", async(req, res) => {
 });
 
 router.get("/selector", CheckAuth, async(req,res) => {
+	const canSeeArray = await req.client.getAllCanSee();
 	res.render("selector", {
 		role: await req.client.getRoles(req.session.user.id),
 		ownerID: config.owner.id,
+		allCanSee: canSeeArray,
 		serverID: config.serverID,
 		userDiscord: req.userInfos,
 		userSteam: req.session?.passport?.user || req.userInfos.steam,

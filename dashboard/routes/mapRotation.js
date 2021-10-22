@@ -6,6 +6,7 @@ const express = require("express"),
 
 router.get("/", CheckAuth, async(req, res, next) => {
 	//if(req.isAuthenticated()){
+	const canSeeArray = await req.client.getAllCanSee();
 	const userRole = await req.client.getRoles(req.session.user.id);
 	const canSee = await req.client.canAccess("dashboard", req.userInfos.id);
 	if(!canSee)
@@ -13,6 +14,7 @@ router.get("/", CheckAuth, async(req, res, next) => {
 	return res.render("squad/mapRotation", {
 		role: userRole,
 		ownerID: config.owner.id,
+		allCanSee: canSeeArray,
 		serverID: config.serverID,
 		userDiscord: req.userInfos,
 		userSteam: req.session?.passport?.user || req.userInfos.steam,

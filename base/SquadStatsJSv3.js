@@ -523,6 +523,12 @@ class SquadStatsJSv3 extends Client {
 		return perms.whoCan[action];
 	}
 
+	async getAllCanSee(){
+		const perms = await this.permissions.findOne({});
+		if(!perms) return;
+		return perms.canSee;
+	}
+
 	// Check if userID can access/see the route/page
 	async canAccess(route, userID) {
 		const perms = await this.permissions.find().lean();
@@ -709,6 +715,14 @@ class SquadStatsJSv3 extends Client {
 		user = await this.users.fetch(search).catch(() => {});
 		return user;
 	}
+
+	// Get all data from audit logs form mongoose
+	async getAuditLogs(){
+		const logs = await this.audit.find({});
+		return logs;
+	}
+
+
 
 	// This function is used to resolve a user from a string (his name or id for example when searching it)
 	async resolveMember(search, guild) {

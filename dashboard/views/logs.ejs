@@ -34,6 +34,89 @@
 		<!-- Header -->
 		<%- include('./partials/header') %>
 			<!-- Content Wrapper. Contains page content -->
+			<!-- Make a table to show all logged data -->
+			<!-- the object looks like: {
+				action: 'PLAYER_WARNED',
+				date: 1632053594772,
+				author: { discord: [Object], steam: [Object] },
+				ip: '212.71.13.150',
+				details: { details: [Object] },
+				_id: 61472a7792427e5a0c861382,
+				__v: 0
+			}, -->
+			<div class="content-wrapper">
+				<div class="content-header">
+					<div class="container-fluid">
+						<div class="row mb-2">
+							<div class="col-sm-6">
+								<h1 class="m-0 text-dark">Logs</h1>
+							</div><!-- /.col -->
+							<div class="col-sm-6">
+								<ol class="breadcrumb float-sm-right">
+									<li class="breadcrumb-item"><a href="#">Home</a></li>
+									<li class="breadcrumb-item active">Logs</li>
+								</ol>
+							</div><!-- /.col -->
+						</div><!-- /.row -->
+					</div><!-- /.container-fluid -->
+				</div>
+				<!-- /.content-header -->
+				<!-- Main content -->
+				<!-- Content Wrapper. Contains page content -->
+				<div class="container-fluid mt--7">
+					<div class="card bg-gradient-neutral shadow p-5">
+						<div class="row mt-2">
+							<div class="col-12">
+								<div class="card">
+									<div class="card-header">
+										<h3 class="card-title">Logs</h3>
+									</div>
+									<!-- /.card-header -->
+									<div class="card-body">
+										<table id="logs" class="table datatable">
+											<thead>
+												<tr>
+													<th>Date</th>
+													<th>Action</th>
+													<th>IP</th>
+													<th>Details</th>
+												</tr>
+											</thead>
+											<tbody>
+												<% logs.map(async function(log) { %>
+													<tr><td><%= new Date(log.date).toLocaleString() %></td><td><%= log.action %></td><td><%= log.ip %></td>
+														<td>
+															<%= JSON.stringify(log.details.details) %>
+														</td></tr>
+													<% }).join('') %>
+											</tbody>
+										</table>
+										<script>
+											$(document).ready(function() {
+												$('.datatable').DataTable( {
+													bAutoWidth: true,
+													aoColumns: [ { sWidth: "1%",  },  { sWidth: "1%" },  { sWidth: "1%" }, { sWidth: "1%" } ],
+													"scrollCollapse": true,
+													"info":           true,
+													"paging":         true
+												} );
+											});
+										</script>
+									</div>
+									<!-- /.card-body -->
+								</div>
+								<!-- /.card -->
+							</div>
+							<!-- /.col -->
+						</div>
+						<!-- /.row -->
+					</div>
+					<!-- /.container-fluid -->
+				</section>
+				<!-- /.content -->
+			
+			<!-- /.content-wrapper -->
+			<!-- Footer -->
 			
 			<%- include('./partials/footer') %>
 		</div>

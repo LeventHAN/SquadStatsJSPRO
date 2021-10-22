@@ -4,9 +4,11 @@ const permissionsSchema =
 	new mongoose.Schema({
 		canSee: {
 			type: Object, default: {
+				manage: ["owner"],
 				players: ["owner", "admin", "moderator", "user"], // whoCan will determine the actions here...
 				dashboard: ["owner", "admin", "moderator", "user"],
 				roles: ["owner", "admin"],
+				logs: ["owner"],
 			}},
 		whoCan: { 
 			type: Object, default : {

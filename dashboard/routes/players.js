@@ -6,6 +6,7 @@ const express = require("express"),
 
 
 router.get("/", CheckAuth, async(req,res, next) => {
+	const canSeeArray = await req.client.getAllCanSee();
 	const userRole = await req.client.getRoles(req.session.user.id);
 	const canSee = await req.client.canAccess("players", req.userInfos.id);
 	if(!canSee)
@@ -14,6 +15,7 @@ router.get("/", CheckAuth, async(req,res, next) => {
 	res.render("players", {
 		role: userRole,
 		userDiscord: req.userInfos,
+		allCanSee: canSeeArray,
 		userSteam: req.session?.passport?.user || req.userInfos.steam,
 		translate: req.translate,
 		repoVersion: config.version,
