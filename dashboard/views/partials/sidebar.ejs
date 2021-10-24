@@ -72,22 +72,24 @@
       <% } %>
       <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="/dashboard">
-              <i class="ni ni-tv-2 text-primary"></i> Dashboard
-            </a>
+            <% if(allCanSee.dashboard.some(e => role.includes(e))){ %>
+              <a class="nav-link" href="/dashboard">
+                <i class="ni ni-tv-2 text-primary"></i> Dashboard
+              </a>
+            <% } %>
+            <% if(allCanSee.players.some(e => role.includes(e))){ %>
+              <a class="nav-link" href="/players">
+                <i class="ni ni-tv-2 text-primary"></i> Live Players™️
+              </a>
+            <% } %>
+            <% if(allCanSee.profile.some(e => role.includes(e))){ %>
+              <a class="nav-link" href="/profile">
+                <i class="ni ni-single-02 text-yellow"></i> My Profile
+              </a>
+            <% } %>
+            
+            
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/players">
-              <i class="ni ni-tv-2 text-primary"></i> Live Players™️
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/profile">
-              <i class="ni ni-single-02 text-yellow"></i> My Profile
-            </a>
-          </li>
-          
-
         <!-- <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-server text-yellow"></i>  <%= translate("dashboard:SERVERS_LIST") %></a>
           <div style="width: 98%;" class="dropdown-menu">

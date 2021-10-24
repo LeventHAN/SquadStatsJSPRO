@@ -610,27 +610,14 @@ class SquadStatsJSv3 extends Client {
 
 	async getPreviusMap(callback){
 		const pool = this.pool;
-		const res = new MYSQLPromiseObjectBuilder(pool);
-		await res.add(
-			"PreviusMap", // object key
-			"SELECT layerClassName FROM DBLog_Matches ORDER BY startTime DESC LIMIT 1;",
-			"0", // default value when null, 0 or nothing
-			"layerClassName" // this is the name of the column
-		).then(res => {
-			return callback(res);
-		});
-	}
-
-	async getLatestTPS(callback){
-		const pool = this.pool;
-		const res = new MYSQLPromiseObjectBuilder(pool);
-		await res.add(
-			"latestTPS", // object key
-			"SELECT tickRate FROM DBLog_TickRates ORDER BY time DESC LIMIT 1;",
-			"0", // default value when null, 0 or nothing
-			"tickRate" // this is the name of the column
-		).then(res => {
-			return callback(res);
+		await pool.query("SELECT id, layerClassname FROM DBLog_Matches WHERE endTime IS NOT NULL ORDER BY endTime DESC LIMIT 1;", (err, result) => {
+			// Call from Pool, Auto closes connection
+			if(err) return callback(err);
+			if (result && result[0] != null) {
+				callback(null, result[0].layerClassname);
+			} else {
+				return callback(null, "No Previus Map Data.");
+			}
 		});
 	}
 
@@ -639,7 +626,6 @@ class SquadStatsJSv3 extends Client {
 		const user = await this.usersData.findOne({ id: userID });
 		if(!user) return console.log("No User found.");
 		const steamUID = user.steam.steamid;
-		// get the guild plugins data from mongoose
 		const pool = this.pool;
 		const res = new MYSQLPromiseObjectBuilder(pool);
 		await res.add(

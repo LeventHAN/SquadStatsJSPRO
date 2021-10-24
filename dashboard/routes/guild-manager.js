@@ -83,7 +83,7 @@ router.post("/:serverID", CheckAuth, async(req, res) => {
 			host: data.host,
 			port: data.port,
 			database: data.database,
-			userDiscord: data.user,
+			user: data.user,
 			password: data.password === "✔️" ? guildData.plugins.squad.db.password : data.password,
 			serverID: data.serverID
 			// (TODO: Should I restrict this to one room?) channel: guild.channels.cache.find((ch) => "#"+ch.name === data.channel).id,
@@ -103,7 +103,7 @@ router.post("/:serverID", CheckAuth, async(req, res) => {
 			host: null,
 			port: null,
 			database: null,
-			userDiscord: null,
+			user: null,
 			password: null,
 			serverID: null
 		};

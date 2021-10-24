@@ -5,10 +5,11 @@ const permissionsSchema =
 		canSee: {
 			type: Object, default: {
 				manage: ["owner"],
-				players: ["owner", "admin", "moderator", "user"], // whoCan will determine the actions here...
-				dashboard: ["owner", "admin", "moderator", "user"],
+				dashboard: ["owner", "admin", "moderator"],
+				players: ["owner", "admin", "moderator"], // whoCan will determine the actions here...
 				roles: ["owner", "admin"],
 				logs: ["owner"],
+				profile: ["user"]
 			}},
 		whoCan: { 
 			type: Object, default : {
