@@ -1,6 +1,7 @@
 const express = require("express"),
 	CheckAuth = require("../auth/CheckAuth"),
 	router = express.Router(),
+	utils = require("../utils"),
 	config = require("../../config");
 
 
@@ -14,6 +15,7 @@ router.get("/", CheckAuth, async(req,res) => {
 
 	res.render("logs", {
 		ownerID: config.owner.id,
+		latestTPS: await utils.getTPS(req.client),
 		playerAmount: await req.client.getPlayersLength(),
 		role: userRole,
 		allCanSee: canSeeArray,
