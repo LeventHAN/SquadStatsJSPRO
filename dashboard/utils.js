@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
-const axios = require("axios");
+const axios = require("axios"),
+MYSQLPromiseObjectBuilder = require("../base/MYSQLPromiseObjectBuilder.js");
 
 /**
  * Fetch guild informations
@@ -48,4 +49,23 @@ async function getBMStats(bmServer){
 	return res.data;
 }
 
-module.exports = { fetchUser, fetchGuild, getBMStats };
+async function getTPS(client)
+{
+	let latestTPS = "";
+	await client.getLatestTPS((res)=>{
+		latestTPS = res;
+	});
+	return latestTPS;
+}
+
+async function getPreviusMap(client)
+{
+	let previusMap = "";
+	await client.getPreviusMap((res)=>{
+		previusMap = res;
+	});	
+	if(previusMap == "") return previusMap == "Not Found.";
+	return previusMap;
+}
+
+module.exports = { fetchUser, fetchGuild, getBMStats, getTPS, getPreviusMap };

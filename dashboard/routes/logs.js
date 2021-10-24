@@ -14,6 +14,7 @@ router.get("/", CheckAuth, async(req,res) => {
 
 	res.render("logs", {
 		ownerID: config.owner.id,
+		playerAmount: await req.client.getPlayersLength(),
 		role: userRole,
 		allCanSee: canSeeArray,
 		serverID: config.serverID,

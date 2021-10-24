@@ -11,6 +11,36 @@
 		<!-- Header -->
 		<%- include('./partials/header') %>
 		
+		<style>
+			.card-body .container{
+				flex-wrap: wrap;
+				max-width: 100%;
+			}
+			.current img{
+
+				border-radius: 12.5px;
+				border: 1px solid rgba(0,0,0,.05);
+				background-color: #f3f3f3;
+				padding: 10px;
+
+			}
+			.next img{
+
+				border-radius: 12.5px;
+				border: 1px solid rgba(0,0,0,.05);
+				background-color: #f3f3f3;
+				padding: 10px;
+
+			}			
+			.previous img{
+				border-radius: 12.5px;
+				border: 1px solid rgba(0,0,0,.05);
+				background-color: #f3f3f3;
+				padding: 10px;
+				width: 130px;
+				opacity: .25;
+			}
+		</style>
 
 			<!-- Content Wrapper. Contains page content -->
 			<div class="container-fluid mt--7">
@@ -32,11 +62,33 @@
 					<div class="col-md-6">
 							<div class="card bg-gradient-neutral shadow p-2">
 								<div class="card-body">
-									<h4 class="card-title">
-										<i class="fas fa-chart-bar"></i>
-										<span>Sended BroadCast Messages (Not Saved Yet)</span>
-									</h4>
-									<span id="BroadCastedMessages"></span>
+									<div class="container d-flex mx-auto p-2">
+										<div class="previous d-inline-block mx-auto px-2">
+											<h4 class="card-title text-center">
+												<i class="fas fa-map"></i>
+												Previous Map
+											</h4>
+											<img id="<%= previusMap %>"onError='noImageFound("<%= previusMap %>")' src="https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/images/<%= previusMap %>.jpg" alt="<%= previusMap %>">
+										</div>
+										<div class="current d-inline-block mx-auto px-2">
+											<h4 class="card-title text-center">
+												<i class="fas fa-map"></i>
+												Current Map
+											</h4>
+										</div>
+										<div class="next d-inline-block mx-auto px-2">
+											<h4 class="card-title text-center">
+												<i class="fas fa-map"></i>
+												Next Map
+											</h4>
+										</div>
+									</div>
+									<div class="buttons mx-auto d-flex">
+										<button id="setCurrentMap" type="button" class="btn btn-primary mt-2d mx-auto d-inline-block">Change Map</button>
+										<button id="setNextMap" type="button" class="btn btn-primary mt-2d mx-auto d-inline-block">Set Next Map</button>
+									</div>
+									<%- include('./partials/currentMap') %>
+
 								</div>
 							</div>
 					</div>

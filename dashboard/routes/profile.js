@@ -15,6 +15,7 @@ router.get("/", CheckAuth, async(req,res) => {
 		allCanSee: canSeeArray,
 		serverID: config.serverID,
 		userDiscord: req.userInfos,
+		playerAmount: await req.client.getPlayersLength(),
 		userSteam: req.session?.passport?.user || req.userInfos.steam,
 		translate: req.translate,
 		repoVersion: config.version,

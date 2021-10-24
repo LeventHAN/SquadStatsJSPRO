@@ -11,6 +11,7 @@ router.get("/", CheckAuth, async function(req, res) {
 		serverID: config.serverID,
 		user: req.userInfos,
 		translate: req.translate,
+		playerAmount: await req.client.getPlayersLength(),
 		printDate: req.printDate,
 		currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`
 	});

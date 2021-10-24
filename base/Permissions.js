@@ -51,7 +51,12 @@ const permissionsSchema =
 					"owner",
 					"admin",
 					"moderator"
-				]
+				],
+				setCurrentMap: [
+					"owner",
+					"admin",
+					"moderator"
+				 ]
 			}},
 	});
 

@@ -2,6 +2,7 @@ const express = require("express"),
 	CheckAuth = require("../auth/CheckAuth"),
 	router = express.Router(),
 	version = require("../../package.json").version,
+      	utils = require("../utils"),
 	config = require("../../config");
 
 // Gets profile page
@@ -15,12 +16,15 @@ router.get("/", CheckAuth, async function(req, res) {
 	const roles = await req.client.getWhitelistRoles();
 	const whitelisted = await req.client.getWhitelistUsers();
 	res.render("rolesSettings", {
+		playerAmount: await req.client.getPlayersLength(),
 		role: userRole,
 		roles: roles,
 		allCanSee: canSeeArray,
+		latestTPS: await utils.getTPS(req.client),
 		whitelisted: whitelisted,
 		ownerID: config.owner.id,
 		serverID: config.serverID,
+		playerAmount: await req.client.getPlayersLength(),
 		userDiscord: req.userInfos,
 		userSteam: req.session?.passport?.user || req.userInfos.steam,
 		translate: req.translate,
