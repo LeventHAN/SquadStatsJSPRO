@@ -595,8 +595,12 @@ class SquadStatsJSv3 extends Client {
 	// Will init the mysql pool
 	async setPool() {
 		const guildID = this.config.serverID;
-		const guild = await this.guildsData.findOne({ id: guildID });
-		if(!guild) throw new Error("No GuildID foound in the config file!");
+		let guild = await this.guildsData.findOne({ id: guildID });
+		if(!guild) {
+			guild = new this.guildsData({ id: guildID });
+			await guild.save();
+			this.databaseCache.guilds.set(guildID, guild);
+		}
 		const pool = await mysql.createPool({
 			connectionLimit: 10, // Call all
 			host: guild.plugins.squad.db.host,
