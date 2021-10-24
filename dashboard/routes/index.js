@@ -37,7 +37,7 @@ router.get("/index", async(req, res) => {
 router.get("/selector", CheckAuth, async(req,res) => {
 	const canSeeArray = await req.client.getAllCanSee();
 	res.render("selector", {
-		latesTPS: await utils.getTPS(req.client),
+		latestTPS: await utils.getTPS(req.client),
 		playerAmount: await req.client.getPlayersLength(),
 		role: await req.client.getRoles(req.session.user.id),
 		ownerID: config.owner.id,
