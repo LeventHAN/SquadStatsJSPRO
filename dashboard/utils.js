@@ -58,7 +58,7 @@ async function getTPS(client)
 	return latestTPS;
 }
 
-async function getPreviusMap(req)
+async function getPreviusMap(client)
 {
 	let previusMap = "";
 	await client.getPreviusMap((res)=>{
