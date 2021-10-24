@@ -14,7 +14,7 @@ router.get("/", CheckAuth, async(req,res, next) => {
 		return next(new Error("You can't access this page"));
 	res.render("players", {
 		role: userRole,
-		latesTPS: await utils.getTPS(req),
+		latestTPS: await utils.getTPS(req),
 		playerAmount: await req.client.getPlayersLength(),
 		userDiscord: req.userInfos,
 		allCanSee: canSeeArray,
