@@ -49,10 +49,10 @@ async function getBMStats(bmServer){
 	return res.data;
 }
 
-async function getTPS(req)
+async function getTPS(client)
 {
 	let latestTPS = "";
-	await req.client.getLatestTPS((res)=>{
+	await client.getLatestTPS((res)=>{
 		latestTPS = res;
 	});
 	return latestTPS;
@@ -61,7 +61,7 @@ async function getTPS(req)
 async function getPreviusMap(req)
 {
 	let previusMap = "";
-	await req.client.getPreviusMap((res)=>{
+	await client.getPreviusMap((res)=>{
 		previusMap = res;
 	});	
 	if(previusMap == "") return previusMap == "Not Found.";
