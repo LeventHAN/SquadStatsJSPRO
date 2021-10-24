@@ -13,7 +13,7 @@ router.get("/index", async(req, res) => {
 	if(req.isAuthenticated()){
 		return res.render("index", {
 			role: await req.client.getRoles(req.session.user.id),
-			latestTPS: await utils.getTPS(req),
+			latestTPS: await utils.getTPS(req.client),
 			ownerID: config.owner.id,
 			serverID: config.serverID,
 			userDiscord: req.userInfos,
