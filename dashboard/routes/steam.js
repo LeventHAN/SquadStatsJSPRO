@@ -7,6 +7,7 @@ router.get("/", CheckAuth, async function(req, res){
 	res.render("steam", {
 		role: await req.client.getRoles(req.session.user.id),
 		ownerID: config.owner.id,
+		playerAmount: await req.client.getPlayersLength(),
 		serverID: config.serverID,
 		userDiscord: req.session.user,
 		userSteam: req.session?.passport?.user || req.userInfos.steam,

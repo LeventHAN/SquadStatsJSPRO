@@ -1,6 +1,7 @@
 const express = require("express"),
 	CheckAuth = require("../auth/CheckAuth"),
 	router = express.Router(),
+	utils = require("../utils")
 	config = require("../../config");
 
 
@@ -12,6 +13,7 @@ router.get("/index", async(req, res) => {
 	if(req.isAuthenticated()){
 		return res.render("index", {
 			role: await req.client.getRoles(req.session.user.id),
+			latesTPS: await utils.getTPS(req),
 			ownerID: config.owner.id,
 			serverID: config.serverID,
 			userDiscord: req.userInfos,
@@ -35,6 +37,8 @@ router.get("/index", async(req, res) => {
 router.get("/selector", CheckAuth, async(req,res) => {
 	const canSeeArray = await req.client.getAllCanSee();
 	res.render("selector", {
+		latesTPS: await utils.getTPS(req),
+		playerAmount: await req.client.getPlayersLength(),
 		role: await req.client.getRoles(req.session.user.id),
 		ownerID: config.owner.id,
 		allCanSee: canSeeArray,

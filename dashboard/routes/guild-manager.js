@@ -25,9 +25,12 @@ router.get("/:serverID", CheckAuth, async(req, res) => {
 	// Fetch guild informations
 	const guildInfos = await utils.fetchGuild(guild.id, req.client, req.user.guilds);
 	await guildInfos.channels.cache.filter((ch) => ch.type === "GUILD_TEXT");
+	console.log(utils.getTPS(req));
 	res.render("manager/guild", {
 		allCanSee: canSeeArray,
 		role: await req.client.getRoles(req.session.user.id),
+		latesTPS: utils.getTPS(req),
+		playerAmount: await req.client.getPlayersLength(),
 		ownerID: config.owner.id,
 		serverID: config.serverID,
 		guild: guildInfos,

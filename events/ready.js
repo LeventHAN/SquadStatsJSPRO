@@ -10,7 +10,7 @@ module.exports = class {
 	async run() {
 		const client = this.client;
 		const socket = client.socket;
-
+		client.pool = await client.setPool();
 		// Logs some informations using the logger file
 		client.logger.log(
 			`Loading a total of ${client.commands.size} command(s).`,

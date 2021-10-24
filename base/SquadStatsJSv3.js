@@ -498,6 +498,17 @@ class SquadStatsJSv3 extends Client {
 
 	}
 
+	async getPlayersLength(){
+		this.players;
+		const response = new Promise(async (res) => {
+			await this.socket.emit("players", async (data) => {
+				res(data);
+			});
+		});
+		this.players = response;
+		return await this.players.then(players => players.length);
+	}
+
 
 	// Will return the users dashboard roles ("owner", "admin", etc..)
 	async getRoles(userID){
@@ -582,36 +593,60 @@ class SquadStatsJSv3 extends Client {
 	}
 
 	// Will init the mysql pool
-	async setPool(guild) {
-		if(!this.pool){
-			this.pool = mysql.createPool({
-				connectionLimit: 10, // Call all
-				host: guild.plugins.squad.db.host,
-				port: guild.plugins.squad.db.port,
-				user: guild.plugins.squad.db.user,
-				password: guild.plugins.squad.db.password,
-				database: guild.plugins.squad.db.database,
-			});
-		}
+	async setPool() {
+		const guildID = this.config.serverID;
+		const guild = await this.guildsData.findOne({ id: guildID });
+		if(!guild) throw new Error("No GuildID foound in the config file!");
+		const pool = await mysql.createPool({
+			connectionLimit: 10, // Call all
+			host: guild.plugins.squad.db.host,
+			port: guild.plugins.squad.db.port,
+			user: guild.plugins.squad.db.user,
+			password: guild.plugins.squad.db.password,
+			database: guild.plugins.squad.db.database,
+		});
+		return pool;
+	}
+
+	async getPreviusMap(callback){
+		const pool = this.pool;
+		const res = new MYSQLPromiseObjectBuilder(pool);
+		await res.add(
+			"PreviusMap", // object key
+			"SELECT layerClassName FROM DBLog_Matches ORDER BY startTime DESC LIMIT 1;",
+			"0", // default value when null, 0 or nothing
+			"layerClassName" // this is the name of the column
+		).then(res => {
+			return callback(res);
+		});
+	}
+
+	async getLatestTPS(callback){
+		const pool = this.pool;
+		const res = new MYSQLPromiseObjectBuilder(pool);
+		await res.add(
+			"latestTPS", // object key
+			"SELECT tickRate FROM DBLog_TickRates ORDER BY time DESC LIMIT 1;",
+			"0", // default value when null, 0 or nothing
+			"tickRate" // this is the name of the column
+		).then(res => {
+			return callback(res);
+		});
 	}
 
 	// Will update a users squad stats
 	async updateStats(userID) {
-		const guildID = this.config.serverID;
 		const user = await this.usersData.findOne({ id: userID });
 		if(!user) return console.log("No User found.");
 		const steamUID = user.steam.steamid;
 		// get the guild plugins data from mongoose
-		const guild = await this.guildsData.findOne({ id: guildID });
-		if(!guild) return console.log("No Guild found.");
-		await this.setPool(guild);
 		const pool = this.pool;
 		const res = new MYSQLPromiseObjectBuilder(pool);
 		await res.add(
-			"kd",
+			"kd", // object key
 			`SELECT (COUNT(*)/(SELECT COUNT(*) FROM DBLog_Deaths WHERE victim = "${steamUID}")) AS KD FROM DBLog_Deaths WHERE attacker="${steamUID}"`,
-			"0",
-			"KD"
+			"0", // default value when null, 0 or nothing
+			"KD" // this is the name of the column
 		);
 		await res.add(
 			"Kills_ALL",

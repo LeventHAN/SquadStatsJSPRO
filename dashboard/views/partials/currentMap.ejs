@@ -1,0 +1,131 @@
+<script>
+const currentMap = document.createElement("img")
+currentMap.classList.add("mx-auto","d-block","currentMap");
+currentMap.setAttribute("onError", "noImageFound('currentMap')");
+
+const nextMap = document.createElement("img")
+nextMap.classList.add(["mx-auto","d-block", "nextMap"]);
+nextMap.style.opacity = "0.35";
+nextMap.setAttribute("width", 150);
+nextMap.setAttribute("onError", "noImageFound('nextMap')")
+
+// will return object all avaible maps
+async function getAllMaps() {
+    let maps;
+    await axios.get(`https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/finished.json`).then(async (res) =>{
+        maps = await res.data.Maps.map(map => {
+            return `<option value="${map.rawName}">${map.rawName}</option>`
+        });
+    });
+    return maps;
+}
+
+
+async function layerManager({action = "setNextMap"}){
+    Swal.fire({
+        title: 'Select Next Map',
+        input: 'select',
+        inputOptions: await getAllMaps(),
+        inputPlaceholder: 'Maps',
+        showCancelButton: true,
+    }).then(async (result) => {
+        if (result.isConfirmed) 
+        {
+            const maps = await getAllMaps();
+            for(let i = 0; i < maps.length; i++){
+                if(i == result.value){
+                    // get first match from maps[i] by this regex: "^<option.*>(.*)<\/option>$"
+                    const mapName = maps[i].match(/^<option.*>(.*)<\/option>$/)[1];
+                    console.log(mapName);
+                    await axios.post(`${window.location.origin}/squad-api/${action}`, {
+                        layer: mapName
+                    }).then((response) => {
+                    if(!response.data.status) return Swal.fire(`Error`,`Error while getting response.`,`error`);
+                    if(response.data.status === "ok") {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Map Changed.'
+                        })
+                    }
+                    if(response.data.status === "nok") 
+                    {
+                        Swal.fire(`There was an error`,`We couldn't set map. Please try again later.`,`error`);
+                    }
+                    if(response.data.status === "nok2") 
+                    {
+                        Swal.fire(`Insufficent Permissions`,`We couldn't perform your requested action. You don't have the right role to perform this action.`,`warning`);
+                    }
+                    })
+                } 
+            }
+        }
+    });
+}
+
+async function getCurrentMap() {
+    await axios.get(`${window.location.origin}/squad-api/getCurrentMap`).then(async (res) =>{
+        const layer = res.data.layer.replaceAll(" ", "_");
+        const url = `https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/images/${layer}.jpg`;
+        const t = await axios.get(url).catch(() => {
+            return false;
+        });
+        if(!t) return currentMap.setAttribute("src", `https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png`);
+
+        currentMap.setAttribute("alt", res.data.layer);
+        currentMap.setAttribute(
+            "src", 
+            url
+            );
+        $(`.current`).append(currentMap);
+        
+    });
+}
+
+async function getNextMap() {
+    await axios.get(`${window.location.origin}/squad-api/getNextMap`).then(async (res) =>{
+        const layer = res.data.layer.replaceAll(" ", "_");
+        try{
+            await axios.get(`https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/images/${layer}.jpg`).then(async (res) =>{
+                nextMap.setAttribute("alt", res.data.layer);
+                nextMap.setAttribute(
+                    "src", 
+                    `https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/images/${layer}.jpg`
+                    );
+                nextMap.setAttribute("width", 130);
+                $(`.next`).append(nextMap);
+            });
+        } catch(err) {
+            nextMap.setAttribute("alt", res.data.layer);
+            nextMap.setAttribute(
+                "src", 
+                `https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png`
+                );
+                nextMap.setAttribute("width", 130);
+
+            $(`.next`).append(nextMap);
+        }
+    });
+}
+
+async function noImageFound(id){
+    // get the id and replace the image with a no image found image
+    const url = `https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png`;
+    const img = document.getElementById(id);
+    img.setAttribute("src", url);
+}
+
+$(document).ready(async function() {
+    await getCurrentMap();
+    await getNextMap();
+    
+    $("#setNextMap").click(() => {
+        layerManager({action: "setNextMap"});
+    });
+    $("#setCurrentMap").click(() => {
+        layerManager({action: "setCurrentMap"});
+    });
+
+    
+});
+
+</script>

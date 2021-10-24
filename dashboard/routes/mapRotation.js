@@ -13,6 +13,7 @@ router.get("/", CheckAuth, async(req, res, next) => {
 		return next(new Error("You can't access this page"));
 	return res.render("squad/mapRotation", {
 		role: userRole,
+		playerAmount: await req.client.getPlayersLength(),
 		ownerID: config.owner.id,
 		allCanSee: canSeeArray,
 		serverID: config.serverID,

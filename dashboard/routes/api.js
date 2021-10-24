@@ -197,7 +197,7 @@ router.get("/getNextMap", CheckAuth, async(req, res) => {
 		"message": "You are doing something wrong."
 	}
  */
-router.post("/setNextMap",  CheckAuth, async function(req, res){
+router.post("/setNextMap", CheckAuth, async function(req, res){
 
 	if(!req.body.layer) return res.json({ status: "nok", message: "You are doing something wrong." });
 		
@@ -222,11 +222,54 @@ router.post("/setNextMap",  CheckAuth, async function(req, res){
 	const moreDetails = {
 		nextLayer: req.body.layer,
 	};
-		// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
-	const log = await req.client.addLog({ action: "SET_NEXT_MAP", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
-	await log.save();
-	res.json({status: "ok", message: "Next map set!"});
+
+	const socket = req.client.socket;
+	socket.emit("rcon.execute", `AdminSetNextLayer ${moreDetails.nextLayer}`, async () => {
+		const log = await req.client.addLog({ action: "SET_NEXT_MAP", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
+		await log.save();
+		return res.json({status: "ok", message: "Next Map set!"});
+	});
 });
+
+
+
+router.post("/setCurrentMap",  CheckAuth, async function(req, res){
+
+	if(!req.body.layer) return res.json({ status: "nok", message: "You are doing something wrong." });
+		
+	const userRole = await req.client.getRoles(req.session.user.id);
+	
+	const canUser = await req.client.whoCan("setCurrentMap");
+		
+	if(!canUser.some(role => userRole.includes(role)))
+		return res.json({status: "nok2", message: "You are not allowed to do this."});
+	
+	
+	const steamAccount = {
+		steam64id: req.session?.passport?.user?.id,
+		displayName: req.session?.passport?.user?.displayName,
+		identifier: req.session?.passport?.user?.identifier,
+	};
+	const discordAccount = {
+		id: req.session.user.id,
+		username: req.session?.user?.username,
+		discriminator: req.session?.user?.discriminator,
+	};
+	const moreDetails = {
+		newLayer: req.body.layer,
+	};
+
+	const socket = req.client.socket;
+
+		// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
+	socket.emit("rcon.execute", `AdminChangeLayer ${moreDetails.nextLayer}`, async () => {
+		const log = await req.client.addLog({ action: "CHANGE_CURRENT_MAP", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
+		await log.save();
+		return res.json({status: "ok", message: "Next Map set!"});
+	});
+});
+
+
 
 /**
  * @api {get} /squad-api/currentMap Request current layer
@@ -244,7 +287,7 @@ router.post("/setNextMap",  CheckAuth, async function(req, res){
 		"layer": "Narva AAS v2"
 	}
  */
-router.get("/currentMap", CheckAuth, async(req, res) => {
+router.get("/getCurrentMap", CheckAuth, async(req, res) => {
 	req.client.socket.emit("rcon.getCurrentMap", async (data) => {
 		const steamAccount = {
 			steam64id: req.session?.passport?.user?.id,
@@ -310,6 +353,7 @@ router.post("/broadcast",  CheckAuth, async function(req, res){
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const log = await req.client.addLog({ action: "ADMIN_BROADCAST", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
 	await log.save();
+	
 	res.json({status: "ok", message: "Broadcast sent!"});
 });
 

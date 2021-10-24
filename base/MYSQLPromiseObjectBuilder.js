@@ -1,4 +1,4 @@
-/**
+/*
  * MySQL Response Object Builder.
  *
  * @author bombitmanbomb
