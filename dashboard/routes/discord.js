@@ -71,13 +71,14 @@ router.get("/callback", async (req, res) => {
 	req.session.user = { ... userData.infos, ... { guilds } };
 	const user = await req.client.users.fetch(req.session.user.id);
 	const userDB = await req.client.findOrCreateUser({ id: user.id });
-	const logsChannel = req.client.channels.cache.get(req.client.config.dashboard.logs);
+	const logsChannel = req.client.channels.cache.get(req.client.config.support.logs);
 	const regIp = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/;
 	const ip = (req.headers["x-forwarded-for"] || req.socket.remoteAddress).match(regIp);
 	const redirectURL = (await req.client.linkedSteamAccount(req.session.user.id) ? req.client.states[req.query.state] : "/auth/steam");
 	console.log(redirectURL);
+	console.log(!userDB.logged, logsChannel, user);
 	// First log in
-	if(!userDB.logged && logsChannel && user){
+	if(!userDB.logged && user){
 
 		// Check if the user is the owner
 		if(!userDB.roles.owner){
@@ -89,14 +90,16 @@ router.get("/callback", async (req, res) => {
 			}
 		}
 
-		// Set logged in for the first time to true and send the embed!
-		const embed = new Discord.MessageEmbed()
-			.setAuthor(user.username, user.displayAvatarURL())
-			.setColor("#DA70D6")
-			.setDescription(req.client.translate("dashboard:FIRST_LOGIN", {
-				user: user.tag
-			}));
-		await logsChannel.send({ embeds: [embed] });
+		if(logsChannel){
+			// Set logged in for the first time to true and send the embed!
+			const embed = new Discord.MessageEmbed()
+				.setAuthor(user.username, user.displayAvatarURL())
+				.setColor("#DA70D6")
+				.setDescription(req.client.translate("dashboard:FIRST_LOGIN", {
+					user: user.tag
+				}));
+			await logsChannel.send({ embeds: [embed] });
+		}
 		userDB.logged = true;
 	}
 

@@ -4,7 +4,7 @@ module.exports = class {
 	}
 
 	async run(oldMember, newMember) {
-		if (oldMember.guild.id !== this.client.config.support.id) return;
+		if (oldMember.guild.id !== this.client.config.serverID) return;
 		if (oldMember.roles.cache.some((r) => r.name === "【💳】Donators")) return;
 		if (newMember.roles.cache.some((r) => r.name === "【💳】Donators")) {
 			// Later maybe use this for donaters...

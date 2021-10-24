@@ -7,7 +7,6 @@ module.exports = {
 	squadBattleMetricsID: "BattleMetrics_ServerID",
 	/* For the support server */
 	support: {
-		id: "810443572150403122", // The ID of the support server
 		logs: "827885263438217226", // And the ID of the logs channel of your server (new servers for example)
 		debug: false, // Will activate debug mode.
 	},
@@ -24,7 +23,6 @@ module.exports = {
 		secret: "MyDiscordBotSecret", // Your discord client secret
 		/* don't forget to add "<baseURL>/api/callback" at the discord bot whitelisted url's/OAuth2 */
 		baseURL: "http://my-domain.com", // The base URl of the dashboard without "/" at the end
-		logs: "827885263438217226", // The channel ID of logs
 		port: 80, // Dashboard port
 		expressSessionPassword: "UcPT5Enzmhk_ARFVrGyDZ3WjJvSe!9", // Change this to something else!!! (Use: https://passwordsgenerator.net/plus/ to generate a new one)
 		failureURL: "http://my-domain.com", // url on which users will be redirected if they click the cancel button (discord authentication) or logout

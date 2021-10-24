@@ -37,7 +37,7 @@ module.exports = {
 
 	// This function return a valid link to the support server
 	async supportLink(client) {
-		const guild = client.guilds.cache.get(client.config.support.id);
+		const guild = client.guilds.cache.get(client.config.serverID);
 		const member = guild.me;
 		const channel = guild.channels.cache.find(
 			(ch) =>
