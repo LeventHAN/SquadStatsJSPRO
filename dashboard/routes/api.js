@@ -1019,14 +1019,4 @@ router.post("/whitelist/removeGroup", CheckAuth, async function(req, res) {
 	return res.json({status: "ok", message: "Group removed!"});
 });
 
-
-router.post("/test", async function (req, res) {
-	console.log("rcon.execute", "AdminSetNextLayer", "Narva_AAS_v1");
-	req.client.socket.emit("rcon.execute", "AdminSetNextLayer", "Narva_AAS_v1", (res) =>{
-		console.log(res);
-		console.log("TEST");
-	});
-	return res.json({status: "ok", message: "test"});
-});
-
 module.exports = router;

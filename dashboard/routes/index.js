@@ -1,7 +1,7 @@
 const express = require("express"),
 	CheckAuth = require("../auth/CheckAuth"),
 	router = express.Router(),
-	utils = require("../utils")
+	utils = require("../utils"),
 	config = require("../../config");
 
 
