@@ -40,6 +40,9 @@ const init = async () => {
 		delete require.cache[require.resolve(`./events/${file}`)];
 	});
 
+	// Create the database connection
+	client.pool = await client.setPool();
+
 	// DEBUG ONLY
 	if (config.support.debug) client.on("debug", console.log);
 	client.login(client.config.token);
