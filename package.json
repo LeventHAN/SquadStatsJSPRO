@@ -62,7 +62,7 @@
 	"devDependencies": {
 		"eslint": "^7.5.0",
 		"nodemon": "^2.0.7",
-		"prettier": "^2.2.1",
+		"prettier": "^2.2.1"
 	},
 	"eslintConfig": {
 		"env": {
