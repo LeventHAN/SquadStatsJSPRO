@@ -40,8 +40,7 @@ const init = async () => {
 		delete require.cache[require.resolve(`./events/${file}`)];
 	});
 
-	// Create the database connection
-	client.pool = await client.setPool();
+	
 
 	// DEBUG ONLY
 	if (config.support.debug) client.on("debug", console.log);
@@ -81,6 +80,8 @@ const init = async () => {
 	await client.createPermissions();
 	// Create the whitelist groups if not existing
 	await client.createWhitelist();
+	// Create the database connection
+	client.pool = await client.setPool();
 };
 
 init();
