@@ -29,7 +29,7 @@ router.get("/:serverID", CheckAuth, async(req, res) => {
 	res.render("manager/guild", {
 		allCanSee: canSeeArray,
 		role: await req.client.getRoles(req.session.user.id),
-		latestTPS: utils.getTPS(req),
+		latestTPS: utils.getTPS(req.client),
 		playerAmount: await req.client.getPlayersLength(),
 		ownerID: config.owner.id,
 		serverID: config.serverID,
