@@ -2,6 +2,7 @@ const express = require("express"),
 	CheckAuth = require("../auth/CheckAuth"),
 	router = express.Router(),
 	version = require("../../package.json").version,
+      	utils = require("../utils"),
 	config = require("../../config");
 
 // Gets profile page
@@ -18,11 +19,8 @@ router.get("/", CheckAuth, async function(req, res) {
 		playerAmount: await req.client.getPlayersLength(),
 		role: userRole,
 		roles: roles,
-<<<<<<< Updated upstream
 		allCanSee: canSeeArray,
-=======
-		latesTPS: "100",
->>>>>>> Stashed changes
+		latestTPS: await utils.getTPS(req),
 		whitelisted: whitelisted,
 		ownerID: config.owner.id,
 		serverID: config.serverID,
