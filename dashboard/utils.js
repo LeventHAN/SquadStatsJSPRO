@@ -51,11 +51,11 @@ async function getBMStats(bmServer){
 
 async function getTPS(req)
 {
-	let latesTPS = "";
+	let latestTPS = "";
 	await req.client.getLatestTPS((res)=>{
-		latesTPS = res;
+		latestTPS = res;
 	});
-	return latesTPS;
+	return latestTPS;
 }
 
 async function getPreviusMap(req)
