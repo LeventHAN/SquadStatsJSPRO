@@ -555,9 +555,6 @@ router.post("/ban", CheckAuth, async function(req, res){
 			case "M":
 				epochDuration = Date.now() + (banNumber * 1000 * 60 * 60 * 24 * 30);
 				break;
-			case "Y":
-				epochDuration = Date.now() + (banNumber * 1000 * 60 * 60 * 24 * 30 * 12);
-				break;
 			case "P":
 				epochDuration = 0;
 				break;
