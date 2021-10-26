@@ -1,5 +1,8 @@
 <script>
     let delay = 2000;
+    const regexTeam = /^Team ID:.(\d{1}).\((.*)\)$/gi;
+    const regexPlayer = /^ID:.(\d).{3}Name:.(.*).{3}Size:.(\d).{3}Locked:.(.*).{3}Creator Name:.(.*).{3}Creator Steam ID:.(.*)$/gi;
+
     const totPlayers = document.createElement("span");
     totPlayers.classList.add("h2","font-weight-bold", "mb-0");
     totPlayers.innerHTML = `/100`;
@@ -9,15 +12,12 @@
     }
 
     // let lastClick = 0;
-    function updatePlayers(option = 3) {
+    async function updatePlayers(option = 3) {
         // simple spam prevention
         // if (lastClick >= (Date.now() - delay))
         //     return;
         // lastClick = Date.now();
-        let team1 = [];
-        let team2 = [];
-        let teamNames = [];
-        socket.emit("players", async (players) => {
+        await socket.emit("players", async (players) => {
             const headerTitle2 = document.getElementById("headerTitle2");
             const headerDesc2 = document.getElementById("headerDesc2");
             const headerIcon2 = document.getElementById("headerIcon2");
@@ -25,12 +25,26 @@
             headerIcon2.className = "fas fa-users";
             headerDesc2.innerHTML = players.length;
             headerDesc2.parentNode.insertBefore(totPlayers, headerDesc2.nextSibling);
-
-            players.forEach(player => {
-                if(player.teamID === "1") team1.push(player);
-                if(player.teamID === "2") team2.push(player);
-                if(player?.squad?.teamName && !teamNames.includes(player?.squad?.teamID + ":" + player?.squad?.teamName)) teamNames.push(player?.squad?.teamID + ":" + player?.squad?.teamName);
-            });
+            const team1 = {
+                id: null,
+                name: null,
+                players: []
+            };
+            const team2 = {
+                id: null,
+                name: null,
+                players: []
+            };
+            for (let i = 0; i < players.length; i++) {
+                if (players[i].teamID == 1) {
+                    team1.players.push(players[i]);
+                } else {
+                    team2.players.push(players[i]);
+                }
+            }
+            // DONE: Print first all players with a squad
+            // TODO: Print after that all players without a squad!
+            // TODO: Print also the disconnected players!
 
             async function createTable1() {
                 let table = document.getElementById("team1_players");
@@ -46,7 +60,7 @@
                 thead.appendChild(title);
                 let tbody = document.createElement("tbody");
                 table.appendChild(tbody);
-                team1.forEach(async player => {
+                team1.players.forEach(async player => {
                     let row = document.createElement("tr");
                     row.id = `${player?.steamID}`;
                     if(player.squadID){
@@ -79,10 +93,6 @@
                     });
 
                 });
-                let team1Title = document.getElementById("team1");
-                let teamTitle1 = teamNames.filter(team => team.includes("1:")).toString().substring(2) || "Nothing";
-                // Convert teamTitle2 to camel case
-                team1Title.innerHTML = teamTitle1.replace(/\b\w/g, l => l.toUpperCase());
             }
 
             async function createTable2() {
@@ -99,7 +109,7 @@
                 thead.appendChild(title);
                 let tbody2 = document.createElement("tbody");
                 table2.appendChild(tbody2);
-                team2.forEach(player => {
+                team2.players.forEach(player => {
                     let row = document.createElement("tr");
                     row.id = `${player?.steamID}`;
                     if(player.squadID){
@@ -129,15 +139,12 @@
                         interactive: true,
                     });
                 });
-                let team2Title = document.getElementById("team2");
-                let teamTitle2 = teamNames.filter(team => team.includes("2:")).toString().substring(2) || "Nothing";
-                // Convert teamTitle2 to camel case
-                team2Title.innerHTML = teamTitle2.replace(/\b\w/g, l => l.toUpperCase());
             }
-            createTable1();
-            createTable2();
-            filterTable1();
-            filterTable2();
+            
+            await createTable1();
+            await createTable2();
+            await filterTable1();
+            await filterTable2();
         });
     }
 
@@ -247,4 +254,35 @@
 
     updatePlayers();
 
+    socket.emit("rcon.execute","ListSquads", async (res) => {
+        const rows = res.split("\n");
+        for (let i = 0; i < rows.length; i++) {
+            while ((m = regexTeam.exec(rows[i])) !== null) {
+                // This is necessary to avoid infinite loops with zero-width matches
+                if (m.index === regexTeam.lastIndex) {
+                    regexTeam.lastIndex++;
+                }
+                if(m[1] == 1) {
+                    document.getElementById("team1").innerHTML = m[2];
+                } else {
+                    document.getElementById("team2").innerHTML = m[2];
+                }
+                
+            }
+
+            // check if the row is regexPlayer
+            while ((m = regexPlayer.exec(rows[i])) !== null) {
+                // This is necessary to avoid infinite loops with zero-width matches
+                if (m.index === regexPlayer.lastIndex) {
+                    regexPlayer.lastIndex++;
+                }
+                console.log(m);
+                const tr = document.getElementById(m[6]);
+                if(tr) {
+                    // get the first td and set the text to the name
+                    tr.getElementsByTagName("td")[3].innerHTML += `<br><i class="fas fa-crown"> Squad Creator</i>`;
+                }
+            }
+        }
+    });
 </script>

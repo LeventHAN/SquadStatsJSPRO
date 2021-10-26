@@ -55,7 +55,7 @@ If a player did missconfigure their profile, they can run: `{prefix}profile re-l
 
 - Git
 - MongoDB ([Windows](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/#download-the-installer) || [Linux](https://docs.mongodb.com/manual/administration/install-on-linux/))
-  - Just download and install it. No need to configure anything. One time install and forget about it.
+  - Just download and install it, or use the the free service of MongoDB -> Mongo Atlas Cloud.
 - [Node.js](https://nodejs.org/en/) (^16.2) - [Download](https://nodejs.org/en/)
 - NPM
 
