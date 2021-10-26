@@ -427,13 +427,6 @@
         //     return;
         // lastClick = Date.now();
         await socket.emit("players", async (players) => {
-            const headerTitle2 = document.getElementById("headerTitle2");
-            const headerDesc2 = document.getElementById("headerDesc2");
-            const headerIcon2 = document.getElementById("headerIcon2");
-            headerTitle2.innerHTML = "Players Amount";
-            headerIcon2.className = "fas fa-users";
-            headerDesc2.innerHTML = players.length;
-            headerDesc2.parentNode.insertBefore(totPlayers, headerDesc2.nextSibling);
             const team1 = {
                 id: null,
                 name: null,
