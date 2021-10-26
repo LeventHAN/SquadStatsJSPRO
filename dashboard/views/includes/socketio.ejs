@@ -79,7 +79,6 @@
       if (command) {
         const adminRequest = command[1].toLowerCase();
         if(adminRequest == "admin"){
-            console.log("admin huh ?");
             await socket.emit("players", (playersList) => {
                 // TODO: GET THE ADMINS BRUH <3 placeholder below: 
                 let adminsList = ["76561197973047706", "76561197975723789"];
@@ -328,7 +327,6 @@
 
 <script>
     function disbandSquad(teamID, squadID) {
-        console.log(`TeamID: ${teamID} and squadID: ${squadID}`);
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -364,7 +362,6 @@
                         }
                     })
                     .catch((error) => {
-                        console.log(error);
                         return Swal.fire(`Error`,`Error: ${error}`,`error`);
                     });
                 }
@@ -375,7 +372,6 @@
 
 <script>
     function removeFromSquad(steamID) {
-        console.log(`steamUID: ${steamID}`);
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -410,7 +406,6 @@
                         }
                     })
                     .catch((error) => {
-                        console.log(error);
                         return Swal.fire(`Error`,`Error: ${error}`,`error`);
                     });
                 }

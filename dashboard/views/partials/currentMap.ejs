@@ -1,6 +1,7 @@
 <script>
 const currentMap = document.createElement("img")
 currentMap.classList.add("mx-auto","d-block","currentMap");
+currentMap.setAttribute("width", 150);
 currentMap.setAttribute("onError", "noImageFound('currentMap')");
 
 const nextMap = document.createElement("img")
@@ -63,9 +64,9 @@ async function layerManager({action = "setNextMap"}){
 }
 
 async function getCurrentMap() {
-    await axios.get(`${window.location.origin}/squad-api/getCurrentMap`).then(async (res) =>{
+    axios.get(`${window.location.origin}/squad-api/getCurrentMap`).then(async (res) =>{
         const layer = res.data.layer.replaceAll(" ", "_");
-        const url = `https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/images/${layer}.jpg`;
+        const url = `https://squadmaps.com/img/maps/thumbnails/${layer}.jpg`;
         const t = await axios.get(url).catch(() => {
             return false;
         });
@@ -82,18 +83,16 @@ async function getCurrentMap() {
 }
 
 async function getNextMap() {
-    await axios.get(`${window.location.origin}/squad-api/getNextMap`).then(async (res) =>{
+    axios.get(`${window.location.origin}/squad-api/getNextMap`).then(async (res) =>{
         const layer = res.data.layer.replaceAll(" ", "_");
         try{
-            await axios.get(`https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/images/${layer}.jpg`).then(async (res) =>{
-                nextMap.setAttribute("alt", res.data.layer);
+            nextMap.setAttribute("alt", res.data.layer);
                 nextMap.setAttribute(
                     "src", 
-                    `https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/images/${layer}.jpg`
+                    `https://squadmaps.com/img/maps/thumbnails/${layer}.jpg`
                     );
                 nextMap.setAttribute("width", 130);
                 $(`.next`).append(nextMap);
-            });
         } catch(err) {
             nextMap.setAttribute("alt", res.data.layer);
             nextMap.setAttribute(
@@ -114,9 +113,15 @@ async function noImageFound(id){
     img.setAttribute("src", url);
 }
 
+
+// run a fucntion before loaded
+window.onload = function(){
+    getCurrentMap();
+    getNextMap();
+}
+
+
 $(document).ready(async function() {
-    await getCurrentMap();
-    await getNextMap();
     
     $("#setNextMap").click(() => {
         layerManager({action: "setNextMap"});

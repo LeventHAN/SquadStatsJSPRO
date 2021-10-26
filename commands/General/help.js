@@ -152,7 +152,6 @@ class Help extends Command {
 			})
 			
 		);
-		console.log("DENEME", )
 		embed.setAuthor(
 			message.translate("general/help:TITLE", {
 				name: this.client.user.username,

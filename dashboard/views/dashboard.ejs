@@ -45,6 +45,42 @@
 			<!-- Content Wrapper. Contains page content -->
 			<div class="container-fluid mt--7">
 				<div class="card bg-gradient-neutral shadow p-5">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="card bg-gradient-neutral shadow p-2">
+								<div class="card-body">
+									<div class="container d-flex mx-auto p-2">
+										<div class="previous d-inline-block mx-auto px-2">
+											<%- include('./partials/currentMap') %>
+											<h4 class="card-title text-center">
+												<i class="fas fa-map"></i>
+												Previous Map
+											</h4>
+											<img id="<%= previusMap %>"onError='noImageFound("<%= previusMap %>")' src="https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/images/<%= previusMap %>.jpg" alt="<%= previusMap %>">
+										</div>
+										<div class="current d-inline-block mx-auto px-2">
+											<h4 class="card-title text-center">
+												<i class="fas fa-map"></i>
+												Current Map 
+											</h4>
+										</div>
+										<div class="next d-inline-block mx-auto px-2">
+											<h4 class="card-title text-center">
+												<i class="fas fa-map"></i>
+												Next Map
+											</h4>
+										</div>
+									</div>
+									<div class="buttons mx-auto d-flex">
+										<button id="setCurrentMap" type="button" class="btn btn-primary mt-2d mx-auto d-inline-block">Change Map</button>
+										<button id="setNextMap" type="button" class="btn btn-primary mt-2d mx-auto d-inline-block">↷ Set Next Map</button>
+									</div>
+									
+
+								</div>
+							</div>
+					</div>
+					</div>
 					<div class="row mt-2">
                         <!-- Make 2 tables next to each other -->
 						<div class="col-md-6">
@@ -59,39 +95,6 @@
 								</div>
 							</div>
 						</div>
-					<div class="col-md-6">
-							<div class="card bg-gradient-neutral shadow p-2">
-								<div class="card-body">
-									<div class="container d-flex mx-auto p-2">
-										<div class="previous d-inline-block mx-auto px-2">
-											<h4 class="card-title text-center">
-												<i class="fas fa-map"></i>
-												Previous Map
-											</h4>
-											<img id="<%= previusMap %>"onError='noImageFound("<%= previusMap %>")' src="https://raw.githubusercontent.com/Squad-Wiki-Editorial/squad-wiki-pipeline-map-data/master/completed_output/_Current%20Version/images/<%= previusMap %>.jpg" alt="<%= previusMap %>">
-										</div>
-										<div class="current d-inline-block mx-auto px-2">
-											<h4 class="card-title text-center">
-												<i class="fas fa-map"></i>
-												Current Map
-											</h4>
-										</div>
-										<div class="next d-inline-block mx-auto px-2">
-											<h4 class="card-title text-center">
-												<i class="fas fa-map"></i>
-												Next Map
-											</h4>
-										</div>
-									</div>
-									<div class="buttons mx-auto d-flex">
-										<button id="setCurrentMap" type="button" class="btn btn-primary mt-2d mx-auto d-inline-block">Change Map</button>
-										<button id="setNextMap" type="button" class="btn btn-primary mt-2d mx-auto d-inline-block">Set Next Map</button>
-									</div>
-									<%- include('./partials/currentMap') %>
-
-								</div>
-							</div>
-					</div>
 						<script>
 						function sendBroadCast(){
 							// TODO: Save this via logger class (ALSO TODO: Add a way to save this message to the database)

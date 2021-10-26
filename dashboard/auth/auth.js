@@ -11,7 +11,6 @@ var express = require("express")
 router.get("/steam", async(req, res) => {
 	const hasLinked = await req.client.linkedSteamAccount(req.session.user.id);
 	if(!hasLinked) return res.redirect("login");
-	console.log("Is is already linked. Redirecting to /index.");
 	return res.redirect("/index");
 });
 
@@ -41,7 +40,6 @@ router.get("/steam/return",
 	passport.authenticate("steam", { failureRedirect: "/" }),
 	async (req, res) => {
 		const redirectURL = req.client.states[req.query.state] || "/index";
-		console.log("Redirecting to " + redirectURL);
 		const needLinking = await req.client.linkedSteamAccount(req.session.user.id);
 		if(needLinking) 
 			await req.client.linkSteamAccount(req.session.user.id, req.session?.passport?.user || req.userInfos.steam);

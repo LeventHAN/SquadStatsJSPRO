@@ -109,10 +109,8 @@ module.exports.load = async (client) => {
 			});
 		}
 		socket.onAny(async (eventName, ...rawArgs) => {
-			console.log(socket.user.id, socket.user.apiToken);
 			const args = rawArgs.slice(0, rawArgs.length - 1);
 			const callback = rawArgs[rawArgs.length - 1];
-			console.log(`${eventName}`, ...args);
 			await client.socket.emit(`${eventName}`, ...args, async (response) => { 
 				return callback(response);
 			});

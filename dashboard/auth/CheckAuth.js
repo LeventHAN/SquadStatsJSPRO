@@ -7,7 +7,6 @@ module.exports = async (req, res, next) => {
 		if(!user) return res.status(401).json({response: "Unauthorized."});
 		req.session.user = user;
 		if(ip) {
-			console.log(user.id);
 			await req.client.apiSaveIP(user.id, ip[0]);
 			req.session.user.lastIp = ip[0];
 		}

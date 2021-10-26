@@ -155,7 +155,6 @@
         }
         if(!table) return;
         row.id=data.player?.steamID;
-        console.log(data);
         if(data.squadID){
             row.innerHTML = `<td class="name font-weight-bold">${addNewLines(data.name)}<br><span class="badge bg-warning text-dark data-toggle="tooltip" data-placement="top" title="${data.possessClassname || "No Role Selected Yet"}" "><span id="${data.dataID}"></span>${data.steamID}</span></td>
                             <td><span ${data.squadID ? 'id='+(data.squadID + data.squad.teamID) : ""}>${data.squad?.locked !== "False" ? "<span class='badge bg-danger text-dark'><span style='font-size: 0.1px'>locked</span>🔒</span></td>" : data.squadID ? "<span class='badge bg-success text-dark'><span style='font-size: 0.1px'>unlocked</span>🔓</span></td>" : "<td><span class='badge bg-danger text-dark'>not in squad</span></td>"}<td><span class="badge bg-secondary text-dark">${data.squad?.size ? "👥 " + data.squad?.size : "" }</span></td><td><span class="badge bg-primary text-dark">${addNewLines(data.squad?.squadName)}</span></td>

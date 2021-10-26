@@ -75,8 +75,6 @@ router.get("/callback", async (req, res) => {
 	const regIp = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/;
 	const ip = (req.headers["x-forwarded-for"] || req.socket.remoteAddress).match(regIp);
 	const redirectURL = (await req.client.linkedSteamAccount(req.session.user.id) ? req.client.states[req.query.state] : "/auth/steam");
-	console.log(redirectURL);
-	console.log(!userDB.logged, logsChannel, user);
 	// First log in
 	if(!userDB.logged && user){
 
