@@ -604,7 +604,7 @@ router.post("/disbandSquad", CheckAuth, async function(req, res){
 
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const socket = req.client.socket;
-	socket.emit("rcon.disbandSquad", moreDetails.teamID, moreDetails.squadID, async () => {
+	socket.emit("rcon.execute", `AdminDisbandSquad ${moreDetails.teamID} ${moreDetails.squadID}`, async () => {
 		const log = await req.client.addLog({ action: "SQUAD_DISBAND", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
 		await log.save();
 		return res.json({status: "ok", message: "Squad is disband!"});
