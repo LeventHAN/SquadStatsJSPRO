@@ -47,6 +47,7 @@ class SquadStatsJSv3 extends Client {
 		this.usersData = require("./User"); // User mongoose model
 		this.membersData = require("./Member"); // Member mongoose model
 		this.logs = require("./Log"); // Log mongoose model
+		this.moderation = require("./Moderation"); // Log mongoose model
 		this.audit = require("./Audit"); // Audit mongoose model
 		this.permissions = require("./Permissions"); // Audit mongoose model
 		this.whitelists = require("./Whitelist"); // Audit mongoose model
@@ -63,6 +64,7 @@ class SquadStatsJSv3 extends Client {
 
 		// For the website
 		this.databaseCache.audit = new Collection();
+		this.databaseCache.moderation = new Collection();
 		this.databaseCache.permissions = new Collection();
 		this.databaseCache.whitelists = new Collection();
 
@@ -311,6 +313,24 @@ class SquadStatsJSv3 extends Client {
 		});
 		await logData.save();
 		return logData;
+	}
+
+	async addModeration({
+		steamID: steamID,
+		moderator: moderator,
+		typeModeration: typeModeration,
+		reason: reason,
+		endDate: endDate
+	}) {
+		const moderationRow = new this.moderation({
+			steamID: steamID,
+			moderator: moderator,
+			typeModeration: typeModeration,
+			reason: reason,
+			endDate: endDate
+		});
+		await moderationRow.save();
+		return moderationRow;
 	}
 
 	// Will create/init the mock data for permissions

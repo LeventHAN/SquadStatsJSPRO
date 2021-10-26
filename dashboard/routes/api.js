@@ -407,10 +407,17 @@ router.post("/kick", CheckAuth, async function(req, res){
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const socket = req.client.socket;
 	// debug
-	console.log("rcon.kick", moreDetails.player, moreDetails.reason);
 	socket.emit("rcon.kick", moreDetails.player, moreDetails.reason, async () => {
 		const log = await req.client.addLog({ action: "PLAYER_KICKED", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
 		await log.save();
+		const moderation = await req.client.addModeration({
+			steamID: req.body.steamUID,
+			moderator: req.session.user.id,
+			typeModeration: "kick",
+			reason: req.body.reason,
+			endDate: null
+		});
+		await moderation.save();
 		return res.json({status: "ok", message: "Player kicked!"});
 	});
 });
@@ -465,10 +472,17 @@ router.post("/warn", CheckAuth, async function(req, res){
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const socket = req.client.socket;
 	// debug
-	console.log("rcon.warn", moreDetails.player, moreDetails.reason);
 	socket.emit("rcon.warn", moreDetails.player, moreDetails.reason, async () => {
 		const log = await req.client.addLog({ action: "PLAYER_WARNED", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
 		await log.save();
+		const moderation = await req.client.addModeration({
+			steamID: req.body.steamUID,
+			moderator: req.session.user.id,
+			typeModeration: "warn",
+			reason: req.body.reason,
+			endDate: null
+		});
+		await moderation.save();
 		return res.json({status: "ok", message: "Player warned!"});
 	});
 });
@@ -526,10 +540,17 @@ router.post("/ban", CheckAuth, async function(req, res){
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const socket = req.client.socket;
 	// debug
-	console.log("rcon.ban", moreDetails.player, "1m", moreDetails.reason);
 	socket.emit("rcon.ban", moreDetails.player, "1m", moreDetails.reason, async () => {
 		const log = await req.client.addLog({ action: "PLAYER_BANNED", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
 		await log.save();
+		const moderation = await req.client.addModeration({
+			steamID: req.body.steamUID,
+			moderator: req.session.user.id,
+			typeModeration: "ban",
+			reason: req.body.reason,
+			endDate: null
+		});
+		await moderation.save();
 		return res.json({status: "ok", message: "Player banned!"});
 	});
 });
@@ -583,8 +604,6 @@ router.post("/disbandSquad", CheckAuth, async function(req, res){
 
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const socket = req.client.socket;
-	// debug:
-	console.log("rcon.disbandSquad", moreDetails.teamID, moreDetails.squadID);
 	socket.emit("rcon.disbandSquad", moreDetails.teamID, moreDetails.squadID, async () => {
 		const log = await req.client.addLog({ action: "SQUAD_DISBAND", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
 		await log.save();
@@ -639,8 +658,6 @@ router.post("/removeFromSquad", CheckAuth, async function(req, res){
 
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const socket = req.client.socket;
-	// debug:
-	console.log("rcon.removePlayerFromSquad", moreDetails.steamUID);
 	socket.emit("rcon.removePlayerFromSquad", moreDetails.steamUID, async () => {
 		const log = await req.client.addLog({ action: "KICK_PLAYER_FROM_SQUAD", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
 		await log.save();
