@@ -1,4 +1,414 @@
 <script>
+    function isFocused(){
+        if(
+            document.activeElement.tagName === "INPUT" ||
+            document.activeElement.tagName === "BUTTON"
+            ) {
+                new Noty({
+                    theme: 'nest',
+                    timeout: 5000, 
+                    queue: "TO_UPDATE",
+                    killer: 'TO_UPDATE',
+                    type: 'info', 
+                    layout: 'bottomLeft', 
+                    text: '<b>Info:</b><br>There ' + (passedNotif === 1 ? 'is ' : 'are ') + passedNotif++ + ((passedNotif-1) === 1 ? ' update' : ' updates') + '. Refresh the page to see them.'}).show(); 
+                return true;
+            }
+        
+        if(!pauseUpdateHover && passedNotif > 1) {
+            updatePlayers();
+            passedNotif = 0;
+            new Noty({
+                    theme: 'nest',
+                    timeout: 5000,
+                    queue: "UPDATED",
+                    killer: 'UPDATED',
+                    type: 'info',
+                    layout: 'bottomLeft',
+                    text: '<b>Info:</b><br>We did update your table, no need to auto refresh.<br><span style="font-size: 8px">Auto Refresh works only when you are not hovering over the tables and not focusing to input fields or pressing to SETTINGS.</span>'
+                }).show();
+        }
+        return false;
+    }
+
+    function isHovering(status){
+        if(status) return pauseUpdateHover = true;
+        return pauseUpdateHover = false;
+    }
+
+</script>
+
+<script>
+    let admins = 0;
+    Noty.setMaxVisible(4);
+    socket.on("connect", () => {
+        new Noty({
+            theme: 'nest',
+            timeout: 2200,
+            type: 'success',
+            visibilityControl: 'true',
+            layout: 'topRight',
+            text: '<b>Reminder:</b><br>You are connected with SquadJS.'
+        }).show();
+    });
+
+
+    // Place holder! SQUADJS needs to have a function to return active admins!
+
+
+    socket.on('CHAT_MESSAGE', async (data) => {
+      const command = data.message.match(/!([^ ]+) ?(.*)/);
+      if (command) {
+        const adminRequest = command[1].toLowerCase();
+        if(adminRequest == "admin"){
+            await socket.emit("players", (playersList) => {
+                // TODO: GET THE ADMINS BRUH <3 placeholder below: 
+                let adminsList = ["76561197973047706", "76561197975723789"];
+                // Count how much times playerList includes adminsList
+                for(let i = 0; i < playersList.length; i++){
+                    if(adminsList.includes(playersList[i].steamID)) admins++;
+                }
+            })
+            new Noty({
+                theme: 'nest',
+                timeout: 10000,
+                layout: 'bottom',
+                queue: 'ADMIN_REQUEST',
+                killer: true,
+                type: 'error',
+                visibilityControl: 'true',
+                text: `<b>Admin Request:</b>
+                <br><b>Active In-Game Admins:</b> <span style="text-color: lightblue">${admins}</span>
+                <br><b>Request:</b> <span style="text-color: lightblue">${command[2].trim()}</span>
+                <br><b>Steam:</b> <a style="text-decoration: none;" href="http://steamcommunity.com/profiles/${data.player.steamID}" target="_blank">${data.player.name}</a>
+                `
+            }).show();
+        }
+      }
+    });
+
+    socket.on("PLAYER_CONNECTED", async (data) => {
+        new Noty({
+            theme: 'nest',
+            timeout: 2500,
+            layout: 'bottomRight',
+            queue: 'PLAYER_CONNECTED',
+            killer: 'PLAYER_CONNECTED',
+            type: 'success',
+            text: `🔌 ${data.player?.name} connected`,
+        }).show();
+        if(window.location.href === `${window.location.origin}/players` && data.player?.name){
+            const interacting = await isFocused();
+            if(interacting || pauseUpdateHover) {
+                return;
+            }
+            addPlayer(data?.player);
+        }
+    });
+
+    socket.on("PLAYER_SQUAD_CHANGE", async (data) => {
+        if(!data.player) return;
+
+        if(data.newSquadID) {
+            if(data.oldSquadID){
+                new Noty({
+                    layout: 'bottomLeft',
+                    theme: 'nest',
+                    timeout: 2500,
+                    queue: 'PLAYER_SQUAD_CHANGE',
+                    killer: 'PLAYER_SQUAD_CHANGE',
+                    type: 'warning',
+                    text: `<b>Squad Change</b><br>${data.player?.name} moved to ${data.player?.squad?.squadName}!`,
+                }).show();
+            } else {
+                new Noty({
+                    layout: 'bottomLeft',
+                    theme: 'nest',
+                    timeout: 2500,
+                    queue: 'PLAYER_SQUAD_CHANGE',
+                    killer: 'PLAYER_SQUAD_CHANGE',
+                    type: 'success',
+                    text: `<b>Squad Join</b><br>${data.player?.name} joined ${data.player?.squad?.squadName}!`,
+                }).show();
+            }
+        } else {
+            new Noty({
+                layout: 'bottomLeft',
+                theme: 'nest',
+                timeout: 2500,
+                queue: 'PLAYER_SQUAD_CHANGE',
+                killer: 'PLAYER_SQUAD_CHANGE',
+                type: 'error',
+                text: `<b>Left Squad</b><br>${data.player?.name} left his squad!`,
+            }).show();
+        }
+        if(window.location.href === `${window.location.origin}/players` && data.player?.name){
+            const interacting = await isFocused();
+            if(interacting || pauseUpdateHover) {
+                return;
+            }
+            await removePlayer(data.player);
+            await addPlayer(data.player);
+        }
+    });
+
+    socket.on("PLAYER_DISCONNECTED", async (data) => {
+        new Noty({
+            theme: 'nest',
+            timeout: 2000,
+            layout: 'bottomRight',
+            queue: 'PLAYER_DISCONNECTED',
+            killer: 'PLAYER_DISCONNECTED',
+            type: 'error',
+            text: `😖 ${data.player?.name || data.chainID} disconnected.`,
+        }).show();
+        if(window.location.href === `${window.location.origin}/players`){
+            const interacting = await isFocused();
+            if(interacting || pauseUpdateHover) {
+                return;
+            }
+            removePlayer(data);
+        }
+    });
+</script>
+
+<script>
+    function kick(steamID) {
+        Swal.fire({
+            title: 'Reason:',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Kick',
+            allowOutsideClick: () => !Swal.isLoading()
+            }).then(async (result) => {
+                Swal.showLoading()
+                if (result.isConfirmed) {
+                    await axios.post(`${window.location.origin}/squad-api/kick`, {
+                        steamUID: steamID,
+                        reason: result.value
+                    })
+                    .then((response) => {
+                        if(!response.data.status) return Swal.fire(`Error`,`Error while getting response.`,`error`);
+                        if(response.data.status === "ok") {
+                            if(window.location.href === `${window.location.origin}/players`){
+                                updatePlayers();
+                            }
+                            
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Player has been kicked.'
+                            })
+
+                        }
+                        if(response.data.status === "nok") {
+                            Swal.fire(`There was an error`,`We couldn't kick the player. Please try again later.`,`error`);
+                        }
+                        if(response.data.status === "nok2") {
+                            Swal.fire(`Insufficent Permissions`,`We couldn't perform your requested action. You don't have the right role to perform this action.`,`warning`);
+                        }
+                    })
+                    .catch((error) => {
+                        return Swal.fire(`Error`,`Error: ${error}`,`error`);
+                    });
+                }
+            })
+    }
+</script>
+
+<script>
+    function warn(steamID) {
+        Swal.fire({
+            title: 'Warn Message:',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Warn',
+            allowOutsideClick: () => !Swal.isLoading()
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    await axios.post(`${window.location.origin}/squad-api/warn`, {
+                        steamUID: steamID,
+                        reason: result.value
+                    })
+                    .then((response) => {
+                        if(!response.data.status) return Swal.fire(`Error`,`Error while getting response.`,`error`);
+                        if(response.data.status === "ok") {
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Player has been warned.'
+                            })
+                        }
+                        if(response.data.status === "nok") {
+                            Swal.fire(`There was an error`,`We couldn't warn the player. Please try again later.`,`error`);
+                        }
+                        if(response.data.status === "nok2") {
+                            Swal.fire(`Insufficent Permissions`,`We couldn't perform your requested action. You don't have the right role to perform this action.`,`warning`);
+                        }
+                    })
+                    .catch((error) => {
+                        return Swal.fire(`Error`,`Error: ${error}`,`error`);
+                    });
+                }
+            })
+    }
+</script>
+
+<script>
+    function ban(steamID) {
+        Swal.fire({
+            title: 'Ban Details:',
+            html:
+            `<div class='d-flex mx-auto'>
+                <div class='length mx-auto d-inline-block'>
+                    <h4>Length</h4>
+                    <input type='number' min="1" id='banLength' class='swal2-input' style='position:relative; bottom: 20px; max-width: 100px; height: 47px;'></input>
+                </div>
+                <div class='type mx-auto d-inline-block'>
+                    <h5>Type</h5>
+                    <select id='selection' class="swal2-select" style='position:relative; border: 1px solid #d9d9d9; border-radius: 5px; bottom: 22px; min-width: 100px; min-height 50px;'>
+                        <option id="m">Minutes</option>
+                        <option id="h">Hours</option>
+                        <option id="d">Days</option>
+                        <option id="M">Months</option>
+                        <option id="P">Perma</option>
+                    </select>
+                </div>
+            </div>
+            <div class='reason mx-auto text-center d-block' style='width:400px'>
+                    <h2>Reason:</h2>
+                    <input id='reason' class='swal2-input mx-auto d-block' style='position:relative; bottom: 5px; width: 400px;'></input>
+            </div>`,
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Ban',
+            allowOutsideClick: () => !Swal.isLoading()
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const selection = document.getElementById('selection');
+                    const type = selection.options[selection.selectedIndex].id;
+                    const reason = document.getElementById('reason').value;
+                    let banTime = `${document.getElementById('banLength').value}${type}`;
+                    await axios.post(`${window.location.origin}/squad-api/ban`, {
+                        steamUID: steamID,
+                        reason: result.value,
+                        duration: banTime
+                    })
+                    .then((response) => {
+                        if(!response.data.status) return Swal.fire(`Error`,`Error while getting response.`,`error`);
+                        if(response.data.status === "ok") {
+                            if(window.location.href === `${window.location.origin}/players`){
+                                updatePlayers();
+                            }
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Player has been banned.'
+                            })
+                        }
+                        if(response.data.status === "nok") {
+                            Swal.fire(`There was an error`,`We couldn't ban the player. Please try again later.`,`error`);
+                        }
+                        if(response.data.status === "nok2") {
+                            Swal.fire(`Insufficent Permissions`,`We couldn't perform your requested action. You don't have the right role to perform this action.`,`warning`);
+                        }
+                    })
+                    .catch((error) => {
+                        return Swal.fire(`Error`,`Error: ${error}`,`error`);
+                    });
+                }
+            })
+    }
+</script>
+
+<script>
+    function disbandSquad(teamID, squadID) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            showCancelButton: true,
+            confirmButtonText: 'Disband',
+            allowOutsideClick: () => !Swal.isLoading()
+            }).then(async (result) => {
+                Swal.showLoading()
+                if (result.isConfirmed) {
+                    await axios.post(`${window.location.origin}/squad-api/disbandSquad`, {
+                        squadID: squadID,
+                        teamID: teamID
+                    })
+                    .then((response) => {
+                        if(!response.data.status) return Swal.fire(`Error`,`Error while getting response.`,`error`);
+                        if(response.data.status === "ok") {
+                            if(window.location.href === `${window.location.origin}/players`){
+                                updatePlayers();
+                            }
+                            Toast.fire({
+                                icon: 'success',
+                                title: "Player's squad is disband!"
+                            })
+                        }
+                        if(response.data.status === "nok") {
+                            Swal.fire(`There was an error`,`We couldn't disband the squad. Please try again later.`,`error`);
+                        }
+                        if(response.data.status === "nok2") {
+                            Swal.fire(`Insufficent Permissions`,`We couldn't perform your requested action. You don't have the right role to perform this action.`,`warning`);
+                        }
+                    })
+                    .catch((error) => {
+                        return Swal.fire(`Error`,`Error: ${error}`,`error`);
+                    });
+                }
+            })
+    }
+</script>
+
+
+<script>
+    function removeFromSquad(steamID) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            showCancelButton: true,
+            confirmButtonText: 'Kick From Squad',
+            allowOutsideClick: () => !Swal.isLoading()
+            }).then(async (result) => {
+                Swal.showLoading()
+                if (result.isConfirmed) {
+                    await axios.post(`${window.location.origin}/squad-api/removeFromSquad`, {
+                        steamID: steamID
+                    })
+                    .then((response) => {
+                        if(!response.data.status) return Swal.fire(`Error`,`Error while getting response.`,`error`);
+                        if(response.data.status === "ok") {
+                            if(window.location.href === `${window.location.origin}/players`){
+                                updatePlayers();
+                            }
+                            Toast.fire({
+                                icon: 'success',
+                                title: response.data.message
+                            })
+                        }
+                        if(response.data.status === "nok") {
+                            Swal.fire(`There was an error`,`We couldn't remove the player from the squad. Please try again later.`,`error`);
+                        }
+                        if(response.data.status === "nok2") {
+                            Swal.fire(`Insufficent Permissions`,`We couldn't perform your requested action. You don't have the right role to perform this action.`,`warning`);
+                        }
+                    })
+                    .catch((error) => {
+                        return Swal.fire(`Error`,`Error: ${error}`,`error`);
+                    });
+                }
+            })
+    }
+</script>
+
+<script>
     let delay = 2000;
     const regexTeam = /^Team ID:.(\d{1}).\((.*)\)$/gi;
     const regexPlayer = /^ID:.(\d).{3}Name:.(.*).{3}Size:.(\d).{3}Locked:.(.*).{3}Creator Name:.(.*).{3}Creator Steam ID:.(.*)$/gi;
@@ -82,7 +492,7 @@
                         <button style="font-size: 10px !important;" type="button" class="badge btn btn-secondary" onclick="warn('${player.steamID}')">Warn</button>
                         <button style="font-size: 10px !important;" type="button" class="badge btn btn-warning" onclick="kick('${player.steamID}')">Kick</button>
                         <button style="font-size: 10px !important;" type="button" class="badge btn btn-danger" onclick="ban('${player.steamID}')">Ban</button>
-                        ${player.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('2', '${player.squadID}')">Disband the Squad</button>` : ''}
+                        ${player.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('1', '${player.squadID}')">Disband the Squad</button>` : ''}
                         ${player.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-info" onclick="removeFromSquad('${player.steamID}')">Kick From Squad</button>` : ''}
                         `,
                         allowHTML: true,
@@ -180,7 +590,7 @@
             <button style="font-size: 10px !important;" type="button" class="badge btn btn-secondary" onclick="warn('${data.steamID}')">Warn</button>
             <button style="font-size: 10px !important;" type="button" class="badge btn btn-warning" onclick="kick('${data.steamID}')">Kick</button>
             <button style="font-size: 10px !important;" type="button" class="badge btn btn-danger" onclick="ban('${data.steamID}')">Ban</button>
-            ${data.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('2', '${data.squadID}')">Disband the Squad</button>` : ''}
+            ${data.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('${data.player?.teamID}', '${data.squadID}')">Disband the Squad</button>` : ''}
             ${data.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-info" onclick="removeFromSquad('${data.steamID}')">Kick From Squad</button>` : ''}`,
             allowHTML: true,
             zIndex: 1,

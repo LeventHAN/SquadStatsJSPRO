@@ -407,7 +407,7 @@ router.post("/kick", CheckAuth, async function(req, res){
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const socket = req.client.socket;
 	// debug
-	socket.emit("rcon.kick", moreDetails.player, moreDetails.reason, async () => {
+	socket.emit("rcon.execute", `AdminKick ${moreDetails.player} ${moreDetails.reason}`, async () => {
 		const log = await req.client.addLog({ action: "PLAYER_KICKED", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
 		await log.save();
 		const moderation = await req.client.addModeration({
@@ -540,7 +540,31 @@ router.post("/ban", CheckAuth, async function(req, res){
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const socket = req.client.socket;
 	// debug
-	socket.emit("rcon.ban", moreDetails.player, "1m", moreDetails.reason, async () => {
+	socket.emit("rcon.execute", `AdminBan ${moreDetails.player} ${moreDetails.duration} ${moreDetails.reason}`, async () => {
+		let banNumber = moreDetails.duration.match(/\d+/g);
+		banNumber = parseInt(banNumber);
+		const banLetter = moreDetails.duration.match(/[a-zA-Z]/g)[0];
+		let epochDuration;
+		switch(banLetter) {
+			case "m":
+				epochDuration = Date.now() + (banNumber * 1000 * 60);
+				break;
+			case "d":
+				epochDuration = Date.now() + (banNumber * 1000 * 60 * 60 * 24);
+				break;
+			case "M":
+				epochDuration = Date.now() + (banNumber * 1000 * 60 * 60 * 24 * 30);
+				break;
+			case "Y":
+				epochDuration = Date.now() + (banNumber * 1000 * 60 * 60 * 24 * 30 * 12);
+				break;
+			case "P":
+				epochDuration = 0;
+				break;
+			default:
+				epochDuration = Date.now() + (1 * 1000 * 60); // 1 minute ban FAST BAN
+				break;
+		}
 		const log = await req.client.addLog({ action: "PLAYER_BANNED", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
 		await log.save();
 		const moderation = await req.client.addModeration({
@@ -548,7 +572,7 @@ router.post("/ban", CheckAuth, async function(req, res){
 			moderator: req.session.user.id,
 			typeModeration: "ban",
 			reason: req.body.reason,
-			endDate: null
+			endDate: epochDuration
 		});
 		await moderation.save();
 		return res.json({status: "ok", message: "Player banned!"});
@@ -577,39 +601,39 @@ router.post("/ban", CheckAuth, async function(req, res){
 		"message": "You are doing something wrong."
 	}
  */
-router.post("/disbandSquad", CheckAuth, async function(req, res){
-	if(!req.body.squadID || !req.body.teamID) return res.json({ status: "nok", message: "You are doing something wrong." });
+	router.post("/disbandSquad", CheckAuth, async function(req, res){
+		if(!req.body.squadID || !req.body.teamID) return res.json({ status: "nok", message: "You are doing something wrong." });
+		
+		const userRole = await req.client.getRoles(req.session.user.id);
 	
-	const userRole = await req.client.getRoles(req.session.user.id);
-
-	const canUser = await req.client.whoCan("disbandSquad");
+		const canUser = await req.client.whoCan("disbandSquad");
+		
+		if(!canUser.some(role => userRole.includes(role)))
+			return res.json({status: "nok2", message: "You are not allowed to do this."});
+		
+		const steamAccount = {
+			steam64id: req.session?.passport?.user?.id,
+			displayName: req.session?.passport?.user?.displayName,
+			identifier: req.session?.passport?.user?.identifier,
+		};
+		const discordAccount = {
+			id: req.session.user.id,
+			username: req.session?.user?.username,
+			discriminator: req.session?.user?.discriminator,
+		};
+		const moreDetails = {
+			teamID: req.body.teamID,
+			squadID: req.body.squadID
+		};
 	
-	if(!canUser.some(role => userRole.includes(role)))
-		return res.json({status: "nok2", message: "You are not allowed to do this."});
-	
-	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
-	};
-	const discordAccount = {
-		id: req.session.user.id,
-		username: req.session?.user?.username,
-		discriminator: req.session?.user?.discriminator,
-	};
-	const moreDetails = {
-		teamID: req.body.teamID,
-		squadID: req.body.squadID
-	};
-
-	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
-	const socket = req.client.socket;
-	socket.emit("rcon.execute", `AdminDisbandSquad ${moreDetails.teamID} ${moreDetails.squadID}`, async () => {
-		const log = await req.client.addLog({ action: "SQUAD_DISBAND", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
-		await log.save();
-		return res.json({status: "ok", message: "Squad is disband!"});
+		// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
+		const socket = req.client.socket;
+		socket.emit("rcon.execute", `AdminDisbandSquad ${moreDetails.teamID} ${moreDetails.squadID}`, async (response) => {
+			const log = await req.client.addLog({ action: "SQUAD_DISBAND", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
+			await log.save();
+			return res.json({status: "ok", message: response});
+		});
 	});
-});
 
 /**
  * @api {post} /squad-api/removeFromSquad Remove players from squad
@@ -658,10 +682,10 @@ router.post("/removeFromSquad", CheckAuth, async function(req, res){
 
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const socket = req.client.socket;
-	socket.emit("rcon.removePlayerFromSquad", moreDetails.steamUID, async () => {
+	socket.emit("rcon.execute", `AdminRemovePlayerFromSquad	${moreDetails.steamUID}`, async (response) => {
 		const log = await req.client.addLog({ action: "KICK_PLAYER_FROM_SQUAD", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
 		await log.save();
-		return res.json({status: "ok", message: "Player removed from squad!"});
+		return res.json({status: "ok", message: response});
 	});
 });
 
