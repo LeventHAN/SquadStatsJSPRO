@@ -13,7 +13,7 @@ const genToken = () => {
 const userSchema = new mongoose.Schema({
 	/* REQUIRED */
 	id: { type: String }, // Discord ID of the user
-	steam: { type: Object }, // Steam ID of the user
+	steam: { type: Object, default: null }, // Steam ID of the user
 	bio: { type: String }, // Biography of the user
 
 	/* STATS */
@@ -27,18 +27,21 @@ const userSchema = new mongoose.Schema({
 		type: Object,
 		default: {
 			user: true,
-		}
+		},
 	},
-	
-	whitelist: { type: Object, default: {
-		won: false, // Did the user win the whitelsit?
-		byClan: false, // Is the user whitelisted by clan?
-		byUser: false, // Is the user whitelisted by user?
-		user: "", // User who whitelisted the user
-		clan: "", // Clan who whitelisted the user
-		reason: "", // Reason for the whitelist
-		expires: 0, // When does the whitelist expire? (EPOCH)
-	} }, // Is the user white listed?
+
+	whitelist: {
+		type: Object,
+		default: {
+			won: false, // Did the user win the whitelsit?
+			byClan: false, // Is the user whitelisted by clan?
+			byUser: false, // Is the user whitelisted by user?
+			user: "", // User who whitelisted the user
+			clan: "", // Clan who whitelisted the user
+			reason: "", // Reason for the whitelist
+			expires: 0, // When does the whitelist expire? (EPOCH)
+		},
+	}, // Is the user white listed?
 
 	/* COOLDOWN */
 	cooldowns: {
@@ -67,7 +70,7 @@ const userSchema = new mongoose.Schema({
 			trackDate: null,
 		},
 	},
-	
+
 	banned: { type: Boolean, default: false }, // Is the user banned?
 	afk: { type: String, default: null }, // Whether the member is disabling his account
 	isOnline: { type: Boolean, default: false }, // Whether the user is online at the dashboard

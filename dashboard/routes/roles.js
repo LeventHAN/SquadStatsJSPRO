@@ -24,7 +24,6 @@ router.get("/", CheckAuth, async function(req, res) {
 		whitelisted: whitelisted,
 		ownerID: config.owner.id,
 		serverID: config.serverID,
-		playerAmount: await req.client.getPlayersLength(),
 		userDiscord: req.userInfos,
 		userSteam: req.session?.passport?.user || req.userInfos.steam,
 		translate: req.translate,

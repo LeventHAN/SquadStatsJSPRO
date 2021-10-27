@@ -32,8 +32,8 @@ module.exports = class {
 		);
 		let isRookie;
 
-		const regex = /\d+/gm;
-		const guildData = await this.client.findOrCreateGuild({ id: guildID });
+		// const regex = /\d+/gm;
+		// const guildData = await this.client.findOrCreateGuild({ id: guildID });
 
 		/**EXAMPLE
 		 *

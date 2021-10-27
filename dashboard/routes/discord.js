@@ -106,14 +106,12 @@ router.get("/callback", async (req, res) => {
 		userDB.isOnline = true;
 	}
 	if(ip){
-		if(!userDB.lastIp.includes(ip)) {
-			userDB.lastIp.push(ip);
+		if(!userDB.lastIp.includes(ip[0])) {
+			userDB.lastIp.push(ip[0]);
 			userDB.markModified("lastIp");
 		}	
 	}
-	
 	await userDB.save();
-
 	res.redirect(redirectURL);
 });
 

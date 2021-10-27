@@ -48,22 +48,21 @@ router.get("/steam/return",
 );
 
 router.post("/steam/delete", CheckAuth, async(req, res) => {
-	if(!req.body.userID) return res.json({ status: "nok", message: "You are doing something wrong." });
+	if(!req.body.steamid) return res.json({ status: "nok", message: "You are doing something wrong." });
 	
-	const userRole = await req.client.getRoles(req.session.user.id);
-
+	const userFromToken = await req.client.fetchUserByToken(req.body.apiToken);
+	if(!userFromToken) return res.json({ status: "nok", message: "You are doing something wrong." });
 	const canUser = await req.client.whoCan("unlinkSteam");
 	
-	if(!canUser.some(role => userRole.includes(role)))
-		return res.json({status: "nok2", message: "You are not allowed to do this."});
+	// check if canUser has any value for the keys of userFromToken.roles without hasOwnProperty
+	if(!canUser.some(role => Object.prototype.hasOwnProperty.call(userFromToken.roles, role))) return res.json({ status: "nok2", message: "You are not allowed to do that." });
 
-
-
-	// Check if req.body.userID is indeed the userID of the user requesting
-	// to delete their linked Steam account.
-	const userSteamAccount = req.client.linkedSteamAccount(req.body.userID);
+	const userSteamAccount = req.client.linkedSteamAccount(req.body.steamid);
 	if(!userSteamAccount) return res.json({ status: "nok", message: "There is no account linked." });
-	if(userSteamAccount.id !== req.body.userID && !userRole.includes("owner")) return res.json({ status: "nok", message: "You are not the owner of this account." });
+	
+	// check if userSteamAccount.id is not the same as req.body.steamid and that the userFromToken.roles has "owner" or "admin" key in it
+	if(userSteamAccount.id !== req.body.steamid && !canUser.some(role => Object.prototype.hasOwnProperty.call(userFromToken.roles, role))) return res.json({ status: "nok2", message: "You don't have the permission to do that!" });
+	
 
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
@@ -76,14 +75,17 @@ router.post("/steam/delete", CheckAuth, async(req, res) => {
 		discriminator: req.session?.user?.discriminator,
 	};
 	const moreDetails = {
-		unlinkedAccountID: req.body.userID,
+		unlinkedAccountID: req.body.steamid,
 	};
-	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
+	const userToUpdate = await req.client.findOrCreateUser({id: userFromToken.id});
+	userToUpdate.steam = null;
+	userToUpdate.squad.tracking = false;
+	await userToUpdate.markModified("steam");
+	await userToUpdate.markModified("squad");
+	await userToUpdate.save();
 	const log = await req.client.addLog({ action: "USER_UNLINK_STEAM", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
 	await log.save();
-	res.redirect("/logout");
-	return (await req.client.unlinkSteamAccount(req.body.userID) ? res.json({ status: "ok" }) : res.json({ status: "nok" }));
-	
+	return res.json({ status: "ok" });
 });
 
 

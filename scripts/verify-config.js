@@ -1,6 +1,6 @@
 /* eslint-disable no-async-promise-executor */
 const config = require("../config.js");
-const fetch = require("node-fetch");
+// const fetch = require("node-fetch");
 
 const chalk = require("chalk");
 const success = (message) => console.log(`   ${chalk.green("✓")} ${message}`);

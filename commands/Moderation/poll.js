@@ -25,8 +25,6 @@ class Poll extends Command {
 
 		message.delete().catch(() => {});
 
-	
-
 		const success = this.client.customEmojis.success.split(":")[1];
 		const error = this.client.customEmojis.error.split(":")[1];
 

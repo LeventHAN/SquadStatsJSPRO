@@ -18,7 +18,9 @@ class Ignore extends Command {
 
 	async run(message, args, data) {
 		const channel = message.mentions.channels
-			.filter((ch) => ch.type === "GUILD_TEXT" && ch.guild.id === message.guild.id)
+			.filter(
+				(ch) => ch.type === "GUILD_TEXT" && ch.guild.id === message.guild.id
+			)
 			.first();
 		if (!channel) {
 			return message.error("misc:INVALID_CHANNEL");

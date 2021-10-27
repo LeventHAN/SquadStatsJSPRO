@@ -1,7 +1,6 @@
 const express = require("express"),
 	CheckAuth = require("../auth/CheckAuth"),
 	router = express.Router(),
-	utils = require("../utils"),
 	config = require("../../config");
 
 // Gets profile page

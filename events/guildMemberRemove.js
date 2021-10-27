@@ -10,6 +10,5 @@ module.exports = class {
 			id: member.guild.id,
 		});
 		member.guild.data = guildData;
-
 	}
 };

@@ -10,22 +10,47 @@ const genToken = () => {
 	return token;
 };
 
-const whitelistSchema =
-	new mongoose.Schema({
-		token: { type: String, default: genToken() },
-		roles: {type: Object, default: {
+const whitelistSchema = new mongoose.Schema({
+	token: { type: String, default: genToken() },
+	roles: {
+		type: Object,
+		default: {
 			Default: {
-				permissions: ["changemap","pause","cheat","private","balance","chat","kick","ban","config","cameraman","immunity","manageserver","featuretest","reserve","demos","debug","teamchange","forceteamchange","canseeadminchat","adminteleporttoplayer","AdminSetFogOfWar"]
+				permissions: [
+					"changemap",
+					"pause",
+					"cheat",
+					"private",
+					"balance",
+					"chat",
+					"kick",
+					"ban",
+					"config",
+					"cameraman",
+					"immunity",
+					"manageserver",
+					"featuretest",
+					"reserve",
+					"demos",
+					"debug",
+					"teamchange",
+					"forceteamchange",
+					"canseeadminchat",
+					"adminteleporttoplayer",
+					"AdminSetFogOfWar",
+				],
 			},
-		}},
-		memberData: {type: Object, default: {
+		},
+	},
+	memberData: {
+		type: Object,
+		default: {
 			Default: {
 				role: null,
 				description: null,
-			}
-		}},
-	});
-
-
+			},
+		},
+	},
+});
 
 module.exports = mongoose.model("Whitelist", whitelistSchema);

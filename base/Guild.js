@@ -17,7 +17,8 @@ module.exports = mongoose.model(
 		language: { type: String, default: languages.find((l) => l.default).name }, // Language of the guild
 		prefix: { type: String, default: config.prefix }, // Default or custom prefix of the guild
 		dashboard: {
-			type: Object, default: {
+			type: Object,
+			default: {
 				showNotifications: {
 					onConnect: true,
 					onDisconnect: true,
@@ -33,8 +34,8 @@ module.exports = mongoose.model(
 					onSquadJoin: true,
 					onSquadLeave: true,
 					onSquadUpdate: true,
-				}
-			}
+				},
+			},
 		},
 		plugins: {
 			type: Object,
@@ -61,10 +62,10 @@ module.exports = mongoose.model(
 						rotations: {
 							type: Object,
 							default: {
-								"Default": {
+								Default: {
 									layers: [],
 								},
-							}
+							},
 						},
 					},
 				},

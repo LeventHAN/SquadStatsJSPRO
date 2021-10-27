@@ -54,27 +54,46 @@ class Profile extends Command {
 			return message.error("squad/profile:BOT_USER");
 		}
 
-
 		const userData =
 			member.id === message.author.id
 				? data.userData
 				: await client.findOrCreateUser({ id: member.id });
 
-
-		if(!userData.steam?.steamid || userData.id !== message.author.id){
+		if (!userData.steam?.steamid) {
 			return message.error("squad/profile:NOT_LOGGED_TAG", {
 				dashboard: data.config.dashboard.baseURL,
-				user: userData.id
+				user: userData.id,
 			});
 		}
 
 		if (data.userData.squad.tracking) {
-			message.success("YOU ARE GETTING TRACKED?");
 			steamUID = data.userData.steam.steamid;
-		} else {
-			message.success("YOU ARE NOT GETTING TRACKED?");
 		}
 
+		if (
+			args[0] === "re" ||
+			args[1] === "re" ||
+			args[0] === "re-link" ||
+			args[1] === "re-link" ||
+			args[0] === "relink" ||
+			args[1] === "relink"
+		) {
+			// make an axios post request to the dashboard to "/steam/delete" with the token of the userData
+			return await client.axios
+				.post(`${data.config.dashboard.baseURL}/auth/steam/delete`, {
+					apiToken: userData.apiToken,
+					steamid: userData.steam.steamid,
+				})
+				.then(async (res) => {
+					if (res.data.status === "ok") {
+						return message.success("squad/profile:REMOVE_LINK");
+					} else if (res.data.status === "nok2") {
+						return message.error("squad/profile:RE_LINK_FAIL_PERM");
+					} else {
+						return message.error("squad/profile:RE_LINK_FAIL");
+					}
+				});
+		}
 		/**
 		 * Send an embed message to the authors channel with the authors squad stats grabbed from MongoDB.
 		 *
@@ -93,12 +112,15 @@ class Profile extends Command {
 						? userData.bio
 						: message.translate("squad/profile:NO_BIO", {
 							prefix: data.guild.prefix,
-						})
+						  })
 				)
 				.addField(
 					message.translate("squad/profile:STEAMS"),
 					message.translate("squad/profile:STEAM", {
-						steamName: ( userData.squad.steamName === "Undefined" ? "Not Recorded Profile": userData.squad.steamName ),
+						steamName:
+							userData.squad.steamName === "Undefined"
+								? "Not Recorded Profile"
+								: userData.squad.steamName,
 						steam64ID: userData.squad.steam64ID || "#",
 					}),
 					false
@@ -161,7 +183,7 @@ class Profile extends Command {
 					}),
 					true
 				)
-				
+
 				.addField("\u200B", "\u200B", true)
 				.addField(
 					message.translate("squad/profile:MK_ROLES"),
@@ -277,7 +299,6 @@ class Profile extends Command {
 			const role = message.guild.roles.cache.find((r) => r.name === roleName);
 			message.member.roles.add(role).catch(console.error);
 			message.success("squad/profile:UPDATE", {
-				creator: message.author.toString(),
 				steamID: steamUID,
 			});
 		}

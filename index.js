@@ -40,7 +40,7 @@ const init = async () => {
 		delete require.cache[require.resolve(`./events/${file}`)];
 	});
 
-	
+
 
 	// DEBUG ONLY
 	if (config.support.debug) client.on("debug", console.log);
