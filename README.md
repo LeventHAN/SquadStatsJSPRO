@@ -78,12 +78,11 @@ What is changed:
 - Again there is no need for yet another RCON connection, SquadStatsJSPRO uses the **already** existing RCON connection from SquadJS.
 
 
-
-
 ### Installation
 
 1. Clone the repository via your terminal/cmd: `git clone https://github.com/11TStudio/SquadStatsJSPRO`
 2. Configure the `config.example.js` file. And when done SAVE and delete the .example. (At the end the file should look like: `config.js`)
+   - Once you have completed stap 3 (below) run also <code>npm run testcfg</code> to see if everything is configured fine.
 3. Run `npm install` via the terminal.
 4. Start your bot: `node index.js&`. (**I recommend you to use [pm2](https://pm2.keymetrics.io)**)
 5. Star this repo if you liked!
