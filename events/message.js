@@ -55,6 +55,8 @@ module.exports = class {
 		}
 
 		const userData = await client.findOrCreateUser({ id: message.author.id });
+		// add message.author.banner to be null
+		if (!message.author.banner) message.author.banner = null;
 		data.userData = userData;
 
 		if (message.guild) {

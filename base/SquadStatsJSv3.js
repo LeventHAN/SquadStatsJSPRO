@@ -1,8 +1,4 @@
-const {
-	Client,
-	Collection,
-	Intents,
-} = require("discord.js");
+const { Client, Collection, Intents } = require("discord.js");
 
 const util = require("util"),
 	path = require("path"),
@@ -35,6 +31,8 @@ class SquadStatsJSv3 extends Client {
 				parse: ["users"],
 			},
 		});
+		// init axios here
+		this.axios = axios;
 		this.config = require("../config"); // Load the config file
 		this.customEmojis = require("../emojis.json"); // load the bot's emojis
 		this.languages = require("../languages/language-meta.json"); // Load the bot's languages
@@ -82,7 +80,7 @@ class SquadStatsJSv3 extends Client {
 					},
 					serverAuth: {
 						token: this.config.socketIO.serverSecret,
-					}
+					},
 				}
 			);
 		}
@@ -162,7 +160,7 @@ class SquadStatsJSv3 extends Client {
 	}
 
 	// This function is used to find a user data or create it
-	async findOrCreateUser({ id: userID }, isLean) {
+	async findOrCreateUser({ id: userID }, isLean = false) {
 		if (this.databaseCache.users.get(userID)) {
 			return isLean
 				? this.databaseCache.users.get(userID).toJSON()
@@ -187,39 +185,28 @@ class SquadStatsJSv3 extends Client {
 	async linkSteamAccount(userID, steamObj) {
 		// In case something goes wrong, we want to make sure we don't have a steam account linked to this user
 		if (steamObj.id) {
-			const userData = await this.usersData.findOne({ id: userID });
-			if(!userData) return;
+			const userData = await this.findOrCreateUser({ id: userID });
+			if (!userData) return;
 			// check if userData has a steam account
-			if (!userData?.steam) {	
+			if (!userData.steam) {
 				userData.steam = steamObj._json;
+				await userData.markModified("steam");
+				await userData.markModified("steam.id");
 				await userData.save();
 			}
 			return;
 		}
 	}
 
-	
 	// Will check if the user has a steam account linked to them and send back the steam data if so
 	async linkedSteamAccount(userID) {
 		const userData = await this.usersData.findOne({ id: userID });
-		if(!userData) return false;
+		if (!userData) return false;
 		return userData.steam;
 	}
 
-	// Will remove the steam field from the user data and save it
-	async unlinkSteamAccount(steamID) {
-		const user = await this.usersData.findOne({ "steam.steamid": steamID });
-		if(!user) return false;
-		// console.log(user?.steam);
-		//user.steam = undefined;
-		await user.set("steam", undefined, { strict: false });
-		await user.markModified("steam");
-		await user.save();
-		return true;
-	}
-
 	// Checks if the user.id is the same as the owners id given in the config file
-	async isOwner(id){
+	async isOwner(id) {
 		return this.config.owner.id === id;
 	}
 
@@ -237,7 +224,7 @@ class SquadStatsJSv3 extends Client {
 	// Will save the ip address of the user by its user.id
 	async apiSaveIP(userID, ip) {
 		const user = await this.usersData.findOne({ id: userID });
-		if(!user.lastIp.includes(ip)) {
+		if (!user.lastIp.includes(ip)) {
 			// save the ip to the user lastIp array
 			user.lastIp.push(ip);
 			// save the user
@@ -320,14 +307,14 @@ class SquadStatsJSv3 extends Client {
 		moderator: moderator,
 		typeModeration: typeModeration,
 		reason: reason,
-		endDate: endDate
+		endDate: endDate,
 	}) {
 		const moderationRow = new this.moderation({
 			steamID: steamID,
 			moderator: moderator,
 			typeModeration: typeModeration,
 			reason: reason,
-			endDate: endDate
+			endDate: endDate,
 		});
 		await moderationRow.save();
 		return moderationRow;
@@ -336,235 +323,243 @@ class SquadStatsJSv3 extends Client {
 	// Will create/init the mock data for permissions
 	async createPermissions() {
 		const doesExist = await this.permissions.find({}).lean();
-		if(doesExist.length !== 0) return this.logger.log("Permissions schema already exist. 👌", "log");
-		this.permissions.create({}).catch((err) => { return console.log(err); });
+		if (doesExist.length !== 0)
+			return this.logger.log("Permissions schema already exist. 👌", "log");
+		this.permissions.create({}).catch((err) => {
+			return console.log(err);
+		});
 		this.logger.log("Permissions schema is created 👌", "log");
 	}
 
 	// Will create/init the mock data for permissions
 	async createWhitelist() {
 		const doesExist = await this.whitelists.find({}).lean();
-		if(doesExist.length !== 0) return;
-		this.whitelists.create({}).catch((err) => { return console.log(err); });
+		if (doesExist.length !== 0) return;
+		this.whitelists.create({}).catch((err) => {
+			return console.log(err);
+		});
 		this.logger.log("Whitelists default schema is created 👌", "log");
 	}
 
 	// Will replace the Whitelist by the new one given (file)
 	async importWhitelist({ roles: roles, whitelisted: whitelisted }) {
 		const whitelist = await this.whitelists.findOne({});
-		if(!whitelist) return;
+		if (!whitelist) return;
 		whitelist.roles = roles;
 		whitelist.memberData = whitelisted;
 		await whitelist.save();
-		this.logger.log("Whitelists schema is imported via the dashboard 👌", "log");
+		this.logger.log(
+			"Whitelists schema is imported via the dashboard 👌",
+			"log"
+		);
 	}
 
 	// Returns the whitelist roles only (Groups)
 	async getWhitelistRoles() {
 		const whitelist = await this.whitelists.findOne({});
-		if(!whitelist) return;
+		if (!whitelist) return;
 		return whitelist.roles;
 	}
 
 	// Returns the whitelist users only (Accounts)
 	async getWhitelistUsers() {
 		const whitelist = await this.whitelists.findOne({});
-		if(!whitelist) return;
+		if (!whitelist) return;
 		return whitelist.memberData;
 	}
 
 	// Remove user from whitelist by steamID
-	async removeUserWhitelist(steamID){
+	async removeUserWhitelist(steamID) {
 		const whitelist = await this.whitelists.findOne({});
-		if(!whitelist) return;
+		if (!whitelist) return;
 		delete whitelist.memberData[steamID];
 		await whitelist.markModified("memberData");
 		await whitelist.save();
 	}
 
-	async removeWhitelistRole(role){
+	async removeWhitelistRole(role) {
 		const whitelist = await this.whitelists.findOne({});
-		if(!whitelist) return;
+		if (!whitelist) return;
 		delete whitelist.roles[role];
 		await whitelist.markModified("roles");
 		await whitelist.save();
 	}
 
 	// Add a single role (Groupe) to a permission groupe or if not exist make it.
-	async addWhitelistRolePermission(role, permission){
+	async addWhitelistRolePermission(role, permission) {
 		// Normally there is only one, but might want to change it to .find({}) later
 		const whitelists = await this.whitelists.findOne({});
-		if(!whitelists) return;
-		if(!whitelists.roles[role]) return;
+		if (!whitelists) return;
+		if (!whitelists.roles[role]) return;
 		whitelists.roles[role].permissions.push(permission);
-		await whitelists.markModified("roles");
-		await whitelists.save(); 
-	}
-
-	// Remove a single role 
-	async removeWhitelistRolePermission(role, permission){
-		const whitelists = await this.whitelists.findOne({});
-		if(!whitelists) return;
-		if(!whitelists.roles[role]) return;
-		whitelists.roles[role].permissions = whitelists.roles[role].permissions.filter(perm => perm !== permission);
 		await whitelists.markModified("roles");
 		await whitelists.save();
 	}
 
-	// will add a new group to the whitelist schema 
-	async addWhitelistGroup(group){
+	// Remove a single role
+	async removeWhitelistRolePermission(role, permission) {
 		const whitelists = await this.whitelists.findOne({});
-		if(!whitelists) return;
+		if (!whitelists) return;
+		if (!whitelists.roles[role]) return;
+		whitelists.roles[role].permissions = whitelists.roles[
+			role
+		].permissions.filter((perm) => perm !== permission);
+		await whitelists.markModified("roles");
+		await whitelists.save();
+	}
+
+	// will add a new group to the whitelist schema
+	async addWhitelistGroup(group) {
+		const whitelists = await this.whitelists.findOne({});
+		if (!whitelists) return;
 		whitelists.roles[group] = {
 			permissions: [],
-			name: group
+			name: group,
 		};
 		await whitelists.markModified("roles");
 		await whitelists.save();
 	}
 
 	// will add whitelist to an user
-	async addUserWhitelist(steamID, role, description){
+	async addUserWhitelist(steamID, role, description) {
 		const whitelists = await this.whitelists.findOne({});
-		if(!whitelists) return;
+		if (!whitelists) return;
 		whitelists.memberData[steamID] = {
 			role: role,
-			description: description
+			description: description,
 		};
 		await whitelists.markModified("memberData");
 		await whitelists.save();
 	}
 
 	// Righnot hard coded. Might wanna change this...
-	async getAllAvaibleAccesLevels(){
+	async getAllAvaibleAccesLevels() {
 		return [
 			{
 				level: "changemap",
-				description: "Map commands"
+				description: "Map commands",
 			},
 			{
 				level: "canseeadminchat",
-				description: "This group can see the admin chat + teamkills"
+				description: "This group can see the admin chat + teamkills",
 			},
 			{
 				level: "balance",
-				description: "This group can switch teams regardless of team sizes"
+				description: "This group can switch teams regardless of team sizes",
 			},
 			{
 				level: "pause",
-				description: "Match commands"
+				description: "Match commands",
 			},
 			{
 				level: "cheat",
-				description: "Access to some cheat commands"
+				description: "Access to some cheat commands",
 			},
 			{
 				level: "private",
-				description: "Set server private"
+				description: "Set server private",
 			},
 			{
 				level: "chat",
-				description: "Admin chat"
+				description: "Admin chat",
 			},
 			{
 				level: "kick",
-				description: "kick commands"
+				description: "kick commands",
 			},
 			{
 				level: "ban",
-				description: "ban commands"
+				description: "ban commands",
 			},
 			{
 				level: "config",
-				description: "Set server configuration"
+				description: "Set server configuration",
 			},
 			{
 				level: "immune",
-				description: "Cannot be kicked or banned"
+				description: "Cannot be kicked or banned",
 			},
 			{
 				level: "manageserver",
-				description: "Manage server / kill server"
+				description: "Manage server / kill server",
 			},
 			{
 				level: "cameraman",
-				description: "Spectate players"
+				description: "Spectate players",
 			},
 			{
 				level: "featuretest",
-				description: "Debug commands like Vehicle Spawner"
+				description: "Debug commands like Vehicle Spawner",
 			},
 			{
 				level: "forceteamchange",
-				description: "Allows forced team changes"
+				description: "Allows forced team changes",
 			},
 			{
 				level: "reserve",
-				description: "Reserved slot access"
+				description: "Reserved slot access",
 			},
 			{
 				level: "demos",
-				description: "Record demo's (currently broken)"
+				description: "Record demo's (currently broken)",
 			},
 			{
 				level: "debug",
-				description: "Debug commands"
+				description: "Debug commands",
 			},
 			{
 				level: "teamchange",
-				description: "Change teams without penalty"
+				description: "Change teams without penalty",
 			},
 		];
-
 	}
 
-	async getPlayersLength(){
+	async getPlayersLength() {
 		this.players;
-		const response = new Promise(async (res) => {
-			await this.socket.emit("players", async (data) => {
+		const response = new Promise((res) => {
+			this.socket.emit("players", async (data) => {
 				res(data);
 			});
 		});
 		this.players = response;
-		return await this.players.then(players => players.length);
+		return await this.players.then((players) => players.length);
 	}
 
-
 	// Will return the users dashboard roles ("owner", "admin", etc..)
-	async getRoles(userID){
+	async getRoles(userID) {
 		// search the roles for the userID
 		const user = await this.usersData.findOne({ id: userID });
-		if(!user || !user.roles) return;
+		if (!user || !user.roles) return;
 		const roleArray = [];
 		// loop through the roles
 		for (const key in user.roles) {
-			if(user.roles[key]) roleArray.push(key);
+			if (user.roles[key]) roleArray.push(key);
 		}
 		return roleArray;
 	}
 
 	// Get all role names that can do the "action" (kick, ban, etc..)
-	async whoCan(action){
+	async whoCan(action) {
 		// get the permissions
 		const perms = await this.permissions.findOne({});
-		if(!perms) return;
+		if (!perms) return;
 		// check if the action is in the permissions
-		if(!perms.whoCan[action]) return;
+		if (!perms.whoCan[action]) return;
 		// return the permissions
 		return perms.whoCan[action];
 	}
 
-	async getAllCanSee(){
+	async getAllCanSee() {
 		const perms = await this.permissions.findOne({});
-		if(!perms) return;
+		if (!perms) return;
 		return perms.canSee;
 	}
 
 	// Check if userID can access/see the route/page
 	async canAccess(route, userID) {
 		const perms = await this.permissions.find().lean();
-		const user = await this.findOrCreateUser({ id: userID});
-		if(perms.length === 0) return false;
+		const user = await this.findOrCreateUser({ id: userID });
+		if (perms.length === 0) return false;
 
 		// Loop trough perms.canSee and search for route in it
 		for (const key in perms[0].canSee) {
@@ -585,12 +580,12 @@ class SquadStatsJSv3 extends Client {
 	async getWhitelistToken() {
 		// get the token from the whitelists collection
 		const whitelist = await this.whitelists.findOne({});
-		if(!whitelist) return;
+		if (!whitelist) return;
 		return whitelist.token;
 	}
 
 	// Will generate a random string that is 32 characters long
-	async generateToken(){
+	async generateToken() {
 		let token = "";
 		const characters =
 			"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwzy0123456789_";
@@ -604,7 +599,7 @@ class SquadStatsJSv3 extends Client {
 	async regenerateToken() {
 		// get the token from the whitelists collection
 		const whitelist = await this.whitelists.findOne({});
-		if(!whitelist) return;
+		if (!whitelist) return;
 		// generate a new token
 		const token = await this.generateToken();
 		// update the token in the whitelists collection
@@ -616,7 +611,7 @@ class SquadStatsJSv3 extends Client {
 	async setPool() {
 		const guildID = this.config.serverID;
 		let guild = await this.guildsData.findOne({ id: guildID });
-		if(!guild) {
+		if (!guild) {
 			guild = new this.guildsData({ id: guildID });
 			await guild.save();
 			this.databaseCache.guilds.set(guildID, guild);
@@ -632,36 +627,40 @@ class SquadStatsJSv3 extends Client {
 		return pool;
 	}
 
-	async getPreviusMap(callback){
+	async getPreviusMap(callback) {
 		const pool = this.pool;
 		const res = new MYSQLPromiseObjectBuilder(pool);
-		await res.add(
-			"PreviusMap", // object key
-			"SELECT layerClassName FROM DBLog_Matches ORDER BY startTime DESC LIMIT 1;",
-			"0", // default value when null, 0 or nothing
-			"layerClassName" // this is the name of the column
-		).then(res => {
-			return callback(res);
-		});
+		await res
+			.add(
+				"PreviusMap", // object key
+				"SELECT layerClassName FROM DBLog_Matches ORDER BY startTime DESC LIMIT 1;",
+				"0", // default value when null, 0 or nothing
+				"layerClassName" // this is the name of the column
+			)
+			.then((res) => {
+				return callback(res);
+			});
 	}
 
-	async getLatestTPS(callback){
+	async getLatestTPS(callback) {
 		const pool = this.pool;
 		const res = new MYSQLPromiseObjectBuilder(pool);
-		await res.add(
-			"latestTPS", // object key
-			"SELECT tickRate FROM DBLog_TickRates ORDER BY time DESC LIMIT 1;",
-			"0", // default value when null, 0 or nothing
-			"tickRate" // this is the name of the column
-		).then(res => {
-			return callback(res);
-		});
+		await res
+			.add(
+				"latestTPS", // object key
+				"SELECT tickRate FROM DBLog_TickRates ORDER BY time DESC LIMIT 1;",
+				"0", // default value when null, 0 or nothing
+				"tickRate" // this is the name of the column
+			)
+			.then((res) => {
+				return callback(res);
+			});
 	}
 
 	// Will update a users squad stats
 	async updateStats(userID) {
-		const user = await this.usersData.findOne({ id: userID });
-		if(!user) return console.log("No User found.");
+		const user = await this.findOrCreateUser({ id: userID });
+		if (!user) return console.log("No User found.");
 		const steamUID = user.steam.steamid;
 		const pool = this.pool;
 		const res = new MYSQLPromiseObjectBuilder(pool);
@@ -732,21 +731,22 @@ class SquadStatsJSv3 extends Client {
 	}
 
 	// Get all player squad stats from mongoose
-	async getLeaderboard(){
-		const users = await this.usersData.find({"squad.kd": {$exists: true}});
-		users.map(user => user.squad.kd).sort();
+	async getLeaderboard() {
+		const users = await this.usersData.find({ "squad.kd": { $exists: true } });
+		users.map((user) => user.squad.kd).sort();
 		// return only users squad object and steam.name if it exist
-		return users.map(user => {
-			if(user.steam?.personaname) return {
-				name: user.steam.personaname,
-				id: user.steam.steamid,
-				avatar: user.steam.avatar,
-				squad: user.squad
-			};
+		return users.map((user) => {
+			if (user.steam?.personaname)
+				return {
+					name: user.steam.personaname,
+					id: user.steam.steamid,
+					avatar: user.steam.avatar,
+					squad: user.squad,
+				};
 		});
 	}
 
-	async getAllUsers(){
+	async getAllUsers() {
 		const users = await this.usersData.find({});
 		return users;
 	}
@@ -775,12 +775,10 @@ class SquadStatsJSv3 extends Client {
 	}
 
 	// Get all data from audit logs form mongoose
-	async getAuditLogs(){
+	async getAuditLogs() {
 		const logs = await this.audit.find({});
 		return logs;
 	}
-
-
 
 	// This function is used to resolve a user from a string (his name or id for example when searching it)
 	async resolveMember(search, guild) {

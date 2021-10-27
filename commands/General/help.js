@@ -150,7 +150,6 @@ class Help extends Command {
 				dashboardLink: this.client.config.dashboard.baseURL,
 				githubLink: "https://github.com/11TStudio",
 			})
-			
 		);
 		embed.setAuthor(
 			message.translate("general/help:TITLE", {

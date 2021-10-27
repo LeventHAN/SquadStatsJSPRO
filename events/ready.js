@@ -10,7 +10,7 @@ module.exports = class {
 	async run() {
 		const client = this.client;
 		const socket = client.socket;
-		
+
 		// Logs some informations using the logger file
 		client.logger.log(
 			`Loading a total of ${client.commands.size} command(s).`,
@@ -50,10 +50,7 @@ module.exports = class {
 		let i = 0;
 
 		setInterval(function () {
-			const toDisplay =
-				status[parseInt(i, 10)].name +
-				" | v" +
-				version;
+			const toDisplay = status[parseInt(i, 10)].name + " | v" + version;
 			client.user.setActivity(toDisplay, {
 				type: status[parseInt(i, 10)].type,
 			});

@@ -30,7 +30,10 @@
     "EXP": "**{{exp}}** points",
     "HOURS": "📊 Play Hours",
     "ACTIVITY": "📅 Last Active",
+    "REMOVE_LINK": "Your account has been unlinked.",
     "NOT_LOGGED": "It seems that we don't know your steam account. Please login to our dashboard: {{dashboard}} and re-try after that!",
     "NOT_LOGGED_TAG": "<@{{user}}> didn't connect his account yet. To connect please log in to our dashboard; {{dashboard}}",
-    "UPDATE": "**{{creator}}** your stats are updated."
+    "UPDATE": "**Stats are updated.**",
+    "RE_LINK_FAIL_PERM": "You don't have permission to re-link your account. Please contact the server owner.",
+    "RE_LINK_FAIL": "There was an error. Please contact the server owner!"
 }

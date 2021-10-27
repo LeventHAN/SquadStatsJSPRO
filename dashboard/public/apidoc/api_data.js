@@ -443,6 +443,56 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "/squad-api/getNextMap",
+    "title": "Request next layer",
+    "name": "getNextMap",
+    "group": "Server",
+    "parameter": {
+      "fields": {
+        "Login": [
+          {
+            "group": "Login",
+            "type": "String",
+            "optional": false,
+            "field": "apiToken",
+            "description": "<p>Your api token</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "level",
+            "description": "<p>Map name.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "layer",
+            "description": "<p>Layer name.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "   HTTP/1.1 200 OK\n\t{\n\t\t\"level\": \"Narva\",\n\t\t\"layer\": \"Narva AAS v2\"\n\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./dashboard/routes/api.js",
+    "groupTitle": "Server"
+  },
+  {
+    "type": "get",
     "url": "/squad-api/getPlayersList",
     "title": "Request current active players",
     "name": "getPlayersList",
@@ -536,9 +586,9 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/squad-api/nextMap",
-    "title": "Request next layer",
-    "name": "nextMap",
+    "url": "/squad-api/setNextMap",
+    "title": "Set next layer",
+    "name": "setNextMap",
     "group": "Server",
     "parameter": {
       "fields": {
@@ -558,24 +608,26 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "Object",
             "optional": false,
-            "field": "level",
-            "description": "<p>Map name.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "layer",
-            "description": "<p>Layer name.</p>"
+            "field": "status",
+            "description": "<p>The status of the request.</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "   HTTP/1.1 200 OK\n\t{\n\t\t\"level\": \"Narva\",\n\t\t\"layer\": \"Narva AAS v2\"\n\t}",
+          "content": "   HTTP/1.1 200 OK\n\t{\n\t\t\"status\": \"ok\",\n\t\t\"message\": \"Next map set!\"\n\t}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "{\n\t\t\"status\": \"nok\",\n\t\t\"message\": \"You are doing something wrong.\"\n\t}",
           "type": "json"
         }
       ]
@@ -586,7 +638,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/roles/players/remove",
+    "url": "/roles/whitelist/removeUserWhitelist",
     "title": "Remove the whitelist from a player",
     "name": "RemoveWhitelistPlayer",
     "group": "WhiteList",
@@ -649,7 +701,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "./dashboard/routes/roles.js",
+    "filename": "./dashboard/routes/api.js",
     "groupTitle": "WhiteList"
   },
   {
@@ -707,7 +759,7 @@ define({ "api": [
     },
     "description": "<p>Only the owner can regenerate the url of the whitelists</p>",
     "version": "0.0.0",
-    "filename": "./dashboard/routes/roles.js",
+    "filename": "./dashboard/routes/api.js",
     "groupTitle": "WhiteList"
   },
   {
@@ -765,7 +817,7 @@ define({ "api": [
     },
     "description": "<p>Only the owner can get the url of the whitelists</p>",
     "version": "0.0.0",
-    "filename": "./dashboard/routes/roles.js",
+    "filename": "./dashboard/routes/api.js",
     "groupTitle": "WhiteList"
   }
 ] });

@@ -41,7 +41,7 @@ class Clear extends Command {
 				.setColor(data.config.embed.color)
 				.setFooter(data.config.embed.footer);
 			return newChannel.send({
-				embeds: [embed]
+				embeds: [embed],
 			});
 		}
 

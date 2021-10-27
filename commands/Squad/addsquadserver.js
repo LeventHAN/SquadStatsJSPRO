@@ -143,7 +143,7 @@ class AddSquadDB extends Command {
 				.addField(
 					message.translate("squad/addsquadserver:SERVER_IDS"),
 					message.translate("squad/addsquadserver:SERVER_ID", {
-						id: data.guild.plugins.squad.stats.serverID || ":x:",
+						id: data.guild.plugins.squad.db.serverID || ":x:",
 					}),
 					true
 				)
@@ -152,10 +152,12 @@ class AddSquadDB extends Command {
 					message.translate("squad/addsquadserver:ROLE", {
 						stats: data.guild.plugins.squad.stats.rolesEnabled
 							? ":white_check_mark:"
-							: ":x:",
-						statsGiven: data.guild.plugins.squad.stats.rolesGiven
-							? ":white_check_mark:"
-							: ":x:",
+							: ":x: Disabled.",
+						statsGiven: data.guild.plugins.squad.stats.rolesEnabled
+							? data.guild.plugins.squad.stats.rolesGiven
+								? "Given: :white_check_mark:"
+								: ""
+							: "",
 					}),
 					true
 				)
@@ -274,11 +276,14 @@ class AddSquadDB extends Command {
 					message.error("squad/addsquadserver:DELETEROLES", {
 						role: controlPoint,
 					});
+					return message.error(
+						"**If you already have the roles. Please use;** ```!add-sq bypass-roles```"
+					);
 				}
 			}
-
 			return message.channel.send({ embeds: [profileEmbed] }); // Send the embed in the current channel
 		}
+
 		if (args[0] === "bypass-roles" || args[0] === "fix-roles") {
 			data.guild.plugins.squad.stats.rolesGiven = true;
 			data.guild.markModified("plugins.squad.stats");

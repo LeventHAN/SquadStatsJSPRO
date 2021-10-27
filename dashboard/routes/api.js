@@ -261,7 +261,7 @@ router.post("/setCurrentMap",  CheckAuth, async function(req, res){
 
 	const socket = req.client.socket;
 
-		// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
+	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	socket.emit("rcon.execute", `AdminChangeLayer ${moreDetails.nextLayer}`, async () => {
 		const log = await req.client.addLog({ action: "CHANGE_CURRENT_MAP", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
 		await log.save();
@@ -598,39 +598,39 @@ router.post("/ban", CheckAuth, async function(req, res){
 		"message": "You are doing something wrong."
 	}
  */
-	router.post("/disbandSquad", CheckAuth, async function(req, res){
-		if(!req.body.squadID || !req.body.teamID) return res.json({ status: "nok", message: "You are doing something wrong." });
+router.post("/disbandSquad", CheckAuth, async function(req, res){
+	if(!req.body.squadID || !req.body.teamID) return res.json({ status: "nok", message: "You are doing something wrong." });
 		
-		const userRole = await req.client.getRoles(req.session.user.id);
+	const userRole = await req.client.getRoles(req.session.user.id);
 	
-		const canUser = await req.client.whoCan("disbandSquad");
+	const canUser = await req.client.whoCan("disbandSquad");
 		
-		if(!canUser.some(role => userRole.includes(role)))
-			return res.json({status: "nok2", message: "You are not allowed to do this."});
+	if(!canUser.some(role => userRole.includes(role)))
+		return res.json({status: "nok2", message: "You are not allowed to do this."});
 		
-		const steamAccount = {
-			steam64id: req.session?.passport?.user?.id,
-			displayName: req.session?.passport?.user?.displayName,
-			identifier: req.session?.passport?.user?.identifier,
-		};
-		const discordAccount = {
-			id: req.session.user.id,
-			username: req.session?.user?.username,
-			discriminator: req.session?.user?.discriminator,
-		};
-		const moreDetails = {
-			teamID: req.body.teamID,
-			squadID: req.body.squadID
-		};
+	const steamAccount = {
+		steam64id: req.session?.passport?.user?.id,
+		displayName: req.session?.passport?.user?.displayName,
+		identifier: req.session?.passport?.user?.identifier,
+	};
+	const discordAccount = {
+		id: req.session.user.id,
+		username: req.session?.user?.username,
+		discriminator: req.session?.user?.discriminator,
+	};
+	const moreDetails = {
+		teamID: req.body.teamID,
+		squadID: req.body.squadID
+	};
 	
-		// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
-		const socket = req.client.socket;
-		socket.emit("rcon.execute", `AdminDisbandSquad ${moreDetails.teamID} ${moreDetails.squadID}`, async (response) => {
-			const log = await req.client.addLog({ action: "SQUAD_DISBAND", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
-			await log.save();
-			return res.json({status: "ok", message: response});
-		});
+	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
+	const socket = req.client.socket;
+	socket.emit("rcon.execute", `AdminDisbandSquad ${moreDetails.teamID} ${moreDetails.squadID}`, async (response) => {
+		const log = await req.client.addLog({ action: "SQUAD_DISBAND", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: moreDetails}});
+		await log.save();
+		return res.json({status: "ok", message: response});
 	});
+});
 
 /**
  * @api {post} /squad-api/removeFromSquad Remove players from squad

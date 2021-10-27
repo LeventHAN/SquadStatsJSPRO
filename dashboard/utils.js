@@ -1,7 +1,5 @@
 const Discord = require("discord.js");
-const axios = require("axios"),
-MYSQLPromiseObjectBuilder = require("../base/MYSQLPromiseObjectBuilder.js");
-
+const axios = require("axios");
 /**
  * Fetch guild informations
  * @param {string} guildID The ID of the guild to fetch
