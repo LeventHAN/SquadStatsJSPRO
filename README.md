@@ -35,21 +35,7 @@ For squad usage you NEED to have `SquadJS/socket.io` and `SquadJS/dblog` configu
 ## Using SquadStatsJS PRO
 
 The general usage can be found on the help command.
-
-**Configuring the Squad DB Connection**
-Before doing anything, you/the owner of the server, should first configurate the squad DB connection via `{prefix}add-sq` and read the embed message.
-<br>This will also create KD roles. (Which will be linked to the users once they run the stat command; `{prefix}profile <steam64ID>`)
-
-**Checking stats**
-An user should first link his steam64ID (17 digits long steam identifier) with his discord account.
-<br>This is simple as doing `{prefix}profile <steamID>`. Once done, his steamID will be linked with his discord profile and all data will be saved to the mongodb.
-<br>After linking the user can just use `{prefix}profile` and his stats will be shown (updated every hour)
-
-**Unlinking a steamUID from yourself**
-If a player did missconfigure their profile, they can run: `{prefix}profile re-link`.
-<br>This will let users make another link by running `{prefix}profile <steam64ID>`
-
-**Important: Experience will be avaible once SquadJS has it, it is in the PR so soon.**
+Soon there will be a written usage guide and/or a video example.
 
 ### Prerequisites
 
@@ -57,16 +43,32 @@ If a player did missconfigure their profile, they can run: `{prefix}profile re-l
 - MongoDB ([Windows](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/#download-the-installer) || [Linux](https://docs.mongodb.com/manual/administration/install-on-linux/))
   - Just download and install it, or use the the free service of MongoDB -> Mongo Atlas Cloud.
 - [Node.js](https://nodejs.org/en/) (^16.2) - [Download](https://nodejs.org/en/)
-- NPM
+  - This will be used for DiscordJSv13
+- NPM 
+  - Recommended version: 7.20.x
+- SquadJS
+	- MySQL server configured. If you want to use mysql 8.x than I recommend you to use the <code>mysql_native_password</code> authentication plugin. More can be found here <a>https://stackoverflow.com/a/50131831/12628648 </a> 
+	- <code>SquadJS/socket.io</code> and <code>SquadJS/dblog</code> configured.
 
-### Postrequisites
+### Updating from v2.0 to v2.1
+Unfortunately there is no script to upgrade your old version to the latest and the reason for that is because there was an whole rewrite of the bot. Therefor major code changes and db schema changes were made that it makes it very hard to me to write a script to update everything without losing data.
 
-- Once you have a working bot, you should join [this emoji discord server](https://discord.gg/NPkySYKMkN) to obtain the emojis! (On join you will get how to proceed further, just do what the welcome messages mentions.)
+If you want to update you should **remove** everything that you already have from SquadStatsJSPRO v2 and clone this instead.
+
+What is changed:
+- Website hosted at the IP of your bot's machine.
+- Panel for players and admins to manage the server and see profile stats.
+- No more useless discord commands. Just commands about squad.
+- An API that you can build up on.
+- Major RAM usage stays between **30-100MB**!
+- Again there is no need for yet another RCON connection, SquadStatsJSPRO uses the **already** existing RCON connection from SquadJS.
+
 
 ### Installation
 
 1. Clone the repository via your terminal/cmd: `git clone https://github.com/11TStudio/SquadStatsJSPRO`
 2. Configure the `config.example.js` file. And when done SAVE and delete the .example. (At the end the file should look like: `config.js`)
+   - Once you have completed stap 3 (below) run also <code>npm run testcfg</code> to see if everything is configured fine.
 3. Run `npm install` via the terminal.
 4. Start your bot: `node index.js&`. (**I recommend you to use [pm2](https://pm2.keymetrics.io)**)
 5. Star this repo if you liked!
@@ -77,63 +79,72 @@ SquadStatsJS PRO can be configured via .js file which by default is called `conf
 
 The config file needs to be called `config.js` at the end and a example can be found below:
 
+PS: Configure this file as first thing before you do anything :)
+
 ```js
 module.exports = {
 	/* The token of your Discord Bot */
-	token: "XXXXXXXXXXX",
+	token: "Discord_Bot_Token",
+	/* The main Discord server ID */
+	serverID: "Discord_Server_ID",
+	/* The Battle Metrics Server ID of your squad server */
+	squadBattleMetricsID: "BattleMetrics_ServerID",
 	/* For the support server */
 	support: {
-		id: "XXXXXXXXXXX", // The ID of the support server
-		logs: "XXXXXXXXXXX", // And the ID of the logs channel of your server (new servers for example)
+		logs: "827885263438217226", // And the ID of the logs channel of your server (new servers for example)
+		debug: false, // Will activate debug mode.
 	},
-	/* Dashboard configuration */
+	/* SocketIO details */
+	socketIO: {
+		enabled: true, // whether the squad map voting is enabled or nothing
+		ip: "194.26.183.182", // The IP address where SquadJS is installed.
+		port: "7777", // The port for socket.IO
+		token: "MyPasswordForSocketIOFromSquadJS", // Password for socket.IO
+	},
+	/* Dashboard/Website configuration */
 	dashboard: {
-		enabled: false, // whether the dashboard is enabled or not
-		secret: "XXXXXXXXXXX", // Your discord client secret
-		baseURL: "https://localhost", // The base URl of the dashboard
-		logs: "XXXXXXXXXXX", // The channel ID of logs
-		port: 8080, // Dashboard port
-		expressSessionPassword: "XXXXXXXXXXX", // Express session password (it can be what you want)
-		failureURL: "https://leventhan.info", // url on which users will be redirected if they click the cancel button (discord authentication)
+		enabled: true, // whether the dashboard is enabled or not
+		secret: "MyDiscordBotSecret", // Your discord client secret
+		/* don't forget to add "<baseURL>/api/callback" at the discord bot whitelisted url's/OAuth2 */
+		baseURL: "http://my-domain.com", // The base URl of the dashboard without "/" at the end
+		port: 80, // Dashboard port
+		expressSessionPassword: "UcPT5Enzmhk_ARFVrGyDZ3WjJvSe!9", // Change this to something else!!! (Use: https://passwordsgenerator.net/plus/ to generate a new one)
+		failureURL: "http://my-domain.com", // url on which users will be redirected if they click the cancel button (discord authentication) or logout
 	},
-	mongoDB: "mongodb://localhost:27017/SquadStatsJSv3", // The URl of the mongodb database
-	prefix: "!", // The default prefix for the bot
+	/* The URl of the mongodb database (SECURE YOUR CONNECTION IF YOU WILL USE IT REMOTELY) */
+	/* 	More info on:	https://docs.mongodb.com/manual/reference/connection-string/ */
+	mongoDB: "mongodb://localhost:27017/V3", // if remote hosted: "mongodb://username:password@host:port/database"
+	/* The default prefix for using the bot, you can also change this from dashboard or discord command (setprefix) */
+	prefix: "v3!",
 	/* For the embeds (embeded messages) */
 	embed: {
 		color: "#0091fc", // The default color for the embeds
-		footer: "LeventHAN | leventhan.info", // And the default footer for the embeds
+		footer: "LeventHAN | l-event.studio", // And the default footer for the embeds
 	},
 	/* Bot's owner informations */
+	/* Change this to your own ID (and name?), as this will be used to give you permission at the dashboard when configuring it! */
 	owner: {
-		id: "152644814146371584", // The ID of the bot's owner
-		name: "LeventHAN#0001", // And the name of the bot's owner
-	},
-	/* DBL votes webhook (optional) */
-	votes: {
-		port: 5000, // The port for the server
-		password: "XXXXXXXXXXX", // The webhook auth that you have defined on discordbots.org
-		channel: "XXXXXXXXXXX", // The ID of the channel that in you want the votes logs
+		id: "152644814146371584", // The ID of the bot's owner (for the dashboard to give access to configurations)
+		name: "LeventHAN#0001", // And the name of the bot's owner (just for statistics)
 	},
 	/* The API keys that are required for certain commands */
 	apiKeys: {
-		// DBL: https://discordbots.org/api/docs#mybots
-		dbl: "",
-		// SENTRY: https://sentry.io (this is not required and not recommended - you can delete the field)
-		sentryDSN: "",
+		steam: "MySteamKeyToken", // Will be used for logging (Obtain by filling your domain or IP here: https://steamcommunity.com/dev/apikey)
+		battleMetrics: "MyBattleMetricsToken", // Will be used to sync with your Battle Metrics server (Obtain from: https://www.battlemetrics.com/developers)
 	},
 	/* The others utils links */
 	others: {
 		github: "https://github.com/11TStudio", // Founder's github account
-		donate: "https://leventhan.info", // Donate link
+		donate: "https://github.com/sponsors/11TStudio", // Sponsor Link (donate if you liked this project <3)
 	},
 	/* The Bot status */
 	status: [
 		{
-			name: "SquadStatsJSv3 servs on {serversCount} servers",
+			name: "👀 looking for your stats",
 			type: "LISTENING",
 		},
 		{
-			name: "WebSite: leventhan.info",
+			name: "SquadStatsJS PRO™",
 			type: "PLAYING",
 		},
 	],
@@ -141,7 +152,7 @@ module.exports = {
 ```
 
 ## Commands and Examples
-
+Soon there will be more examples and screenshots!
 <details>
       <summary>help</summary>
       <h2>Help Embed</h2>
@@ -164,8 +175,8 @@ module.exports = {
 
 ## Credits
 
-- @[AtlantaBot](https://github.com/Androz2091/AtlantaBot) for the amazing bot, used the core base.
 - [SquadJS](https://github.com/Thomas-Smyth/SquadJS) - The reason this bot is made.
+- The [Contributors](https://github.com/11TStudio/SquadStatsJSPRO/graphs/contributors), for helping me build this amazing multi-purpose bot.
 - My mom for feeding me while I was coding.
 
 ## License
