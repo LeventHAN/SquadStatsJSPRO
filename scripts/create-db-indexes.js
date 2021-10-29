@@ -7,7 +7,7 @@ try {
 } catch (e) {
 	console.log(
 		chalk.red(
-			"Cannot find module mongodb. Please install it using \"npm install mongodb\" before executing migration scripts."
+			'Cannot find module mongodb. Please install it using "npm install mongodb" before executing migration scripts.'
 		)
 	);
 	process.exit(1);

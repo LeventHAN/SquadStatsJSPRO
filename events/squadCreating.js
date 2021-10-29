@@ -103,8 +103,8 @@ module.exports = class {
 								isRookie.private
 									? "Private Account"
 									: isRookie.rookie
-										? "Rookie"
-										: "Not Rookie"
+									? "Rookie"
+									: "Not Rookie"
 							}\n-Squad Hours: ${Math.round(isRookie.playHours / 60)} \n\`\`\``,
 							false
 						)

@@ -40,8 +40,6 @@ const init = async () => {
 		delete require.cache[require.resolve(`./events/${file}`)];
 	});
 
-
-
 	// DEBUG ONLY
 	if (config.support.debug) client.on("debug", console.log);
 	client.login(client.config.token);
@@ -52,8 +50,8 @@ const init = async () => {
 				info.timeDifference
 					? info.timeDifference
 					: info.timeout
-						? info.timeout
-						: "Unknown timeout "
+					? info.timeout
+					: "Unknown timeout "
 			}`
 		);
 	});

@@ -44,25 +44,26 @@ Soon there will be a written usage guide and/or a video example.
   - Just download and install it, or use the the free service of MongoDB -> Mongo Atlas Cloud.
 - [Node.js](https://nodejs.org/en/) (^16.2) - [Download](https://nodejs.org/en/)
   - This will be used for DiscordJSv13
-- NPM 
+- NPM
   - Recommended version: 7.20.x
 - SquadJS
-	- MySQL server configured. If you want to use mysql 8.x than I recommend you to use the <code>mysql_native_password</code> authentication plugin. More can be found here <a>https://stackoverflow.com/a/50131831/12628648 </a> 
-	- <code>SquadJS/socket.io</code> and <code>SquadJS/dblog</code> configured.
+  - MySQL server configured. If you want to use mysql 8.x than I recommend you to use the <code>mysql_native_password</code> authentication plugin. More can be found here <a>https://stackoverflow.com/a/50131831/12628648 </a>
+  - <code>SquadJS/socket.io</code> and <code>SquadJS/dblog</code> configured.
 
 ### Updating from v2.0 to v2.1
+
 Unfortunately there is no script to upgrade your old version to the latest and the reason for that is because there was an whole rewrite of the bot. Therefor major code changes and db schema changes were made that it makes it very hard to me to write a script to update everything without losing data.
 
 If you want to update you should **remove** everything that you already have from SquadStatsJSPRO v2 and clone this instead.
 
 What is changed:
+
 - Website hosted at the IP of your bot's machine.
 - Panel for players and admins to manage the server and see profile stats.
 - No more useless discord commands. Just commands about squad.
 - An API that you can build up on.
 - Major RAM usage stays between **30-100MB**!
 - Again there is no need for yet another RCON connection, SquadStatsJSPRO uses the **already** existing RCON connection from SquadJS.
-
 
 ### Installation
 
@@ -152,7 +153,9 @@ module.exports = {
 ```
 
 ## Commands and Examples
+
 Soon there will be more examples and screenshots!
+
 <details>
       <summary>help</summary>
       <h2>Help Embed</h2>

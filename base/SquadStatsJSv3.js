@@ -269,9 +269,9 @@ class SquadStatsJSv3 extends Client {
 		} else {
 			let guildData = isLean
 				? await this.guildsData
-					.findOne({ id: guildID })
-					.populate("members")
-					.lean()
+						.findOne({ id: guildID })
+						.populate("members")
+						.lean()
 				: await this.guildsData.findOne({ id: guildID }).populate("members");
 			if (guildData) {
 				if (!isLean) this.databaseCache.guilds.set(guildID, guildData);
@@ -360,7 +360,6 @@ class SquadStatsJSv3 extends Client {
 		if (!whitelist) return;
 		return whitelist.roles;
 	}
-
 	// Returns the whitelist users only (Accounts)
 	async getWhitelistUsers() {
 		const whitelist = await this.whitelists.findOne({});

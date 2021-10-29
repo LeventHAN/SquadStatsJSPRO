@@ -111,7 +111,7 @@ class Profile extends Command {
 					userData.bio
 						? userData.bio
 						: message.translate("squad/profile:NO_BIO", {
-							prefix: data.guild.prefix,
+								prefix: data.guild.prefix,
 						  })
 				)
 				.addField(
