@@ -170,7 +170,7 @@ router.get("/getNextMap", CheckAuth, async(req, res) => {
 			username: req.session?.user?.username,
 			discriminator: req.session?.user?.discriminator,
 		};
-	
+		await req.client.getCountofPlayer("76561198065390351");
 		const log = await req.client.addLog({ action: "GET_NEXT_MAP", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: null}});
 		await log.save();
 		return res.json(data);
@@ -702,6 +702,14 @@ router.get("/whitelist/:token", async function(req, res){
 });
 
 
+router.post("/moderation/getCount", CheckAuth, async function(req, res) {
+	if(!req.body.steamid ) return res.json({ status: "nok", message: "You are doing something wrong." });
+	const kick = await req.client.moderation.count({steamID: `${req.body.steamid}`, typeModeration: `kick`});
+	const warn = await req.client.moderation.count({steamID: `${req.body.steamid}`, typeModeration: `warn`});
+	const ban = await req.client.moderation.count({steamID: `${req.body.steamid}`, typeModeration: `ban`});
+	return res.json({status: "ok", count: {kick: `${kick}`, ban: `${ban}`, warn: `${warn}`}});
+})
+
 router.post("/whitelist/import", CheckAuth, async function(req, res, next) {
 	const userRole = await req.client.getRoles(req.session.user.id);
 	const canSee = await req.client.canAccess("roles", req.userInfos.id);
@@ -922,7 +930,6 @@ router.post("/whitelist/removeUserWhitelist", CheckAuth, async function(req, res
 		player: req.body.steamUID,
 		reason: req.body.reason,
 	};
-
 	await req.client.removeUserWhitelist(req.body.steamUID);
 	const log = await req.client.addLog({ action: "PLAYER_WHITELIST_REMOVED", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: { details: moreDetails}});
 	await log.save();

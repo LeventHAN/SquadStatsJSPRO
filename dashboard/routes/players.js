@@ -4,8 +4,6 @@ const express = require("express"),
 	utils = require("../utils"),
 	config = require("../../config");
 
-
-
 router.get("/", CheckAuth, async(req,res, next) => {
 	const canSeeArray = await req.client.getAllCanSee();
 	const userRole = await req.client.getRoles(req.session.user.id);
