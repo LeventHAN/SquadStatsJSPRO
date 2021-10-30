@@ -90,32 +90,35 @@ module.exports.load = async (client) => {
 
 	const whitelist = ["http://localhost:3000", "https://localhost:3000", config.dashboard.baseURL];
 
-	io.use(async (socket, next) => {
-		if(!socket.handshake.auth) return next(new Error("No token provided."));
-		const user = await client.fetchUserByToken(socket.handshake.auth.token);
-		if(!user) {
-			console.log("Someone did try to login with wrong credintials.", socket.handshake);
-			return next(new Error("Invalid token."));
-		}
-		socket.user = user;
-		next();
-	});
-
-
-	io.on("connection", async (socket) => {
-		for (const eventToBroadcast of eventsToBroadcast) {
-			client.socket.on((eventToBroadcast), (...args) => {
-				socket.emit(eventToBroadcast, ...args);
-			});
-		}
-		socket.onAny(async (eventName, ...rawArgs) => {
-			const args = rawArgs.slice(0, rawArgs.length - 1);
-			const callback = rawArgs[rawArgs.length - 1];
-			await client.socket.emit(`${eventName}`, ...args, async (response) => { 
-				return callback(response);
+	if(client.socket){
+		io.use(async (socket, next) => {
+			if(!socket.handshake.auth) return next(new Error("No token provided."));
+			const user = await client.fetchUserByToken(socket.handshake.auth.token);
+			if(!user) {
+				console.log("Someone did try to login with wrong credintials.", socket.handshake);
+				return next(new Error("Invalid token."));
+			}
+			socket.user = user;
+			next();
+		});
+	
+	
+		io.on("connection", async (socket) => {
+			for (const eventToBroadcast of eventsToBroadcast) {
+				client.socket.on((eventToBroadcast), (...args) => {
+					socket.emit(eventToBroadcast, ...args);
+				});
+			}
+			socket.onAny(async (eventName, ...rawArgs) => {
+				const args = rawArgs.slice(0, rawArgs.length - 1);
+				const callback = rawArgs[rawArgs.length - 1];
+				await client.socket.emit(`${eventName}`, ...args, async (response) => { 
+					return callback(response);
+				});
 			});
 		});
-	});
+	}
+	
 
 	/* App configuration */
 	app

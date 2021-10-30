@@ -170,7 +170,6 @@ router.get("/getNextMap", CheckAuth, async(req, res) => {
 			username: req.session?.user?.username,
 			discriminator: req.session?.user?.discriminator,
 		};
-		await req.client.getCountofPlayer("76561198065390351");
 		const log = await req.client.addLog({ action: "GET_NEXT_MAP", author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: {details: null}});
 		await log.save();
 		return res.json(data);

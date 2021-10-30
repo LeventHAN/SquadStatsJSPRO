@@ -10,16 +10,18 @@ module.exports = class {
 	async run() {
 		const client = this.client;
 		const socket = client.socket;
-
+		if(socket){
+			socket.on("connect_error", (err) => {
+				return client.logger.log(err, "ERROR");
+			});
+		}
 		// Logs some informations using the logger file
 		client.logger.log(
 			`Loading a total of ${client.commands.size} command(s).`,
 			"log"
 		);
 
-		socket.on("connect_error", (err) => {
-			return client.logger.log(err, "ERROR");
-		});
+		
 
 		// /* Squad Creating Plugin */
 		// 	await client.emit("squadCreating", squadVotingGuild, "851451690020110346", socket);

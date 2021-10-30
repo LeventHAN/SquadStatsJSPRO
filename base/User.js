@@ -13,6 +13,8 @@ const genToken = () => {
 const userSchema = new mongoose.Schema({
 	/* REQUIRED */
 	id: { type: String }, // Discord ID of the user
+	name: { type: String, default: null }, // Discord name of the user
+	discriminator: { type: String, default: null }, // Discord discriminator of the user
 	steam: { type: Object, default: null }, // Steam ID of the user
 	bio: { type: String }, // Biography of the user
 

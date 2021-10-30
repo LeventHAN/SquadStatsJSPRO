@@ -45,15 +45,6 @@ module.exports = class {
 			return client.commands.get("someone").run(message, null, data);
 		}
 
-		if (message.guild) {
-			// Gets the data of the member
-			const memberData = await client.findOrCreateMember({
-				id: message.author.id,
-				guildID: message.guild.id,
-			});
-			data.memberData = memberData;
-		}
-
 		const userData = await client.findOrCreateUser({ id: message.author.id });
 		// add message.author.banner to be null
 		if (!message.author.banner) message.author.banner = null;

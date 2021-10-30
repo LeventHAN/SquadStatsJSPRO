@@ -38,6 +38,8 @@ async function fetchUser(userData, client, query){
 	}
 	const user = await client.users.fetch(userData.id);
 	const userDb = await client.findOrCreateUser({ id: user.id }, true);
+	// Fix for no banner issue.
+	if (!user.banner) user.banner = null;
 	const userInfos = { apiToken: userDb.apiToken, ...user.toJSON(), ...userDb, ...userData, ...user.presence };
 	return userInfos;
 }

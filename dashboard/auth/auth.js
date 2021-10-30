@@ -40,9 +40,7 @@ router.get("/steam/return",
 	passport.authenticate("steam", { failureRedirect: "/" }),
 	async (req, res) => {
 		const redirectURL = req.client.states[req.query.state] || "/index";
-		const needLinking = await req.client.linkedSteamAccount(req.session.user.id);
-		if(needLinking) 
-			await req.client.linkSteamAccount(req.session.user.id, req.session?.passport?.user || req.userInfos.steam);
+		await req.client.linkSteamAccount(req.session.user.id, req.session?.passport?.user || req.userInfos.steam);
 		return res.redirect(redirectURL);
 	}
 );

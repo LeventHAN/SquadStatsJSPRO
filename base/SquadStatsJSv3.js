@@ -43,7 +43,6 @@ class SquadStatsJSv3 extends Client {
 		this.functions = require("../helpers/functions"); // Load the functions file
 		this.guildsData = require("./Guild"); // Guild mongoose model
 		this.usersData = require("./User"); // User mongoose model
-		this.membersData = require("./Member"); // Member mongoose model
 		this.logs = require("./Log"); // Log mongoose model
 		this.moderation = require("./Moderation"); // Log mongoose model
 		this.audit = require("./Audit"); // Audit mongoose model
@@ -68,7 +67,7 @@ class SquadStatsJSv3 extends Client {
 
 		this.databaseCache.usersReminds = new Collection(); // members with active reminds
 		this.databaseCache.mutedUsers = new Collection(); // members who are currently muted
-
+		this.socket = null;
 		if (this.config.socketIO.enabled) {
 			const io = require("socket.io-client"); // Load the socket.io client
 			// make socketIO connection to an IP address
@@ -191,11 +190,10 @@ class SquadStatsJSv3 extends Client {
 			if (!userData.steam) {
 				userData.steam = steamObj._json;
 				await userData.markModified("steam");
-				await userData.markModified("steam.id");
 				await userData.save();
 			}
-			return;
 		}
+		return;
 	}
 
 	// Will check if the user has a steam account linked to them and send back the steam data if so
@@ -229,34 +227,6 @@ class SquadStatsJSv3 extends Client {
 			user.lastIp.push(ip);
 			// save the user
 			await user.save();
-		}
-	}
-
-	// DEPRECIATED USE USER INSTEAD! Member will be removed soon. This function is used to find a member data or create it
-	async findOrCreateMember({ id: memberID, guildID }, isLean) {
-		if (this.databaseCache.members.get(`${memberID}${guildID}`)) {
-			return isLean
-				? this.databaseCache.members.get(`${memberID}${guildID}`).toJSON()
-				: this.databaseCache.members.get(`${memberID}${guildID}`);
-		} else {
-			let memberData = isLean
-				? await this.membersData.findOne({ guildID, id: memberID }).lean()
-				: await this.membersData.findOne({ guildID, id: memberID });
-			if (memberData) {
-				if (!isLean)
-					this.databaseCache.members.set(`${memberID}${guildID}`, memberData);
-				return memberData;
-			} else {
-				memberData = new this.membersData({ id: memberID, guildID: guildID });
-				await memberData.save();
-				const guild = await this.findOrCreateGuild({ id: guildID });
-				if (guild) {
-					guild.members.push(memberData._id);
-					await guild.save();
-				}
-				this.databaseCache.members.set(`${memberID}${guildID}`, memberData);
-				return isLean ? memberData.toJSON() : memberData;
-			}
 		}
 	}
 
@@ -514,6 +484,7 @@ class SquadStatsJSv3 extends Client {
 	}
 
 	async getPlayersLength() {
+		if(!this.socket) return "N/A";
 		this.players;
 		const response = new Promise((res) => {
 			this.socket.emit("players", async (data) => {
