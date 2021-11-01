@@ -1063,4 +1063,27 @@ router.post("/whitelist/removeGroup", CheckAuth, async function(req, res) {
 	return res.json({status: "ok", message: "Group removed!"});
 });
 
+router.post("/roles/toggleRole", CheckAuth, async function(req, res) {
+	if(!req.body.userId || !req.body.role) return res.json({ status: "nok", message: "You are doing something wrong." });
+	const steamAccount = {
+		steam64id: req.session?.passport?.user?.id,
+		displayName: req.session?.passport?.user?.displayName,
+		identifier: req.session?.passport?.user?.identifier,
+	};
+	const discordAccount = {
+		id: req.session.user.id,
+		username: req.session?.user?.username,
+		discriminator: req.session?.user?.discriminator,
+	};
+	const moreDetails = {
+		userId: req.body.userId,
+		role: req.body.role,
+	};
+	const status = await req.client.toggleUserRole(req.body.userId, req.body.role);
+	const log = await req.client.addLog({ action: `${status.toUpperCase()}`, author: {discord: discordAccount, steam: steamAccount}, ip: req.session.user.lastIp, details: { details: moreDetails}});
+	await log.save();
+	// return ok status
+	return res.json({status: "ok", message: `${status.toUpperCase()}`});
+});
+
 module.exports = router;
