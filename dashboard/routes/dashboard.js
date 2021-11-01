@@ -7,22 +7,20 @@ const express = require("express"),
 
 
 router.get("/", CheckAuth, async(req,res,next) => {
-	const canSeeArray = await req.client.getAllCanSee();
-	const userRole = await req.client.getRoles(req.session.user.id);
+	const allCanSeeRoles = await req.client.getAllCanSee();
+	
 	const canSee = await req.client.canAccess("dashboard", req.userInfos.id);
 	if(!canSee)
 		return next(new Error("You can't access this page"));
-	
-	
 
 
 	res.render("dashboard", {
+		userRoles: await req.client.getRoles(req.session.user.id),
 		latestTPS: await utils.getTPS(req.client),
 		previusMap: await utils.getPreviusMap(req.client),
 		playerAmount: await req.client.getPlayersLength(),
-		ownerID: config.owner.id,
-		role: userRole,
-		allCanSee: canSeeArray,
+		c: req.client,
+		allCanSee: allCanSeeRoles,
 		serverID: config.serverID,
 		userDiscord: req.userInfos,
 		userSteam: req.session?.passport?.user || req.userInfos.steam,

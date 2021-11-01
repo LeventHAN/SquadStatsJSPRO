@@ -6,6 +6,8 @@ const express = require("express"),
 // Gets profile page
 router.get("/", CheckAuth, async function(req, res) {
 	res.render("settings", {
+		userRoles: await req.client.findOrCreateUser({id: req.user.id}),
+		c: req.client,
 		role: await req.client.getRoles(req.session.user.id),
 		ownerID: config.owner.id,
 		serverID: config.serverID,

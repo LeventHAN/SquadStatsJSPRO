@@ -8,7 +8,6 @@ const express = require("express"),
 // Gets profile page
 router.get("/", CheckAuth, async function(req, res) {
 	const canSeeArray = await req.client.getAllCanSee();
-	const userRole = await req.client.getRoles(req.session.user.id);
 	const canSee = await req.client.canAccess("roles", req.userInfos.id);
 	if(!canSee)
 		return res.json({status: "nok", message: "No access!"});
@@ -16,8 +15,9 @@ router.get("/", CheckAuth, async function(req, res) {
 	const roles = await req.client.getWhitelistRoles();
 	const whitelisted = await req.client.getWhitelistUsers();
 	res.render("rolesSettings", {
+		userRoles: await req.client.getRoles(req.session.user.id),
 		playerAmount: await req.client.getPlayersLength(),
-		role: userRole,
+		c: req.client,
 		roles: roles,
 		allCanSee: canSeeArray,
 		latestTPS: await utils.getTPS(req.client),

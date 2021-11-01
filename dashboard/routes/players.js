@@ -6,12 +6,12 @@ const express = require("express"),
 
 router.get("/", CheckAuth, async(req,res, next) => {
 	const canSeeArray = await req.client.getAllCanSee();
-	const userRole = await req.client.getRoles(req.session.user.id);
 	const canSee = await req.client.canAccess("players", req.userInfos.id);
 	if(!canSee)
 		return next(new Error("You can't access this page"));
 	res.render("players", {
-		role: userRole,
+		userRoles: await req.client.getRoles(req.session.user.id),
+		c: req.client,
 		latestTPS: await utils.getTPS(req.client),
 		playerAmount: await req.client.getPlayersLength(),
 		userDiscord: req.userInfos,

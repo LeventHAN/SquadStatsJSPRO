@@ -12,7 +12,8 @@ router.get("/", async(req, res) => {
 router.get("/index", async(req, res) => {
 	if(req.isAuthenticated()){
 		return res.render("index", {
-			role: await req.client.getRoles(req.session.user.id),
+			c: req.client,
+			userRoles: await req.client.getRoles(req.session.user.id),
 			latestTPS: await utils.getTPS(req.client),
 			ownerID: config.owner.id,
 			serverID: config.serverID,
@@ -24,6 +25,7 @@ router.get("/index", async(req, res) => {
 		});
 	}
 	return res.render("index", {
+		c: req.client,
 		ownerID: config.owner.id,
 		serverID: config.serverID,
 		userDiscord: null,
@@ -35,19 +37,29 @@ router.get("/index", async(req, res) => {
 });
 
 router.get("/selector", CheckAuth, async(req,res) => {
-	const canSeeArray = await req.client.getAllCanSee();
+	const allCanSeeRoles = await req.client.getAllCanSee();
+
 	res.render("selector", {
+		userRoles: await req.client.getRoles(req.session.user.id),
+		c: req.client,
 		latestTPS: await utils.getTPS(req.client),
 		playerAmount: await req.client.getPlayersLength(),
-		role: await req.client.getRoles(req.session.user.id),
 		ownerID: config.owner.id,
-		allCanSee: canSeeArray,
+		allCanSee: allCanSeeRoles,
 		serverID: config.serverID,
 		userDiscord: req.userInfos,
 		userSteam: req.session?.passport?.user || req.userInfos.steam,
 		translate: req.translate,
 		repoVersion: config.version,
 		currentURL: `${config.dashboard.baseURL}/${req.originalUrl}` 
+	});
+});
+
+router.get("/leaderboard", async(req, res) => {
+
+	// await req.client.getLeaderboard();
+	res.render("selector", {
+		currentURL: `${config.dashboard.baseURL}/${req.originalUrl}` 	
 	});
 });
 

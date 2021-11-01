@@ -6,13 +6,13 @@ const express = require("express"),
 	config = require("../../config");
 
 router.get("/:serverID", CheckAuth, async(req, res) => {
-	// Check if the user has the permissions to edit this guild
-	const canSeeArray = await req.client.getAllCanSee();
+	const allCanSeeRoles = await req.client.getAllCanSee();
 	const guild = req.client.guilds.cache.get(req.params.serverID);
+
 	if(!guild || !req.userInfos.displayedGuilds || !req.userInfos.displayedGuilds.find((g) => g.id === req.params.serverID)){
 		return res.render("404", {
-			allCanSee: canSeeArray,
-			role: await req.client.getRoles(req.session.user.id),
+			allCanSee: allCanSeeRoles,
+			userRoles: await req.client.getRoles(req.session.user.id),
 			ownerID: config.owner.id,
 			serverID: config.serverID,
 			userDiscord: req.userInfos,
@@ -24,20 +24,32 @@ router.get("/:serverID", CheckAuth, async(req, res) => {
 
 	// Fetch guild informations
 	const guildInfos = await utils.fetchGuild(guild.id, req.client, req.user.guilds);
-	await guildInfos.channels.cache.filter((ch) => ch.type === "GUILD_TEXT");
+	await guild.channels.cache.filter((ch) => ch.type === "GUILD_TEXT");
+	const allUsers = await req.client.usersData.find().lean().exec();
+	const allPages = await req.client.getAllPagesCanSee();
+	const allActions = await req.client.getAllActionsWhoCan();
+	const allDifferentRoles = await req.client.getAllDiffrentRoles();
+
 	res.render("manager/guild", {
-		allCanSee: canSeeArray,
+		userRoles: await req.client.getRoles(req.session.user.id),
+		c: req.client,
+		allCanSee: allCanSeeRoles,
+		allActions: allActions,
 		role: await req.client.getRoles(req.session.user.id),
 		latestTPS: await utils.getTPS(req.client),
 		playerAmount: await req.client.getPlayersLength(),
 		ownerID: config.owner.id,
 		serverID: config.serverID,
+		allUsers: allUsers,
+		allPages: allPages,
+		allRoles: allDifferentRoles,
+		memberCount: guild.memberCount,
 		guild: guildInfos,
 		userDiscord: req.userInfos,
 		translate: req.translate,
 		repoVersion: version,
 		bot: req.client,
-		currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`
+		currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`,
 	});
 });
 
@@ -47,7 +59,7 @@ router.post("/:serverID", CheckAuth, async(req, res) => {
 	const guild = req.client.guilds.cache.get(req.params.serverID);
 	if(!guild || !req.userInfos.displayedGuilds || !req.userInfos.displayedGuilds.find((g) => g.id === req.params.serverID)){
 		return res.render("404", {
-			role: await req.client.getRoles(req.session.user.id),
+			userRoles: await req.client.getRoles(req.session.user.id),
 			ownerID: config.owner.id,
 			serverID: config.serverID,
 			userDiscord: req.userInfos,

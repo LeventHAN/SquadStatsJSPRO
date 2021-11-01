@@ -52,16 +52,13 @@ router.post("/steam/delete", CheckAuth, async(req, res) => {
 	if(!userFromToken) return res.json({ status: "nok", message: "You are doing something wrong." });
 	const canUser = await req.client.whoCan("unlinkSteam");
 	
-	// check if canUser has any value for the keys of userFromToken.roles without hasOwnProperty
-	if(!canUser.some(role => Object.prototype.hasOwnProperty.call(userFromToken.roles, role))) return res.json({ status: "nok2", message: "You are not allowed to do that." });
+	// check if array userFromToken.roles has any of the roles in the array canUser
+	if(!canUser.some(role => userFromToken.roles.includes(role))) return res.json({ status: "nok", message: "You are doing something wrong." });
 
 	const userSteamAccount = req.client.linkedSteamAccount(req.body.steamid);
 	if(!userSteamAccount) return res.json({ status: "nok", message: "There is no account linked." });
-	
-	// check if userSteamAccount.id is not the same as req.body.steamid and that the userFromToken.roles has "owner" or "admin" key in it
-	if(userSteamAccount.id !== req.body.steamid && !canUser.some(role => Object.prototype.hasOwnProperty.call(userFromToken.roles, role))) return res.json({ status: "nok2", message: "You don't have the permission to do that!" });
-	
-
+	// check if userSteamAccount.id is not the same as req.body.steamid and that the userFromToken.roles has "owner" or "admin" values in it now it is array
+	if(userSteamAccount.id !== req.body.steamid && !userFromToken.roles.includes("owner") || !userFromToken.roles.includes("admin")) return res.json({ status: "nok", message: "You are doing something wrong." });
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
 		displayName: req.session?.passport?.user?.displayName,

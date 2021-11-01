@@ -78,15 +78,12 @@ router.get("/callback", async (req, res) => {
 	// save the user's tag so we can use it later
 	userDB.name = user.username;
 	userDB.discriminator = user.discriminator;
+	
 	if(!userDB.logged && user){
-
-		// Check if the user is the owner
-		if(!userDB.roles.owner){
+		if(!userDB.roles.includes("owner")){
 			const isOwner = await req.client.isOwner(user.id);
 			if(isOwner) {
-				// put owner key inside the roles and make it true
-				userDB.roles.owner = true;
-				userDB.markModified("roles");
+				userDB.roles.push("owner");
 			}
 		}
 

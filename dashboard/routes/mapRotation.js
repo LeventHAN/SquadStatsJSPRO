@@ -7,12 +7,12 @@ const express = require("express"),
 router.get("/", CheckAuth, async(req, res, next) => {
 	//if(req.isAuthenticated()){
 	const canSeeArray = await req.client.getAllCanSee();
-	const userRole = await req.client.getRoles(req.session.user.id);
 	const canSee = await req.client.canAccess("dashboard", req.userInfos.id);
 	if(!canSee)
 		return next(new Error("You can't access this page"));
 	return res.render("squad/mapRotation", {
-		role: userRole,
+		userRoles: await req.client.getRoles(req.session.user.id),
+		c: req.client,
 		playerAmount: await req.client.getPlayersLength(),
 		ownerID: config.owner.id,
 		allCanSee: canSeeArray,

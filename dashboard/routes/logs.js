@@ -8,16 +8,16 @@ const express = require("express"),
 
 router.get("/", CheckAuth, async(req,res) => {
 	const canSeeArray = await req.client.getAllCanSee();
-	const userRole = await req.client.getRoles(req.session.user.id);
 	const canSee = await req.client.canAccess("logs", req.userInfos.id);
 	if(!canSee)
 		return res.json({status: "nok", message: "No access!"});
 
 	res.render("logs", {
+		c: req.client,
 		ownerID: config.owner.id,
 		latestTPS: await utils.getTPS(req.client),
 		playerAmount: await req.client.getPlayersLength(),
-		role: userRole,
+		userRoles: await req.client.getRoles(req.session.user.id),
 		allCanSee: canSeeArray,
 		serverID: config.serverID,
 		userDiscord: req.userInfos,

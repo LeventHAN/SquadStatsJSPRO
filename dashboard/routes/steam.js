@@ -5,6 +5,8 @@ const express = require("express"),
 
 router.get("/", CheckAuth, async function(req, res){
 	res.render("steam", {
+		userRoles: await req.client.findOrCreateUser({id: req.user.id}),
+		c: req.client,
 		role: await req.client.getRoles(req.session.user.id),
 		ownerID: config.owner.id,
 		playerAmount: await req.client.getPlayersLength(),
