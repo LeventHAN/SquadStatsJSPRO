@@ -1,3 +1,35 @@
+<% function hasCommonElements(arr1, arr2) {
+     
+  // Create an empty object
+  let obj = {};
+       
+      // Loop through the first array
+      for (let i = 0; i < arr1.length; i++) {
+           
+          // Check if element from first array
+          // already exist in object or not
+          if(!obj[arr1[i]]) {
+           
+              // If it doesn't exist assign the
+              // properties equals to the
+              // elements in the array
+              const element = arr1[i];
+              obj[element] = true;
+          }
+      }
+       
+      // Loop through the second array
+      for (let j = 0; j < arr2.length ; j++) {
+       
+      // Check elements from second array exist
+      // in the created object or not
+      if(obj[arr2[j]]) {
+          return true;
+      }
+  }
+  return false;
+}
+%>
 <div class="collapse" id="navbarToggleExternalContent">
 <nav class="navbar navbar-vertical fixed-left navbar-expand-md navbar-light bg-white" id="sidenav-main">
   <div class="container-fluid">
@@ -67,22 +99,21 @@
       </form>
       <!-- Navigation -->
       <!-- Heading -->
-      <% if(userDiscord.id === ownerID || (role.includes("admin") || role.includes("owner"))) { %>
-        <h6 class="navbar-heading text-muted">Administration??</h6>
-      <% } %>
+      <!-- -->
+      <h6 class="navbar-heading text-muted">GENERAL</h6>
       <ul class="navbar-nav">
           <li class="nav-item">
-            <% if(allCanSee.dashboard.some(e => role.includes(e))){ %>
+            <% if(hasCommonElements(userRoles, allCanSee.dashboard)){ %>
               <a class="nav-link" href="/dashboard">
                 <i class="ni ni-tv-2 text-primary"></i> Dashboard
               </a>
             <% } %>
-            <% if(allCanSee.players.some(e => role.includes(e))){ %>
+            <% if(hasCommonElements(userRoles, allCanSee.players)){ %>
               <a class="nav-link" href="/players">
                 <i class="ni ni-tv-2 text-primary"></i> Live Players™️
               </a>
             <% } %>
-            <% if(allCanSee.profile.some(e => role.includes(e))){ %>
+            <% if(hasCommonElements(userRoles, allCanSee.profile)){ %>
               <a class="nav-link" href="/profile">
                 <i class="ni ni-single-02 text-yellow"></i> My Profile
               </a>
@@ -148,24 +179,24 @@
         </li> -->
       </ul>
       <hr class="my-3">
-      <h6 class="navbar-heading text-muted">OWNER SECTION</h6>
+      <h6 class="navbar-heading text-muted">Administration</h6>
       <ul class="navbar-nav">
       <!-- Divider -->
      
       <!-- Heading -->
       
       <li class="nav-item">
-        <% if(allCanSee.manage.some(e => role.includes(e))){ %>
+        <% if(hasCommonElements(userRoles, allCanSee.manage)){ %>
           <a class="nav-link" href="/manage/<%= serverID %>">
             <i class="ni ni-ui-04 text-black"></i> Configure Server
           </a>
         <% } %>
-        <% if(allCanSee.roles.some(e => role.includes(e))){ %>
+        <% if(hasCommonElements(userRoles, allCanSee.roles)){ %>
           <a class="nav-link" href="/roles">
             <i class="ni ni-badge text-blue"></i> Server Whitelists
           </a>
         <% } %>
-        <% if(allCanSee.logs.some(e => role.includes(e))){ %>
+        <% if(hasCommonElements(userRoles, allCanSee.logs)){ %>
           <a class="nav-link" href="/logs">
             <i class="ni ni-archive-2 text-yellow"></i> Dashboard Logs
           </a>
