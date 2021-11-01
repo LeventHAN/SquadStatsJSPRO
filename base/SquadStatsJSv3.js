@@ -46,7 +46,7 @@ class SquadStatsJSv3 extends Client {
 		this.logs = require("./Log"); // Log mongoose model
 		this.moderation = require("./Moderation"); // Log mongoose model
 		this.audit = require("./Audit"); // Audit mongoose model
-		this.permissions = require("./Permissions"); // Audit mongoose model
+		this.permission = require("./Permissions"); // Audit mongoose model
 		this.whitelists = require("./Whitelist"); // Audit mongoose model
 		this.dashboard = require("../dashboard/app"); // Dashboard app
 		this.queues = new Collection(); // This collection will be used for the music
@@ -57,7 +57,6 @@ class SquadStatsJSv3 extends Client {
 		this.databaseCache = {};
 		this.databaseCache.users = new Collection();
 		this.databaseCache.guilds = new Collection();
-		this.databaseCache.members = new Collection();
 
 		// For the website
 		this.databaseCache.audit = new Collection();
@@ -292,10 +291,10 @@ class SquadStatsJSv3 extends Client {
 
 	// Will create/init the mock data for permissions
 	async createPermissions() {
-		const doesExist = await this.permissions.find({}).lean();
+		const doesExist = await this.permission.find({}).lean();
 		if (doesExist.length !== 0)
 			return this.logger.log("Permissions schema already exist. 👌", "log");
-		this.permissions.create({}).catch((err) => {
+		this.permission.create({}).catch((err) => {
 			return console.log(err);
 		});
 		this.logger.log("Permissions schema is created 👌", "log");
@@ -500,18 +499,13 @@ class SquadStatsJSv3 extends Client {
 		// search the roles for the userID
 		const user = await this.usersData.findOne({ id: userID });
 		if (!user || !user.roles) return;
-		const roleArray = [];
-		// loop through the roles
-		for (const key in user.roles) {
-			if (user.roles[key]) roleArray.push(key);
-		}
-		return roleArray;
+		return user.roles;
 	}
 
 	// Get all role names that can do the "action" (kick, ban, etc..)
 	async whoCan(action) {
 		// get the permissions
-		const perms = await this.permissions.findOne({});
+		const perms = await this.permission.findOne({});
 		if (!perms) return;
 		// check if the action is in the permissions
 		if (!perms.whoCan[action]) return;
@@ -520,30 +514,75 @@ class SquadStatsJSv3 extends Client {
 	}
 
 	async getAllCanSee() {
-		const perms = await this.permissions.findOne({});
+		const perms = await this.permission.findOne({});
 		if (!perms) return;
 		return perms.canSee;
 	}
 
+	async getAllDiffrentRoles() {
+		const perms = await this.permission.findOne({});
+		if (!perms) return;
+
+		const roles = [];
+		// loop trough perms.canSee and put all values to roles
+		for (const key in perms.canSee) {
+			if (perms.canSee[key]){
+				// loop trough the roles
+				for (let i=0; i<perms.canSee[key].length; i++) {
+					roles.push(perms.canSee[key][i]);
+				}
+			}
+		}
+		// remove duplicates
+		return [...new Set(roles)];
+
+
+		
+	}
+
+	async getAllPagesCanSee(){
+		const perms = await this.permission.findOne({});
+		if (!perms) return;
+		// look inside canSee and whoCan and put all diffrent values in an array
+		const pages = [];
+		for (const key in perms.canSee) {
+			if (perms.canSee[key]) pages.push(key);
+		}
+		return pages;
+	}
+
+	async getAllActionsWhoCan(){
+		const perms = await this.permission.findOne({});
+		if (!perms) return;
+		// look inside canSee and whoCan and put all diffrent values in an array
+		const actions = [];
+		for (const key in perms.whoCan) {
+			if (perms.whoCan[key]) actions.push(key);
+		}
+		return actions;
+	}
+
 	// Check if userID can access/see the route/page
 	async canAccess(route, userID) {
-		const perms = await this.permissions.find().lean();
+		const perms = await this.permission.find().lean();
 		const user = await this.findOrCreateUser({ id: userID });
+		let response = false;
 		if (perms.length === 0) return false;
 
 		// Loop trough perms.canSee and search for route in it
 		for (const key in perms[0].canSee) {
+			
 			if (key === route) {
 				// Loop trough the roles in the array
 				for (const role of perms[0].canSee[key]) {
-					// Loop trough user.roles and check if the keys that have true as value are included in role
-					for (const key in user.roles) {
-						if (user.roles[key] && role === key) return true;
+					// Loop trough user.roles and check if the keys that have true as value are included in role now it is an array
+					for (const userRole of user.roles) {
+						if (userRole === role) response = true;
 					}
 				}
 			}
 		}
-		return false;
+		return response;
 	}
 
 	// Will get the secret key for the whitelist URL (used for the remote whitelist link)
@@ -721,6 +760,22 @@ class SquadStatsJSv3 extends Client {
 		return users;
 	}
 
+	async toggleUserRole(userID, role) {
+		const user = await this.findOrCreateUser({ id: userID });
+		if (!user) return false;
+		let action = "";
+		// check if user has role and remove it
+		if (user.roles.includes(role)) {
+			user.roles = user.roles.filter((r) => r !== role);
+			action = "removed";
+		} else {
+			user.roles.push(role);
+			action = "added";
+		}
+		await user.save();
+		return action;
+	}
+
 	// This function is used to resolve a user from a string (his name or id for example when searching it)
 	async resolveUser(search) {
 		let user = null;
@@ -748,26 +803,6 @@ class SquadStatsJSv3 extends Client {
 	async getAuditLogs() {
 		const logs = await this.audit.find({});
 		return logs;
-	}
-
-	// This function is used to resolve a user from a string (his name or id for example when searching it)
-	async resolveMember(search, guild) {
-		let member = null;
-		if (!search || typeof search !== "string") return;
-		// Try ID search
-		if (search.match(/^<@!?(\d+)>$/)) {
-			const id = search.match(/^<@!?(\d+)>$/)[1];
-			member = await guild.members.fetch(id).catch(() => {});
-			if (member) return member;
-		}
-		// Try username search
-		if (search.match(/^!?(\w+)#(\d+)$/)) {
-			guild = await guild.fetch();
-			member = guild.members.cache.find((m) => m.user.tag === search);
-			if (member) return member;
-		}
-		member = await guild.members.fetch(search).catch(() => {});
-		return member;
 	}
 
 	// This function is used to resolve a role from a string (his name or id for example when searching it)

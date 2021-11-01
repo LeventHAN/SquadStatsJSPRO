@@ -9,10 +9,6 @@ module.exports = mongoose.model(
 		/* REQUIRED */
 		id: { type: String }, // Discord ID of the guild
 
-		/* MEMBERSDATA */
-		membersData: { type: Object, default: {} }, // Members data of the guild
-		members: [{ type: Schema.Types.ObjectId, ref: "Member" }],
-
 		/* CONFIGURATION */
 		language: { type: String, default: languages.find((l) => l.default).name }, // Language of the guild
 		prefix: { type: String, default: config.prefix }, // Default or custom prefix of the guild
