@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-
+    
 	<%- include('../includes/head') %>
     
     <body>
@@ -39,7 +39,7 @@
                                     <div class="row">
                                         <div class="col-sm-12 border-right">
                                             <div class="description-block">
-                                                <h5 class="display-3"><%= guild.memberCount %></h5>
+                                                <h5 class="display-3"><%= memberCount %></h5>
                                                 <span class="lead"><%= translate("common:MEMBERS") %></span>
                                             </div>
                                             <!-- /.description-block -->
@@ -224,16 +224,97 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group col-md-6">
-                              <label for="toggle-test">Test</label>
-                              <input name="toggle-test" type="checkbox" data-style="ios" data-toggle="toggle" data-size="xs" data-on="Enabled" data-off="Disabled" checked>
+                            <div class="col-md-12">
+                                <!-- SQUAD CONFIGURATION -->
+                                <div class="box box-success">
+                                    <div class="box-header with-border"><h3 class="box-title">Add User Roles</h3></div>
+                                        <!-- /.box-header -->
+                                    <div class="box-body">
+                                        <!-- make a table with allUsers -->
+                                        <table class="datatable table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>User</th>
+                                                    <th>Roles</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% for(var i = 0; i < allUsers.length; i++) { %>
+                                                    <tr>
+                                                        <td> 
+                                                            <div class="media align-items-center">
+                                                                <%- allUsers[i].steam ? `<span class="avatar avatar-sm rounded-circle"><a href="${allUsers[i].steam.profileurl}" target="_blanc"><img alt="Avatar" src="${allUsers[i].steam.avatar}"></span><div class="media-body ml-2 d-none d-lg-block"><span class="mb-0 text-sm font-weight-bold">${allUsers[i].steam?.personaname}</span><span class="text-xs text-muted d-block">${allUsers[i].steam?.steamid}</span></div></a>` : `<span class="avatar avatar-sm rounded-circle"><img alt="Avatar" src="${userDiscord.displayAvatarURL}"></span> <div class="media-body ml-2 d-none d-lg-block"><span class="mb-0 text-sm font-weight-bold">${userDiscord.tag}</span></div>` %>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <% for( let z = 0; z < allUsers[i].roles.length; z++) { %>
+                                                                <label for="<%= allUsers[i].id+':-:'+allUsers[i].roles[z] %>" class="badge"><%= allUsers[i].roles[z] %></label>
+                                                                <input id="<%= allUsers[i].id+':-:'+allUsers[i].roles[z] %>" onchange="toggleRole('<%=allUsers[i].id%>', '<%=allUsers[i].roles[z]%>')" name="toggle-test" type="checkbox" data-style="ios" data-toggle="toggle" data-size="xs" data-on="On" data-off="Off" checked>
+                                                            <% } %>
+                                                            <% let uncheckedRoles = allRoles.filter(role => !allUsers[i].roles.includes(role)); %>
+                                                            <% for( let x = 0; x < uncheckedRoles.length; x++) { %>
+                                                                <label for="<%= allUsers[i].id+':-:'+uncheckedRoles[x] %>" class="badge"><%= uncheckedRoles[x] %></label>
+                                                                <input id="<%= allUsers[i].id+':-:'+uncheckedRoles[x] %>" onchange="toggleRole('<%=allUsers[i].id%>', '<%=uncheckedRoles[x]%>')" name="toggle-test" type="checkbox" data-style="ios" data-toggle="toggle" data-size="xs" data-on="On" data-off="Off" >
+                                                            <% } %>
+                                                          </td>
+                                                    </tr>
+                                                <% } %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>  
+                        
                     <div>
 				</section>
+                <div class="row">
+                    
+                </div>
 				
 				<!-- Footer includes credits and version -->
 			</div>
+            <script>
+                $(function () {
+                    $('.datatable').DataTable({
+                        "paging": true,
+                        "lengthChange": true,
+                        "searching": true,
+                        "ordering": true,
+                        "info": true,
+                        "autoWidth": true,
+                        "responsive": true,
+                        "columnDefs": [
+                            { responsivePriority: 1, targets: 0 },
+                            { responsivePriority: 2, targets: -1 }
+                        ]
+                    });
+                });
+
+                async function toggleRole(userId, role) {
+                    console.log(userId);
+                    console.log(role);
+                    await axios.post(`${window.location.origin}/squad-api/roles/toggleRole`, {
+                        userId: userId,
+                        role: role
+                    }).then(function (response) {
+                        if(response.data.status != "ok") return Toast.fire({icon: 'error', title: response.data.message});
+                        switch (response.data.message) {
+                            case 'REMOVED':
+                                Toast.fire({icon: 'info', title: `${role.charAt(0).toUpperCase()+role.slice(1)} has been removed!`});
+                                break;
+                            case 'ADDED':
+                                Toast.fire({icon: 'info', title: `${role.charAt(0).toUpperCase()+role.slice(1)} has been added!`});
+                                break;
+                            default:
+                                Toast.fire({icon: 'error', title: response.data.message});
+                                break;
+                        }
+                    }).catch(function (error) {
+                        toastr.error(error);
+                    });
+                }
+            </script>
             <!-- /.content-wrapper -->
             
             <%- include('../partials/footer') %>
