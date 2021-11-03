@@ -495,7 +495,7 @@ async function ban(steamID) {
                 await axios.post(`${window.location.origin}/squad-api/ban`, {
                     steamUID: steamID,
                     reason: reason,
-                    duration: banTime ? null : 0
+                    duration: banTime
                 })
                     .then((response) => {
                         if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
