@@ -1086,4 +1086,29 @@ router.post("/roles/toggleRole", CheckAuth, async function(req, res) {
 	return res.json({status: "ok", message: `${status.toUpperCase()}`});
 });
 
+router.post("/dashboard/toggleShowNotifications", CheckAuth, async function(req, res) {
+	if(!req.body.actionType) return res.json({ status: "nok", message: "You are doing something wrong." });
+	await req.client.toggleShowNotifications(req.body.actionType);
+	// return ok status
+	return res.json({status: "ok", message: "Toggled the notification!"});
+});
+
+router.post("/dashboard/toggleUpdatePlayersTable", CheckAuth, async function(req, res) {
+	if(!req.body.actionType) return res.json({ status: "nok", message: "You are doing something wrong." });
+	await req.client.toggleUpdatePlayersTable(req.body.actionType);
+	// return ok status
+	return res.json({status: "ok", message: "Toggled the notification!"});
+});
+
+router.get("/dashboard/getShowNotifications", CheckAuth, async function(req, res){
+	const showNotifications = await req.client.getShowNotifications();
+	return res.json({status: "ok", showNotifications: showNotifications});
+});
+
+router.get("/dashboard/getUpdatePlayersTable", CheckAuth, async function(req, res){
+	const showUpdatePlayersTable = await req.client.getUpdatePlayersTable();
+	return res.json({status: "ok", showUpdatePlayersTable: showUpdatePlayersTable});
+});
+
+
 module.exports = router;
