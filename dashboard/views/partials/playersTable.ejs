@@ -494,7 +494,7 @@ async function ban(steamID) {
                 if (!length) return Swal.fire(`Error`, `Ban Length cannot be empty`, `error`);
                 await axios.post(`${window.location.origin}/squad-api/ban`, {
                     steamUID: steamID,
-                    reason: result.value,
+                    reason: reason,
                     duration: banTime ? null : 0
                 })
                     .then((response) => {
