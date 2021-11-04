@@ -19,7 +19,13 @@ let responseUpdate = {
     onSquadLeave: null,
     onSquadUpdate: null
 };
+<% for (let key in notifySettings) { %>
+    responseNotify["<%= key %>"] = <%= notifySettings[key] %>;
+<% }; %>
 
+<% for (let key in updateSettings) { %>
+    responseUpdate["<%= key %>"] = <%= updateSettings[key] %>;
+<% }; %>
 
 
 let admins = 0;
@@ -193,20 +199,6 @@ async function addPlayer(data) {
 
 }
 
-
-function filterTable1() {
-    $('#team1_players').DataTable({
-        destroy: true,
-        bAutoWidth: false,
-        aoColumns: [{ sWidth: "1%", }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }],
-
-        "scrollCollapse": true,
-        "info": false,
-        "paging": false
-    });
-}
-
-
 async function removePlayer(data) {
     const value = gaugePlayers.getValue();
     gaugePlayers.setValueAnimated(value.getValue() - 1, 2);
@@ -234,6 +226,18 @@ async function removePlayer(data) {
         case "2":
             filterTable2();
     }
+}
+
+function filterTable1() {
+    $('#team1_players').DataTable({
+        destroy: true,
+        bAutoWidth: false,
+        aoColumns: [{ sWidth: "1%", }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }],
+
+        "scrollCollapse": true,
+        "info": false,
+        "paging": false
+    });
 }
 
 function filterTable2() {
@@ -347,126 +351,6 @@ socket.on("PLAYER_DISCONNECTED", async (data) => {
         }
     }
 });
-
-    async function warn(steamID) {
-        await axios.post(`${window.location.origin}/squad-api/moderation/getCount`, {
-            steamid: steamID
-        }).then((resp) => {
-            if (!resp.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
-            Swal.fire({
-                title: 'Warn Message:',
-                input: 'text',
-                html: `</div class='mx-auto d-flex text-center'>
-                <h3 class='badge d-inline-block bg-danger text-dark mx-3 p-2'>Bans: <span style='font-size: 14px'>${resp.data.count.ban}</span></h3><h3 class='kick d-inline-block badge bg-warning text-dark mx-3 p-2'>Kicks: <span style='font-size: 14px'>${resp.data.count.kick}</span></h3><h3 class='warn d-inline-block badge bg-info text-dark mx-3 p-2'>Warns: <span style='font-size: 14px'>${resp.data.count.warn}</span></h3>`,
-                inputAttributes: {
-                    autocapitalize: 'off'
-                },
-                showCancelButton: true,
-                confirmButtonText: 'Warn',
-                allowOutsideClick: () => !Swal.isLoading()
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    await axios.post(`${window.location.origin}/squad-api/warn`, {
-                        steamUID: steamID,
-                        reason: result.value
-                    })
-                        .then((response) => {
-                            if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
-                            if (response.data.status === "ok") {
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: 'Player has been warned.'
-                                })
-                            }
-                            if (response.data.status === "nok") {
-                                Swal.fire(`There was an error`, `We couldn't warn the player. Please try again later.`, `error`);
-                            }
-                            if (response.data.status === "nok2") {
-                                Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
-                            }
-                        })
-                        .catch((error) => {
-                            return Swal.fire(`Error`, `Error: ${error}`, `error`);
-                        });
-                }
-            })
-        })
-    }
-
-    async function ban(steamID) {
-        await axios.post(`${window.location.origin}/squad-api/moderation/getCount`, {
-            steamid: steamID
-        }).then((resp) => {
-            if (!resp.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
-            Swal.fire({
-                title: 'Ban Details:',
-                html:
-                    `<div class='d-flex mx-auto'>
-                    <div class='length mx-auto d-inline-block'>
-                        <h4>Length</h4>
-                        <input type='number' min="1" id='banLength' class='swal2-input' style='position:relative; bottom: 20px; max-width: 100px; height: 47px;'></input>
-                    </div>
-                    <div class='type mx-auto d-inline-block'>
-                        <h5>Type</h5>
-                        <select id='selection' class="swal2-select" style='position:relative; border: 1px solid #d9d9d9; border-radius: 5px; bottom: 22px; min-width: 100px; min-height 50px;'>
-                            <option id="m">Minutes</option>
-                            <option id="d">Days</option>
-                            <option id="M">Months</option>
-                            <option id="P">Perma</option>
-                        </select>
-                    </div>
-                </div>
-                <div class='reason mx-auto text-center d-block' style='width:400px'>
-                        <h2>Reason:</h2>
-                        <input id='reason' class='swal2-input mx-auto d-block' style='position:relative; bottom: 5px; width: 400px;'></input>
-                </div>
-                </div class='mx-auto d-flex text-center'>
-                <h3 class='badge d-inline-block bg-danger text-dark mx-3 p-2'>Bans: <span style='font-size: 14px'>${resp.data.count.ban}</span></h3><h3 class='kick d-inline-block badge bg-warning text-dark mx-3 p-2'>Kicks: <span style='font-size: 14px'>${resp.data.count.kick}</span></h3><h3 class='warn d-inline-block badge bg-info text-dark mx-3 p-2'>Warns: <span style='font-size: 14px'>${resp.data.count.warn}</span></h3>`,
-                inputAttributes: {
-                    autocapitalize: 'off'
-                },
-                showCancelButton: true,
-                confirmButtonText: 'Ban',
-                allowOutsideClick: () => !Swal.isLoading()
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    const selection = document.getElementById('selection');
-                    const type = selection.options[selection.selectedIndex].id;
-                    const reason = document.getElementById('reason').value;
-                    const length = document.getElementById('banLength').value;
-                    let banTime = `${length}${type}`;
-                    if (!reason) return Swal.fire(`Error`, `Reason cannot be empty.`, `error`);
-                    if (!length) return Swal.fire(`Error`, `Ban Length cannot be empty`, `error`);
-                    await axios.post(`${window.location.origin}/squad-api/ban`, {
-                        steamUID: steamID,
-                        reason: reason,
-                        duration: banTime
-                    })
-                        .then((response) => {
-                            if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
-                            if (response.data.status === "ok") {
-                                if (window.location.href === `${window.location.origin}/players`) {
-                                    updatePlayers();
-                                }
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: 'Player has been banned.'
-                                })
-                            }
-                            if (response.data.status === "nok") {
-                                Swal.fire(`There was an error`, `We couldn't ban the player. Please try again later.`, `error`);
-                            }
-                            if (response.data.status === "nok2") {
-                                Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
-                            }
-                        })
-                        .catch((error) => {
-                            return Swal.fire(`Error`, `Error: ${error}`, `error`);
-                        });
-                }
-            })
-        })
-    }
 
 async function kick(steamID) {
     await axios.post(`${window.location.origin}/squad-api/moderation/getCount`, {
