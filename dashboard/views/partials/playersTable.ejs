@@ -19,13 +19,7 @@ let responseUpdate = {
     onSquadLeave: null,
     onSquadUpdate: null
 };
-<% for (let key in notifySettings) { %>
-    responseNotify["<%= key %>"] = <%= notifySettings[key] %>;
-<% }; %>
 
-<% for (let key in updateSettings) { %>
-    responseUpdate["<%= key %>"] = <%= updateSettings[key] %>;
-<% }; %>
 
 
 let admins = 0;
@@ -352,8 +346,6 @@ socket.on("PLAYER_DISCONNECTED", async (data) => {
     }
 });
 
-<<<<<<< HEAD
-<script>
     async function warn(steamID) {
         await axios.post(`${window.location.origin}/squad-api/moderation/getCount`, {
             steamid: steamID
@@ -478,14 +470,11 @@ socket.on("PLAYER_DISCONNECTED", async (data) => {
 </script>
 
 <script>
-    function disbandSquad(teamID, squadID) {
-=======
 async function kick(steamID) {
     await axios.post(`${window.location.origin}/squad-api/moderation/getCount`, {
         steamid: steamID
     }).then((resp) => {
         if (!resp.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
->>>>>>> 004d8dec3cef1e094fd60f98e18c707c76b5d2e0
         Swal.fire({
             title: 'Reason:',
             input: 'text',
