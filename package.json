@@ -9,7 +9,6 @@
 		"lint": "eslint . --ext .js --fix",
 		"testcfg": "node scripts/verify-config.js",
 		"prettier": "prettier --use-tabs --write .",
-		"pretdash": "prettier --use-tabs --write \"dashboard/routes/*.js\"",
 		"ready": "yarn run genApiDoc && yarn run prettier && yarn run lint",
 		"genApiDoc": "apidoc -f \"./dashboard/routes/\" -i ./ -o \"dashboard/public/apidoc/\""
 	},
