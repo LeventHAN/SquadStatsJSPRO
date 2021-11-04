@@ -11,7 +11,7 @@ const moderationSchema = new mongoose.Schema({
 		type: String,
 		default: "steamID",
 	},
-	/* admin discordID */
+	/* admin discordName */
 	moderatorName: {
 		type: String,
 		default: "discordName",
