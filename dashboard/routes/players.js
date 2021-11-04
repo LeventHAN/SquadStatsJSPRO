@@ -4,15 +4,14 @@ const express = require("express"),
 	utils = require("../utils"),
 	config = require("../../config");
 
-router.get("/", CheckAuth, async(req,res, next) => {
+router.get("/", CheckAuth, async (req, res, next) => {
 	const canSeeArray = await req.client.getAllCanSee();
 	const canSee = await req.client.canAccess("players", req.userInfos.id);
 	const responseNotify = await req.client.getShowNotifications();
 	const responseUpdate = await req.client.getUpdatePlayersTable();
 
-	if(!canSee)
-		return next(new Error("You can't access this page"));
-	
+	if (!canSee) return next(new Error("You can't access this page"));
+
 	res.render("players", {
 		notifySettings: responseNotify,
 		updateSettings: responseUpdate,
@@ -28,11 +27,8 @@ router.get("/", CheckAuth, async(req,res, next) => {
 		currentURL: `${config.dashboard.baseURL}/${req.originalUrl}`,
 		serverID: config.serverID,
 		ownerID: config.owner.id,
-		conf: config
+		conf: config,
 	});
-
 });
-
-
 
 module.exports = router;

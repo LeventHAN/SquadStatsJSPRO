@@ -1,6 +1,7 @@
 # Ignore artifacts:
 docs/
-dashboard/
+dashboard/public/
+dashboard/views/
 assets/
 languages/
 node_modules/

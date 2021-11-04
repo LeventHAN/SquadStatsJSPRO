@@ -2,17 +2,13 @@ const express = require("express"),
 	CheckAuth = require("../auth/CheckAuth"),
 	router = express.Router(),
 	config = require("../../config"),
-	utils = require("../utils"); 
+	utils = require("../utils");
 
-
-
-router.get("/", CheckAuth, async(req,res,next) => {
+router.get("/", CheckAuth, async (req, res, next) => {
 	const allCanSeeRoles = await req.client.getAllCanSee();
-	
-	const canSee = await req.client.canAccess("dashboard", req.userInfos.id);
-	if(!canSee)
-		return next(new Error("You can't access this page"));
 
+	const canSee = await req.client.canAccess("dashboard", req.userInfos.id);
+	if (!canSee) return next(new Error("You can't access this page"));
 
 	res.render("dashboard", {
 		userRoles: await req.client.getRoles(req.session.user.id),
@@ -27,11 +23,8 @@ router.get("/", CheckAuth, async(req,res,next) => {
 		translate: req.translate,
 		repoVersion: config.version,
 		currentURL: `${config.dashboard.baseURL}/${req.originalUrl}`,
-		config: config
+		config: config,
 	});
-
 });
-
-
 
 module.exports = router;

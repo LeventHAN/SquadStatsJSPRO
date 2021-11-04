@@ -4,9 +4,7 @@ const express = require("express"),
 	utils = require("../utils"),
 	config = require("../../config");
 
-
-
-router.get("/", CheckAuth, async(req,res) => {
+router.get("/", CheckAuth, async (req, res) => {
 	const canSeeArray = await req.client.getAllCanSee();
 
 	res.render("profile", {
@@ -22,11 +20,8 @@ router.get("/", CheckAuth, async(req,res) => {
 		translate: req.translate,
 		repoVersion: config.version,
 		currentURL: `${config.dashboard.baseURL}/${req.originalUrl}`,
-		config: config
+		config: config,
 	});
-
 });
-
-
 
 module.exports = router;

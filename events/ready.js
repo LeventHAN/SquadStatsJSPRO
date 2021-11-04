@@ -10,7 +10,7 @@ module.exports = class {
 	async run() {
 		const client = this.client;
 		const socket = client.socket;
-		if(socket){
+		if (socket) {
 			socket.on("connect_error", (err) => {
 				return client.logger.log(err, "ERROR");
 			});
@@ -20,8 +20,6 @@ module.exports = class {
 			`Loading a total of ${client.commands.size} command(s).`,
 			"log"
 		);
-
-		
 
 		// /* Squad Creating Plugin */
 		// 	await client.emit("squadCreating", squadVotingGuild, "851451690020110346", socket);

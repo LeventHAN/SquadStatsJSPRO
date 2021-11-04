@@ -4,13 +4,10 @@ const express = require("express"),
 	utils = require("../utils"),
 	config = require("../../config");
 
-
-
-router.get("/", CheckAuth, async(req,res) => {
+router.get("/", CheckAuth, async (req, res) => {
 	const canSeeArray = await req.client.getAllCanSee();
 	const canSee = await req.client.canAccess("logs", req.userInfos.id);
-	if(!canSee)
-		return res.json({status: "nok", message: "No access!"});
+	if (!canSee) return res.json({ status: "nok", message: "No access!" });
 
 	res.render("logs", {
 		c: req.client,
@@ -26,11 +23,8 @@ router.get("/", CheckAuth, async(req,res) => {
 		repoVersion: config.version,
 		currentURL: `${config.dashboard.baseURL}/${req.originalUrl}`,
 		config: config,
-		logs: await req.client.getAuditLogs()
+		logs: await req.client.getAuditLogs(),
 	});
-
 });
-
-
 
 module.exports = router;

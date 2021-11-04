@@ -6,8 +6,6 @@ const express = require("express"),
 	multiparty = require("multiparty"),
 	fs = require("fs");
 
-
-
 router.get("/", CheckAuth, async (req, res) => {
 	return res.json("Welcome to the SquadStatsJSPRO api!");
 });
@@ -86,7 +84,12 @@ router.get("/getServerInfo", CheckAuth, async (req, res) => {
 		discriminator: req.session?.user?.discriminator,
 	};
 
-	const log = await req.client.addLog({ action: "GET_SERVER_INFO", author: { discord: discordAccount, steam: steamAccount }, ip: null, details: { details: req.session.user } });
+	const log = await req.client.addLog({
+		action: "GET_SERVER_INFO",
+		author: { discord: discordAccount, steam: steamAccount },
+		ip: null,
+		details: { details: req.session.user },
+	});
 	await log.save();
 	return res.json(response);
 });
@@ -135,12 +138,16 @@ router.get("/getPlayersList", CheckAuth, async (req, res) => {
 			username: req.session?.user?.username,
 			discriminator: req.session?.user?.discriminator,
 		};
-		const log = await req.client.addLog({ action: "GET_PLAYERS_LIST", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: null } });
+		const log = await req.client.addLog({
+			action: "GET_PLAYERS_LIST",
+			author: { discord: discordAccount, steam: steamAccount },
+			ip: req.session.user.lastIp,
+			details: { details: null },
+		});
 		await log.save();
 		return res.json(data);
 	});
 });
-
 
 /**
  * @api {get} /squad-api/getNextMap Request next layer
@@ -170,7 +177,12 @@ router.get("/getNextMap", CheckAuth, async (req, res) => {
 			username: req.session?.user?.username,
 			discriminator: req.session?.user?.discriminator,
 		};
-		const log = await req.client.addLog({ action: "GET_NEXT_MAP", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: null } });
+		const log = await req.client.addLog({
+			action: "GET_NEXT_MAP",
+			author: { discord: discordAccount, steam: steamAccount },
+			ip: req.session.user.lastIp,
+			details: { details: null },
+		});
 		await log.save();
 		return res.json(data);
 	});
@@ -197,16 +209,21 @@ router.get("/getNextMap", CheckAuth, async (req, res) => {
 	}
  */
 router.post("/setNextMap", CheckAuth, async function (req, res) {
-
-	if (!req.body.layer) return res.json({ status: "nok", message: "You are doing something wrong." });
+	if (!req.body.layer)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
 
 	const userRole = await req.client.getRoles(req.session.user.id);
 
 	const canUser = await req.client.whoCan("setNextMap");
 
-	if (!canUser.some(role => userRole.includes(role)))
-		return res.json({ status: "nok2", message: "You are not allowed to do this." });
-
+	if (!canUser.some((role) => userRole.includes(role)))
+		return res.json({
+			status: "nok2",
+			message: "You are not allowed to do this.",
+		});
 
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
@@ -223,26 +240,38 @@ router.post("/setNextMap", CheckAuth, async function (req, res) {
 	};
 
 	const socket = req.client.socket;
-	socket.emit("rcon.execute", `AdminSetNextLayer ${moreDetails.nextLayer}`, async () => {
-		const log = await req.client.addLog({ action: "SET_NEXT_MAP", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: moreDetails } });
-		await log.save();
-		return res.json({ status: "ok", message: "Next Map set!" });
-	});
+	socket.emit(
+		"rcon.execute",
+		`AdminSetNextLayer ${moreDetails.nextLayer}`,
+		async () => {
+			const log = await req.client.addLog({
+				action: "SET_NEXT_MAP",
+				author: { discord: discordAccount, steam: steamAccount },
+				ip: req.session.user.lastIp,
+				details: { details: moreDetails },
+			});
+			await log.save();
+			return res.json({ status: "ok", message: "Next Map set!" });
+		}
+	);
 });
 
-
-
 router.post("/setCurrentMap", CheckAuth, async function (req, res) {
-
-	if (!req.body.layer) return res.json({ status: "nok", message: "You are doing something wrong." });
+	if (!req.body.layer)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
 
 	const userRole = await req.client.getRoles(req.session.user.id);
 
 	const canUser = await req.client.whoCan("setCurrentMap");
 
-	if (!canUser.some(role => userRole.includes(role)))
-		return res.json({ status: "nok2", message: "You are not allowed to do this." });
-
+	if (!canUser.some((role) => userRole.includes(role)))
+		return res.json({
+			status: "nok2",
+			message: "You are not allowed to do this.",
+		});
 
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
@@ -261,14 +290,21 @@ router.post("/setCurrentMap", CheckAuth, async function (req, res) {
 	const socket = req.client.socket;
 
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
-	socket.emit("rcon.execute", `AdminChangeLayer ${moreDetails.nextLayer}`, async () => {
-		const log = await req.client.addLog({ action: "CHANGE_CURRENT_MAP", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: moreDetails } });
-		await log.save();
-		return res.json({ status: "ok", message: "Next Map set!" });
-	});
+	socket.emit(
+		"rcon.execute",
+		`AdminChangeLayer ${moreDetails.nextLayer}`,
+		async () => {
+			const log = await req.client.addLog({
+				action: "CHANGE_CURRENT_MAP",
+				author: { discord: discordAccount, steam: steamAccount },
+				ip: req.session.user.lastIp,
+				details: { details: moreDetails },
+			});
+			await log.save();
+			return res.json({ status: "ok", message: "Next Map set!" });
+		}
+	);
 });
-
-
 
 /**
  * @api {get} /squad-api/currentMap Request current layer
@@ -298,7 +334,12 @@ router.get("/getCurrentMap", CheckAuth, async (req, res) => {
 			username: req.session?.user?.username,
 			discriminator: req.session?.user?.discriminator,
 		};
-		const log = await req.client.addLog({ action: "GET_CURRENT_MAP", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: null } });
+		const log = await req.client.addLog({
+			action: "GET_CURRENT_MAP",
+			author: { discord: discordAccount, steam: steamAccount },
+			ip: req.session.user.lastIp,
+			details: { details: null },
+		});
 		await log.save();
 		return res.json(data);
 	});
@@ -325,16 +366,21 @@ router.get("/getCurrentMap", CheckAuth, async (req, res) => {
 	}
  */
 router.post("/broadcast", CheckAuth, async function (req, res) {
-
-	if (!req.body.content) return res.json({ status: "nok", message: "You are doing something wrong." });
+	if (!req.body.content)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
 
 	const userRole = await req.client.getRoles(req.session.user.id);
 
 	const canUser = await req.client.whoCan("broadcast");
 
-	if (!canUser.some(role => userRole.includes(role)))
-		return res.json({ status: "nok2", message: "You are not allowed to do this." });
-
+	if (!canUser.some((role) => userRole.includes(role)))
+		return res.json({
+			status: "nok2",
+			message: "You are not allowed to do this.",
+		});
 
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
@@ -350,7 +396,12 @@ router.post("/broadcast", CheckAuth, async function (req, res) {
 		broadcast: req.body.content,
 	};
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
-	const log = await req.client.addLog({ action: "ADMIN_BROADCAST", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: moreDetails } });
+	const log = await req.client.addLog({
+		action: "ADMIN_BROADCAST",
+		author: { discord: discordAccount, steam: steamAccount },
+		ip: req.session.user.lastIp,
+		details: { details: moreDetails },
+	});
 	await log.save();
 
 	res.json({ status: "ok", message: "Broadcast sent!" });
@@ -379,14 +430,21 @@ router.post("/broadcast", CheckAuth, async function (req, res) {
 	}
  */
 router.post("/kick", CheckAuth, async function (req, res) {
-	if (!req.body.steamUID || !req.body.reason) return res.json({ status: "nok", message: "You are doing something wrong." });
+	if (!req.body.steamUID || !req.body.reason)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
 
 	const userRole = await req.client.getRoles(req.session.user.id);
 
 	const canUser = await req.client.whoCan("kick");
 
-	if (!canUser.some(role => userRole.includes(role)))
-		return res.json({ status: "nok2", message: "You are not allowed to do this." });
+	if (!canUser.some((role) => userRole.includes(role)))
+		return res.json({
+			status: "nok2",
+			message: "You are not allowed to do this.",
+		});
 
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
@@ -400,25 +458,34 @@ router.post("/kick", CheckAuth, async function (req, res) {
 	};
 	const moreDetails = {
 		player: req.body.steamUID,
-		reason: req.body.reason
+		reason: req.body.reason,
 	};
 
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const socket = req.client.socket;
 	// debug
-	socket.emit("rcon.execute", `AdminKick ${moreDetails.player} ${moreDetails.reason}`, async () => {
-		const log = await req.client.addLog({ action: "PLAYER_KICKED", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: moreDetails } });
-		await log.save();
-		const moderation = await req.client.addModeration({
-			steamID: req.body.steamUID,
-			moderator: req.session.user.id,
-			typeModeration: "kick",
-			reason: req.body.reason,
-			endDate: null
-		});
-		await moderation.save();
-		return res.json({ status: "ok", message: "Player kicked!" });
-	});
+	socket.emit(
+		"rcon.execute",
+		`AdminKick ${moreDetails.player} ${moreDetails.reason}`,
+		async () => {
+			const log = await req.client.addLog({
+				action: "PLAYER_KICKED",
+				author: { discord: discordAccount, steam: steamAccount },
+				ip: req.session.user.lastIp,
+				details: { details: moreDetails },
+			});
+			await log.save();
+			const moderation = await req.client.addModeration({
+				steamID: req.body.steamUID,
+				moderator: req.session.user.id,
+				typeModeration: "kick",
+				reason: req.body.reason,
+				endDate: null,
+			});
+			await moderation.save();
+			return res.json({ status: "ok", message: "Player kicked!" });
+		}
+	);
 });
 
 /**
@@ -444,14 +511,21 @@ router.post("/kick", CheckAuth, async function (req, res) {
 	}
  */
 router.post("/warn", CheckAuth, async function (req, res) {
-	if (!req.body.steamUID || !req.body.reason) return res.json({ status: "nok", message: "You are doing something wrong." });
+	if (!req.body.steamUID || !req.body.reason)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
 
 	const userRole = await req.client.getRoles(req.session.user.id);
 
 	const canUser = await req.client.whoCan("warn");
 
-	if (!canUser.some(role => userRole.includes(role)))
-		return res.json({ status: "nok2", message: "You are not allowed to do this." });
+	if (!canUser.some((role) => userRole.includes(role)))
+		return res.json({
+			status: "nok2",
+			message: "You are not allowed to do this.",
+		});
 
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
@@ -465,21 +539,26 @@ router.post("/warn", CheckAuth, async function (req, res) {
 	};
 	const moreDetails = {
 		player: req.body.steamUID,
-		reason: req.body.reason
+		reason: req.body.reason,
 	};
 
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const socket = req.client.socket;
 	// debug
 	socket.emit("rcon.warn", moreDetails.player, moreDetails.reason, async () => {
-		const log = await req.client.addLog({ action: "PLAYER_WARNED", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: moreDetails } });
+		const log = await req.client.addLog({
+			action: "PLAYER_WARNED",
+			author: { discord: discordAccount, steam: steamAccount },
+			ip: req.session.user.lastIp,
+			details: { details: moreDetails },
+		});
 		await log.save();
 		const moderation = await req.client.addModeration({
 			steamID: req.body.steamUID,
 			moderator: req.session.user.id,
 			typeModeration: "warn",
 			reason: req.body.reason,
-			endDate: null
+			endDate: null,
 		});
 		await moderation.save();
 		return res.json({ status: "ok", message: "Player warned!" });
@@ -510,14 +589,21 @@ router.post("/warn", CheckAuth, async function (req, res) {
 	}
  */
 router.post("/ban", CheckAuth, async function (req, res) {
-	if (!req.body.steamUID || !req.body.reason || !req.body.duration) return res.json({ status: "nok", message: "You are doing something wrong." });
+	if (!req.body.steamUID || !req.body.reason || !req.body.duration)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
 
 	const userRole = await req.client.getRoles(req.session.user.id);
 
 	const canUser = await req.client.whoCan("ban");
 
-	if (!canUser.some(role => userRole.includes(role)))
-		return res.json({ status: "nok2", message: "You are not allowed to do this." });
+	if (!canUser.some((role) => userRole.includes(role)))
+		return res.json({
+			status: "nok2",
+			message: "You are not allowed to do this.",
+		});
 
 	// TODO: check if the duration is valid
 	const steamAccount = {
@@ -533,54 +619,64 @@ router.post("/ban", CheckAuth, async function (req, res) {
 	const moreDetails = {
 		player: req.body.steamUID,
 		reason: req.body.reason,
-		duration: req.body.duration
+		duration: req.body.duration,
 	};
 
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const socket = req.client.socket;
 	// debug
-	const check = await req.client.moderation.find({ steamID: moreDetails.player }).where('endDate').gt(Date.now());
-	if (check.length == 0 ) {
-		socket.emit("rcon.execute", `AdminBan ${moreDetails.player} ${moreDetails.duration} ${moreDetails.reason}`, async () => {
-			let banNumber = moreDetails.duration.match(/\d+/g);
-			banNumber = parseInt(banNumber);
-			const banLetter = moreDetails.duration.match(/[a-zA-Z]/g)[0];
-			let epochDuration;
-			switch (banLetter) {
-				case "m":
-					epochDuration = Date.now() + (banNumber * 1000 * 60);
-					break;
-				case "d":
-					epochDuration = Date.now() + (banNumber * 1000 * 60 * 60 * 24);
-					break;
-				case "M":
-					epochDuration = Date.now() + (banNumber * 1000 * 60 * 60 * 24 * 30);
-					break;
-				case "P":
-					epochDuration = 0;
-					break;
-				default:
-					epochDuration = Date.now() + (1 * 1000 * 60); // 1 minute ban FAST BAN
-					break;
+	const check = await req.client.moderation
+		.find({ steamID: moreDetails.player })
+		.where("endDate")
+		.gt(Date.now());
+	if (check.length == 0) {
+		socket.emit(
+			"rcon.execute",
+			`AdminBan ${moreDetails.player} ${moreDetails.duration} ${moreDetails.reason}`,
+			async () => {
+				let banNumber = moreDetails.duration.match(/\d+/g);
+				banNumber = parseInt(banNumber);
+				const banLetter = moreDetails.duration.match(/[a-zA-Z]/g)[0];
+				let epochDuration;
+				switch (banLetter) {
+					case "m":
+						epochDuration = Date.now() + banNumber * 1000 * 60;
+						break;
+					case "d":
+						epochDuration = Date.now() + banNumber * 1000 * 60 * 60 * 24;
+						break;
+					case "M":
+						epochDuration = Date.now() + banNumber * 1000 * 60 * 60 * 24 * 30;
+						break;
+					case "P":
+						epochDuration = 0;
+						break;
+					default:
+						epochDuration = Date.now() + 1 * 1000 * 60; // 1 minute ban FAST BAN
+						break;
+				}
+				const log = await req.client.addLog({
+					action: "PLAYER_BANNED",
+					author: { discord: discordAccount, steam: steamAccount },
+					ip: req.session.user.lastIp,
+					details: { details: moreDetails },
+				});
+				await log.save();
+				const moderation = await req.client.addModeration({
+					steamID: req.body.steamUID,
+					moderator: req.session.user.id,
+					typeModeration: "ban",
+					reason: req.body.reason,
+					endDate: epochDuration,
+				});
+				await moderation.save();
+				return res.json({ status: "ok", message: "Player banned!" });
 			}
-			const log = await req.client.addLog({ action: "PLAYER_BANNED", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: moreDetails } });
-			await log.save();
-			const moderation = await req.client.addModeration({
-				steamID: req.body.steamUID,
-				moderator: req.session.user.id,
-				typeModeration: "ban",
-				reason: req.body.reason,
-				endDate: epochDuration
-			});
-			await moderation.save();
-			return res.json({ status: "ok", message: "Player banned!" });
-		});
-	}else{
-		return res.json({status: "nok3", message: "Player already banned!"})
+		);
+	} else {
+		return res.json({ status: "nok3", message: "Player already banned!" });
 	}
 });
-
-
 
 /**
  * @api {post} /squad-api/disbandSquad Disband squads
@@ -605,14 +701,21 @@ router.post("/ban", CheckAuth, async function (req, res) {
 	}
  */
 router.post("/disbandSquad", CheckAuth, async function (req, res) {
-	if (!req.body.squadID || !req.body.teamID) return res.json({ status: "nok", message: "You are doing something wrong." });
+	if (!req.body.squadID || !req.body.teamID)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
 
 	const userRole = await req.client.getRoles(req.session.user.id);
 
 	const canUser = await req.client.whoCan("disbandSquad");
 
-	if (!canUser.some(role => userRole.includes(role)))
-		return res.json({ status: "nok2", message: "You are not allowed to do this." });
+	if (!canUser.some((role) => userRole.includes(role)))
+		return res.json({
+			status: "nok2",
+			message: "You are not allowed to do this.",
+		});
 
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
@@ -626,16 +729,25 @@ router.post("/disbandSquad", CheckAuth, async function (req, res) {
 	};
 	const moreDetails = {
 		teamID: req.body.teamID,
-		squadID: req.body.squadID
+		squadID: req.body.squadID,
 	};
 
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const socket = req.client.socket;
-	socket.emit("rcon.execute", `AdminDisbandSquad ${moreDetails.teamID} ${moreDetails.squadID}`, async (response) => {
-		const log = await req.client.addLog({ action: "SQUAD_DISBAND", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: moreDetails } });
-		await log.save();
-		return res.json({ status: "ok", message: response });
-	});
+	socket.emit(
+		"rcon.execute",
+		`AdminDisbandSquad ${moreDetails.teamID} ${moreDetails.squadID}`,
+		async (response) => {
+			const log = await req.client.addLog({
+				action: "SQUAD_DISBAND",
+				author: { discord: discordAccount, steam: steamAccount },
+				ip: req.session.user.lastIp,
+				details: { details: moreDetails },
+			});
+			await log.save();
+			return res.json({ status: "ok", message: response });
+		}
+	);
 });
 
 /**
@@ -660,14 +772,21 @@ router.post("/disbandSquad", CheckAuth, async function (req, res) {
 	}
  */
 router.post("/removeFromSquad", CheckAuth, async function (req, res) {
-	if (!req.body.steamID) return res.json({ status: "nok", message: "You are doing something wrong." });
+	if (!req.body.steamID)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
 
 	const userRole = await req.client.getRoles(req.session.user.id);
 
 	const canUser = await req.client.whoCan("removeFromSquad");
 
-	if (!canUser.some(role => userRole.includes(role)))
-		return res.json({ status: "nok2", message: "You are not allowed to do this." });
+	if (!canUser.some((role) => userRole.includes(role)))
+		return res.json({
+			status: "nok2",
+			message: "You are not allowed to do this.",
+		});
 
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
@@ -680,18 +799,26 @@ router.post("/removeFromSquad", CheckAuth, async function (req, res) {
 		discriminator: req.session?.user?.discriminator,
 	};
 	const moreDetails = {
-		steamUID: req.body.steamID
+		steamUID: req.body.steamID,
 	};
 
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const socket = req.client.socket;
-	socket.emit("rcon.execute", `AdminRemovePlayerFromSquad	${moreDetails.steamUID}`, async (response) => {
-		const log = await req.client.addLog({ action: "KICK_PLAYER_FROM_SQUAD", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: moreDetails } });
-		await log.save();
-		return res.json({ status: "ok", message: response });
-	});
+	socket.emit(
+		"rcon.execute",
+		`AdminRemovePlayerFromSquad	${moreDetails.steamUID}`,
+		async (response) => {
+			const log = await req.client.addLog({
+				action: "KICK_PLAYER_FROM_SQUAD",
+				author: { discord: discordAccount, steam: steamAccount },
+				ip: req.session.user.lastIp,
+				details: { details: moreDetails },
+			});
+			await log.save();
+			return res.json({ status: "ok", message: response });
+		}
+	);
 });
-
 
 router.get("/whitelist/:token", async function (req, res) {
 	const providedToken = req.params.token;
@@ -701,28 +828,45 @@ router.get("/whitelist/:token", async function (req, res) {
 		const users = await req.client.getWhitelistUsers();
 		return res.render("whitelist", {
 			roles: groups,
-			memberData: users
+			memberData: users,
 		});
 	}
 	return res.json({ status: "nok", message: "Something went wrong!" });
 });
 
-
 router.post("/moderation/getCount", CheckAuth, async function (req, res) {
-	if (!req.body.steamid) return res.json({ status: "nok", message: "You are doing something wrong." });
-	const kick = await req.client.moderation.count({ steamID: `${req.body.steamid}`, typeModeration: `kick` });
-	const warn = await req.client.moderation.count({ steamID: `${req.body.steamid}`, typeModeration: `warn` });
-	const ban = await req.client.moderation.count({ steamID: `${req.body.steamid}`, typeModeration: `ban` });
-	return res.json({ status: "ok", count: { kick: `${kick}`, ban: `${ban}`, warn: `${warn}` } });
-})
+	if (!req.body.steamid)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
+	const kick = await req.client.moderation.count({
+		steamID: `${req.body.steamid}`,
+		typeModeration: "kick",
+	});
+	const warn = await req.client.moderation.count({
+		steamID: `${req.body.steamid}`,
+		typeModeration: "warn",
+	});
+	const ban = await req.client.moderation.count({
+		steamID: `${req.body.steamid}`,
+		typeModeration: "ban",
+	});
+	return res.json({
+		status: "ok",
+		count: { kick: `${kick}`, ban: `${ban}`, warn: `${warn}` },
+	});
+});
 
 router.post("/whitelist/import", CheckAuth, async function (req, res, next) {
 	const userRole = await req.client.getRoles(req.session.user.id);
 	const canSee = await req.client.canAccess("roles", req.userInfos.id);
-	if (!canSee)
-		return next(new Error("You can't access this page"));
+	if (!canSee) return next(new Error("You can't access this page"));
 	if (!userRole.includes("owner"))
-		return res.json({ status: "nok", message: "Only the owner can update the admin.cfg!" });
+		return res.json({
+			status: "nok",
+			message: "Only the owner can update the admin.cfg!",
+		});
 
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
@@ -736,10 +880,8 @@ router.post("/whitelist/import", CheckAuth, async function (req, res, next) {
 	};
 	const form = new multiparty.Form();
 	form.parse(req, async function (err, fields, files) {
-		if (err)
-			return next(err);
-		if (!files.whitelistfile)
-			return next(new Error("No file found"));
+		if (err) return next(err);
+		if (!files.whitelistfile) return next(new Error("No file found"));
 		if (files.whitelistfile.length > 1)
 			return next(new Error("Too many files"));
 		const file = files.whitelistfile[0];
@@ -761,7 +903,7 @@ router.post("/whitelist/import", CheckAuth, async function (req, res, next) {
 				tempArray.push(permission.trim());
 			}
 			roles[match[1]] = {
-				permissions: tempArray
+				permissions: tempArray,
 			};
 		}
 
@@ -774,19 +916,23 @@ router.post("/whitelist/import", CheckAuth, async function (req, res, next) {
 			// add match[1] to the roles with the steamID as index
 			whitelisted[match2[1]] = {
 				role: match2[2],
-				description: match2[3].trim()
+				description: match2[3].trim(),
 			};
 		}
 
 		await req.client.importWhitelist({
 			roles: roles,
-			whitelisted: whitelisted
+			whitelisted: whitelisted,
 		});
-		const log = await req.client.addLog({ action: "WHITELIST_IMPORTED", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: null } });
+		const log = await req.client.addLog({
+			action: "WHITELIST_IMPORTED",
+			author: { discord: discordAccount, steam: steamAccount },
+			ip: req.session.user.lastIp,
+			details: { details: null },
+		});
 		await log.save();
 		// Send the roles to the client
 		res.redirect(303, "/roles");
-
 	});
 });
 
@@ -803,7 +949,11 @@ router.get("/banlist/:token", async function (req, res) {
 });
 
 router.post("/banlist/removeUserBanlist", CheckAuth, async function (req, res) {
-	if (!req.body.steamUID || !req.body.reason) return res.json({ status: "nok", message: "You are doing something wrong." });
+	if (!req.body.steamUID || !req.body.reason)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
 		displayName: req.session?.passport?.user?.displayName,
@@ -819,7 +969,12 @@ router.post("/banlist/removeUserBanlist", CheckAuth, async function (req, res) {
 		reason: req.body.reason,
 	};
 	await req.client.removeUserBanlist(req.body.steamUID);
-	const log = await req.client.addLog({ action: "PLAYER_BANLIST_REMOVED", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: moreDetails } });
+	const log = await req.client.addLog({
+		action: "PLAYER_BANLIST_REMOVED",
+		author: { discord: discordAccount, steam: steamAccount },
+		ip: req.session.user.lastIp,
+		details: { details: moreDetails },
+	});
 	await log.save();
 	return res.json({ status: "ok", message: "Player removed from banlist!" });
 });
@@ -852,14 +1007,15 @@ router.post("/banlist/removeUserBanlist", CheckAuth, async function (req, res) {
 	@apiDescription Only the owner can get the url of the whitelists
  */
 router.get("/url", CheckAuth, async function (req, res) {
-
 	const userRole = await req.client.getRoles(req.session.user.id);
 	const canSee = await req.client.canAccess("roles", req.userInfos.id);
-	if (!canSee)
-		return res.json({ status: "nok", message: "No access!" });
+	if (!canSee) return res.json({ status: "nok", message: "No access!" });
 	// Check if userRole has any of ["owner"]
 	if (!userRole.includes("owner"))
-		return res.json({ status: "nok", message: "Only the owner can get the url!" });
+		return res.json({
+			status: "nok",
+			message: "Only the owner can get the url!",
+		});
 
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
@@ -873,7 +1029,12 @@ router.get("/url", CheckAuth, async function (req, res) {
 	};
 
 	const token = await req.client.getWhitelistToken();
-	const log = await req.client.addLog({ action: "WHITELIST_URL", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: null } });
+	const log = await req.client.addLog({
+		action: "WHITELIST_URL",
+		author: { discord: discordAccount, steam: steamAccount },
+		ip: req.session.user.lastIp,
+		details: { details: null },
+	});
 	await log.save();
 	res.json({ status: "ok", message: "URL sent!", token: token });
 });
@@ -906,14 +1067,15 @@ router.get("/url", CheckAuth, async function (req, res) {
 	@apiDescription Only the owner can regenerate the url of the whitelists
  */
 router.get("/url/regenerate", CheckAuth, async function (req, res) {
-
 	const userRole = await req.client.getRoles(req.session.user.id);
 	const canSee = await req.client.canAccess("roles", req.userInfos.id);
-	if (!canSee)
-		return res.json({ status: "nok", message: "No access!" });
+	if (!canSee) return res.json({ status: "nok", message: "No access!" });
 	// Check if userRole has any of ["owner"]
 	if (!userRole.includes("owner"))
-		return res.json({ status: "nok", message: "Only the owner can get regenerate the url!" });
+		return res.json({
+			status: "nok",
+			message: "Only the owner can get regenerate the url!",
+		});
 
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
@@ -927,7 +1089,12 @@ router.get("/url/regenerate", CheckAuth, async function (req, res) {
 	};
 
 	const token = await req.client.regenerateToken();
-	const log = await req.client.addLog({ action: "WHITELIST_URL_REGENERATED", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: null } });
+	const log = await req.client.addLog({
+		action: "WHITELIST_URL_REGENERATED",
+		author: { discord: discordAccount, steam: steamAccount },
+		ip: req.session.user.lastIp,
+		details: { details: null },
+	});
 	await log.save();
 	res.json({ status: "ok", message: "URL sent!", token: token });
 });
@@ -954,30 +1121,50 @@ router.get("/url/regenerate", CheckAuth, async function (req, res) {
 		"message": "You are doing something wrong."
 	}
  */
-router.post("/whitelist/removeUserWhitelist", CheckAuth, async function (req, res) {
-	if (!req.body.steamUID || !req.body.reason) return res.json({ status: "nok", message: "You are doing something wrong." });
-	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
-	};
-	const discordAccount = {
-		id: req.session.user.id,
-		username: req.session?.user?.username,
-		discriminator: req.session?.user?.discriminator,
-	};
-	const moreDetails = {
-		player: req.body.steamUID,
-		reason: req.body.reason,
-	};
-	await req.client.removeUserWhitelist(req.body.steamUID);
-	const log = await req.client.addLog({ action: "PLAYER_WHITELIST_REMOVED", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: moreDetails } });
-	await log.save();
-	return res.json({ status: "ok", message: "Whitelist removed from the player!" });
-});
+router.post(
+	"/whitelist/removeUserWhitelist",
+	CheckAuth,
+	async function (req, res) {
+		if (!req.body.steamUID || !req.body.reason)
+			return res.json({
+				status: "nok",
+				message: "You are doing something wrong.",
+			});
+		const steamAccount = {
+			steam64id: req.session?.passport?.user?.id,
+			displayName: req.session?.passport?.user?.displayName,
+			identifier: req.session?.passport?.user?.identifier,
+		};
+		const discordAccount = {
+			id: req.session.user.id,
+			username: req.session?.user?.username,
+			discriminator: req.session?.user?.discriminator,
+		};
+		const moreDetails = {
+			player: req.body.steamUID,
+			reason: req.body.reason,
+		};
+		await req.client.removeUserWhitelist(req.body.steamUID);
+		const log = await req.client.addLog({
+			action: "PLAYER_WHITELIST_REMOVED",
+			author: { discord: discordAccount, steam: steamAccount },
+			ip: req.session.user.lastIp,
+			details: { details: moreDetails },
+		});
+		await log.save();
+		return res.json({
+			status: "ok",
+			message: "Whitelist removed from the player!",
+		});
+	}
+);
 
 router.post("/players/update/stats", CheckAuth, async function (req, res) {
-	if (!req.body.userID) return res.json({ status: "nok", message: "You are doing something wrong." });
+	if (!req.body.userID)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
 
 	await req.client.updateStats(req.body.userID);
 	return res.json({ status: "ok", message: "Stats updated!" });
@@ -988,53 +1175,89 @@ router.post("/players/get/leaderboard", CheckAuth, async function (req, res) {
 	return res.json(response);
 });
 
-router.post("/whitelist/roles/addPermission", CheckAuth, async function (req, res) {
-	if (!req.body.role || !req.body.permission) return res.json({ status: "nok", message: "You are doing something wrong." });
+router.post(
+	"/whitelist/roles/addPermission",
+	CheckAuth,
+	async function (req, res) {
+		if (!req.body.role || !req.body.permission)
+			return res.json({
+				status: "nok",
+				message: "You are doing something wrong.",
+			});
 
-	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
-	};
-	const discordAccount = {
-		id: req.session.user.id,
-		username: req.session?.user?.username,
-		discriminator: req.session?.user?.discriminator,
-	};
-	const moreDetails = {
-		role: req.body.role,
-		permission: req.body.permission,
-	};
-	await req.client.addWhitelistRolePermission(req.body.role, req.body.permission);
-	const log = await req.client.addLog({ action: "WHITELIST_GROUPE_PERM_ADD", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: moreDetails } });
-	await log.save();
-	return res.json({ status: "ok", message: "Permission added!" });
-});
-router.post("/whitelist/roles/removePermission", CheckAuth, async function (req, res) {
-	if (!req.body.role || !req.body.permission) return res.json({ status: "nok", message: "You are doing something wrong." });
-	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
-	};
-	const discordAccount = {
-		id: req.session.user.id,
-		username: req.session?.user?.username,
-		discriminator: req.session?.user?.discriminator,
-	};
-	const moreDetails = {
-		role: req.body.role,
-		permission: req.body.permission,
-	};
+		const steamAccount = {
+			steam64id: req.session?.passport?.user?.id,
+			displayName: req.session?.passport?.user?.displayName,
+			identifier: req.session?.passport?.user?.identifier,
+		};
+		const discordAccount = {
+			id: req.session.user.id,
+			username: req.session?.user?.username,
+			discriminator: req.session?.user?.discriminator,
+		};
+		const moreDetails = {
+			role: req.body.role,
+			permission: req.body.permission,
+		};
+		await req.client.addWhitelistRolePermission(
+			req.body.role,
+			req.body.permission
+		);
+		const log = await req.client.addLog({
+			action: "WHITELIST_GROUPE_PERM_ADD",
+			author: { discord: discordAccount, steam: steamAccount },
+			ip: req.session.user.lastIp,
+			details: { details: moreDetails },
+		});
+		await log.save();
+		return res.json({ status: "ok", message: "Permission added!" });
+	}
+);
+router.post(
+	"/whitelist/roles/removePermission",
+	CheckAuth,
+	async function (req, res) {
+		if (!req.body.role || !req.body.permission)
+			return res.json({
+				status: "nok",
+				message: "You are doing something wrong.",
+			});
+		const steamAccount = {
+			steam64id: req.session?.passport?.user?.id,
+			displayName: req.session?.passport?.user?.displayName,
+			identifier: req.session?.passport?.user?.identifier,
+		};
+		const discordAccount = {
+			id: req.session.user.id,
+			username: req.session?.user?.username,
+			discriminator: req.session?.user?.discriminator,
+		};
+		const moreDetails = {
+			role: req.body.role,
+			permission: req.body.permission,
+		};
 
-	const log = await req.client.addLog({ action: "WHITELIST_GROUPE_PERM_REMOVE", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: moreDetails } });
-	await log.save();
-	await req.client.removeWhitelistRolePermission(req.body.role, req.body.permission);
-	return res.json({ status: "ok", message: "Permission removed!" });
-});
+		const log = await req.client.addLog({
+			action: "WHITELIST_GROUPE_PERM_REMOVE",
+			author: { discord: discordAccount, steam: steamAccount },
+			ip: req.session.user.lastIp,
+			details: { details: moreDetails },
+		});
+		await log.save();
+		await req.client.removeWhitelistRolePermission(
+			req.body.role,
+			req.body.permission
+		);
+		return res.json({ status: "ok", message: "Permission removed!" });
+	}
+);
 
 router.post("/whitelist/addGroup", CheckAuth, async function (req, res) {
-	if (!req.body.group) return res.json({ status: "nok", message: "You are doing something wrong." });
+	if (!req.body.group)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
 		displayName: req.session?.passport?.user?.displayName,
@@ -1048,42 +1271,72 @@ router.post("/whitelist/addGroup", CheckAuth, async function (req, res) {
 
 	// trim and make sure group is not empty and has no special characters or spaces
 	const group = req.body.group.trim().replace(/[^a-zA-Z0-9_]/g, "");
-	if (!group) return res.json({ status: "nok", message: "You are doing something wrong." });
+	if (!group)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
 
 	const moreDetails = {
 		group: group,
 	};
 	await req.client.addWhitelistGroup(group);
-	const log = await req.client.addLog({ action: "WHITELIST_GROUP_ADD", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: moreDetails } });
+	const log = await req.client.addLog({
+		action: "WHITELIST_GROUP_ADD",
+		author: { discord: discordAccount, steam: steamAccount },
+		ip: req.session.user.lastIp,
+		details: { details: moreDetails },
+	});
 	await log.save();
 	return res.redirect(303, "/roles");
 });
 
-router.post("/whitelist/addUserWhitelist", CheckAuth, async function (req, res) {
-	if (!req.body.steamID || !req.body.description || !req.body.role) return res.json({ status: "nok", message: "You are doing something wrong." });
-	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
-	};
-	const discordAccount = {
-		id: req.session.user.id,
-		username: req.session?.user?.username,
-		discriminator: req.session?.user?.discriminator,
-	};
-	const moreDetails = {
-		player: req.body.steamID,
-		description: req.body.description,
-		role: req.body.role,
-	};
-	await req.client.addUserWhitelist(req.body.steamID, req.body.role, req.body.description);
-	const log = await req.client.addLog({ action: "PLAYER_WHITELIST_ADD", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: moreDetails } });
-	await log.save();
-	return res.redirect(303, "/roles");
-});
+router.post(
+	"/whitelist/addUserWhitelist",
+	CheckAuth,
+	async function (req, res) {
+		if (!req.body.steamID || !req.body.description || !req.body.role)
+			return res.json({
+				status: "nok",
+				message: "You are doing something wrong.",
+			});
+		const steamAccount = {
+			steam64id: req.session?.passport?.user?.id,
+			displayName: req.session?.passport?.user?.displayName,
+			identifier: req.session?.passport?.user?.identifier,
+		};
+		const discordAccount = {
+			id: req.session.user.id,
+			username: req.session?.user?.username,
+			discriminator: req.session?.user?.discriminator,
+		};
+		const moreDetails = {
+			player: req.body.steamID,
+			description: req.body.description,
+			role: req.body.role,
+		};
+		await req.client.addUserWhitelist(
+			req.body.steamID,
+			req.body.role,
+			req.body.description
+		);
+		const log = await req.client.addLog({
+			action: "PLAYER_WHITELIST_ADD",
+			author: { discord: discordAccount, steam: steamAccount },
+			ip: req.session.user.lastIp,
+			details: { details: moreDetails },
+		});
+		await log.save();
+		return res.redirect(303, "/roles");
+	}
+);
 
 router.post("/whitelist/removeGroup", CheckAuth, async function (req, res) {
-	if (!req.body.group) return res.json({ status: "nok", message: "You are doing something wrong." });
+	if (!req.body.group)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
 		displayName: req.session?.passport?.user?.displayName,
@@ -1098,14 +1351,23 @@ router.post("/whitelist/removeGroup", CheckAuth, async function (req, res) {
 		group: req.body.group,
 	};
 	await req.client.removeWhitelistRole(req.body.group);
-	const log = await req.client.addLog({ action: "WHITELIST_GROUP_REMOVE", author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: moreDetails } });
+	const log = await req.client.addLog({
+		action: "WHITELIST_GROUP_REMOVE",
+		author: { discord: discordAccount, steam: steamAccount },
+		ip: req.session.user.lastIp,
+		details: { details: moreDetails },
+	});
 	await log.save();
 	// return ok status
 	return res.json({ status: "ok", message: "Group removed!" });
 });
 
 router.post("/roles/toggleRole", CheckAuth, async function (req, res) {
-	if (!req.body.userId || !req.body.role) return res.json({ status: "nok", message: "You are doing something wrong." });
+	if (!req.body.userId || !req.body.role)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
 	const steamAccount = {
 		steam64id: req.session?.passport?.user?.id,
 		displayName: req.session?.passport?.user?.displayName,
@@ -1120,36 +1382,70 @@ router.post("/roles/toggleRole", CheckAuth, async function (req, res) {
 		userId: req.body.userId,
 		role: req.body.role,
 	};
-	const status = await req.client.toggleUserRole(req.body.userId, req.body.role);
-	const log = await req.client.addLog({ action: `${status.toUpperCase()}`, author: { discord: discordAccount, steam: steamAccount }, ip: req.session.user.lastIp, details: { details: moreDetails } });
+	const status = await req.client.toggleUserRole(
+		req.body.userId,
+		req.body.role
+	);
+	const log = await req.client.addLog({
+		action: `${status.toUpperCase()}`,
+		author: { discord: discordAccount, steam: steamAccount },
+		ip: req.session.user.lastIp,
+		details: { details: moreDetails },
+	});
 	await log.save();
 	// return ok status
 	return res.json({ status: "ok", message: `${status.toUpperCase()}` });
 });
 
-router.post("/dashboard/toggleShowNotifications", CheckAuth, async function(req, res) {
-	if(!req.body.actionType) return res.json({ status: "nok", message: "You are doing something wrong." });
-	await req.client.toggleShowNotifications(req.body.actionType);
-	// return ok status
-	return res.json({status: "ok", message: "Toggled the notification!"});
-});
+router.post(
+	"/dashboard/toggleShowNotifications",
+	CheckAuth,
+	async function (req, res) {
+		if (!req.body.actionType)
+			return res.json({
+				status: "nok",
+				message: "You are doing something wrong.",
+			});
+		await req.client.toggleShowNotifications(req.body.actionType);
+		// return ok status
+		return res.json({ status: "ok", message: "Toggled the notification!" });
+	}
+);
 
-router.post("/dashboard/toggleUpdatePlayersTable", CheckAuth, async function(req, res) {
-	if(!req.body.actionType) return res.json({ status: "nok", message: "You are doing something wrong." });
-	await req.client.toggleUpdatePlayersTable(req.body.actionType);
-	// return ok status
-	return res.json({status: "ok", message: "Toggled the notification!"});
-});
+router.post(
+	"/dashboard/toggleUpdatePlayersTable",
+	CheckAuth,
+	async function (req, res) {
+		if (!req.body.actionType)
+			return res.json({
+				status: "nok",
+				message: "You are doing something wrong.",
+			});
+		await req.client.toggleUpdatePlayersTable(req.body.actionType);
+		// return ok status
+		return res.json({ status: "ok", message: "Toggled the notification!" });
+	}
+);
 
-router.get("/dashboard/getShowNotifications", CheckAuth, async function(req, res){
-	const showNotifications = await req.client.getShowNotifications();
-	return res.json({status: "ok", showNotifications: showNotifications});
-});
+router.get(
+	"/dashboard/getShowNotifications",
+	CheckAuth,
+	async function (req, res) {
+		const showNotifications = await req.client.getShowNotifications();
+		return res.json({ status: "ok", showNotifications: showNotifications });
+	}
+);
 
-router.get("/dashboard/getUpdatePlayersTable", CheckAuth, async function(req, res){
-	const showUpdatePlayersTable = await req.client.getUpdatePlayersTable();
-	return res.json({status: "ok", showUpdatePlayersTable: showUpdatePlayersTable});
-});
-
+router.get(
+	"/dashboard/getUpdatePlayersTable",
+	CheckAuth,
+	async function (req, res) {
+		const showUpdatePlayersTable = await req.client.getUpdatePlayersTable();
+		return res.json({
+			status: "ok",
+			showUpdatePlayersTable: showUpdatePlayersTable,
+		});
+	}
+);
 
 module.exports = router;

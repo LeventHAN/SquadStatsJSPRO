@@ -6,11 +6,10 @@ const express = require("express"),
 	config = require("../../config");
 
 // Gets profile page
-router.get("/", CheckAuth, async function(req, res) {
+router.get("/", CheckAuth, async function (req, res) {
 	const canSeeArray = await req.client.getAllCanSee();
 	const canSee = await req.client.canAccess("roles", req.userInfos.id);
-	if(!canSee)
-		return res.json({status: "nok", message: "No access!"});
+	if (!canSee) return res.json({ status: "nok", message: "No access!" });
 
 	const roles = await req.client.getWhitelistRoles();
 	const whitelisted = await req.client.getWhitelistUsers();

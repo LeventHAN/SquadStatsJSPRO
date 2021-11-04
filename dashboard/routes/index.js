@@ -4,13 +4,12 @@ const express = require("express"),
 	utils = require("../utils"),
 	config = require("../../config");
 
-
-router.get("/", async(req, res) => {
+router.get("/", async (req, res) => {
 	return res.redirect("/index");
 });
 
-router.get("/index", async(req, res) => {
-	if(req.isAuthenticated()){
+router.get("/index", async (req, res) => {
+	if (req.isAuthenticated()) {
 		return res.render("index", {
 			c: req.client,
 			userRoles: await req.client.getRoles(req.session.user.id),
@@ -21,7 +20,7 @@ router.get("/index", async(req, res) => {
 			userSteam: req.session?.passport?.user || req.userInfos.steam,
 			translate: req.translate,
 			repoVersion: config.version,
-			currentURL: `${config.dashboard.baseURL}/${req.originalUrl}` 
+			currentURL: `${config.dashboard.baseURL}/${req.originalUrl}`,
 		});
 	}
 	return res.render("index", {
@@ -32,11 +31,11 @@ router.get("/index", async(req, res) => {
 		userSteam: null,
 		translate: req.translate,
 		repoVersion: config.version,
-		currentURL: `${config.dashboard.baseURL}/${req.originalUrl}` 
+		currentURL: `${config.dashboard.baseURL}/${req.originalUrl}`,
 	});
 });
 
-router.get("/selector", CheckAuth, async(req,res) => {
+router.get("/selector", CheckAuth, async (req, res) => {
 	const allCanSeeRoles = await req.client.getAllCanSee();
 
 	res.render("selector", {
@@ -51,15 +50,14 @@ router.get("/selector", CheckAuth, async(req,res) => {
 		userSteam: req.session?.passport?.user || req.userInfos.steam,
 		translate: req.translate,
 		repoVersion: config.version,
-		currentURL: `${config.dashboard.baseURL}/${req.originalUrl}` 
+		currentURL: `${config.dashboard.baseURL}/${req.originalUrl}`,
 	});
 });
 
-router.get("/leaderboard", async(req, res) => {
-
+router.get("/leaderboard", async (req, res) => {
 	// await req.client.getLeaderboard();
 	res.render("selector", {
-		currentURL: `${config.dashboard.baseURL}/${req.originalUrl}` 	
+		currentURL: `${config.dashboard.baseURL}/${req.originalUrl}`,
 	});
 });
 

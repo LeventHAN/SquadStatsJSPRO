@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
 	/* ROLES */
 	roles: {
 		type: Array,
-		default: ["user"]
+		default: ["user"],
 	},
 
 	whitelist: {
