@@ -74,9 +74,14 @@ router.get("/", CheckAuth, async (req, res) => {
 router.get("/getServerInfo", CheckAuth, async (req, res) => {
 	const response = await utils.getBMStats(config.squadBattleMetricsID);
 	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
 		id: req.session.user.id,
@@ -129,9 +134,14 @@ router.get("/getServerInfo", CheckAuth, async (req, res) => {
 router.get("/getPlayersList", CheckAuth, async (req, res) => {
 	req.client.socket.emit("players", async (data) => {
 		const steamAccount = {
-			steam64id: req.session?.passport?.user?.id,
-			displayName: req.session?.passport?.user?.displayName,
-			identifier: req.session?.passport?.user?.identifier,
+			steam64id:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			displayName:
+				req.session?.passport?.user?.displayName ||
+				req.session?.passport?.user?.personaname,
+			identifier:
+				req.session?.passport?.user?.identifier ||
+				req.session?.passport?.user?.profileurl,
 		};
 		const discordAccount = {
 			id: req.session.user.id,
@@ -168,9 +178,14 @@ router.get("/getPlayersList", CheckAuth, async (req, res) => {
 router.get("/getNextMap", CheckAuth, async (req, res) => {
 	req.client.socket.emit("rcon.getNextMap", async (data) => {
 		const steamAccount = {
-			steam64id: req.session?.passport?.user?.id,
-			displayName: req.session?.passport?.user?.displayName,
-			identifier: req.session?.passport?.user?.identifier,
+			steam64id:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			displayName:
+				req.session?.passport?.user?.displayName ||
+				req.session?.passport?.user?.personaname,
+			identifier:
+				req.session?.passport?.user?.identifier ||
+				req.session?.passport?.user?.profileurl,
 		};
 		const discordAccount = {
 			id: req.session.user.id,
@@ -226,9 +241,14 @@ router.post("/setNextMap", CheckAuth, async function (req, res) {
 		});
 
 	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
 		id: req.session.user.id,
@@ -274,9 +294,14 @@ router.post("/setCurrentMap", CheckAuth, async function (req, res) {
 		});
 
 	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
 		id: req.session.user.id,
@@ -325,9 +350,14 @@ router.post("/setCurrentMap", CheckAuth, async function (req, res) {
 router.get("/getCurrentMap", CheckAuth, async (req, res) => {
 	req.client.socket.emit("rcon.getCurrentMap", async (data) => {
 		const steamAccount = {
-			steam64id: req.session?.passport?.user?.id,
-			displayName: req.session?.passport?.user?.displayName,
-			identifier: req.session?.passport?.user?.identifier,
+			steam64id:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			displayName:
+				req.session?.passport?.user?.displayName ||
+				req.session?.passport?.user?.personaname,
+			identifier:
+				req.session?.passport?.user?.identifier ||
+				req.session?.passport?.user?.profileurl,
 		};
 		const discordAccount = {
 			id: req.session.user.id,
@@ -383,9 +413,14 @@ router.post("/broadcast", CheckAuth, async function (req, res) {
 		});
 
 	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
 		id: req.session.user.id,
@@ -447,9 +482,14 @@ router.post("/kick", CheckAuth, async function (req, res) {
 		});
 
 	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
 		id: req.session.user.id,
@@ -477,6 +517,10 @@ router.post("/kick", CheckAuth, async function (req, res) {
 			await log.save();
 			const moderation = await req.client.addModeration({
 				steamID: req.body.steamUID,
+				moderatorSteamID:
+					req.session?.passport?.user?.id ||
+					req.session?.passport?.user?.steamid,
+				moderatorName: req.session.user.username,
 				moderator: req.session.user.id,
 				typeModeration: "kick",
 				reason: req.body.reason,
@@ -528,9 +572,14 @@ router.post("/warn", CheckAuth, async function (req, res) {
 		});
 
 	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
 		id: req.session.user.id,
@@ -555,6 +604,9 @@ router.post("/warn", CheckAuth, async function (req, res) {
 		await log.save();
 		const moderation = await req.client.addModeration({
 			steamID: req.body.steamUID,
+			moderatorSteamID:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			moderatorName: req.session.user.username,
 			moderator: req.session.user.id,
 			typeModeration: "warn",
 			reason: req.body.reason,
@@ -607,9 +659,14 @@ router.post("/ban", CheckAuth, async function (req, res) {
 
 	// TODO: check if the duration is valid
 	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
 		id: req.session.user.id,
@@ -621,7 +678,6 @@ router.post("/ban", CheckAuth, async function (req, res) {
 		reason: req.body.reason,
 		duration: req.body.duration,
 	};
-
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const socket = req.client.socket;
 	// debug
@@ -664,6 +720,10 @@ router.post("/ban", CheckAuth, async function (req, res) {
 				await log.save();
 				const moderation = await req.client.addModeration({
 					steamID: req.body.steamUID,
+					moderatorSteamID:
+						req.session?.passport?.user?.id ||
+						req.session?.passport?.user?.steamid,
+					moderatorName: req.session.user.username,
 					moderator: req.session.user.id,
 					typeModeration: "ban",
 					reason: req.body.reason,
@@ -718,9 +778,14 @@ router.post("/disbandSquad", CheckAuth, async function (req, res) {
 		});
 
 	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
 		id: req.session.user.id,
@@ -789,9 +854,14 @@ router.post("/removeFromSquad", CheckAuth, async function (req, res) {
 		});
 
 	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
 		id: req.session.user.id,
@@ -869,9 +939,14 @@ router.post("/whitelist/import", CheckAuth, async function (req, res, next) {
 		});
 
 	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
 		id: req.session.user.id,
@@ -955,9 +1030,14 @@ router.post("/banlist/removeUserBanlist", CheckAuth, async function (req, res) {
 			message: "You are doing something wrong.",
 		});
 	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
 		id: req.session.user.id,
@@ -1018,9 +1098,14 @@ router.get("/url", CheckAuth, async function (req, res) {
 		});
 
 	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
 		id: req.session.user.id,
@@ -1078,9 +1163,14 @@ router.get("/url/regenerate", CheckAuth, async function (req, res) {
 		});
 
 	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
 		id: req.session.user.id,
@@ -1131,9 +1221,14 @@ router.post(
 				message: "You are doing something wrong.",
 			});
 		const steamAccount = {
-			steam64id: req.session?.passport?.user?.id,
-			displayName: req.session?.passport?.user?.displayName,
-			identifier: req.session?.passport?.user?.identifier,
+			steam64id:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			displayName:
+				req.session?.passport?.user?.displayName ||
+				req.session?.passport?.user?.personaname,
+			identifier:
+				req.session?.passport?.user?.identifier ||
+				req.session?.passport?.user?.profileurl,
 		};
 		const discordAccount = {
 			id: req.session.user.id,
@@ -1186,9 +1281,14 @@ router.post(
 			});
 
 		const steamAccount = {
-			steam64id: req.session?.passport?.user?.id,
-			displayName: req.session?.passport?.user?.displayName,
-			identifier: req.session?.passport?.user?.identifier,
+			steam64id:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			displayName:
+				req.session?.passport?.user?.displayName ||
+				req.session?.passport?.user?.personaname,
+			identifier:
+				req.session?.passport?.user?.identifier ||
+				req.session?.passport?.user?.profileurl,
 		};
 		const discordAccount = {
 			id: req.session.user.id,
@@ -1223,9 +1323,14 @@ router.post(
 				message: "You are doing something wrong.",
 			});
 		const steamAccount = {
-			steam64id: req.session?.passport?.user?.id,
-			displayName: req.session?.passport?.user?.displayName,
-			identifier: req.session?.passport?.user?.identifier,
+			steam64id:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			displayName:
+				req.session?.passport?.user?.displayName ||
+				req.session?.passport?.user?.personaname,
+			identifier:
+				req.session?.passport?.user?.identifier ||
+				req.session?.passport?.user?.profileurl,
 		};
 		const discordAccount = {
 			id: req.session.user.id,
@@ -1259,9 +1364,14 @@ router.post("/whitelist/addGroup", CheckAuth, async function (req, res) {
 			message: "You are doing something wrong.",
 		});
 	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
 		id: req.session.user.id,
@@ -1301,9 +1411,14 @@ router.post(
 				message: "You are doing something wrong.",
 			});
 		const steamAccount = {
-			steam64id: req.session?.passport?.user?.id,
-			displayName: req.session?.passport?.user?.displayName,
-			identifier: req.session?.passport?.user?.identifier,
+			steam64id:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			displayName:
+				req.session?.passport?.user?.displayName ||
+				req.session?.passport?.user?.personaname,
+			identifier:
+				req.session?.passport?.user?.identifier ||
+				req.session?.passport?.user?.profileurl,
 		};
 		const discordAccount = {
 			id: req.session.user.id,
@@ -1338,9 +1453,14 @@ router.post("/whitelist/removeGroup", CheckAuth, async function (req, res) {
 			message: "You are doing something wrong.",
 		});
 	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
 		id: req.session.user.id,
@@ -1369,9 +1489,14 @@ router.post("/roles/toggleRole", CheckAuth, async function (req, res) {
 			message: "You are doing something wrong.",
 		});
 	const steamAccount = {
-		steam64id: req.session?.passport?.user?.id,
-		displayName: req.session?.passport?.user?.displayName,
-		identifier: req.session?.passport?.user?.identifier,
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
 		id: req.session.user.id,

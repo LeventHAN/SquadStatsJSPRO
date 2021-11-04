@@ -88,6 +88,7 @@ router.get("/callback", async (req, res) => {
 	req.session.user = { ...userData.infos, ...{ guilds } };
 	const user = await req.client.users.fetch(req.session.user.id);
 	const userDB = await req.client.findOrCreateUser({ id: user.id });
+	if (userDB?.steam) req.session.passport = { user: userDB.steam };
 	const logsChannel = req.client.channels.cache.get(
 		req.client.config.support.logs
 	);

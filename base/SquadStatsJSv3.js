@@ -272,6 +272,8 @@ class SquadStatsJSv3 extends Client {
 
 	async addModeration({
 		steamID: steamID,
+		moderatorSteamID: moderatorSteamID,
+		moderatorName: moderatorName,
 		moderator: moderator,
 		typeModeration: typeModeration,
 		reason: reason,
@@ -279,6 +281,8 @@ class SquadStatsJSv3 extends Client {
 	}) {
 		const moderationRow = new this.moderation({
 			steamID: steamID,
+			moderatorSteamID: moderatorSteamID,
+			moderatorName: moderatorName,
 			moderator: moderator,
 			typeModeration: typeModeration,
 			reason: reason,
