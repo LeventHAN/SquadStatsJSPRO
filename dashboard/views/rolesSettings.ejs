@@ -230,141 +230,16 @@
                                 <h3 class="box-title">Show Remote Admins URL</h3>
                                 <h6>Put this URL to your remoteAdmin.cfg file</h6>
                             </div>
-                            <pre id="urlToWhitelist">*****************************************************</pre>
-                            <button class="btn btn-secondary" onclick="getWhiteListURL()"><i id="eyeURL" class="fa fa-eye-slash"></i></button>
+                            <pre id="urlTolist">*****************************************************</pre>
+                            <button class="btn btn-secondary" onclick="getListURL()"><i id="eyeURL" class="fa fa-eye-slash"></i></button>
                             <button class="btn btn-info" onclick="regenToken()">Regenerate Token</button>
                         </div>
                     <div>
 				</section>
 				<!-- Footer includes credits and version -->
 			</div>
+            <%- include('./partials/whiteban') %>
             <!-- /.content-wrapper -->
-            <script>
-                let usersTable;
-                // When loading the page, the datatable is created
-                $(document).ready(() => {
-                    usersTable = $('#datatable').DataTable({
-                        destroy: true,
-                        bAutoWidth: false,
-                        "scrollCollapse": true,
-                        "info":           false,
-                        "paging":         true,
-                    } );
-                });
-            </script>
-            <script>
-                
-                let urlShowing = false;
-                let eye = document.getElementById("eyeURL");
-
-
-                async function removeWhitelist(steamID) {
-                    Swal.fire({
-                        title: 'Reason of removal:',
-                        input: 'text',
-                        inputAttributes: {
-                            autocapitalize: 'off'
-                        },
-                        showCancelButton: true,
-                        confirmButtonText: 'Remove',
-                        allowOutsideClick: () => !Swal.isLoading()
-                        }).then(async (result) => {
-                            if (result.isConfirmed) {
-                                await axios.post(`${window.location.origin}/squad-api/whitelist/removeUserWhitelist`, {
-                                    steamUID: steamID,
-                                    reason: result.value
-                                })
-                                .then((response) => {
-                                    if(!response.data.status) return Swal.fire(`Error`,`Error while getting response.`,`error`);
-                                    if(response.data.status === "ok") {
-                                        Toast.fire({
-                                            icon: 'success',
-                                            title: 'Player has been removed.'
-                                        })
-                                        // Remove the row and refresh the datatable
-                                        usersTable.row( document.getElementById(steamID) ).remove().draw();
-                                    }
-                                    if(response.data.status === "nok") {
-                                        Swal.fire(`There was an error`,response.data.message,`error`);
-                                    }
-                                })
-                                .catch((error) => {
-                                    return Swal.fire(`Error`,`Error: ${error}`,`error`);
-                                });
-                            }
-                        })
-                }
-
-
-
-
-               async function getWhiteListURL(){
-                    if(urlShowing) {
-                        // remove fa-eye from it
-                        eye.classList.remove("fa-eye");
-                        // add fa-eye-slash to it
-                        eye.classList.add("fa-eye-slash");
-                        $('#urlToWhitelist').text('*****************************************************');
-                        urlShowing = false;
-                        return Toast.fire({
-                                    icon: 'warning',
-                                    title: 'URL is hidden.'
-                                })
-                    }
-                    await axios.get(`${window.location.origin}/squad-api/url`)
-                    .then((response) => {
-                        if(!response.data.status) return Swal.fire(`Error`,`Error while getting response.`,`error`);
-                        if(response.data.status === "ok") {
-                            Toast.fire({
-                                icon: 'success',
-                                title: 'URL is not hidden anymore.'
-                            })
-                            $("#urlToWhitelist").text(response.data.url);
-                            // remove fa-eye-slash from it
-                            eye.classList.remove("fa-eye-slash");
-                            // add fa-eye to it
-                            eye.classList.add("fa-eye");
-                            return urlShowing = true;
-                        }
-                        if(response.data.status === "nok") {
-                            Swal.fire(`There was an error`,response.data.message,`error`);
-                        }
-                    })
-                    .catch((error) => {
-                        return Swal.fire(`Error`,`Error: ${error}`,`error`);
-                    });
-               } 
-               async function regenToken(){
-                    await axios.get(`${window.location.origin}/squad-api/url/regenerate`)
-                    .then((response) => {
-                        if(!response.data.status) return Swal.fire(`Error`,`Error while getting response.`,`error`);
-                        if(response.data.status === "ok") {
-                            Toast.fire({
-                                icon: 'success',
-                                title: 'Token is regenerated.'
-                            })
-                            $("#urlToWhitelist").text(response.data.url);
-                            // remove fa-eye-slash from it
-                            eye.classList.remove("fa-eye-slash");
-                            // add fa-eye to it
-                            eye.classList.add("fa-eye");
-                            return urlShowing = true;
-                        }
-                        if(response.data.status === "nok") {
-                            Swal.fire(`There was an error`,response.data.message,`error`);
-                        }
-                    })
-                    .catch((error) => {
-                        return Swal.fire(`Error`,`Error: ${error}`,`error`);
-                    });
-               } 
-            </script>
-
-            <script>
-                $('input[type="checkbox"]').change(function() {
-                    $(`label[for="${this.id}"]`).toggleClass('active');
-                });
-            </script>
             <%- include('./partials/footer') %>
 		<!-- ./wrapper -->
         <%- include('./partials/scripts') %>

@@ -272,6 +272,8 @@ class SquadStatsJSv3 extends Client {
 
 	async addModeration({
 		steamID: steamID,
+		moderatorSteamID: moderatorSteamID,
+		moderatorName: moderatorName,
 		moderator: moderator,
 		typeModeration: typeModeration,
 		reason: reason,
@@ -279,6 +281,8 @@ class SquadStatsJSv3 extends Client {
 	}) {
 		const moderationRow = new this.moderation({
 			steamID: steamID,
+			moderatorSteamID: moderatorSteamID,
+			moderatorName: moderatorName,
 			moderator: moderator,
 			typeModeration: typeModeration,
 			reason: reason,
@@ -322,6 +326,16 @@ class SquadStatsJSv3 extends Client {
 		);
 	}
 
+	async getBanlist() {
+		const bans = await this.moderation.find({});
+		const onList = [];
+		bans.forEach((element) => {
+			if (element.typeModeration == "ban" && element.endDate > Date.now())
+				return onList.push(element);
+		});
+		return onList;
+	}
+
 	// Returns the whitelist roles only (Groups)
 	async getWhitelistRoles() {
 		const whitelist = await this.whitelists.findOne({});
@@ -333,6 +347,14 @@ class SquadStatsJSv3 extends Client {
 		const whitelist = await this.whitelists.findOne({});
 		if (!whitelist) return;
 		return whitelist.memberData;
+	}
+
+	async removeUserBanlist(steamID) {
+		await this.moderation.findOneAndUpdate(
+			{ steamID: steamID, endDate: { $gt: Date.now() } },
+			{ $set: { endDate: Date.now() } }
+		);
+		return true;
 	}
 
 	// Remove user from whitelist by steamID
@@ -482,7 +504,7 @@ class SquadStatsJSv3 extends Client {
 	}
 
 	async getPlayersLength() {
-		if(!this.socket) return "N/A";
+		if (!this.socket) return "N/A";
 		this.players;
 		const response = new Promise((res) => {
 			this.socket.emit("players", async (data) => {
@@ -525,21 +547,18 @@ class SquadStatsJSv3 extends Client {
 		const roles = [];
 		// loop trough perms.canSee and put all values to roles
 		for (const key in perms.canSee) {
-			if (perms.canSee[key]){
+			if (perms.canSee[key]) {
 				// loop trough the roles
-				for (let i=0; i<perms.canSee[key].length; i++) {
+				for (let i = 0; i < perms.canSee[key].length; i++) {
 					roles.push(perms.canSee[key][i]);
 				}
 			}
 		}
 		// remove duplicates
 		return [...new Set(roles)];
-
-
-		
 	}
 
-	async getAllPagesCanSee(){
+	async getAllPagesCanSee() {
 		const perms = await this.permission.findOne({});
 		if (!perms) return;
 		// look inside canSee and whoCan and put all diffrent values in an array
@@ -550,7 +569,7 @@ class SquadStatsJSv3 extends Client {
 		return pages;
 	}
 
-	async getAllActionsWhoCan(){
+	async getAllActionsWhoCan() {
 		const perms = await this.permission.findOne({});
 		if (!perms) return;
 		// look inside canSee and whoCan and put all diffrent values in an array
@@ -570,7 +589,6 @@ class SquadStatsJSv3 extends Client {
 
 		// Loop trough perms.canSee and search for route in it
 		for (const key in perms[0].canSee) {
-			
 			if (key === route) {
 				// Loop trough the roles in the array
 				for (const role of perms[0].canSee[key]) {
@@ -805,21 +823,22 @@ class SquadStatsJSv3 extends Client {
 	}
 
 	async getShowNotifications() {
-		const guild = await this.findOrCreateGuild({id: this.config.serverID });
+		const guild = await this.findOrCreateGuild({ id: this.config.serverID });
 		return guild.dashboard.showNotifications;
 	}
 
 	async getUpdatePlayersTable() {
-		const guild = await this.findOrCreateGuild({id: this.config.serverID });
+		const guild = await this.findOrCreateGuild({ id: this.config.serverID });
 		return guild.dashboard.updatePlayersTable;
 	}
 
 	async toggleShowNotifications(actionType) {
-		const guild = await this.findOrCreateGuild({id: this.config.serverID });
+		const guild = await this.findOrCreateGuild({ id: this.config.serverID });
 		if (guild) {
-			for( const action in guild.dashboard.showNotifications) {
+			for (const action in guild.dashboard.showNotifications) {
 				if (action === actionType) {
-					guild.dashboard.showNotifications[action] = !guild.dashboard.showNotifications[action];
+					guild.dashboard.showNotifications[action] =
+						!guild.dashboard.showNotifications[action];
 				}
 			}
 		}
@@ -827,11 +846,12 @@ class SquadStatsJSv3 extends Client {
 	}
 
 	async toggleUpdatePlayersTable(actionType) {
-		const guild = await this.findOrCreateGuild({id: this.config.serverID });
+		const guild = await this.findOrCreateGuild({ id: this.config.serverID });
 		if (guild) {
-			for( const action in guild.dashboard.updatePlayersTable) {
+			for (const action in guild.dashboard.updatePlayersTable) {
 				if (action === actionType) {
-					guild.dashboard.updatePlayersTable[action] = !guild.dashboard.updatePlayersTable[action];
+					guild.dashboard.updatePlayersTable[action] =
+						!guild.dashboard.updatePlayersTable[action];
 				}
 			}
 		}

@@ -6,6 +6,16 @@ const moderationSchema = new mongoose.Schema({
 		type: String,
 		default: "12345678911234567",
 	},
+	/* admin steamID */
+	moderatorSteamID: {
+		type: String,
+		default: "steamID",
+	},
+	/* admin discordName */
+	moderatorName: {
+		type: String,
+		default: "discordName",
+	},
 	/* admin discordID */
 	moderator: {
 		type: String,
@@ -28,7 +38,7 @@ const moderationSchema = new mongoose.Schema({
 	},
 	/* end date of the action - null if just kick or warn */
 	endDate: {
-		type: Date,
+		type: Number,
 		default: null,
 	},
 });

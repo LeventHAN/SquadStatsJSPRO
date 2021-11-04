@@ -13,7 +13,7 @@ module.exports.load = async (client) => {
 	const limiter = rateLimit({
 		windowMs: 1000,
 		max: 10, // limit each IP to 6 requests per windowMs (1 second)
-		message: "RateLimit reached! Please try again."
+		message: "RateLimit reached! Please try again.",
 	});
 	const express = require("express"),
 		session = require("express-session"),
@@ -30,6 +30,7 @@ module.exports.load = async (client) => {
 		discordAPIRouter = require("./routes/discord"),
 		apiRouter = require("./routes/api"),
 		logoutRouter = require("./routes/logout"),
+		banlistRouter = require("./routes/banlist"),
 		settingsRouter = require("./routes/settings"),
 		rolesRouter = require("./routes/roles"),
 		steamRouter = require("./routes/steam"),
@@ -64,71 +65,80 @@ module.exports.load = async (client) => {
 		"PLAYER_WARNED",
 		"PLAYER_KICKED",
 		"PLAYER_BANNED",
-		"SQUAD_CREATED"
+		"SQUAD_CREATED",
 	];
 
-	passport.serializeUser(function(user, done) {
+	passport.serializeUser(function (user, done) {
 		done(null, user);
 	});
 
-	passport.deserializeUser(function(obj, done) {
+	passport.deserializeUser(function (obj, done) {
 		done(null, obj);
 	});
 
-	passport.use(new SteamStrategy({
-		returnURL: config.dashboard.baseURL+"/auth/steam/return",
-		realm: config.dashboard.baseURL,
-		apiKey: config.apiKeys.steam
-	},
-	function(identifier, profile, done) {
-		process.nextTick(function () {
-			profile.identifier = identifier;
-			return done(null, profile);
-		});
-	}
-	));
+	passport.use(
+		new SteamStrategy(
+			{
+				returnURL: config.dashboard.baseURL + "/auth/steam/return",
+				realm: config.dashboard.baseURL,
+				apiKey: config.apiKeys.steam,
+			},
+			function (identifier, profile, done) {
+				process.nextTick(function () {
+					profile.identifier = identifier;
+					return done(null, profile);
+				});
+			}
+		)
+	);
 
+	const whitelist = [
+		"http://localhost:3000",
+		"https://localhost:3000",
+		config.dashboard.baseURL,
+	];
 
-	const whitelist = ["http://localhost:3000", "https://localhost:3000", config.dashboard.baseURL];
-
-	if(client.socket){
+	if (client.socket) {
 		io.use(async (socket, next) => {
-			if(!socket.handshake.auth) return next(new Error("No token provided."));
+			if (!socket.handshake.auth) return next(new Error("No token provided."));
 			const user = await client.fetchUserByToken(socket.handshake.auth.token);
-			if(!user) {
-				console.log("Someone did try to login with wrong credintials.", socket.handshake);
+			if (!user) {
+				console.log(
+					"Someone did try to login with wrong credintials.",
+					socket.handshake
+				);
 				return next(new Error("Invalid token."));
 			}
 			socket.user = user;
 			next();
 		});
-	
-	
+
 		io.on("connection", async (socket) => {
 			for (const eventToBroadcast of eventsToBroadcast) {
-				client.socket.on((eventToBroadcast), (...args) => {
+				client.socket.on(eventToBroadcast, (...args) => {
 					socket.emit(eventToBroadcast, ...args);
 				});
 			}
 			socket.onAny(async (eventName, ...rawArgs) => {
 				const args = rawArgs.slice(0, rawArgs.length - 1);
 				const callback = rawArgs[rawArgs.length - 1];
-				await client.socket.emit(`${eventName}`, ...args, async (response) => { 
+				await client.socket.emit(`${eventName}`, ...args, async (response) => {
 					return callback(response);
 				});
 			});
 		});
 	}
-	
 
 	/* App configuration */
 	app
 		.use(express.json())
 		.use(express.urlencoded({ extended: true }))
-		.use(cors({
-			origin: "*",
-			optionsSuccessStatus: 200
-		}))
+		.use(
+			cors({
+				origin: "*",
+				optionsSuccessStatus: 200,
+			})
+		)
 		// Set the engine to html (for ejs template)
 		.engine("html", require("ejs").renderFile)
 		.set("view engine", "ejs")
@@ -153,7 +163,7 @@ module.exports.load = async (client) => {
 			req.user = req.session.user;
 			req.client = client;
 			req.locale = "en-US";
-			if (req.user && req.url !== "/"){
+			if (req.user && req.url !== "/") {
 				req.userInfos = await utils.fetchUser(req.user, req.client);
 			}
 			if (req.user) {
@@ -170,6 +180,7 @@ module.exports.load = async (client) => {
 		.use("/settings", settingsRouter)
 		.use("/roles", rolesRouter)
 		.use("/steam", steamRouter)
+		.use("/bans", banlistRouter)
 		.use("/", mainRouter)
 		.use("/players", playersRouter)
 		.use("/profile", profileRouter)
@@ -193,17 +204,26 @@ module.exports.load = async (client) => {
 			});
 		});
 
-
-
 	// Listen express server
 	app.listen(app.get("port"), () => {
-		client.logger.log(`SquadStatsJS ${version} Dashboard is listening on port ${app.get("port")}`,"READY");
+		client.logger.log(
+			`SquadStatsJS ${version} Dashboard is listening on port ${app.get(
+				"port"
+			)}`,
+			"READY"
+		);
 	});
 	// Listen websocket server
-	server.listen(3000, {
-		origins: whitelist
-	}, () => {
-		client.logger.log(`SquadStatsJS ${version} SocketIO is listening on port 3000`,"READY");
-	});
-
+	server.listen(
+		3000,
+		{
+			origins: whitelist,
+		},
+		() => {
+			client.logger.log(
+				`SquadStatsJS ${version} SocketIO is listening on port 3000`,
+				"READY"
+			);
+		}
+	);
 };

@@ -3,12 +3,12 @@ const express = require("express"),
 	router = express.Router();
 
 // Gets login page
-router.get("/", CheckAuth, async function(req, res) {
+router.get("/", CheckAuth, async function (req, res) {
 	// Set user's status to false
 	const user = await req.client.users.fetch(req.session.user.id);
 	const userDB = await req.client.findOrCreateUser({ id: user.id });
 	// Set active status to false
-	if(userDB.isOnline){
+	if (userDB.isOnline) {
 		userDB.isOnline = false;
 	}
 	await userDB.save();
