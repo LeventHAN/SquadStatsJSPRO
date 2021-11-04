@@ -28,7 +28,7 @@ const moderationSchema = new mongoose.Schema({
 	},
 	/* end date of the action - null if just kick or warn */
 	endDate: {
-		type: Date,
+		type: Number,
 		default: null,
 	},
 });

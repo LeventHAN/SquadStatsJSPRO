@@ -323,6 +323,16 @@ class SquadStatsJSv3 extends Client {
 		);
 	}
 
+	async getBanlist()
+	{
+		const bans = await this.moderation.find({});
+		let onList = [];
+		bans.forEach(element => {
+			if(element.typeModeration == "ban" && element.endDate > Date.now() ) return onList.push(element)
+		});
+		return onList;
+	}
+
 	// Returns the whitelist roles only (Groups)
 	async getWhitelistRoles() {
 		const whitelist = await this.whitelists.findOne({});
@@ -334,6 +344,13 @@ class SquadStatsJSv3 extends Client {
 		const whitelist = await this.whitelists.findOne({});
 		if (!whitelist) return;
 		return whitelist.memberData;
+	}
+
+	async removeUserBanlist(steamID) {
+		const banlist = await this.moderation.find({steamID: steamID}).where('endDate').gt(Date.now());
+		if (!banlist) return;
+		await this.moderation.findOneAndUpdate({steamID: steamID, endDate: {'$gt': Date.now() } } ,{ '$set': { endDate: Date.now() } })
+		return true;
 	}
 
 	// Remove user from whitelist by steamID

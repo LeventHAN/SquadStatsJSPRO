@@ -30,6 +30,7 @@ module.exports.load = async (client) => {
 		discordAPIRouter = require("./routes/discord"),
 		apiRouter = require("./routes/api"),
 		logoutRouter = require("./routes/logout"),
+		banlistRouter = require("./routes/banlist"),
 		settingsRouter = require("./routes/settings"),
 		rolesRouter = require("./routes/roles"),
 		steamRouter = require("./routes/steam"),
@@ -169,6 +170,7 @@ module.exports.load = async (client) => {
 		.use("/settings", settingsRouter)
 		.use("/roles", rolesRouter)
 		.use("/steam", steamRouter)
+		.use("/bans", banlistRouter)
 		.use("/", mainRouter)
 		.use("/players", playersRouter)
 		.use("/profile", profileRouter)

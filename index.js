@@ -9,7 +9,6 @@ const util = require("util"),
 // Load SquadStatsJSv3 class
 const SquadStatsJSv3 = require("./base/SquadStatsJSv3"),
 	client = new SquadStatsJSv3();
-
 const init = async () => {
 	// Search for all commands
 	const directories = await readdir("./commands/");

@@ -320,8 +320,8 @@
                     if (!length) return Swal.fire(`Error`, `Ban Length cannot be empty`, `error`);
                     await axios.post(`${window.location.origin}/squad-api/ban`, {
                         steamUID: steamID,
-                        reason: result.value,
-                        duration: banTime ? null : 0
+                        reason: reason,
+                        duration: banTime
                     })
                         .then((response) => {
                             if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
