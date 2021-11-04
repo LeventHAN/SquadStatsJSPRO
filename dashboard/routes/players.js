@@ -7,9 +7,15 @@ const express = require("express"),
 router.get("/", CheckAuth, async(req,res, next) => {
 	const canSeeArray = await req.client.getAllCanSee();
 	const canSee = await req.client.canAccess("players", req.userInfos.id);
+	const responseNotify = await req.client.getShowNotifications();
+	const responseUpdate = await req.client.getUpdatePlayersTable();
+
 	if(!canSee)
 		return next(new Error("You can't access this page"));
+	
 	res.render("players", {
+		notifySettings: responseNotify,
+		updateSettings: responseUpdate,
 		userRoles: await req.client.getRoles(req.session.user.id),
 		c: req.client,
 		latestTPS: await utils.getTPS(req.client),

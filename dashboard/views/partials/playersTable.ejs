@@ -1,75 +1,100 @@
-<script>
-    function isFocused() {
-        if (
-            document.activeElement.tagName === "INPUT" ||
-            document.activeElement.tagName === "BUTTON"
-        ) {
-            new Noty({
-                theme: 'nest',
-                timeout: 5000,
-                queue: "TO_UPDATE",
-                killer: 'TO_UPDATE',
-                type: 'info',
-                layout: 'bottomLeft',
-                text: '<b>Info:</b><br>There ' + (passedNotif === 1 ? 'is ' : 'are ') + passedNotif++ + ((passedNotif - 1) === 1 ? ' update' : ' updates') + '. Refresh the page to see them.'
-            }).show();
-            return true;
-        }
 
-        if (!pauseUpdateHover && passedNotif > 1) {
-            updatePlayers();
-            passedNotif = 0;
-            new Noty({
-                theme: 'nest',
-                timeout: 5000,
-                queue: "UPDATED",
-                killer: 'UPDATED',
-                type: 'info',
-                layout: 'bottomLeft',
-                text: '<b>Info:</b><br>We did update your table, no need to auto refresh.<br><span style="font-size: 8px">Auto Refresh works only when you are not hovering over the tables and not focusing to input fields or pressing to SETTINGS.</span>'
-            }).show();
-        }
-        return false;
-    }
-
-    function isHovering(status) {
-        if (status) return pauseUpdateHover = true;
-        return pauseUpdateHover = false;
-    }
-
-</script>
+<script src='https://rawgit.com/naikus/svg-gauge/master/dist/gauge.js'></script>
 
 <script>
-    let admins = 0;
-    Noty.setMaxVisible(4);
-    socket.on("connect", () => {
-        new Noty({
-            theme: 'nest',
-            timeout: 2200,
-            type: 'success',
-            visibilityControl: 'true',
-            layout: 'topRight',
-            text: '<b>Reminder:</b><br>You are connected with SquadJS.'
-        }).show();
-    });
+const Gauge = window.Gauge;
+let responseNotify = {
+    onConnect: null,
+    onDisconnect: null,
+    onSquadJoin: null,
+    onSquadLeave: null,
+    onSquadUpdate: null,
+    onAdminRequest: null,
+    notifyAboutUpdates: null
+};
+let responseUpdate = {
+    onConnect: null,
+    onDisconnect: null,
+    onSquadJoin: null,
+    onSquadLeave: null,
+    onSquadUpdate: null
+};
+<% for (let key in notifySettings) { %>
+    responseNotify["<%= key %>"] = <%= notifySettings[key] %>;
+<% }; %>
+
+<% for (let key in updateSettings) { %>
+    responseUpdate["<%= key %>"] = <%= updateSettings[key] %>;
+<% }; %>
 
 
+let admins = 0;
+let gaugePlayers;
+let playersSizeTitle =  document.getElementById("headerTitle2");
+playersSizeTitle.innerHTML = "Realtime Players Count"
+socket.emit("players", (playersList) => {
+    gaugePlayers = Gauge(
+    document.getElementById("headerDesc2"), {
+        min: 0,
+        max: 100,
+        dialStartAngle: 180,
+        dialEndAngle: 0,
+        viewBox: (0, 0, 100, 100),
+        color: function(value) {
+            if(value < 0) {
+                return "#5ee432";
+            } else if(value < 50) {
+                return "#fffa50";
+            } else if(value < 80) {
+                return "#f7aa38";
+            } else {
+                return "#ef4655";
+            }
+        }
+    }
+    );
+    gaugePlayers.setValueAnimated(playersList.length, 2);
+});
+
+
+
+
+
+
+
+Noty.setMaxVisible(4);
+socket.on("connect", () => {
+    
+    new Noty({
+        theme: 'nest',
+        timeout: 2200,
+        type: 'success',
+        visibilityControl: 'true',
+        layout: 'topRight',
+        text: '<b>Reminder:</b><br>You are connected with SquadJS.'
+    }).show();
+
+});
+
+
+if(responseNotify.onAdminRequest) {
     // Place holder! SQUADJS needs to have a function to return active admins!
-
 
     socket.on('CHAT_MESSAGE', async (data) => {
         const command = data.message.match(/!([^ ]+) ?(.*)/);
         if (command) {
             const adminRequest = command[1].toLowerCase();
             if (adminRequest == "admin") {
-                await socket.emit("players", (playersList) => {
-                    // TODO: GET THE ADMINS BRUH <3 placeholder below: 
-                    let adminsList = ["76561197973047706", "76561197975723789"];
-                    // Count how much times playerList includes adminsList
-                    for (let i = 0; i < playersList.length; i++) {
-                        if (adminsList.includes(playersList[i].steamID)) admins++;
-                    }
-                })
+                // TODO: add here check for in game admins.
+                // await socket.emit("players", (playersList) => {
+                //     // TODO: GET THE ADMINS BRUH <3 placeholder below: 
+
+                //     let adminsList = ["76561197973047706", "76561197975723789"];
+                //     // Count how much times playerList includes adminsList
+                //     for (let i = 0; i < playersList.length; i++) {
+                //         if (adminsList.includes(playersList[i].steamID)) admins++;
+                //     }
+                // })
                 new Noty({
                     theme: 'nest',
                     timeout: 10000,
@@ -79,7 +104,7 @@
                     type: 'error',
                     visibilityControl: 'true',
                     text: `<b>Admin Request:</b>
-                <br><b>Active In-Game Admins:</b> <span style="text-color: lightblue">${admins}</span>
+                <!-- <br><b>Active In-Game Admins:</b> <span style="text-color: lightblue">ADMIN AMOUNT HERE.</span> -->
                 <br><b>Request:</b> <span style="text-color: lightblue">${command[2].trim()}</span>
                 <br><b>Steam:</b> <a style="text-decoration: none;" href="http://steamcommunity.com/profiles/${data.player.steamID}" target="_blank">${data.player.name}</a>
                 `
@@ -87,8 +112,153 @@
             }
         }
     });
+}
 
-    socket.on("PLAYER_CONNECTED", async (data) => {
+let pauseUpdateHover = false;
+let passedNotif = 1;
+function isFocused() {
+    if (
+        document.activeElement.tagName === "INPUT" ||
+        document.activeElement.tagName === "BUTTON"
+    ) {
+        new Noty({
+            theme: 'nest',
+            timeout: 5000,
+            queue: "TO_UPDATE",
+            killer: 'TO_UPDATE',
+            type: 'info',
+            layout: 'bottomLeft',
+            text: '<b>Info:</b><br>There ' + (passedNotif === 1 ? 'is ' : 'are ') + passedNotif++ + ((passedNotif - 1) === 1 ? ' update' : ' updates') + '. Refresh the page to see them.'
+        }).show();
+        return true;
+    }
+
+    if (!pauseUpdateHover && passedNotif > 1) {
+        updatePlayers();
+        passedNotif = 0;
+        new Noty({
+            theme: 'nest',
+            timeout: 5000,
+            queue: "UPDATED",
+            killer: 'UPDATED',
+            type: 'info',
+            layout: 'bottomLeft',
+            text: '<b>Info:</b><br>We did update your table, no need to auto refresh.<br><span style="font-size: 8px">Auto Refresh works only when you are not hovering over the tables and not focusing to input fields or pressing to SETTINGS.</span>'
+        }).show();
+    }
+    return false;
+}
+
+async function addPlayer(data) {
+    const value = gaugePlayers.getValue();
+    gaugePlayers.setValueAnimated(value.getValue() + 1, 2);
+    let table;
+    let row = document.createElement("tr");
+    switch (data.player?.teamID) {
+        case "1":
+            table = document.getElementById("team1_players");
+            break;
+        case "2":
+            table = document.getElementById("team2_players");
+    }
+    if (!table) return;
+    row.id = data.player?.steamID;
+    if (data.squadID) {
+        row.innerHTML = `<td class="name font-weight-bold">${addNewLines(data.name)}<br><span class="badge bg-warning text-dark data-toggle="tooltip" data-placement="top" title="${data.possessClassname || "No Role Selected Yet"}" "><span id="${data.dataID}"></span>${data.steamID}</span></td>
+                        <td><span ${data.squadID ? 'id=' + (data.squadID + data.squad.teamID) : ""}>${data.squad?.locked !== "False" ? "<span class='badge bg-danger text-dark'><span style='font-size: 0.1px'>locked</span>🔒</span></td>" : data.squadID ? "<span class='badge bg-success text-dark'><span style='font-size: 0.1px'>unlocked</span>🔓</span></td>" : "<td><span class='badge bg-danger text-dark'>not in squad</span></td>"}<td><span class="badge bg-secondary text-dark">${data.squad?.size ? "👥 " + data.squad?.size : ""}</span></td><td><span class="badge bg-primary text-dark">${addNewLines(data.squad?.squadName)}</span></td>
+                        <td class="squadName"><button class="badge btn btn-secondary" id="settings${data.steamID}" aria-describedby="Actions">Actions</button></td>
+                        `;
+    } else {
+        row.innerHTML = `<td class="name font-weight-bold">${addNewLines(data.name)}<br><span class="badge bg-warning text-dark data-toggle="tooltip" data-placement="top" title="${data.possessClassname || "No Role Selected Yet"}" "><span id="${data.dataID}"></span>${data.steamID}</span></td>
+                        <td></td><td></td><td><span class='badge bg-danger text-dark'>not in squad</span></td>
+                        <td class="squadName"><button class="badge btn btn-secondary" id="settings${data.steamID}" aria-describedby="Actions">Actions</button></td>
+                        `;
+    }
+    table.appendChild(row);
+    tippy(document.getElementById(`settings${data.player?.steamID}`), {
+        theme: 'leventhan',
+        content: `
+        <button style="font-size: 10px !important;" type="button" class="badge btn btn-secondary" onclick="warn('${data.steamID}')">Warn</button>
+        <button style="font-size: 10px !important;" type="button" class="badge btn btn-warning" onclick="kick('${data.steamID}')">Kick</button>
+        <button style="font-size: 10px !important;" type="button" class="badge btn btn-danger" onclick="ban('${data.steamID}')">Ban</button>
+        ${data.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('${data.player?.teamID}', '${data.squadID}')">Disband the Squad</button>` : ''}
+        ${data.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-info" onclick="removeFromSquad('${data.steamID}')">Kick From Squad</button>` : ''}`,
+        allowHTML: true,
+        zIndex: 1,
+        maxWidth: 'none',
+        trigger: 'click',
+        interactive: true,
+    });
+    switch (data.player?.teamID) {
+        case "1":
+            filterTable1();
+            break;
+        case "2":
+            filterTable2();
+    }
+
+}
+
+async function removePlayer(data) {
+    const value = gaugePlayers.getValue();
+    gaugePlayers.setValueAnimated(value.getValue() - 1, 2);
+    let table;
+    let rows;
+    switch (data.player?.teamID) {
+        case "1":
+            table = document.getElementById("team1_players");
+            rows = document.querySelectorAll("#team1_players tr");
+            break;
+        case "2":
+            table = document.getElementById("team2_players");
+            rows = document.querySelectorAll("#team2_players tr");
+    }
+    if (!table) return updatePlayers();
+    rows.forEach((row) => {
+        if (row.id === data.player?.steamID) {
+            row.remove();
+        }
+    })
+    switch (data.player?.teamID) {
+        case "1":
+            filterTable1();
+            break;
+        case "2":
+            filterTable2();
+    }
+}
+
+function filterTable1() {
+    $('#team1_players').DataTable({
+        destroy: true,
+        bAutoWidth: false,
+        aoColumns: [{ sWidth: "1%", }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }],
+
+        "scrollCollapse": true,
+        "info": false,
+        "paging": false
+    });
+}
+
+function filterTable2() {
+    $('#team2_players').DataTable({
+        destroy: true,
+        bAutoWidth: false,
+        aoColumns: [{ sWidth: "1%", }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }],
+
+        "scrollCollapse": true,
+        "info": false,
+        "paging": false
+    });
+}
+
+function isHovering(status) {
+    if (status) return pauseUpdateHover = true;
+    return pauseUpdateHover = false;
+}
+
+socket.on("PLAYER_CONNECTED", async (data) => {
+    if(responseNotify.onConnect) {
         new Noty({
             theme: 'nest',
             timeout: 2500,
@@ -98,6 +268,8 @@
             type: 'success',
             text: `🔌 ${data.player?.name} connected`,
         }).show();
+    }
+    if(responseUpdate.onConnect) {
         if (window.location.href === `${window.location.origin}/players` && data.player?.name) {
             const interacting = await isFocused();
             if (interacting || pauseUpdateHover) {
@@ -105,11 +277,12 @@
             }
             addPlayer(data?.player);
         }
-    });
+    }
+});
 
-    socket.on("PLAYER_SQUAD_CHANGE", async (data) => {
-        if (!data.player) return;
-
+socket.on("PLAYER_SQUAD_CHANGE", async (data) => {
+    if (!data.player) return;
+    if(responseNotify.onSquadUpdate) {
         if (data.newSquadID) {
             if (data.oldSquadID) {
                 new Noty({
@@ -143,6 +316,8 @@
                 text: `<b>Left Squad</b><br>${data.player?.name} left his squad!`,
             }).show();
         }
+    }
+    if(responseNotify.onSquadUpdate) {
         if (window.location.href === `${window.location.origin}/players` && data.player?.name) {
             const interacting = await isFocused();
             if (interacting || pauseUpdateHover) {
@@ -151,9 +326,11 @@
             await removePlayer(data.player);
             await addPlayer(data.player);
         }
-    });
+    }
+});
 
-    socket.on("PLAYER_DISCONNECTED", async (data) => {
+socket.on("PLAYER_DISCONNECTED", async (data) => {
+    if(responseNotify.onDisconnect) {
         new Noty({
             theme: 'nest',
             timeout: 2000,
@@ -163,6 +340,8 @@
             type: 'error',
             text: `😖 ${data.player?.name || data.chainID} disconnected.`,
         }).show();
+    }
+    if(responseUpdate.onDisconnect) {
         if (window.location.href === `${window.location.origin}/players`) {
             const interacting = await isFocused();
             if (interacting || pauseUpdateHover) {
@@ -170,62 +349,10 @@
             }
             removePlayer(data);
         }
-    });
-</script>
-
-<script>
-    async function kick(steamID) {
-        await axios.post(`${window.location.origin}/squad-api/moderation/getCount`, {
-            steamid: steamID
-        }).then((resp) => {
-            if (!resp.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
-            Swal.fire({
-                title: 'Reason:',
-                input: 'text',
-                html: `</div class='mx-auto d-flex text-center'>
-                <h3 class='badge d-inline-block bg-danger text-dark mx-3 p-2'>Bans: <span style='font-size: 14px'>${resp.data.count.ban}</span></h3><h3 class='kick d-inline-block badge bg-warning text-dark mx-3 p-2'>Kicks: <span style='font-size: 14px'>${resp.data.count.kick}</span></h3><h3 class='warn d-inline-block badge bg-info text-dark mx-3 p-2'>Warns: <span style='font-size: 14px'>${resp.data.count.warn}</span></h3>`,
-                inputAttributes: {
-                    autocapitalize: 'off'
-                },
-                showCancelButton: true,
-                confirmButtonText: 'Kick',
-                allowOutsideClick: () => !Swal.isLoading()
-            }).then(async (result) => {
-                Swal.showLoading()
-                if (result.isConfirmed) {
-                    await axios.post(`${window.location.origin}/squad-api/kick`, {
-                        steamUID: steamID,
-                        reason: result.value
-                    })
-                        .then((response) => {
-                            if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
-                            if (response.data.status === "ok") {
-                                if (window.location.href === `${window.location.origin}/players`) {
-                                    updatePlayers();
-                                }
-
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: 'Player has been kicked.'
-                                })
-
-                            }
-                            if (response.data.status === "nok") {
-                                Swal.fire(`There was an error`, `We couldn't kick the player. Please try again later.`, `error`);
-                            }
-                            if (response.data.status === "nok2") {
-                                Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
-                            }
-                        })
-                        .catch((error) => {
-                            return Swal.fire(`Error`, `Error: ${error}`, `error`);
-                        });
-                }
-            })
-        })
     }
-</script>
+});
 
+<<<<<<< HEAD
 <script>
     async function warn(steamID) {
         await axios.post(`${window.location.origin}/squad-api/moderation/getCount`, {
@@ -352,18 +479,30 @@
 
 <script>
     function disbandSquad(teamID, squadID) {
+=======
+async function kick(steamID) {
+    await axios.post(`${window.location.origin}/squad-api/moderation/getCount`, {
+        steamid: steamID
+    }).then((resp) => {
+        if (!resp.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+>>>>>>> 004d8dec3cef1e094fd60f98e18c707c76b5d2e0
         Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            title: 'Reason:',
+            input: 'text',
+            html: `</div class='mx-auto d-flex text-center'>
+            <h3 class='badge d-inline-block bg-danger text-dark mx-3 p-2'>Bans: <span style='font-size: 14px'>${resp.data.count.ban}</span></h3><h3 class='kick d-inline-block badge bg-warning text-dark mx-3 p-2'>Kicks: <span style='font-size: 14px'>${resp.data.count.kick}</span></h3><h3 class='warn d-inline-block badge bg-info text-dark mx-3 p-2'>Warns: <span style='font-size: 14px'>${resp.data.count.warn}</span></h3>`,
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
             showCancelButton: true,
-            confirmButtonText: 'Disband',
+            confirmButtonText: 'Kick',
             allowOutsideClick: () => !Swal.isLoading()
         }).then(async (result) => {
             Swal.showLoading()
             if (result.isConfirmed) {
-                await axios.post(`${window.location.origin}/squad-api/disbandSquad`, {
-                    squadID: squadID,
-                    teamID: teamID
+                await axios.post(`${window.location.origin}/squad-api/kick`, {
+                    steamUID: steamID,
+                    reason: result.value
                 })
                     .then((response) => {
                         if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
@@ -371,13 +510,15 @@
                             if (window.location.href === `${window.location.origin}/players`) {
                                 updatePlayers();
                             }
+
                             Toast.fire({
                                 icon: 'success',
-                                title: "Player's squad is disband!"
+                                title: 'Player has been kicked.'
                             })
+
                         }
                         if (response.data.status === "nok") {
-                            Swal.fire(`There was an error`, `We couldn't disband the squad. Please try again later.`, `error`);
+                            Swal.fire(`There was an error`, `We couldn't kick the player. Please try again later.`, `error`);
                         }
                         if (response.data.status === "nok2") {
                             Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
@@ -388,37 +529,41 @@
                     });
             }
         })
-    }
-</script>
+    })
+}
 
-
-<script>
-    function removeFromSquad(steamID) {
+async function warn(steamID) {
+    await axios.post(`${window.location.origin}/squad-api/moderation/getCount`, {
+        steamid: steamID
+    }).then((resp) => {
+        if (!resp.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
         Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            title: 'Warn Message:',
+            input: 'text',
+            html: `</div class='mx-auto d-flex text-center'>
+            <h3 class='badge d-inline-block bg-danger text-dark mx-3 p-2'>Bans: <span style='font-size: 14px'>${resp.data.count.ban}</span></h3><h3 class='kick d-inline-block badge bg-warning text-dark mx-3 p-2'>Kicks: <span style='font-size: 14px'>${resp.data.count.kick}</span></h3><h3 class='warn d-inline-block badge bg-info text-dark mx-3 p-2'>Warns: <span style='font-size: 14px'>${resp.data.count.warn}</span></h3>`,
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
             showCancelButton: true,
-            confirmButtonText: 'Kick From Squad',
+            confirmButtonText: 'Warn',
             allowOutsideClick: () => !Swal.isLoading()
         }).then(async (result) => {
-            Swal.showLoading()
             if (result.isConfirmed) {
-                await axios.post(`${window.location.origin}/squad-api/removeFromSquad`, {
-                    steamID: steamID
+                await axios.post(`${window.location.origin}/squad-api/warn`, {
+                    steamUID: steamID,
+                    reason: result.value
                 })
                     .then((response) => {
                         if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
                         if (response.data.status === "ok") {
-                            if (window.location.href === `${window.location.origin}/players`) {
-                                updatePlayers();
-                            }
                             Toast.fire({
                                 icon: 'success',
-                                title: response.data.message
+                                title: 'Player has been warned.'
                             })
                         }
                         if (response.data.status === "nok") {
-                            Swal.fire(`There was an error`, `We couldn't remove the player from the squad. Please try again later.`, `error`);
+                            Swal.fire(`There was an error`, `We couldn't warn the player. Please try again later.`, `error`);
                         }
                         if (response.data.status === "nok2") {
                             Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
@@ -429,287 +574,329 @@
                     });
             }
         })
-    }
-</script>
+    })
+}
 
-<script>
-    let delay = 2000;
-    const regexTeam = /^Team ID:.(\d{1}).\((.*)\)$/gi;
-    const regexPlayer = /^ID:.(\d).{3}Name:.(.*).{3}Size:.(\d).{3}Locked:.(.*).{3}Creator Name:.(.*).{3}Creator Steam ID:.(.*)$/gi;
-
-    const totPlayers = document.createElement("span");
-    totPlayers.classList.add("h2", "font-weight-bold", "mb-0");
-    totPlayers.innerHTML = `/100`;
-
-    function addNewLines(str) {
-        return str.replace(/(?!$|\n)([^\n]{19}(?!\n))/g, '$1<br>');
-    }
-
-    // let lastClick = 0;
-    async function updatePlayers(option = 3) {
-        // simple spam prevention
-        // if (lastClick >= (Date.now() - delay))
-        //     return;
-        // lastClick = Date.now();
-        await socket.emit("players", async (players) => {
-            const team1 = {
-                id: null,
-                name: null,
-                players: []
-            };
-            const team2 = {
-                id: null,
-                name: null,
-                players: []
-            };
-            for (let i = 0; i < players.length; i++) {
-                if (players[i].teamID == 1) {
-                    team1.players.push(players[i]);
-                } else {
-                    team2.players.push(players[i]);
-                }
-            }
-            // DONE: Print first all players with a squad
-            // TODO: Print after that all players without a squad!
-            // TODO: Print also the disconnected players!
-
-            async function createTable1() {
-                let table = document.getElementById("team1_players");
-                table.innerHTML = '';
-                let thead = document.createElement("thead");
-                table.appendChild(thead);
-                let title = document.createElement("tr");
-                title.innerHTML = `<th scope="col">Player</th>
-                                    <th scope="col">🔒/🔓</th>
-                                    <th scope="col">#👥</th>
-                                    <th scope="col">Squad</th>
-                                    <th scope="col">Actions</th>`;
-                thead.appendChild(title);
-                let tbody = document.createElement("tbody");
-                table.appendChild(tbody);
-                team1.players.forEach(async player => {
-                    let row = document.createElement("tr");
-                    row.id = `${player?.steamID}`;
-                    if (player.squadID) {
-                        row.innerHTML = `<td class="name font-weight-bold">${addNewLines(player.name)}<br><span class="badge bg-warning text-dark player-toggle="tooltip" player-placement="top" title="${player.possessClassname || "No Role Selected Yet"}" "><span id="${player.playerID}"></span>${player.steamID}</span></td>
-                                        <td><span ${player.squadID ? 'id=' + (player.squadID + player.squad.teamID) : ""}>${player.squad?.locked !== "False" ? "<span class='badge bg-danger text-dark'><span style='font-size: 0.1px'>locked</span>🔒</span></td>" : player.squadID ? "<span class='badge bg-success text-dark'><span style='font-size: 0.1px'>unlocked</span>🔓</span></td>" : "<td><span class='badge bg-danger text-dark'>not in squad</span></td>"}<td><span class="badge bg-secondary text-dark">${player.squad?.size ? "👥 " + player.squad?.size : ""}</span></td><td><span class="badge bg-primary text-dark">${addNewLines(player.squad?.squadName) || "<span class='badge bg-danger text-dark'>not in squad</span>"}</span></td>
-                                        <td class="squadName"><button class="badge btn btn-secondary" id="settings${player.steamID}" aria-describedby="Actions">Actions</button></td>
-                                        `;
-                    } else {
-                        row.innerHTML = `<td class="name font-weight-bold">${addNewLines(player.name)}<br><span class="badge bg-warning text-dark player-toggle="tooltip" player-placement="top" title="${player.possessClassname || "No Role Selected Yet"}" "><span id="${player.playerID}"></span>${player.steamID}</span></td>
-                                        <td></td><td></td><td><span class='badge bg-danger text-dark'>not in squad</span></td>
-                                        <td class="squadName"><button class="badge btn btn-secondary" id="settings${player.steamID}" aria-describedby="Actions">Actions</button></td>
-                                        `;
-                    }
-
-
-                    await tbody.appendChild(row);
-                    tippy(document.getElementById(`settings${player.steamID}`), {
-                        content: `
-                        <button style="font-size: 10px !important;" type="button" class="badge btn btn-secondary" onclick="warn('${player.steamID}')">Warn</button>
-                        <button style="font-size: 10px !important;" type="button" class="badge btn btn-warning" onclick="kick('${player.steamID}')">Kick</button>
-                        <button style="font-size: 10px !important;" type="button" class="badge btn btn-danger" onclick="ban('${player.steamID}')">Ban</button>
-                        ${player.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('1', '${player.squadID}')">Disband the Squad</button>` : ''}
-                        ${player.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-info" onclick="removeFromSquad('${player.steamID}')">Kick From Squad</button>` : ''}
-                        `,
-                        allowHTML: true,
-                        zIndex: 1,
-                        maxWidth: 'none',
-                        trigger: 'click',
-                        interactive: true,
+async function ban(steamID) {
+    await axios.post(`${window.location.origin}/squad-api/moderation/getCount`, {
+        steamid: steamID
+    }).then((resp) => {
+        if (!resp.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+        Swal.fire({
+            title: 'Ban Details:',
+            html:
+                `<div class='d-flex mx-auto'>
+                <div class='length mx-auto d-inline-block'>
+                    <h4>Length</h4>
+                    <input type='number' min="1" id='banLength' class='swal2-input' style='position:relative; bottom: 20px; max-width: 100px; height: 47px;'></input>
+                </div>
+                <div class='type mx-auto d-inline-block'>
+                    <h5>Type</h5>
+                    <select id='selection' class="swal2-select" style='position:relative; border: 1px solid #d9d9d9; border-radius: 5px; bottom: 22px; min-width: 100px; min-height 50px;'>
+                        <option id="m">Minutes</option>
+                        <option id="d">Days</option>
+                        <option id="M">Months</option>
+                        <option id="P">Perma</option>
+                    </select>
+                </div>
+            </div>
+            <div class='reason mx-auto text-center d-block' style='width:400px'>
+                    <h2>Reason:</h2>
+                    <input id='reason' class='swal2-input mx-auto d-block' style='position:relative; bottom: 5px; width: 400px;'></input>
+            </div>
+            </div class='mx-auto d-flex text-center'>
+            <h3 class='badge d-inline-block bg-danger text-dark mx-3 p-2'>Bans: <span style='font-size: 14px'>${resp.data.count.ban}</span></h3><h3 class='kick d-inline-block badge bg-warning text-dark mx-3 p-2'>Kicks: <span style='font-size: 14px'>${resp.data.count.kick}</span></h3><h3 class='warn d-inline-block badge bg-info text-dark mx-3 p-2'>Warns: <span style='font-size: 14px'>${resp.data.count.warn}</span></h3>`,
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Ban',
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const selection = document.getElementById('selection');
+                const type = selection.options[selection.selectedIndex].id;
+                const reason = document.getElementById('reason').value;
+                const length = document.getElementById('banLength').value;
+                let banTime = `${length}${type}`;
+                if (!reason) return Swal.fire(`Error`, `Reason cannot be empty.`, `error`);
+                if (!length) return Swal.fire(`Error`, `Ban Length cannot be empty`, `error`);
+                await axios.post(`${window.location.origin}/squad-api/ban`, {
+                    steamUID: steamID,
+                    reason: reason,
+                    duration: banTime
+                })
+                    .then((response) => {
+                        if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                        if (response.data.status === "ok") {
+                            if (window.location.href === `${window.location.origin}/players`) {
+                                updatePlayers();
+                            }
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Player has been banned.'
+                            })
+                        }
+                        if (response.data.status === "nok") {
+                            Swal.fire(`There was an error`, `We couldn't ban the player. Please try again later.`, `error`);
+                        }
+                        if (response.data.status === "nok2") {
+                            Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
+                        }
+                    })
+                    .catch((error) => {
+                        return Swal.fire(`Error`, `Error: ${error}`, `error`);
                     });
-
-                });
-            }
-
-            async function createTable2() {
-                let table2 = document.getElementById("team2_players");
-                table2.innerHTML = '';
-                let thead = document.createElement("thead");
-                table2.appendChild(thead);
-                let title = document.createElement("tr");
-                title.innerHTML = `<th scope="col">Player</th>
-                                    <th scope="col">🔒/🔓</th>
-                                    <th scope="col">#👥</th>
-                                    <th scope="col">Squad</th>
-                                    <th scope="col">Actions</th>`;
-                thead.appendChild(title);
-                let tbody2 = document.createElement("tbody");
-                table2.appendChild(tbody2);
-                team2.players.forEach(player => {
-                    let row = document.createElement("tr");
-                    row.id = `${player?.steamID}`;
-                    if (player.squadID) {
-                        row.innerHTML = `<td class="name font-weight-bold">${addNewLines(player.name)}<br><span class="badge bg-warning text-dark player-toggle="tooltip" player-placement="top" title="${player.possessClassname || "No Role Selected Yet"}" "><span id="${player.playerID}"></span>${player.steamID}</span></td>
-                                        <td><span ${player.squadID ? 'id=' + (player.squadID + player.squad.teamID) : ""}>${player.squad?.locked !== "False" ? "<span class='badge bg-danger text-dark'><span style='font-size: 0.1px'>locked</span>🔒</span></td>" : player.squadID ? "<span class='badge bg-success text-dark'><span style='font-size: 0.1px'>unlocked</span>🔓</span></td>" : "<td><span class='badge bg-danger text-dark'>not in squad</span></td>"}<td><span class="badge bg-secondary text-dark">${player.squad?.size ? "👥 " + player.squad?.size : ""}</span></td><td><span class="badge bg-primary text-dark">${addNewLines(player.squad?.squadName) || ""}</span></td>                                
-                                        <td class="squadName"><button class="badge btn btn-secondary" id="settings${player.steamID}" aria-describedby="Actions">Actions</button></td>
-                                        `;
-                    } else {
-                        row.innerHTML = `<td class="name font-weight-bold">${addNewLines(player.name)}<br><span class="badge bg-warning text-dark player-toggle="tooltip" player-placement="top" title="${player.possessClassname || "No Role Selected Yet"}" "><span id="${player.playerID}"></span>${player.steamID}</span></td>
-                                        <td></td><td></td><td><span class='badge bg-danger text-dark'>not in squad</span></td>
-                                        <td class="squadName"><button class="badge btn btn-secondary" id="settings${player.steamID}" aria-describedby="Actions">Actions</button></td>
-                                        `;
-                    }
-                    tbody2.appendChild(row);
-                    tippy(document.getElementById(`settings${player.steamID}`), {
-                        theme: 'leventhan',
-                        content: `
-                        <button style="font-size: 10px !important;" type="button" class="badge btn btn-secondary" onclick="warn('${player.steamID}')">Warn</button>
-                        <button style="font-size: 10px !important;" type="button" class="badge btn btn-warning" onclick="kick('${player.steamID}')">Kick</button>
-                        <button style="font-size: 10px !important;" type="button" class="badge btn btn-danger" onclick="ban('${player.steamID}')">Ban</button>
-                        ${player.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('2', '${player.squadID}')">Disband the Squad</button>` : ''}
-                        ${player.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-info" onclick="removeFromSquad('${player.steamID}')">Kick From Squad</button>` : ''}`,
-                        allowHTML: true,
-                        zIndex: 1,
-                        maxWidth: 'none',
-                        trigger: 'click',
-                        interactive: true,
-                    });
-                });
-            }
-
-            await createTable1();
-            await createTable2();
-            await filterTable1();
-            await filterTable2();
-        });
-    }
-
-    async function addPlayer(data) {
-        const headerDesc2 = document.getElementById("headerDesc2");
-        headerDesc2.innerHTML = parseInt(headerDesc2.innerHTML) + 1;
-        let table;
-        let row = document.createElement("tr");
-        switch (data.player?.teamID) {
-            case "1":
-                table = document.getElementById("team1_players");
-                break;
-            case "2":
-                table = document.getElementById("team2_players");
-        }
-        if (!table) return;
-        row.id = data.player?.steamID;
-        if (data.squadID) {
-            row.innerHTML = `<td class="name font-weight-bold">${addNewLines(data.name)}<br><span class="badge bg-warning text-dark data-toggle="tooltip" data-placement="top" title="${data.possessClassname || "No Role Selected Yet"}" "><span id="${data.dataID}"></span>${data.steamID}</span></td>
-                            <td><span ${data.squadID ? 'id=' + (data.squadID + data.squad.teamID) : ""}>${data.squad?.locked !== "False" ? "<span class='badge bg-danger text-dark'><span style='font-size: 0.1px'>locked</span>🔒</span></td>" : data.squadID ? "<span class='badge bg-success text-dark'><span style='font-size: 0.1px'>unlocked</span>🔓</span></td>" : "<td><span class='badge bg-danger text-dark'>not in squad</span></td>"}<td><span class="badge bg-secondary text-dark">${data.squad?.size ? "👥 " + data.squad?.size : ""}</span></td><td><span class="badge bg-primary text-dark">${addNewLines(data.squad?.squadName)}</span></td>
-                            <td class="squadName"><button class="badge btn btn-secondary" id="settings${data.steamID}" aria-describedby="Actions">Actions</button></td>
-                            `;
-        } else {
-            row.innerHTML = `<td class="name font-weight-bold">${addNewLines(data.name)}<br><span class="badge bg-warning text-dark data-toggle="tooltip" data-placement="top" title="${data.possessClassname || "No Role Selected Yet"}" "><span id="${data.dataID}"></span>${data.steamID}</span></td>
-                            <td></td><td></td><td><span class='badge bg-danger text-dark'>not in squad</span></td>
-                            <td class="squadName"><button class="badge btn btn-secondary" id="settings${data.steamID}" aria-describedby="Actions">Actions</button></td>
-                            `;
-        }
-        table.appendChild(row);
-        tippy(document.getElementById(`settings${data.player?.steamID}`), {
-            theme: 'leventhan',
-            content: `
-            <button style="font-size: 10px !important;" type="button" class="badge btn btn-secondary" onclick="warn('${data.steamID}')">Warn</button>
-            <button style="font-size: 10px !important;" type="button" class="badge btn btn-warning" onclick="kick('${data.steamID}')">Kick</button>
-            <button style="font-size: 10px !important;" type="button" class="badge btn btn-danger" onclick="ban('${data.steamID}')">Ban</button>
-            ${data.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('${data.player?.teamID}', '${data.squadID}')">Disband the Squad</button>` : ''}
-            ${data.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-info" onclick="removeFromSquad('${data.steamID}')">Kick From Squad</button>` : ''}`,
-            allowHTML: true,
-            zIndex: 1,
-            maxWidth: 'none',
-            trigger: 'click',
-            interactive: true,
-        });
-        switch (data.player?.teamID) {
-            case "1":
-                filterTable1();
-                break;
-            case "2":
-                filterTable2();
-        }
-
-    }
-
-    async function removePlayer(data) {
-        const headerDesc2 = document.getElementById("headerDesc2");
-        headerDesc2.innerHTML = parseInt(headerDesc2.innerHTML) - 1;
-        let table;
-        let rows;
-        switch (data.player?.teamID) {
-            case "1":
-                table = document.getElementById("team1_players");
-                rows = document.querySelectorAll("#team1_players tr");
-                break;
-            case "2":
-                table = document.getElementById("team2_players");
-                rows = document.querySelectorAll("#team2_players tr");
-        }
-        if (!table) return updatePlayers();
-        rows.forEach((row) => {
-            if (row.id === data.player?.steamID) {
-                row.remove();
             }
         })
-        switch (data.player?.teamID) {
-            case "1":
-                filterTable1();
-                break;
-            case "2":
-                filterTable2();
+    })
+}
+
+function disbandSquad(teamID, squadID) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        showCancelButton: true,
+        confirmButtonText: 'Disband',
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then(async (result) => {
+        Swal.showLoading()
+        if (result.isConfirmed) {
+            await axios.post(`${window.location.origin}/squad-api/disbandSquad`, {
+                squadID: squadID,
+                teamID: teamID
+            })
+                .then((response) => {
+                    if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                    if (response.data.status === "ok") {
+                        if (window.location.href === `${window.location.origin}/players`) {
+                            updatePlayers();
+                        }
+                        Toast.fire({
+                            icon: 'success',
+                            title: "Player's squad is disband!"
+                        })
+                    }
+                    if (response.data.status === "nok") {
+                        Swal.fire(`There was an error`, `We couldn't disband the squad. Please try again later.`, `error`);
+                    }
+                    if (response.data.status === "nok2") {
+                        Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
+                    }
+                })
+                .catch((error) => {
+                    return Swal.fire(`Error`, `Error: ${error}`, `error`);
+                });
         }
-    }
+    })
+}
 
-    function filterTable1() {
-        $('#team1_players').DataTable({
-            destroy: true,
-            bAutoWidth: false,
-            aoColumns: [{ sWidth: "1%", }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }],
+function removeFromSquad(steamID) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        showCancelButton: true,
+        confirmButtonText: 'Kick From Squad',
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then(async (result) => {
+        Swal.showLoading()
+        if (result.isConfirmed) {
+            await axios.post(`${window.location.origin}/squad-api/removeFromSquad`, {
+                steamID: steamID
+            })
+                .then((response) => {
+                    if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                    if (response.data.status === "ok") {
+                        if (window.location.href === `${window.location.origin}/players`) {
+                            updatePlayers();
+                        }
+                        Toast.fire({
+                            icon: 'success',
+                            title: response.data.message
+                        })
+                    }
+                    if (response.data.status === "nok") {
+                        Swal.fire(`There was an error`, `We couldn't remove the player from the squad. Please try again later.`, `error`);
+                    }
+                    if (response.data.status === "nok2") {
+                        Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
+                    }
+                })
+                .catch((error) => {
+                    return Swal.fire(`Error`, `Error: ${error}`, `error`);
+                });
+        }
+    })
+}
 
-            "scrollCollapse": true,
-            "info": false,
-            "paging": false
-        });
-    }
 
-    function filterTable2() {
-        $('#team2_players').DataTable({
-            destroy: true,
-            bAutoWidth: false,
-            aoColumns: [{ sWidth: "1%", }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }],
-
-            "scrollCollapse": true,
-            "info": false,
-            "paging": false
-        });
-    }
+const regexTeam = /^Team ID:.(\d{1}).\((.*)\)$/gi;
+const regexPlayer = /^ID:.(\d).{3}Name:.(.*).{3}Size:.(\d).{3}Locked:.(.*).{3}Creator Name:.(.*).{3}Creator Steam ID:.(.*)$/gi;
 
 
-    updatePlayers();
 
-    socket.emit("rcon.execute", "ListSquads", async (res) => {
-        const rows = res.split("\n");
-        for (let i = 0; i < rows.length; i++) {
-            while ((m = regexTeam.exec(rows[i])) !== null) {
-                // This is necessary to avoid infinite loops with zero-width matches
-                if (m.index === regexTeam.lastIndex) {
-                    regexTeam.lastIndex++;
-                }
-                if (m[1] == 1) {
-                    document.getElementById("team1").innerHTML = m[2];
+function addNewLines(str) {
+    return str.replace(/(?!$|\n)([^\n]{19}(?!\n))/g, '$1<br>');
+}
+
+// let lastClick = 0;
+async function updatePlayers(option = 3) {
+    await socket.emit("players", async (players) => {
+        const team1 = {
+            id: null,
+            name: null,
+            players: []
+        };
+        const team2 = {
+            id: null,
+            name: null,
+            players: []
+        };
+        for (let i = 0; i < players.length; i++) {
+            if (players[i].teamID == 1) {
+                team1.players.push(players[i]);
+            } else {
+                team2.players.push(players[i]);
+            }
+        }
+        // DONE: Print first all players with a squad
+        // TODO: Print after that all players without a squad!
+        // TODO: Print also the disconnected players!
+
+        async function createTable1() {
+            let table = document.getElementById("team1_players");
+            table.innerHTML = '';
+            let thead = document.createElement("thead");
+            table.appendChild(thead);
+            let title = document.createElement("tr");
+            title.innerHTML = `<th scope="col">Player</th>
+                                <th scope="col">🔒/🔓</th>
+                                <th scope="col">#👥</th>
+                                <th scope="col">Squad</th>
+                                <th scope="col">Actions</th>`;
+            thead.appendChild(title);
+            let tbody = document.createElement("tbody");
+            table.appendChild(tbody);
+            team1.players.forEach(async player => {
+                let row = document.createElement("tr");
+                row.id = `${player?.steamID}`;
+                if (player.squadID) {
+                    row.innerHTML = `<td class="name font-weight-bold">${addNewLines(player.name)}<br><span class="badge bg-warning text-dark player-toggle="tooltip" player-placement="top" title="${player.possessClassname || "No Role Selected Yet"}" "><span id="${player.playerID}"></span>${player.steamID}</span></td>
+                                    <td><span ${player.squadID ? 'id=' + (player.squadID + player.squad.teamID) : ""}>${player.squad?.locked !== "False" ? "<span class='badge bg-danger text-dark'><span style='font-size: 0.1px'>locked</span>🔒</span></td>" : player.squadID ? "<span class='badge bg-success text-dark'><span style='font-size: 0.1px'>unlocked</span>🔓</span></td>" : "<td><span class='badge bg-danger text-dark'>not in squad</span></td>"}<td><span class="badge bg-secondary text-dark">${player.squad?.size ? "👥 " + player.squad?.size : ""}</span></td><td><span class="badge bg-primary text-dark">${addNewLines(player.squad?.squadName) || "<span class='badge bg-danger text-dark'>not in squad</span>"}</span></td>
+                                    <td class="squadName"><button class="badge btn btn-secondary" id="settings${player.steamID}" aria-describedby="Actions">Actions</button></td>
+                                    `;
                 } else {
-                    document.getElementById("team2").innerHTML = m[2];
+                    row.innerHTML = `<td class="name font-weight-bold">${addNewLines(player.name)}<br><span class="badge bg-warning text-dark player-toggle="tooltip" player-placement="top" title="${player.possessClassname || "No Role Selected Yet"}" "><span id="${player.playerID}"></span>${player.steamID}</span></td>
+                                    <td></td><td></td><td><span class='badge bg-danger text-dark'>not in squad</span></td>
+                                    <td class="squadName"><button class="badge btn btn-secondary" id="settings${player.steamID}" aria-describedby="Actions">Actions</button></td>
+                                    `;
                 }
 
-            }
 
-            // check if the row is regexPlayer
-            while ((m = regexPlayer.exec(rows[i])) !== null) {
-                // This is necessary to avoid infinite loops with zero-width matches
-                if (m.index === regexPlayer.lastIndex) {
-                    regexPlayer.lastIndex++;
-                }
-                console.log(m);
-                const tr = document.getElementById(m[6]);
-                if (tr) {
-                    // get the first td and set the text to the name
-                    tr.getElementsByTagName("td")[3].innerHTML += `<br><i class="fas fa-crown"> Squad Creator</i>`;
-                }
-            }
+                await tbody.appendChild(row);
+                tippy(document.getElementById(`settings${player.steamID}`), {
+                    content: `
+                    <button style="font-size: 10px !important;" type="button" class="badge btn btn-secondary" onclick="warn('${player.steamID}')">Warn</button>
+                    <button style="font-size: 10px !important;" type="button" class="badge btn btn-warning" onclick="kick('${player.steamID}')">Kick</button>
+                    <button style="font-size: 10px !important;" type="button" class="badge btn btn-danger" onclick="ban('${player.steamID}')">Ban</button>
+                    ${player.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('1', '${player.squadID}')">Disband the Squad</button>` : ''}
+                    ${player.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-info" onclick="removeFromSquad('${player.steamID}')">Kick From Squad</button>` : ''}
+                    `,
+                    allowHTML: true,
+                    zIndex: 1,
+                    maxWidth: 'none',
+                    trigger: 'click',
+                    interactive: true,
+                });
+
+            });
         }
+
+        async function createTable2() {
+            let table2 = document.getElementById("team2_players");
+            table2.innerHTML = '';
+            let thead = document.createElement("thead");
+            table2.appendChild(thead);
+            let title = document.createElement("tr");
+            title.innerHTML = `<th scope="col">Player</th>
+                                <th scope="col">🔒/🔓</th>
+                                <th scope="col">#👥</th>
+                                <th scope="col">Squad</th>
+                                <th scope="col">Actions</th>`;
+            thead.appendChild(title);
+            let tbody2 = document.createElement("tbody");
+            table2.appendChild(tbody2);
+            team2.players.forEach(player => {
+                let row = document.createElement("tr");
+                row.id = `${player?.steamID}`;
+                if (player.squadID) {
+                    row.innerHTML = `<td class="name font-weight-bold">${addNewLines(player.name)}<br><span class="badge bg-warning text-dark player-toggle="tooltip" player-placement="top" title="${player.possessClassname || "No Role Selected Yet"}" "><span id="${player.playerID}"></span>${player.steamID}</span></td>
+                                    <td><span ${player.squadID ? 'id=' + (player.squadID + player.squad.teamID) : ""}>${player.squad?.locked !== "False" ? "<span class='badge bg-danger text-dark'><span style='font-size: 0.1px'>locked</span>🔒</span></td>" : player.squadID ? "<span class='badge bg-success text-dark'><span style='font-size: 0.1px'>unlocked</span>🔓</span></td>" : "<td><span class='badge bg-danger text-dark'>not in squad</span></td>"}<td><span class="badge bg-secondary text-dark">${player.squad?.size ? "👥 " + player.squad?.size : ""}</span></td><td><span class="badge bg-primary text-dark">${addNewLines(player.squad?.squadName) || ""}</span></td>                                
+                                    <td class="squadName"><button class="badge btn btn-secondary" id="settings${player.steamID}" aria-describedby="Actions">Actions</button></td>
+                                    `;
+                } else {
+                    row.innerHTML = `<td class="name font-weight-bold">${addNewLines(player.name)}<br><span class="badge bg-warning text-dark player-toggle="tooltip" player-placement="top" title="${player.possessClassname || "No Role Selected Yet"}" "><span id="${player.playerID}"></span>${player.steamID}</span></td>
+                                    <td></td><td></td><td><span class='badge bg-danger text-dark'>not in squad</span></td>
+                                    <td class="squadName"><button class="badge btn btn-secondary" id="settings${player.steamID}" aria-describedby="Actions">Actions</button></td>
+                                    `;
+                }
+                tbody2.appendChild(row);
+                tippy(document.getElementById(`settings${player.steamID}`), {
+                    theme: 'leventhan',
+                    content: `
+                    <button style="font-size: 10px !important;" type="button" class="badge btn btn-secondary" onclick="warn('${player.steamID}')">Warn</button>
+                    <button style="font-size: 10px !important;" type="button" class="badge btn btn-warning" onclick="kick('${player.steamID}')">Kick</button>
+                    <button style="font-size: 10px !important;" type="button" class="badge btn btn-danger" onclick="ban('${player.steamID}')">Ban</button>
+                    ${player.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('2', '${player.squadID}')">Disband the Squad</button>` : ''}
+                    ${player.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-info" onclick="removeFromSquad('${player.steamID}')">Kick From Squad</button>` : ''}`,
+                    allowHTML: true,
+                    zIndex: 1,
+                    maxWidth: 'none',
+                    trigger: 'click',
+                    interactive: true,
+                });
+            });
+        }
+
+        await createTable1();
+        await createTable2();
+        socket.emit("rcon.execute", "ListSquads", async (res) => {
+            const rows = res.split("\n");
+            for (let i = 0; i < rows.length; i++) {
+                while ((m = regexTeam.exec(rows[i])) !== null) {
+                    // This is necessary to avoid infinite loops with zero-width matches
+                    if (m.index === regexTeam.lastIndex) {
+                        regexTeam.lastIndex++;
+                    }
+                    if (m[1] == 1) {
+                        document.getElementById("team1").innerHTML = m[2];
+                    } else {
+                        document.getElementById("team2").innerHTML = m[2];
+                    }
+
+                }
+
+                // check if the row is regexPlayer
+                while ((m = regexPlayer.exec(rows[i])) !== null) {
+                    // This is necessary to avoid infinite loops with zero-width matches
+                    if (m.index === regexPlayer.lastIndex) {
+                        regexPlayer.lastIndex++;
+                    }
+                    const tr = document.getElementById(m[6]);
+                    if (tr) {
+                        // get the first td and set the text to the name
+                        tr.getElementsByTagName("td")[3].innerHTML += `<br><i class="fas fa-crown"> Squad Creator</i>`;
+                    }
+                }
+            }
+        });
+        await filterTable1();
+        await filterTable2();
     });
+}
+
+
+updatePlayers();
+
+
 </script>

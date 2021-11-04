@@ -49,7 +49,6 @@ class SquadStatsJSv3 extends Client {
 		this.permission = require("./Permissions"); // Audit mongoose model
 		this.whitelists = require("./Whitelist"); // Audit mongoose model
 		this.dashboard = require("../dashboard/app"); // Dashboard app
-		this.queues = new Collection(); // This collection will be used for the music
 		this.states = {}; // Used for the dashboard
 		this.knownGuilds = [];
 		this.pool = null;
@@ -820,6 +819,40 @@ class SquadStatsJSv3 extends Client {
 	async getAuditLogs() {
 		const logs = await this.audit.find({});
 		return logs;
+	}
+
+	async getShowNotifications() {
+		const guild = await this.findOrCreateGuild({id: this.config.serverID });
+		return guild.dashboard.showNotifications;
+	}
+
+	async getUpdatePlayersTable() {
+		const guild = await this.findOrCreateGuild({id: this.config.serverID });
+		return guild.dashboard.updatePlayersTable;
+	}
+
+	async toggleShowNotifications(actionType) {
+		const guild = await this.findOrCreateGuild({id: this.config.serverID });
+		if (guild) {
+			for( const action in guild.dashboard.showNotifications) {
+				if (action === actionType) {
+					guild.dashboard.showNotifications[action] = !guild.dashboard.showNotifications[action];
+				}
+			}
+		}
+		await guild.save();
+	}
+
+	async toggleUpdatePlayersTable(actionType) {
+		const guild = await this.findOrCreateGuild({id: this.config.serverID });
+		if (guild) {
+			for( const action in guild.dashboard.updatePlayersTable) {
+				if (action === actionType) {
+					guild.dashboard.updatePlayersTable[action] = !guild.dashboard.updatePlayersTable[action];
+				}
+			}
+		}
+		await guild.save();
 	}
 
 	// This function is used to resolve a role from a string (his name or id for example when searching it)
