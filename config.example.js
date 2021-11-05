@@ -31,7 +31,7 @@ module.exports = {
 	/* 	More info on:	https://docs.mongodb.com/manual/reference/connection-string/ */
 	mongoDB: "mongodb://localhost:27017/V3", // if remote hosted: "mongodb://username:password@host:port/database"
 	/* The default prefix for using the bot, you can also change this from dashboard or discord command (setprefix) */
-	prefix: "v3!",
+	prefix: "!",
 	/* For the embeds (embeded messages) */
 	embed: {
 		color: "#0091fc", // The default color for the embeds
