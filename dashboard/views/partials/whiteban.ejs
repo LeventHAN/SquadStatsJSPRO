@@ -1,0 +1,325 @@
+<script>
+    const pathname = window.location.pathname;
+    async function togglePermissionToRole(role, permission) {
+        let button = $('#' + role + ' button:contains("' + permission + '")').filter(function () {
+            return $(this).text() === permission;
+        });
+        // check if the button is active
+        if (button.hasClass('active')) {
+            // remove the permission from the role
+            await axios.post(`${window.location.origin}/squad-api/whitelist/roles/removePermission`, {
+                role: role,
+                permission: permission
+            })
+                .then((response) => {
+                    if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                    if (response.data.status === "ok") {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Permission removed!'
+                        })
+                        // remove the active class from the button inside the div role, and where permission matches exactly with the content of the button
+                        button.removeClass('active');
+                    }
+                    if (response.data.status === "nok") {
+                        Swal.fire(`There was an error`, response.data.message, `error`);
+                    }
+                })
+                .catch((error) => {
+                    return Swal.fire(`Error`, `${error}`, `error`);
+                });
+        } else {
+            await axios.post(`${window.location.origin}/squad-api/whitelist/roles/addPermission`, {
+                role: role,
+                permission: permission
+            })
+                .then((response) => {
+                    if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                    if (response.data.status === "ok") {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Permission added to the role!'
+                        })
+                        button.addClass('active');
+
+                    }
+                    if (response.data.status === "nok") {
+                        Swal.fire(`There was an error`, response.data.message, `error`);
+                    }
+                })
+                .catch((error) => {
+                    return Swal.fire(`Error`, `${error}`, `error`);
+                });
+        }
+    }
+
+    async function removeGroup(role) {
+        await axios.post(`${window.location.origin}/squad-api/whitelist/removeGroup`, {
+            group: role
+        })
+            .then((response) => {
+                if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                if (response.data.status === "ok") {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Group removed!'
+                    })
+                    // remove the attributes with class "role"
+                    $(`.${role}`).remove();
+                    $(`#${role}`).remove();
+                }
+                if (response.data.status === "nok") {
+                    Swal.fire(`There was an error`, response.data.message, `error`);
+                }
+            })
+            .catch((error) => {
+                return Swal.fire(`Error`, `${error}`, `error`);
+            });
+    }
+
+    let usersTable;
+    // When loading the page, the datatable is created
+    $(document).ready(() => {
+        usersTable = $('#datatable').DataTable({
+            destroy: true,
+            bAutoWidth: false,
+            "scrollCollapse": true,
+            "info": false,
+            "paging": true,
+        });
+    });
+
+    let Showing = false;
+    let eye = document.getElementById("eyeURL");
+
+
+    async function removeWhitelist(steamID) {
+        Swal.fire({
+            title: 'Reason of removal:',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Remove',
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await axios.post(`${window.location.origin}/squad-api/whitelist/removeUserWhitelist`, {
+                    steamUID: steamID,
+                    reason: result.value
+                })
+                    .then((response) => {
+                        if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                        if (response.data.status === "ok") {
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Player has been removed.'
+                            })
+                            // Remove the row and refresh the datatable
+                            usersTable.row(document.getElementById(steamID)).remove().draw();
+                        }
+                        if (response.data.status === "nok") {
+                            Swal.fire(`There was an error`, response.data.message, `error`);
+                        }
+                    })
+                    .catch((error) => {
+                        return Swal.fire(`Error`, `Error: ${error}`, `error`);
+                    });
+            }
+        })
+    }
+
+    async function removeBanlist(steamID) {
+        Swal.fire({
+            title: 'Reason of removal:',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Remove',
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await axios.post(`${window.location.origin}/squad-api/banlist/removeUserBanlist`, {
+                    steamUID: steamID,
+                    reason: result.value
+                })
+                    .then((response) => {
+                        if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                        if (response.data.status === "ok") {
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Player has been removed.'
+                            })
+                            // Remove the row and refresh the datatable
+                            usersTable.row(document.getElementById(steamID)).remove().draw();
+                        }
+                        if (response.data.status === "nok") {
+                            Swal.fire(`There was an error`, response.data.message, `error`);
+                        }
+                    })
+                    .catch((error) => {
+                        return Swal.fire(`Error`, `Error: ${error}`, `error`);
+                    });
+            }
+        })
+    }
+    async function getListURL() {
+        if (Showing) {
+            // remove fa-eye from it
+            eye.classList.remove("fa-eye");
+            // add fa-eye-slash to it
+            eye.classList.add("fa-eye-slash");
+            $('#urlTolist').text('*****************************************************');
+            Showing = false;
+            return Toast.fire({
+                icon: 'warning',
+                title: 'URL is hidden.'
+            })
+        }
+        if (pathname == "/roles") {
+            await axios.get(`${window.location.origin}/squad-api/url`)
+                .then((response) => {
+                    if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                    if (response.data.status === "ok") {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'URL is not hidden anymore.'
+                        })
+                        $("#urlTolist").text(`${window.location.origin}/squad-api/whitelist/${response.data.token}`);
+                        // remove fa-eye-slash from it
+                        eye.classList.remove("fa-eye-slash");
+                        // add fa-eye to it
+                        eye.classList.add("fa-eye");
+                        return Showing = true;
+                    }
+                    if (response.data.status === "nok") {
+                        Swal.fire(`There was an error`, response.data.message, `error`);
+                    }
+                })
+                .catch((error) => {
+                    return Swal.fire(`Error`, `Error: ${error}`, `error`);
+                });
+        }
+        if (pathname == "/bans") {
+            await axios.get(`${window.location.origin}/squad-api/url`)
+                .then((response) => {
+                    if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                    if (response.data.status === "ok") {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'URL is not hidden anymore.'
+                        })
+                        $("#urlTolist").text(`${window.location.origin}/squad-api/banlist/${response.data.token}`);
+                        // remove fa-eye-slash from it
+                        eye.classList.remove("fa-eye-slash");
+                        // add fa-eye to it
+                        eye.classList.add("fa-eye");
+                        return Showing = true;
+                    }
+                    if (response.data.status === "nok") {
+                        Swal.fire(`There was an error`, response.data.message, `error`);
+                    }
+                })
+                .catch((error) => {
+                    return Swal.fire(`Error`, `Error: ${error}`, `error`);
+                });
+        }
+    }
+
+    async function regenToken() {
+        if (pathname == "/roles") {
+            await axios.get(`${window.location.origin}/squad-api/url/regenerate`)
+                .then((response) => {
+                    if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                    if (response.data.status === "ok") {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Token is regenerated.'
+                        })
+                        $("#urlTolist").text(`${window.location.origin}/squad-api/whitelist/${response.data.token}`);
+                        // remove fa-eye-slash from it
+                        eye.classList.remove("fa-eye-slash");
+                        // add fa-eye to it
+                        eye.classList.add("fa-eye");
+                        return Showing = true;
+                    }
+                    if (response.data.status === "nok") {
+                        Swal.fire(`There was an error`, response.data.message, `error`);
+                    }
+                })
+                .catch((error) => {
+                    return Swal.fire(`Error`, `Error: ${error}`, `error`);
+                });
+        }
+        if (pathname == "/bans") {
+            await axios.get(`${window.location.origin}/squad-api/url/regenerate`)
+                .then((response) => {
+                    if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                    if (response.data.status === "ok") {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Token is regenerated.'
+                        })
+                        $("#urlTolist").text(`${window.location.origin}/squad-api/banlist/${response.data.token}`);
+                        // remove fa-eye-slash from it
+                        eye.classList.remove("fa-eye-slash");
+                        // add fa-eye to it
+                        eye.classList.add("fa-eye");
+                        return Showing = true;
+                    }
+                    if (response.data.status === "nok") {
+                        Swal.fire(`There was an error`, response.data.message, `error`);
+                    }
+                })
+                .catch((error) => {
+                    return Swal.fire(`Error`, `Error: ${error}`, `error`);
+                });
+        }
+    }
+
+    async function banPlayer() {
+        const selection = document.getElementById('selection');
+        const type = selection.options[selection.selectedIndex].id;
+        const reason = document.getElementById('reason').value;
+        const length = document.getElementById('banLength').value;
+        const id = document.getElementById('steamID').value;
+        let banTime = `${length}${type}`;
+        if (!reason) return Swal.fire(`Error`, `Reason cannot be empty.`, `error`);
+        if (!id) return Swal.fire(`Error`, `ID cannot be empty.`, `error`);
+        if (!length) return Swal.fire(`Error`, `Ban Length cannot be empty`, `error`);
+        await axios.post(`${window.location.origin}/squad-api/ban`, {
+            steamUID: id,
+            reason: reason,
+            duration: banTime
+        })
+            .then((response) => {
+                if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                if (response.data.status === "ok") {
+                    location.reload();
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Player has been banned.'
+                    })
+                }
+                if (response.data.status === "nok") {
+                    Swal.fire(`There was an error`, `We couldn't ban the player. Please try again later.`, `error`);
+                }
+                if (response.data.status === "nok2") {
+                    Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
+                }
+                if (response.data.status === "nok3") {
+                    Swal.fire(`Already Banned`, `This player already banned.`, `warning`);
+                }
+            })
+            .catch((error) => {
+                return Swal.fire(`Error`, `Error: ${error}`, `error`);
+            });
+    }
+
+    $('input[type="checkbox"]').change(function () {
+        $(`label[for="${this.id}"]`).toggleClass('active');
+    });
+</script>
