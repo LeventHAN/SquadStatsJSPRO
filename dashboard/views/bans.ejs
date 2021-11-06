@@ -45,7 +45,7 @@
                                                                 <%- banlisted[user].reason %>
                                                             </td>
                                                             <td>
-                                                                <%- banlisted[user].endDate %>
+                                                                <%- new Date( banlisted[user].endDate ).toLocaleString('en-GB', { hour12:false } ) %>
                                                             </td>
                                                             <td>
                                                                 <%- banlisted[user].moderator %>
