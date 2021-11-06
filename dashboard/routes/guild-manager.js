@@ -2,8 +2,7 @@ const express = require("express"),
 	utils = require("../utils"),
 	CheckAuth = require("../auth/CheckAuth"),
 	router = express.Router(),
-	version = require("../../package.json").version,
-	config = require("../../config");
+	version = require("../../package.json").version;
 
 router.get("/:serverID", CheckAuth, async (req, res) => {
 	const allCanSeeRoles = await req.client.getAllCanSee();
@@ -17,8 +16,8 @@ router.get("/:serverID", CheckAuth, async (req, res) => {
 		return res.render("404", {
 			allCanSee: allCanSeeRoles,
 			userRoles: await req.client.getRoles(req.session.user.id),
-			ownerID: config.owner.id,
-			serverID: config.serverID,
+			ownerID: req.client.config.owner.id,
+			serverID: req.client.config.serverID,
 			userDiscord: req.userInfos,
 			translate: req.translate,
 			repoVersion: version,
@@ -46,8 +45,8 @@ router.get("/:serverID", CheckAuth, async (req, res) => {
 		role: await req.client.getRoles(req.session.user.id),
 		latestTPS: await utils.getTPS(req.client),
 		playerAmount: await req.client.getPlayersLength(),
-		ownerID: config.owner.id,
-		serverID: config.serverID,
+		ownerID: req.client.config.owner.id,
+		serverID: req.client.config.serverID,
 		allUsers: allUsers,
 		allPages: allPages,
 		allRoles: allDifferentRoles,
@@ -71,8 +70,8 @@ router.post("/:serverID", CheckAuth, async (req, res) => {
 	) {
 		return res.render("404", {
 			userRoles: await req.client.getRoles(req.session.user.id),
-			ownerID: config.owner.id,
-			serverID: config.serverID,
+			ownerID: req.client.config.owner.id,
+			serverID: req.client.config.serverID,
 			userDiscord: req.userInfos,
 			translate: req.translate,
 			currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`,

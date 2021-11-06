@@ -1,8 +1,7 @@
 const express = require("express"),
 	CheckAuth = require("../auth/CheckAuth"),
 	router = express.Router(),
-	utils = require("../utils"),
-	config = require("../../config");
+	utils = require("../utils");
 
 router.get("/", CheckAuth, async (req, res) => {
 	const canSeeArray = await req.client.getAllCanSee();
@@ -11,18 +10,18 @@ router.get("/", CheckAuth, async (req, res) => {
 
 	res.render("logs", {
 		c: req.client,
-		ownerID: config.owner.id,
+		ownerID: req.client.config.owner.id,
 		latestTPS: await utils.getTPS(req.client),
 		playerAmount: await req.client.getPlayersLength(),
 		userRoles: await req.client.getRoles(req.session.user.id),
 		allCanSee: canSeeArray,
-		serverID: config.serverID,
+		serverID: req.client.config.serverID,
 		userDiscord: req.userInfos,
 		userSteam: req.session?.passport?.user || req.userInfos.steam,
 		translate: req.translate,
-		repoVersion: config.version,
-		currentURL: `${config.dashboard.baseURL}/${req.originalUrl}`,
-		config: config,
+		repoVersion: req.client.config.version,
+		currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`,
+		config: req.client.config,
 		logs: await req.client.getAuditLogs(),
 	});
 });

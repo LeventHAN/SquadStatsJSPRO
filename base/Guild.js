@@ -1,17 +1,13 @@
 const mongoose = require("mongoose"),
 	Schema = mongoose.Schema,
-	config = require("../config.js"),
 	languages = require("../languages/language-meta.json");
 
 module.exports = mongoose.model(
 	"Guild",
 	new Schema({
-		/* REQUIRED */
 		id: { type: String }, // Discord ID of the guild
-
-		/* CONFIGURATION */
 		language: { type: String, default: languages.find((l) => l.default).name }, // Language of the guild
-		prefix: { type: String, default: config.prefix }, // Default or custom prefix of the guild
+		prefix: { type: String, default: "!" },
 		dashboard: {
 			type: Object,
 			default: {

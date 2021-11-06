@@ -1,7 +1,6 @@
 const express = require("express"),
 	CheckAuth = require("../auth/CheckAuth"),
-	router = express.Router(),
-	config = require("../../config");
+	router = express.Router();
 
 // Gets profile page
 router.get("/", CheckAuth, async function (req, res) {
@@ -9,8 +8,8 @@ router.get("/", CheckAuth, async function (req, res) {
 		userRoles: await req.client.findOrCreateUser({ id: req.user.id }),
 		c: req.client,
 		role: await req.client.getRoles(req.session.user.id),
-		ownerID: config.owner.id,
-		serverID: config.serverID,
+		ownerID: req.client.config.owner.id,
+		serverID: req.client.config.serverID,
 		user: req.userInfos,
 		translate: req.translate,
 		playerAmount: await req.client.getPlayersLength(),

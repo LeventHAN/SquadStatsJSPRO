@@ -1,6 +1,5 @@
 const chalk = require("chalk");
-const status = require("../config.js").status,
-	version = require("../package.json").version;
+const version = require("../package.json").version;
 
 module.exports = class {
 	constructor(client) {
@@ -50,11 +49,11 @@ module.exports = class {
 		let i = 0;
 
 		setInterval(function () {
-			const toDisplay = status[parseInt(i, 10)].name + " | v" + version;
+			const toDisplay = client.config.status[parseInt(i, 10)].name + " | v" + version;
 			client.user.setActivity(toDisplay, {
-				type: status[parseInt(i, 10)].type,
+				type: client.config.status[parseInt(i, 10)].type,
 			});
-			if (status[parseInt(i + 1, 10)]) i++;
+			if (client.config.status[parseInt(i + 1, 10)]) i++;
 			else i = 0;
 		}, 20000); // Every 20 seconds
 

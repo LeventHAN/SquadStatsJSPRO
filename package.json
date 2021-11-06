@@ -4,10 +4,7 @@
 	"description": "An advanced version of SquadStatsJS (tracking your squad stats) with advanced discord commands to manage your discord server.",
 	"main": "index.js",
 	"scripts": {
-		"start": "node .",
-		"dev": "nodemon node . ",
 		"lint": "eslint . --ext .js --fix",
-		"testcfg": "node scripts/verify-config.js",
 		"prettier": "prettier --use-tabs --write .",
 		"ready": "yarn run genApiDoc && yarn run prettier && yarn run lint",
 		"genApiDoc": "apidoc -f \"./dashboard/routes/\" -i ./ -o \"dashboard/public/apidoc/\""

@@ -1,5 +1,4 @@
-const config = require("../config"),
-	version = require("../package.json").version,
+const version = require("../package.json").version,
 	cors = require("cors"),
 	utils = require("./utils"),
 	authRoutes = require("./auth/auth"),
@@ -79,9 +78,9 @@ module.exports.load = async (client) => {
 	passport.use(
 		new SteamStrategy(
 			{
-				returnURL: config.dashboard.baseURL + "/auth/steam/return",
-				realm: config.dashboard.baseURL,
-				apiKey: config.apiKeys.steam,
+				returnURL: client.config.dashboard.baseURL + "/auth/steam/return",
+				realm: client.config.dashboard.baseURL,
+				apiKey: client.config.apiKeys.steam,
 			},
 			function (identifier, profile, done) {
 				process.nextTick(function () {
@@ -95,7 +94,7 @@ module.exports.load = async (client) => {
 	const whitelist = [
 		"http://localhost:3000",
 		"https://localhost:3000",
-		config.dashboard.baseURL,
+		client.config.dashboard.baseURL,
 	];
 
 	if (client.socket) {
@@ -147,11 +146,11 @@ module.exports.load = async (client) => {
 		// Set the ejs templates to ./views
 		.set("views", path.join(__dirname, "/views"))
 		// Set the dashboard port
-		.set("port", config.dashboard.port)
+		.set("port", client.config.dashboard.port)
 		// Set the express session password and configuration
 		.use(
 			session({
-				secret: config.dashboard.expressSessionPassword,
+				secret: client.config.dashboard.expressSessionPassword,
 				resave: false,
 				saveUninitialized: false,
 			})

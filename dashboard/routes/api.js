@@ -2,7 +2,6 @@ const express = require("express"),
 	CheckAuth = require("../auth/CheckAuth"),
 	router = express.Router(),
 	utils = require("../utils"),
-	config = require("../../config"),
 	multiparty = require("multiparty"),
 	fs = require("fs");
 
@@ -72,7 +71,7 @@ router.get("/", CheckAuth, async (req, res) => {
 }
  */
 router.get("/getServerInfo", CheckAuth, async (req, res) => {
-	const response = await utils.getBMStats(config.squadBattleMetricsID);
+	const response = await utils.getBMStats(req.client.config.squadBattleMetricsID);
 	const steamAccount = {
 		steam64id:
 			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,

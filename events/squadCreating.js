@@ -1,6 +1,5 @@
 const { MessageEmbed } = require("discord.js"),
-	SquadCheckers = require("../helpers/squadChecker"),
-	config = require("../config.js");
+	SquadCheckers = require("../helpers/squadChecker");
 
 /**Builds an embed message.
  *
@@ -117,8 +116,8 @@ module.exports = class {
 						.addField("Harita:", `${serverInfo.details.map}`, true)
 						.addField("Game Mod:", `${serverInfo.details.gameMode}`, true)
 						.addField("Anlık Oyuncu:", `${serverInfo.players}`, true)
-						.setColor(isRookie ? "#fc1d00" : config.embed.color)
-						.setFooter(config.embed.footer)
+						.setColor(isRookie ? "#fc1d00" : this.client.config.embed.color)
+						.setFooter(this.client.config.embed.footer)
 						.setTimestamp()
 				);
 			}

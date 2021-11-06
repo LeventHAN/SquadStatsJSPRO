@@ -1,5 +1,4 @@
 require("./helpers/extenders");
-const config = require("./config");
 
 const util = require("util"),
 	fs = require("fs"),
@@ -8,7 +7,18 @@ const util = require("util"),
 
 // Load SquadStatsJSv3 class
 const SquadStatsJSv3 = require("./base/SquadStatsJSv3"),
-	client = new SquadStatsJSv3();
+	client = new SquadStatsJSv3(),
+	config = process.env.config,
+	configPath = process.argv[2];
+
+if (config && configPath)
+	throw new Error("Cannot accept both a config and config path.");
+
+const readConfig = async () => {
+	client.config = config
+		? await client.parseConfig(config)
+		: await  client.parseConfig(await client.readConfig(configPath || "./config.json"));
+};
 const init = async () => {
 	// Search for all commands
 	const directories = await readdir("./commands/");
@@ -40,7 +50,6 @@ const init = async () => {
 	});
 
 	// DEBUG ONLY
-	if (config.support.debug) client.on("debug", console.log);
 	client.login(client.config.token);
 	// Checking first if the bot has ratelimit
 	client.on("rateLimit", (info) => {
@@ -77,10 +86,13 @@ const init = async () => {
 	await client.createPermissions();
 	// Create the whitelist groups if not existing
 	await client.createWhitelist();
+
+	await client.hookSocketIO();
 	// Create the database connection
 	client.pool = await client.setPool();
 };
 
+readConfig();
 init();
 
 // if there are errors, log them

@@ -1,8 +1,7 @@
 const express = require("express"),
 	CheckAuth = require("../auth/CheckAuth"),
 	router = express.Router(),
-	utils = require("../utils"),
-	config = require("../../config");
+	utils = require("../utils");
 
 router.get("/", CheckAuth, async (req, res, next) => {
 	const canSeeArray = await req.client.getAllCanSee();
@@ -23,11 +22,11 @@ router.get("/", CheckAuth, async (req, res, next) => {
 		allCanSee: canSeeArray,
 		userSteam: req.session?.passport?.user || req.userInfos.steam,
 		translate: req.translate,
-		repoVersion: config.version,
-		currentURL: `${config.dashboard.baseURL}/${req.originalUrl}`,
-		serverID: config.serverID,
-		ownerID: config.owner.id,
-		conf: config,
+		repoVersion: req.client.config.version,
+		currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`,
+		serverID: req.client.config.serverID,
+		ownerID: req.client.config.owner.id,
+		conf: req.client.config,
 	});
 });
 

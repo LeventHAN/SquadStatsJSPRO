@@ -1,5 +1,4 @@
-const axios = require("axios"),
-	config = require("../config");
+const axios = require("axios");
 
 /** Check players squad play time.
  *
@@ -8,7 +7,7 @@ const axios = require("axios"),
  * @returns {boolean} True/False if not private, if private {string} "private".
  */
 const checkSquadRookie = async ({ steamID, prefTime }) => {
-	const steamKey = require("../config").apiKeys.steam;
+	const steamKey = this.client.config.apiKeys.steam;
 	const appID = 393380;
 	let res = {
 		rookie: null,
@@ -60,7 +59,7 @@ const checkSquadRookie = async ({ steamID, prefTime }) => {
  */
 const checkCurrentLayer = async () => {
 	const response = await axios.get(
-		config.dashboard.baseURL + "/v2/getServerInfo"
+		this.client.config.dashboard.baseURL + "/v2/getServerInfo"
 	);
 	return response.data.data.attributes;
 };

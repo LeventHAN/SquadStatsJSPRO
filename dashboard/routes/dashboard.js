@@ -1,7 +1,6 @@
 const express = require("express"),
 	CheckAuth = require("../auth/CheckAuth"),
 	router = express.Router(),
-	config = require("../../config"),
 	utils = require("../utils");
 
 router.get("/", CheckAuth, async (req, res, next) => {
@@ -17,13 +16,13 @@ router.get("/", CheckAuth, async (req, res, next) => {
 		playerAmount: await req.client.getPlayersLength(),
 		c: req.client,
 		allCanSee: allCanSeeRoles,
-		serverID: config.serverID,
+		serverID: req.client.config.serverID,
 		userDiscord: req.userInfos,
 		userSteam: req.session?.passport?.user || req.userInfos.steam,
 		translate: req.translate,
-		repoVersion: config.version,
-		currentURL: `${config.dashboard.baseURL}/${req.originalUrl}`,
-		config: config,
+		repoVersion: req.client.config.version,
+		currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`,
+		config: req.client.config,
 	});
 });
 

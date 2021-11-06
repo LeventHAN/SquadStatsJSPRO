@@ -2,12 +2,12 @@ const { Client, Collection, Intents } = require("discord.js");
 
 const util = require("util"),
 	path = require("path"),
+	fs = require("fs"),
 	moment = require("moment"),
 	MYSQLPromiseObjectBuilder = require("./MYSQLPromiseObjectBuilder.js"),
 	axios = require("axios");
 
 const mysql = require("mysql");
-
 moment.relativeTimeThreshold("s", 60);
 moment.relativeTimeThreshold("ss", 5);
 moment.relativeTimeThreshold("m", 60);
@@ -33,7 +33,7 @@ class SquadStatsJSv3 extends Client {
 		});
 		// init axios here
 		this.axios = axios;
-		this.config = require("../config"); // Load the config file
+		this.config = {};
 		this.customEmojis = require("../emojis.json"); // load the bot's emojis
 		this.languages = require("../languages/language-meta.json"); // Load the bot's languages
 		this.commands = new Collection(); // Creates new commands collection
@@ -66,6 +66,9 @@ class SquadStatsJSv3 extends Client {
 		this.databaseCache.usersReminds = new Collection(); // members with active reminds
 		this.databaseCache.mutedUsers = new Collection(); // members who are currently muted
 		this.socket = null;
+	}
+
+	async hookSocketIO(){
 		if (this.config.socketIO.enabled) {
 			const io = require("socket.io-client"); // Load the socket.io client
 			// make socketIO connection to an IP address
@@ -80,6 +83,20 @@ class SquadStatsJSv3 extends Client {
 					},
 				}
 			);
+		}
+	}
+	async readConfig(configPath = "./config.json") {
+		configPath = path.resolve(__dirname, "../", configPath);
+		if (!fs.existsSync(configPath))
+			throw new Error("Config file does not exist.");
+		return fs.readFileSync(configPath, "utf8");
+	}
+
+	async parseConfig(configString) {
+		try {
+			return JSON.parse(configString);
+		} catch (err) {
+			throw new Error("Unable to parse config file, check the JSON format.");
 		}
 	}
 

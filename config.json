@@ -1,0 +1,51 @@
+{
+	"token": "Discord_Bot_Token",
+	"serverID": "Discord_Server_ID",
+	"squadBattleMetricsID": "BattleMetrics_ServerID",
+	"support": {
+		"logs": "827885263438217226",
+		"debug": false
+	},
+	"socketIO": {
+		"enabled": true, 
+		"ip": "194.26.183.182", 
+		"port": "7777",
+		"token": "MyPasswordForSocketIOFromSquadJS"
+	},
+	"dashboard": {
+		"enabled": true,
+		"secret": "MyDiscordBotSecret",
+		"baseURL": "http://my-domain.com",
+		"port": 80,
+		"expressSessionPassword": "UcPT5Enzmhk_ARFVrGyDZ3WjJvSe!9",
+		"failureURL": "http://my-domain.com"
+	},
+	"mongoDB": "mongodb://localhost:27017/V3", 
+	"prefix": "!",
+	"embed": {
+		"color": "#0091fc",
+		"footer": "LeventHAN | l-event.studio"
+	},
+	"owner": {
+		"id": "152644814146371584", 
+		"name": "LeventHAN#0001"
+	},
+	"apiKeys": {
+		"steam": "MySteamKeyToken",
+		"battleMetrics": "MyBattleMetricsToken"
+	},
+	"others": {
+		"github": "https://github.com/11TStudio",
+		"donate": "https://github.com/sponsors/11TStudio"
+	},
+	"status": [
+		{
+			"name": "👀 looking for your stats",
+			"type": "LISTENING"
+		},
+		{
+			"name": "SquadStatsJS PRO™",
+			"type": "PLAYING"
+		}
+	]
+}
