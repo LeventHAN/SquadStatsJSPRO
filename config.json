@@ -9,6 +9,7 @@
 	"socketIO": {
 		"enabled": true, 
 		"ip": "194.26.183.182", 
+		"localPort": "3001",
 		"port": "7777",
 		"token": "MyPasswordForSocketIOFromSquadJS"
 	},
