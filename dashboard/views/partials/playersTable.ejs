@@ -150,8 +150,7 @@ function isFocused() {
 }
 
 async function addPlayer(data) {
-    const value = gaugePlayers.getValue();
-    gaugePlayers.setValueAnimated(value.getValue() + 1, 2);
+    gaugePlayers.setValueAnimated(gaugePlayers.getValue() + 1, 2);
     let table;
     let row = document.createElement("tr");
     switch (data.player?.teamID) {
@@ -200,8 +199,7 @@ async function addPlayer(data) {
 }
 
 async function removePlayer(data) {
-    const value = gaugePlayers.getValue();
-    gaugePlayers.setValueAnimated(value.getValue() - 1, 2);
+    gaugePlayers.setValueAnimated(gaugePlayers.getValue() - 1, 2);
     let table;
     let rows;
     switch (data.player?.teamID) {
