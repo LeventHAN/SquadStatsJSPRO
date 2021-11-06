@@ -9,13 +9,17 @@ router.get("/", CheckAuth, async (req, res, next) => {
 	const responseNotify = await req.client.getShowNotifications();
 	const responseUpdate = await req.client.getUpdatePlayersTable();
 
-	if (!canSee) return next(new Error("You can't access this page"));
+	const url = req.client.config.dashboard.baseURL;
+	const urlNoProtocol = url.replace(/^https?:\/\//, "");
 
+
+	if (!canSee) return next(new Error("You can't access this page"));
 	res.render("players", {
 		notifySettings: responseNotify,
 		updateSettings: responseUpdate,
 		userRoles: await req.client.getRoles(req.session.user.id),
 		c: req.client,
+		socketIO: urlNoProtocol,
 		latestTPS: await utils.getTPS(req.client),
 		playerAmount: await req.client.getPlayersLength(),
 		userDiscord: req.userInfos,

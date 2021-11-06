@@ -90,13 +90,7 @@ module.exports.load = async (client) => {
 			}
 		)
 	);
-
-	const whitelist = [
-		"http://localhost:3000",
-		"https://localhost:3000",
-		client.config.dashboard.baseURL,
-	];
-
+	
 	if (client.socket) {
 		io.use(async (socket, next) => {
 			if (!socket.handshake.auth) return next(new Error("No token provided."));
@@ -214,13 +208,15 @@ module.exports.load = async (client) => {
 	});
 	// Listen websocket server
 	server.listen(
-		3000,
-		{
-			origins: whitelist,
+		client.config.socketIO.localPort,
+		{ 
+			cors: {
+				origin: "*",
+			},
 		},
 		() => {
 			client.logger.log(
-				`SquadStatsJS ${version} SocketIO is listening on port 3000`,
+				`SquadStatsJS ${version} SocketIO is listening on port ${client.config.socketIO.localPort}`,
 				"READY"
 			);
 		}

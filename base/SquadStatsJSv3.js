@@ -83,6 +83,10 @@ class SquadStatsJSv3 extends Client {
 					},
 				}
 			);
+			// log on connection /w socket.io @ SquadJS server
+			this.socket.on("connect", () => {
+				this.logger.log("Socket.io connected to the SquadJS server.", "log");
+			});
 		}
 	}
 	async readConfig(configPath = "./config.json") {
