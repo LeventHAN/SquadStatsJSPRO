@@ -1,9 +1,9 @@
 <script src="https://cdn.socket.io/4.1.2/socket.io.js" crossorigin="anonymous"></script>
 <script>
-    const url = "<%= socketIOURL %>";
-    const urlNorthflank = "<%= conf.socketIOURL_Nortflank %>"
+    const url = "<%= config.socketIOURL %>";
+    const urlNorthflank = "<%= config.socketIOURL_Nortflank %>"
     let socket = {};
-    
+
     if(urlNorthflank){
         socket = io(
             urlNorthflank,
@@ -20,7 +20,7 @@
     // check if url is localhost
     if (!urlNorthflank && url && url.includes("localhost")) {
         socket = io(
-            "<%= socketIOURL %>:<%=conf.socketIO.localPort%>",
+            "<%= socketIOURL %>:<%=config.socketIO.localPort%>",
             {
                 transports: ["websocket", "polling"],
                 withCredentials: true,

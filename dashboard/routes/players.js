@@ -11,7 +11,6 @@ router.get("/", CheckAuth, async (req, res, next) => {
 
 	if (!canSee) return next(new Error("You can't access this page"));
 	res.render("players", {
-		socketIOURL: req.client.config.socketIOURL,
 		notifySettings: responseNotify,
 		updateSettings: responseUpdate,
 		userRoles: await req.client.getRoles(req.session.user.id),
@@ -26,7 +25,7 @@ router.get("/", CheckAuth, async (req, res, next) => {
 		currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`,
 		serverID: req.client.config.serverID,
 		ownerID: req.client.config.owner.id,
-		conf: req.client.config,
+		config: req.client.config,
 	});
 });
 
