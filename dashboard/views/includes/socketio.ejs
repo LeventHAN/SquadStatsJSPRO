@@ -20,7 +20,7 @@
     // check if url is localhost
     if (!urlNorthflank && url && url.includes("localhost")) {
         socket = io(
-            "<%= socketIOURL %>:<%=config.socketIO.localPort%>",
+            "<%= config.socketIOURL %>:<%=config.socketIO.localPort%>",
             {
                 transports: ["websocket", "polling"],
                 withCredentials: true,
