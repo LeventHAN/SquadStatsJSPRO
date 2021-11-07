@@ -1,10 +1,7 @@
 <script src="https://cdn.socket.io/4.1.2/socket.io.js" crossorigin="anonymous"></script>
 <script>
-    const port = "<%= conf.socketIO.localPort %>";
-    let socket = {};
-    if(port === "80"){
-        socket = io(
-        "wss://" + "<%= socketIO %>",
+    const socket = io(
+        "<%= socketIOURL %>:<%=conf.socketIO.localPort%>",
         {
             transports: ["websocket", "polling"],
             withCredentials: true,
@@ -13,17 +10,4 @@
             },
         }
     );
-    } else {
-        socket = io(
-        "wss://" + "<%= socketIO %>" + ":" + "<%= conf.socketIO.localPort %>",
-        {
-            transports: ["websocket", "polling"],
-            withCredentials: true,
-            auth: {
-                token: "<%= userDiscord.apiToken %>",
-            },
-        }
-    );
-    }
-    
 </script>

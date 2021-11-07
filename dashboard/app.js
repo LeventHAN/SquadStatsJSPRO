@@ -19,7 +19,7 @@ module.exports.load = async (client) => {
 		path = require("path"),
 		app = express(),
 		server = require("http").createServer(app),
-		io = require("socket.io")(server);
+		io = require("socket.io")(server, { secure: true, origins: "*:*", transports: ["websocket", "polling"]});
 
 	/* Routers */
 	const mainRouter = require("./routes/index"),
@@ -90,7 +90,8 @@ module.exports.load = async (client) => {
 			}
 		)
 	);
-	
+
+
 	if (client.socket) {
 		io.use(async (socket, next) => {
 			if (!socket.handshake.auth) return next(new Error("No token provided."));
@@ -209,11 +210,6 @@ module.exports.load = async (client) => {
 	// Listen websocket server
 	server.listen(
 		client.config.socketIO.localPort,
-		{ 
-			cors: {
-				origin: "*",
-			},
-		},
 		() => {
 			client.logger.log(
 				`SquadStatsJS ${version} SocketIO is listening on port ${client.config.socketIO.localPort}`,

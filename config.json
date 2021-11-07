@@ -6,10 +6,11 @@
 		"logs": "827885263438217226",
 		"debug": false
 	},
+	"socketIOURL": "ws://localhost",
 	"socketIO": {
 		"enabled": true, 
 		"ip": "194.26.183.182", 
-		"localPort": "3001",
+		"localPort": "8081",
 		"port": "7777",
 		"token": "MyPasswordForSocketIOFromSquadJS"
 	},
@@ -17,7 +18,7 @@
 		"enabled": true,
 		"secret": "MyDiscordBotSecret",
 		"baseURL": "http://my-domain.com",
-		"port": 80,
+		"port": "8080",
 		"expressSessionPassword": "UcPT5Enzmhk_ARFVrGyDZ3WjJvSe!9",
 		"failureURL": "http://my-domain.com"
 	},
