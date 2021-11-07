@@ -754,6 +754,8 @@ async function updatePlayers(option = 3) {
                     const tr = document.getElementById(m[6]);
                     if (tr) {
                         // get the first td and set the text to the name
+                        const td = tr.getElementsByTagName("td")[3].innerText;
+                        if(td.includes(`Squad Creator`)) return;
                         tr.getElementsByTagName("td")[3].innerHTML += `<br><i class="fas fa-crown"> Squad Creator</i>`;
                     }
                 }
