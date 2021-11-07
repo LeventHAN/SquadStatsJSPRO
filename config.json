@@ -7,6 +7,7 @@
 		"debug": false
 	},
 	"socketIOURL": "ws://localhost",
+	"socketIOURL_Nortflank": "",
 	"socketIO": {
 		"enabled": true, 
 		"ip": "194.26.183.182", 

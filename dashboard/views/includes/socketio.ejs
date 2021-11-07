@@ -1,13 +1,37 @@
 <script src="https://cdn.socket.io/4.1.2/socket.io.js" crossorigin="anonymous"></script>
 <script>
-    const socket = io(
-        "<%= socketIOURL %>:<%=conf.socketIO.localPort%>",
-        {
-            transports: ["websocket", "polling"],
-            withCredentials: true,
-            auth: {
-                token: "<%= userDiscord.apiToken %>",
-            },
-        }
-    );
+    const url = "<%= socketIOURL %>";
+    const urlNorthflank = "<%= conf.socketIOURL_Nortflank %>"
+    let socket = {};
+    
+    if(urlNorthflank){
+        socket = io(
+            urlNorthflank,
+            {
+                transports: ["websocket", "polling"],
+                withCredentials: true,
+                auth: {
+                    token: "<%= userDiscord.apiToken %>",
+                },
+            }
+        );
+    }
+
+    // check if url is localhost
+    if (!urlNorthflank && url && url.includes("localhost")) {
+        socket = io(
+            "<%= socketIOURL %>:<%=conf.socketIO.localPort%>",
+            {
+                transports: ["websocket", "polling"],
+                withCredentials: true,
+                auth: {
+                    token: "<%= userDiscord.apiToken %>",
+                },
+            }
+        )
+    }
+
+    
+    
+    
 </script>
