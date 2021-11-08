@@ -29,42 +29,9 @@ let responseUpdate = {
 
 
 let admins = 0;
-let gaugePlayers;
-let playersSizeTitle =  document.getElementById("headerTitle2");
-playersSizeTitle.innerHTML = "Realtime Players Count"
-socket.emit("players", (playersList) => {
-    gaugePlayers = Gauge(
-    document.getElementById("headerDesc2"), {
-        min: 0,
-        max: 100,
-        dialStartAngle: 180,
-        dialEndAngle: 0,
-        viewBox: (0, 0, 100, 100),
-        color: function(value) {
-            if(value < 0) {
-                return "#5ee432";
-            } else if(value < 50) {
-                return "#fffa50";
-            } else if(value < 80) {
-                return "#f7aa38";
-            } else {
-                return "#ef4655";
-            }
-        }
-    }
-    );
-    gaugePlayers.setValueAnimated(playersList.length, 2);
-});
-
-
-
-
-
-
 
 Noty.setMaxVisible(4);
 socket.on("connect", () => {
-    
     new Noty({
         theme: 'nest',
         timeout: 2200,
@@ -153,7 +120,7 @@ async function addPlayer(data) {
     gaugePlayers.setValueAnimated(gaugePlayers.getValue() + 1, 2);
     let table;
     let row = document.createElement("tr");
-    switch (data.player?.teamID) {
+    switch (data.teamID) {
         case "1":
             table = document.getElementById("team1_players");
             break;
@@ -161,7 +128,7 @@ async function addPlayer(data) {
             table = document.getElementById("team2_players");
     }
     if (!table) return;
-    row.id = data.player?.steamID;
+    row.id = data.steamID;
     if (data.squadID) {
         row.innerHTML = `<td class="name font-weight-bold">${addNewLines(data.name)}<br><span class="badge bg-warning text-dark data-toggle="tooltip" data-placement="top" title="${data.possessClassname || "No Role Selected Yet"}" "><span id="${data.dataID}"></span>${data.steamID}</span></td>
                         <td><span ${data.squadID ? 'id=' + (data.squadID + data.squad.teamID) : ""}>${data.squad?.locked !== "False" ? "<span class='badge bg-danger text-dark'><span style='font-size: 0.1px'>locked</span>🔒</span></td>" : data.squadID ? "<span class='badge bg-success text-dark'><span style='font-size: 0.1px'>unlocked</span>🔓</span></td>" : "<td><span class='badge bg-danger text-dark'>not in squad</span></td>"}<td><span class="badge bg-secondary text-dark">${data.squad?.size ? "👥 " + data.squad?.size : ""}</span></td><td><span class="badge bg-primary text-dark">${addNewLines(data.squad?.squadName)}</span></td>
@@ -174,13 +141,13 @@ async function addPlayer(data) {
                         `;
     }
     table.appendChild(row);
-    tippy(document.getElementById(`settings${data.player?.steamID}`), {
+    tippy(document.getElementById(`settings${data.steamID}`), {
         theme: 'leventhan',
         content: `
         <button style="font-size: 10px !important;" type="button" class="badge btn btn-secondary" onclick="warn('${data.steamID}')">Warn</button>
         <button style="font-size: 10px !important;" type="button" class="badge btn btn-warning" onclick="kick('${data.steamID}')">Kick</button>
         <button style="font-size: 10px !important;" type="button" class="badge btn btn-danger" onclick="ban('${data.steamID}')">Ban</button>
-        ${data.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('${data.player?.teamID}', '${data.squadID}')">Disband the Squad</button>` : ''}
+        ${data.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('${data.teamID}', '${data.squadID}')">Disband the Squad</button>` : ''}
         ${data.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-info" onclick="removeFromSquad('${data.steamID}')">Kick From Squad</button>` : ''}`,
         allowHTML: true,
         zIndex: 1,
@@ -188,7 +155,7 @@ async function addPlayer(data) {
         trigger: 'click',
         interactive: true,
     });
-    switch (data.player?.teamID) {
+    switch (data.teamID) {
         case "1":
             filterTable1();
             break;
@@ -202,7 +169,7 @@ async function removePlayer(data) {
     gaugePlayers.setValueAnimated(gaugePlayers.getValue() - 1, 2);
     let table;
     let rows;
-    switch (data.player?.teamID) {
+    switch (data.teamID) {
         case "1":
             table = document.getElementById("team1_players");
             rows = document.querySelectorAll("#team1_players tr");
@@ -211,13 +178,13 @@ async function removePlayer(data) {
             table = document.getElementById("team2_players");
             rows = document.querySelectorAll("#team2_players tr");
     }
-    if (!table) return updatePlayers();
+    if (!table || !data.steamID ) return updatePlayers();
     rows.forEach((row) => {
-        if (row.id === data.player?.steamID) {
+        if (row.id === data.steamID) {
             row.remove();
         }
     })
-    switch (data.player?.teamID) {
+    switch (data.teamID) {
         case "1":
             filterTable1();
             break;
@@ -273,6 +240,7 @@ socket.on("PLAYER_CONNECTED", async (data) => {
             if (interacting || pauseUpdateHover) {
                 return;
             }
+            if(!data.player.teamID) return updatePlayers();
             addPlayer(data?.player);
         }
     }
@@ -345,7 +313,8 @@ socket.on("PLAYER_DISCONNECTED", async (data) => {
             if (interacting || pauseUpdateHover) {
                 return;
             }
-            removePlayer(data);
+            if(!data.player.teamID) return updatePlayers();
+            removePlayer(data?.player);
         }
     }
 });

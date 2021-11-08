@@ -26,6 +26,7 @@ router.get("/", CheckAuth, async (req, res, next) => {
 		serverID: req.client.config.serverID,
 		ownerID: req.client.config.owner.id,
 		config: req.client.config,
+		usage: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2),
 	});
 });
 

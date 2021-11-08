@@ -49,6 +49,8 @@ router.get("/selector", CheckAuth, async (req, res) => {
 		userSteam: req.session?.passport?.user || req.userInfos.steam,
 		translate: req.translate,
 		repoVersion: req.client.config.version,
+		config: req.client.config,
+		usage: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2),
 		currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`,
 	});
 });

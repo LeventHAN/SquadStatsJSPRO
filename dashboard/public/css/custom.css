@@ -8,3 +8,11 @@
 .navbar {
     z-index: 999999999;
 }
+
+span svg {
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+    width: 200px;
+    height: 200px;
+  }

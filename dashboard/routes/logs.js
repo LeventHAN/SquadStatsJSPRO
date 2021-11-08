@@ -22,6 +22,7 @@ router.get("/", CheckAuth, async (req, res) => {
 		repoVersion: req.client.config.version,
 		currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`,
 		config: req.client.config,
+		usage: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2),
 		logs: await req.client.getAuditLogs(),
 	});
 });

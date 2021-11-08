@@ -29,6 +29,8 @@ router.get("/", CheckAuth, async function (req, res) {
 		currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`,
 		repoVersion: version,
 		allAvaibleRoles: await req.client.getAllAvaibleAccesLevels(),
+		config: req.client.config,
+		usage: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2),
 	});
 });
 

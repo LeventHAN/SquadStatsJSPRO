@@ -22,6 +22,7 @@ router.get("/", CheckAuth, async (req, res, next) => {
 		translate: req.translate,
 		repoVersion: req.client.config.version,
 		currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`,
+		usage: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2),
 		config: req.client.config,
 	});
 });
