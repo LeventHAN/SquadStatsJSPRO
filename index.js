@@ -17,7 +17,9 @@ if (config && configPath)
 const readConfig = async () => {
 	client.config = config
 		? await client.parseConfig(config)
-		: await  client.parseConfig(await client.readConfig(configPath || "./config.json"));
+		: await client.parseConfig(
+				await client.readConfig(configPath || "./config.json")
+		  );
 };
 const init = async () => {
 	// Search for all commands

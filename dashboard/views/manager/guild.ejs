@@ -292,8 +292,6 @@
                 });
 
                 async function toggleRole(userId, role) {
-                    console.log(userId);
-                    console.log(role);
                     await axios.post(`${window.location.origin}/squad-api/roles/toggleRole`, {
                         userId: userId,
                         role: role

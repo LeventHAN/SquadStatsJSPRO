@@ -9,8 +9,8 @@
 	"socketIOURL": "ws://localhost",
 	"socketIOURL_Nortflank": "",
 	"socketIO": {
-		"enabled": true, 
-		"ip": "194.26.183.182", 
+		"enabled": true,
+		"ip": "194.26.183.182",
 		"localPort": "8081",
 		"port": "7777",
 		"token": "MyPasswordForSocketIOFromSquadJS"
@@ -23,14 +23,14 @@
 		"expressSessionPassword": "UcPT5Enzmhk_ARFVrGyDZ3WjJvSe!9",
 		"failureURL": "http://my-domain.com"
 	},
-	"mongoDB": "mongodb://localhost:27017/V3", 
+	"mongoDB": "mongodb://localhost:27017/V3",
 	"prefix": "!",
 	"embed": {
 		"color": "#0091fc",
 		"footer": "LeventHAN | l-event.studio"
 	},
 	"owner": {
-		"id": "152644814146371584", 
+		"id": "152644814146371584",
 		"name": "LeventHAN#0001"
 	},
 	"apiKeys": {

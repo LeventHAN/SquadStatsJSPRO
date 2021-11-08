@@ -19,7 +19,11 @@ module.exports.load = async (client) => {
 		path = require("path"),
 		app = express(),
 		server = require("http").createServer(app),
-		io = require("socket.io")(server, { secure: true, origins: "*:*", transports: ["websocket", "polling"]});
+		io = require("socket.io")(server, {
+			secure: true,
+			origins: "*:*",
+			transports: ["websocket", "polling"],
+		});
 
 	/* Routers */
 	const mainRouter = require("./routes/index"),
@@ -90,7 +94,6 @@ module.exports.load = async (client) => {
 			}
 		)
 	);
-
 
 	if (client.socket) {
 		io.use(async (socket, next) => {
@@ -208,13 +211,10 @@ module.exports.load = async (client) => {
 		);
 	});
 	// Listen websocket server
-	server.listen(
-		client.config.socketIO.localPort,
-		() => {
-			client.logger.log(
-				`SquadStatsJS ${version} SocketIO is listening on port ${client.config.socketIO.localPort}`,
-				"READY"
-			);
-		}
-	);
+	server.listen(client.config.socketIO.localPort, () => {
+		client.logger.log(
+			`SquadStatsJS ${version} SocketIO is listening on port ${client.config.socketIO.localPort}`,
+			"READY"
+		);
+	});
 };
