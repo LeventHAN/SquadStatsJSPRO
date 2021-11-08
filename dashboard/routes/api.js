@@ -71,7 +71,9 @@ router.get("/", CheckAuth, async (req, res) => {
 }
  */
 router.get("/getServerInfo", CheckAuth, async (req, res) => {
-	const response = await utils.getBMStats(req.client.config.squadBattleMetricsID);
+	const response = await utils.getBMStats(
+		req.client.config.squadBattleMetricsID
+	);
 	const steamAccount = {
 		steam64id:
 			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,

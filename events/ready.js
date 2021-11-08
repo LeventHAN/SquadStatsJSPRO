@@ -49,7 +49,8 @@ module.exports = class {
 		let i = 0;
 
 		setInterval(function () {
-			const toDisplay = client.config.status[parseInt(i, 10)].name + " | v" + version;
+			const toDisplay =
+				client.config.status[parseInt(i, 10)].name + " | v" + version;
 			client.user.setActivity(toDisplay, {
 				type: client.config.status[parseInt(i, 10)].type,
 			});

@@ -68,7 +68,7 @@ class SquadStatsJSv3 extends Client {
 		this.socket = null;
 	}
 
-	async hookSocketIO(){
+	async hookSocketIO() {
 		if (this.config.socketIO.enabled) {
 			const io = require("socket.io-client"); // Load the socket.io client
 			// make socketIO connection to an IP address
