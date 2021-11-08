@@ -1,0 +1,114 @@
+<script src='https://rawgit.com/naikus/svg-gauge/master/dist/gauge.js'></script>
+
+<script>
+
+    let gaugePlayers;
+    let playersSizeTitle = document.getElementById("headerTitle2");
+    playersSizeTitle.innerHTML = "Realtime Players Count"
+    gaugePlayers = Gauge(
+            document.getElementById("headerDesc2"), {
+            min: 0,
+            max: 100,
+            value: 0,
+            dialStartAngle: 180,
+            dialEndAngle: 0,
+            color: function (value) {
+                if (value < 0) {
+                    return "#5ee432";
+                } else if (value < 50) {
+                    return "#fffa50";
+                } else if (value < 80) {
+                    return "#f7aa38";
+                } else {
+                    return "#ef4655";
+                }
+            }
+        }
+        );
+        console.log("girdi")
+
+    gaugePlayers.setValueAnimated(<%- playerAmount %>, 2);
+
+
+    let gaugeRam;
+    let ramUsage = document.getElementById("headerTitle1");
+    ramUsage.innerHTML = "RAM Usage"
+    gaugeRam = Gauge(
+        document.getElementById("headerDesc1"), {
+        min: 0,
+        max: 100,
+        dialStartAngle: 180,
+        dialEndAngle: 0,
+        color: function (value) {
+            if (value < 30) {
+                return "#5ee432";
+            } else if (value < 60) {
+                return "#fffa50";
+            } else if (value < 90) {
+                return "#f7aa38";
+            } else if (value < 100) {
+                return "#f7aa38";
+            } else {
+                return "#ef4655";
+            }
+        }
+    }
+    );
+    gaugeRam.setValueAnimated( <%- usage %>, 2);
+
+    let gaugeTPS;
+    let tpsTitle = document.getElementById("headerTitle3");
+    tpsTitle.innerHTML = "Latest TPS"
+    gaugeTPS = Gauge(
+        document.getElementById("headerDesc3"), {
+        min: 0,
+        max: 50,
+        dialStartAngle: 180,
+        dialEndAngle: 0,
+        color: function (value) {
+            if (value < 15) {
+                return "#e74c3c";
+            } else if (value < 25) {
+                return "#e67e22";
+            } else if (value < 35) {
+                return "#f1c40f";
+            } else if (value < 45) {
+                return "#2ecc71";
+            } else if (value < 50) {
+                return "#27ae60";
+            } else {
+                return "#27ae60";
+            }
+        }
+    }
+    );
+    gaugeTPS.setValueAnimated( <%- latestTPS %>, 2);
+
+    let unset;
+    let usetTitle = document.getElementById("headerTitle4");
+    usetTitle.innerHTML = "Nothing"
+    unset = Gauge(
+        document.getElementById("headerDesc4"), {
+        min: 0,
+        max: 50,
+        dialStartAngle: 180,
+        dialEndAngle: 0,
+        color: function (value) {
+            if (value < 15) {
+                return "#e74c3c";
+            } else if (value < 25) {
+                return "#e67e22";
+            } else if (value < 35) {
+                return "#f1c40f";
+            } else if (value < 45) {
+                return "#2ecc71";
+            } else if (value < 50) {
+                return "#27ae60";
+            } else {
+                return "#27ae60";
+            }
+        }
+    }
+    );
+    unset.setValueAnimated( <%- latestTPS %>, 2);
+</script>

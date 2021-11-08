@@ -57,6 +57,8 @@ router.get("/:serverID", CheckAuth, async (req, res) => {
 		repoVersion: version,
 		bot: req.client,
 		currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`,
+		config: req.client.config,
+		usage: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2),
 	});
 });
 
