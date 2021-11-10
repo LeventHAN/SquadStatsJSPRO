@@ -213,7 +213,7 @@ module.exports.load = async (client) => {
 	// Listen websocket server
 	server.listen(client.config.socketIO.localPort, () => {
 		client.logger.log(
-			`SquadStatsJS ${version} SocketIO is listening on port ${client.config.socketIO.localPort}`,
+			`Local SocketIO is listening on port ${client.config.socketIO.localPort}`,
 			"READY"
 		);
 	});
