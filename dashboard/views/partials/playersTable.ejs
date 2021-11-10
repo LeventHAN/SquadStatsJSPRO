@@ -170,7 +170,6 @@ async function addPlayer(data) {
                         <td class="squadName"><button class="badge btn btn-secondary" id="settings${data?.steamID}" aria-describedby="Actions">Actions</button></td>
                         `;
     }
-    // table.append(row);
     (table === 1) ? (await tablePlayers1.row.add(row).draw()) : (await tablePlayers2.row.add(row).draw());
     tippy(document.getElementById(`settings${data?.steamID}`), {
         theme: 'leventhan',
@@ -186,13 +185,6 @@ async function addPlayer(data) {
         trigger: 'click',
         interactive: true,
     });
-    // switch (data?.teamID) {
-    //     case "1":
-    //         filterTable1();
-    //         break;
-    //     case "2":
-    //         filterTable2();
-    // }
 
 }
 
@@ -219,13 +211,6 @@ async function removePlayer(data) {
             return (table === 1) ? (await tablePlayers1.row(row).remove().draw()) : (await tablePlayers2.row(row).remove().draw());
         }
     })
-    // switch (data?.teamID) {
-    //     case "1":
-    //         filterTable1();
-    //         break;
-    //     case "2":
-    //         filterTable2();
-    // }
 }
 
 socket.on("PLAYER_CONNECTED", async (data) => {
