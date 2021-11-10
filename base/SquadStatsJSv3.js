@@ -695,9 +695,9 @@ class SquadStatsJSv3 extends Client {
 		await res
 			.add(
 				"latestTPS", // object key
-				"SELECT tickRate FROM DBLog_TickRates ORDER BY time DESC LIMIT 1;",
+				"SELECT tickRate AS latestTPS FROM DBLog_TickRates ORDER BY time DESC LIMIT 1;",
 				"0", // default value when null, 0 or nothing
-				"tickRate" // this is the name of the column
+				"latestTPS" // this is the name of the column
 			)
 			.then((res) => {
 				return callback(res);

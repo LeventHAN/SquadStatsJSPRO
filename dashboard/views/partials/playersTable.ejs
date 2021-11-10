@@ -1,8 +1,10 @@
 
-<script src='https://rawgit.com/naikus/svg-gauge/master/dist/gauge.js'></script>
+
 
 <script>
 const Gauge = window.Gauge;
+let tablePlayers1;
+let tablePlayers2;
 let responseNotify = {
     onConnect: null,
     onDisconnect: null,
@@ -73,7 +75,7 @@ if(responseNotify.onAdminRequest) {
                     text: `<b>Admin Request:</b>
                 <!-- <br><b>Active In-Game Admins:</b> <span style="text-color: lightblue">ADMIN AMOUNT HERE.</span> -->
                 <br><b>Request:</b> <span style="text-color: lightblue">${command[2].trim()}</span>
-                <br><b>Steam:</b> <a style="text-decoration: none;" href="http://steamcommunity.com/profiles/${data.player.steamID}" target="_blank">${data.player.name}</a>
+                <br><b>Steam:</b> <a style="text-decoration: none;" href="http://steamcommunity.com/profiles/${data.player?.steamID}" target="_blank">${data.player?.name}</a>
                 `
                 }).show();
             }
@@ -116,89 +118,10 @@ function isFocused() {
     return false;
 }
 
-async function addPlayer(data) {
-    gaugePlayers.setValueAnimated(gaugePlayers.getValue() + 1, 2);
-    let table;
-    let row = document.createElement("tr");
-    switch (data.teamID) {
-        case "1":
-            table = document.getElementById("team1_players");
-            break;
-        case "2":
-            table = document.getElementById("team2_players");
-    }
-    if (!table) return;
-    row.id = data.steamID;
-    if (data.squadID) {
-        row.innerHTML = `<td class="name font-weight-bold">${addNewLines(data.name)}<br><span class="badge bg-warning text-dark data-toggle="tooltip" data-placement="top" title="${data.possessClassname || "No Role Selected Yet"}" "><span id="${data.dataID}"></span>${data.steamID}</span></td>
-                        <td><span ${data.squadID ? 'id=' + (data.squadID + data.squad.teamID) : ""}>${data.squad?.locked !== "False" ? "<span class='badge bg-danger text-dark'><span style='font-size: 0.1px'>locked</span>🔒</span></td>" : data.squadID ? "<span class='badge bg-success text-dark'><span style='font-size: 0.1px'>unlocked</span>🔓</span></td>" : "<td><span class='badge bg-danger text-dark'>not in squad</span></td>"}<td><span class="badge bg-secondary text-dark">${data.squad?.size ? "👥 " + data.squad?.size : ""}</span></td><td><span class="badge bg-primary text-dark">${addNewLines(data.squad?.squadName)}</span></td>
-                        <td class="squadName"><button class="badge btn btn-secondary" id="settings${data.steamID}" aria-describedby="Actions">Actions</button></td>
-                        `;
-    } else {
-        row.innerHTML = `<td class="name font-weight-bold">${addNewLines(data.name)}<br><span class="badge bg-warning text-dark data-toggle="tooltip" data-placement="top" title="${data.possessClassname || "No Role Selected Yet"}" "><span id="${data.dataID}"></span>${data.steamID}</span></td>
-                        <td></td><td></td><td><span class='badge bg-danger text-dark'>not in squad</span></td>
-                        <td class="squadName"><button class="badge btn btn-secondary" id="settings${data.steamID}" aria-describedby="Actions">Actions</button></td>
-                        `;
-    }
-    table.appendChild(row);
-    tippy(document.getElementById(`settings${data.steamID}`), {
-        theme: 'leventhan',
-        content: `
-        <button style="font-size: 10px !important;" type="button" class="badge btn btn-secondary" onclick="warn('${data.steamID}')">Warn</button>
-        <button style="font-size: 10px !important;" type="button" class="badge btn btn-warning" onclick="kick('${data.steamID}')">Kick</button>
-        <button style="font-size: 10px !important;" type="button" class="badge btn btn-danger" onclick="ban('${data.steamID}')">Ban</button>
-        ${data.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('${data.teamID}', '${data.squadID}')">Disband the Squad</button>` : ''}
-        ${data.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-info" onclick="removeFromSquad('${data.steamID}')">Kick From Squad</button>` : ''}`,
-        allowHTML: true,
-        zIndex: 1,
-        maxWidth: 'none',
-        trigger: 'click',
-        interactive: true,
-    });
-    switch (data.teamID) {
-        case "1":
-            filterTable1();
-            break;
-        case "2":
-            filterTable2();
-    }
-
-}
-
-async function removePlayer(data) {
-    gaugePlayers.setValueAnimated(gaugePlayers.getValue() - 1, 2);
-    let table;
-    let rows;
-    switch (data.teamID) {
-        case "1":
-            table = document.getElementById("team1_players");
-            rows = document.querySelectorAll("#team1_players tr");
-            break;
-        case "2":
-            table = document.getElementById("team2_players");
-            rows = document.querySelectorAll("#team2_players tr");
-    }
-    if (!table || !data.steamID ) return updatePlayers();
-    rows.forEach((row) => {
-        if (row.id === data.steamID) {
-            row.remove();
-        }
-    })
-    switch (data.teamID) {
-        case "1":
-            filterTable1();
-            break;
-        case "2":
-            filterTable2();
-    }
-}
-
 function filterTable1() {
-    $('#team1_players').DataTable({
-        destroy: true,
-        bAutoWidth: false,
-        aoColumns: [{ sWidth: "1%", }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }],
-
+    tablePlayers1 = $('#team1_players').DataTable({
+        "destroy": true,
+        "bAutoWidth": false,
         "scrollCollapse": true,
         "info": false,
         "paging": false
@@ -206,11 +129,9 @@ function filterTable1() {
 }
 
 function filterTable2() {
-    $('#team2_players').DataTable({
-        destroy: true,
-        bAutoWidth: false,
-        aoColumns: [{ sWidth: "1%", }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }],
-
+    tablePlayers2 = $('#team2_players').DataTable({
+        "destroy": true,
+        "bAutoWidth": false,
         "scrollCollapse": true,
         "info": false,
         "paging": false
@@ -218,8 +139,93 @@ function filterTable2() {
 }
 
 function isHovering(status) {
-    if (status) return pauseUpdateHover = true;
-    return pauseUpdateHover = false;
+    if (status) {
+        pauseUpdateHover = true; 
+    } else {
+        pauseUpdateHover = false;
+    }
+    return;
+}
+async function addPlayer(data) {
+    gaugePlayers.setValueAnimated(gaugePlayers.getValue() + 1, 2);
+    let table;
+    let row = document.createElement("tr");
+    switch (data?.teamID) {
+        case "1":
+            table = 1;
+            break;
+        case "2":
+            table = 2;
+    }
+    if (!table) return;
+    row.id = data?.steamID;
+    if (data?.squad?.squadID) {
+        row.innerHTML = `<td class="name font-weight-bold">${addNewLines(data?.name)}<br><span class="badge bg-warning text-dark data-toggle="tooltip" data-placement="top" title="${data?.possessClassname || "No Role Selected Yet"}" ">${data?.steamID}</span></td>
+                        <td><span ${data?.squad?.squadID ? 'id=' + (data?.squad?.squadID + data?.squad.teamID) : ""}>${data?.squad?.locked !== "False" ? "<span class='badge bg-danger text-dark'><span style='font-size: 0.1px'>locked</span>🔒</span></td>" : data?.squad?.squadID ? "<span class='badge bg-success text-dark'><span style='font-size: 0.1px'>unlocked</span>🔓</span></td>" : "<td><span class='badge bg-danger text-dark'>not in squad</span></td>"}<td><span class="badge bg-secondary text-dark">${data?.squad?.size ? "👥 " + data?.squad?.size : ""}</span></td><td><span class="badge bg-primary text-dark">${addNewLines(data?.squad?.squadName)}</span></td>
+                        <td class="squadName"><button class="badge btn btn-secondary" id="settings${data?.steamID}" aria-describedby="Actions">Actions</button></td>
+                        `;
+    } else {
+        row.innerHTML = `<td class="name font-weight-bold">${addNewLines(data?.name)}<br><span class="badge bg-warning text-dark data-toggle="tooltip" data-placement="top" title="${data?.possessClassname || "No Role Selected Yet"}" ">${data?.steamID}</span></td>
+                        <td></td><td></td><td><span class='badge bg-danger text-dark'>not in squad</span></td>
+                        <td class="squadName"><button class="badge btn btn-secondary" id="settings${data?.steamID}" aria-describedby="Actions">Actions</button></td>
+                        `;
+    }
+    // table.append(row);
+    (table === 1) ? (await tablePlayers1.row.add(row).draw()) : (await tablePlayers2.row.add(row).draw());
+    tippy(document.getElementById(`settings${data?.steamID}`), {
+        theme: 'leventhan',
+        content: `
+        <button style="font-size: 10px !important;" type="button" class="badge btn btn-secondary" onclick="warn('${data?.steamID}')">Warn</button>
+        <button style="font-size: 10px !important;" type="button" class="badge btn btn-warning" onclick="kick('${data?.steamID}')">Kick</button>
+        <button style="font-size: 10px !important;" type="button" class="badge btn btn-danger" onclick="ban('${data?.steamID}')">Ban</button>
+        ${data?.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-primary" onclick="disbandSquad('${data?.teamID}', '${data?.squadID}')">Disband the Squad</button>` : ''}
+        ${data?.squadID ? `<button style="font-size: 10px !important;" type="button" class="badge btn btn-info" onclick="removeFromSquad('${data?.steamID}')">Kick From Squad</button>` : ''}`,
+        allowHTML: true,
+        zIndex: 1,
+        maxWidth: 'none',
+        trigger: 'click',
+        interactive: true,
+    });
+    // switch (data?.teamID) {
+    //     case "1":
+    //         filterTable1();
+    //         break;
+    //     case "2":
+    //         filterTable2();
+    // }
+
+}
+
+
+
+
+async function removePlayer(data) {
+    gaugePlayers.setValueAnimated(gaugePlayers.getValue() - 1, 2);
+    let table;
+    let rows;
+    switch (data?.teamID) {
+        case "1":
+            table = 1;
+            rows = document.querySelectorAll("#team1_players tr");
+            break;
+        case "2":
+            table = 2;
+            rows = document.querySelectorAll("#team2_players tr");
+    }
+    
+    if (!data?.steamID ) return updatePlayers();
+    rows.forEach(async (row) => {
+        if (row.id === data?.steamID) {
+            return (table === 1) ? (await tablePlayers1.row(row).remove().draw()) : (await tablePlayers2.row(row).remove().draw());
+        }
+    })
+    // switch (data?.teamID) {
+    //     case "1":
+    //         filterTable1();
+    //         break;
+    //     case "2":
+    //         filterTable2();
+    // }
 }
 
 socket.on("PLAYER_CONNECTED", async (data) => {
@@ -238,10 +244,13 @@ socket.on("PLAYER_CONNECTED", async (data) => {
         if (window.location.href === `${window.location.origin}/players` && data.player?.name) {
             const interacting = await isFocused();
             if (interacting || pauseUpdateHover) {
+            passedNotif++;      
+                
                 return;
             }
-            if(!data.player.teamID) return updatePlayers();
-            addPlayer(data?.player);
+
+            if(!data.player?.teamID) return updatePlayers();
+            await addPlayer(data?.player);
         }
     }
 });
@@ -313,8 +322,8 @@ socket.on("PLAYER_DISCONNECTED", async (data) => {
             if (interacting || pauseUpdateHover) {
                 return;
             }
-            if(!data.player.teamID) return updatePlayers();
-            removePlayer(data?.player);
+            if(!data.player?.teamID) return updatePlayers();
+            await removePlayer(data?.player);
         }
     }
 });
@@ -696,8 +705,7 @@ async function updatePlayers(option = 3) {
             });
         }
 
-        await createTable1();
-        await createTable2();
+        
         socket.emit("rcon.execute", "ListSquads", async (res) => {
             const rows = res.split("\n");
             for (let i = 0; i < rows.length; i++) {
@@ -730,6 +738,8 @@ async function updatePlayers(option = 3) {
                 }
             }
         });
+        await createTable1();
+        await createTable2();
         await filterTable1();
         await filterTable2();
     });
@@ -737,6 +747,7 @@ async function updatePlayers(option = 3) {
 
 
 updatePlayers();
+
 
 
 </script>
