@@ -1574,4 +1574,19 @@ router.get(
 	}
 );
 
+router.post(
+	"/dashboard/toggleDashboardSettings",
+	CheckAuth,
+	async function (req, res) {
+		if (!req.body.onSetting || !req.body.typeSetting)
+			return res.json({
+				status: "nok",
+				message: "You are doing something wrong.",
+			});
+		
+		await req.client.toggleDashboardSettings(req.body.typeSetting, req.body.onSetting);
+		return res.json({ status: "ok", message: "Toggled!" });
+	}
+);
+
 module.exports = router;

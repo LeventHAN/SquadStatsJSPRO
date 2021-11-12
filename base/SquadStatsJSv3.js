@@ -274,6 +274,17 @@ class SquadStatsJSv3 extends Client {
 		}
 	}
 
+	async getNameCheckerConfig(){
+		const guild = await this.findOrCreateGuild({ id: this.config.serverID });
+		return {
+			enabled: guild.plugins.squad.nameChecker.enabled,
+			kickMessage: guild.plugins.squad.nameChecker.kickMessage,
+			showWhichLetters: guild.plugins.squad.nameChecker.showWhichLetters,
+			blacklist: guild.plugins.squad.nameChecker.blacklist,
+			matchRegex: guild.plugins.squad.nameChecker.matchRegex
+		};
+	}
+
 	// This function is used to create a log data in the mongodb
 	async addLog({
 		action: action,
@@ -863,6 +874,7 @@ class SquadStatsJSv3 extends Client {
 				}
 			}
 		}
+		await guild.markModified("dashboard.showNotifications");
 		await guild.save();
 	}
 
@@ -876,7 +888,19 @@ class SquadStatsJSv3 extends Client {
 				}
 			}
 		}
+		await guild.markModified("dashboard.updatePlayersTable");
 		await guild.save();
+	}
+
+	async toggleDashboardSettings(typeSetting, actionType) {
+		switch(typeSetting) {
+			case "notifications":
+				await this.toggleShowNotifications(actionType);
+				break;
+			case "updates":
+				await this.toggleUpdatePlayersTable(actionType);
+				break;
+		}
 	}
 
 	// This function is used to resolve a role from a string (his name or id for example when searching it)

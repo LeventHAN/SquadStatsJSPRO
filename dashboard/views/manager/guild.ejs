@@ -223,7 +223,7 @@
                                 </form>
                             </div>
                         </div>
-                        <div class="form-row">
+                        <div class="form-row mt-4">
                             <div class="col-md-12">
                                 <!-- SQUAD CONFIGURATION -->
                                 <div class="box box-success">
@@ -268,7 +268,52 @@
                         
                     <div>
 				</section>
-                <div class="row">
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="box box-success">
+                            <div class="box-header with-border"><h3 class="box-title">Some other settings</h3></div>
+                            <div class="box-body">
+                                    <div class="form-group notifications">
+                                        <h3>
+                                            Notifications
+                                            <small class="text-muted">The settings for notification panes on Players Table</small>
+                                          </h3>
+                                            <% for(const [key, value] of Object.entries(notificationSettings)) { %>
+                                                <label for="<%= key %>"><%= translate(`dashboard:${key}`) %></label>
+                                                <input id="<%= key %>" onchange="toggleDashboardSettings()" type="checkbox" name="<%= key %>" <%= value ? 'checked' : '' %> data-style="ios" data-toggle="toggle" data-size="xs" data-on="On" data-off="Off">
+                                            <% } %>
+                                            </span>
+                                    </div>
+                                    <div class="form-group updates">
+                                        <h3>
+                                            Update Content
+                                            <small class="text-muted">The settings for updating the table on Players Table</small>
+                                          </h3>
+                                            <% for(const [key, value] of Object.entries(updatePlayersTable)) { %>
+                                            <label for="<%= key %>"><%= translate(`dashboard:${key}`) %></label>
+                                            <input id="<%= key %>" onchange="toggleDashboardSettings()" type="checkbox" name="<%= key %>" <%= value ? 'checked' : '' %> data-style="ios" data-toggle="toggle" data-size="xs" data-on="On" data-off="Off">
+                                            <% } %>
+                                        </span>
+                                    </div>
+                                    <!-- <div class="form-group">
+                                        <h3>
+                                            Plugins
+                                            <small class="text-muted">The settings for plugins</small>
+                                          </h3>
+                                            <label for="nameChecker" class="badge">Name Checker</label>
+                                            <input id="nameChecker" onchange="togglePlugin()" name="toggle-test" type="checkbox" data-style="ios" data-toggle="toggle" data-size="xs" data-on="On" data-off="Off" checked>
+                                            <!-- <label for="squadLeaderChecker" class="badge">SL Experience Checker</label>
+                                            <input id="squadLeaderChecker" onchange="togglePlugin()" name="toggle-test" type="checkbox" data-style="ios" data-toggle="toggle" data-size="xs" data-on="On" data-off="Off" checked>
+                                            <label for="streamerChecker" class="badge">Streamer Notifier</label>
+                                            <input id="streamerChecker" onchange="togglePlugin()" name="toggle-test" type="checkbox" data-style="ios" data-toggle="toggle" data-size="xs" data-on="On" data-off="Off" checked> -->
+                                        </span>
+                                    </div> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                    
                     
                 </div>
 				
@@ -291,7 +336,30 @@
                     });
                 });
 
+                async function toggleDashboardSettings(){
+                    const element = event.target;
+                    if(element.id) return;
+                    // ex; onConnect
+                    const onSetting = await element.getAttribute('for');
+                    
+                    // ex; notifications
+                    const typeSetting = await element.parentElement.parentElement.parentElement.className.split(' ')[1];
+                    const nameOfElement = document.getElementById(onSetting);
+                    if(!onSetting || !typeSetting) return Toast.fire({icon: 'error', title: "You are spamming.", text: "We didn't take any action. Please refresh the page and re-try without spamming."});
+                    
+                    await axios.post(`${window.location.origin}/squad-api/dashboard/toggleDashboardSettings`, {
+                        onSetting: onSetting,
+                        typeSetting: typeSetting
+                    }).then(function (response) {
+                        if(response.data.status != "ok") return Toast.fire({icon: 'error', title: response.data.message});
+                        Toast.fire({icon: 'success', title: response.data.message});
+                    }).catch(function (error) {
+                        Toast.fire({icon: 'error', title: error});
+                    });
+                }
+
                 async function toggleRole(userId, role) {
+                    if(event.target.id) return;
                     await axios.post(`${window.location.origin}/squad-api/roles/toggleRole`, {
                         userId: userId,
                         role: role
@@ -309,7 +377,7 @@
                                 break;
                         }
                     }).catch(function (error) {
-                        toastr.error(error);
+                        Toast.fire({icon: 'error', title: error});
                     });
                 }
 

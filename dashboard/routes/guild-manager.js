@@ -36,8 +36,13 @@ router.get("/:serverID", CheckAuth, async (req, res) => {
 	const allPages = await req.client.getAllPagesCanSee();
 	const allActions = await req.client.getAllActionsWhoCan();
 	const allDifferentRoles = await req.client.getAllDiffrentRoles();
+	const notificationSettings = await req.client.getShowNotifications();
+	const updatePlayersTable = await req.client.getUpdatePlayersTable();
+
 
 	res.render("manager/guild", {
+		notificationSettings: notificationSettings,
+		updatePlayersTable: updatePlayersTable,
 		userRoles: await req.client.getRoles(req.session.user.id),
 		c: req.client,
 		allCanSee: allCanSeeRoles,

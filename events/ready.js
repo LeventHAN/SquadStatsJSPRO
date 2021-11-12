@@ -9,6 +9,7 @@ module.exports = class {
 	async run() {
 		const client = this.client;
 		const socket = client.socket;
+		const nameChecker = await client.getNameCheckerConfig();
 		if (socket) {
 			socket.on("connect_error", (err) => {
 				return client.logger.log(err, "ERROR");
@@ -23,6 +24,19 @@ module.exports = class {
 		// /* Squad Creating Plugin */
 		// 	await client.emit("squadCreating", squadVotingGuild, "851451690020110346", socket);
 		//
+		socket.on("PLAYER_CONNECTED", async (playerData) => {
+			// here all events that relate with player connection
+
+			// Name checker plugin
+			if(nameChecker.enabled) {
+				await client.emit(
+					"onPlayerConnection",
+					client.config.support.logs,
+					playerData,
+					nameChecker
+				);
+			}
+		});
 
 		client.logger.log(
 			`${client.user.tag}, ready to serve ${client.users.cache.size}.`,
