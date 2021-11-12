@@ -2,47 +2,31 @@
 
 
 <script>
+const responseNotify = {
+    <% for(const [key, value] of Object.entries(notifySettings)) { %>
+        "<%= key %>": <%= value %>,
+    <% } %>
+};
+const responseUpdate = {
+    <% for(const [key, value] of Object.entries(updateSettings)) { %>
+        "<%= key %>": <%= value %>,
+    <% } %>
+};
 const Gauge = window.Gauge;
 let tablePlayers1;
 let tablePlayers2;
-let responseNotify = {
-    onConnect: null,
-    onDisconnect: null,
-    onSquadJoin: null,
-    onSquadLeave: null,
-    onSquadUpdate: null,
-    onAdminRequest: null,
-    notifyAboutUpdates: null
-};
-let responseUpdate = {
-    onConnect: null,
-    onDisconnect: null,
-    onSquadJoin: null,
-    onSquadLeave: null,
-    onSquadUpdate: null
-};
-<% for (let key in notifySettings) { %>
-    responseNotify["<%= key %>"] = <%= notifySettings[key] %>;
-<% }; %>
-
-<% for (let key in updateSettings) { %>
-    responseUpdate["<%= key %>"] = <%= updateSettings[key] %>;
-<% }; %>
-
-
 let admins = 0;
-
 Noty.setMaxVisible(4);
+
 socket.on("connect", () => {
     new Noty({
         theme: 'nest',
-        timeout: 2200,
+        timeout: 5000,
         type: 'success',
         visibilityControl: 'true',
         layout: 'topRight',
         text: '<b>Reminder:</b><br>You are connected with SquadJS.'
     }).show();
-
 });
 
 

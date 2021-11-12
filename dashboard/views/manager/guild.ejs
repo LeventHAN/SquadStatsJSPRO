@@ -280,7 +280,7 @@
                                           </h3>
                                             <% for(const [key, value] of Object.entries(notificationSettings)) { %>
                                                 <label for="<%= key %>"><%= translate(`dashboard:${key}`) %></label>
-                                                <input id="<%= key %>" onchange="toggleDashboardSettings()" type="checkbox" name="<%= key %>" <%= value ? 'checked' : '' %> data-style="ios" data-toggle="toggle" data-size="xs" data-on="On" data-off="Off">
+                                                <input id="<%= key %>" onchange="toggleDashboardSettings('notifications','<%= key %>')" type="checkbox" name="<%= key %>" <%= value ? 'checked' : '' %> data-style="ios" data-toggle="toggle" data-size="xs" data-on="On" data-off="Off">
                                             <% } %>
                                             </span>
                                     </div>
@@ -291,10 +291,11 @@
                                           </h3>
                                             <% for(const [key, value] of Object.entries(updatePlayersTable)) { %>
                                             <label for="<%= key %>"><%= translate(`dashboard:${key}`) %></label>
-                                            <input id="<%= key %>" onchange="toggleDashboardSettings()" type="checkbox" name="<%= key %>" <%= value ? 'checked' : '' %> data-style="ios" data-toggle="toggle" data-size="xs" data-on="On" data-off="Off">
+                                            <input id="<%= key %>" onchange="toggleDashboardSettings('updates','<%= key %>')" type="checkbox" name="<%= key %>" <%= value ? 'checked' : '' %> data-style="ios" data-toggle="toggle" data-size="xs" data-on="On" data-off="Off">
                                             <% } %>
                                         </span>
                                     </div>
+
                                     <!-- <div class="form-group">
                                         <h3>
                                             Plugins
@@ -302,10 +303,10 @@
                                           </h3>
                                             <label for="nameChecker" class="badge">Name Checker</label>
                                             <input id="nameChecker" onchange="togglePlugin()" name="toggle-test" type="checkbox" data-style="ios" data-toggle="toggle" data-size="xs" data-on="On" data-off="Off" checked>
-                                            <!-- <label for="squadLeaderChecker" class="badge">SL Experience Checker</label>
+                                            <label for="squadLeaderChecker" class="badge">SL Experience Checker</label>
                                             <input id="squadLeaderChecker" onchange="togglePlugin()" name="toggle-test" type="checkbox" data-style="ios" data-toggle="toggle" data-size="xs" data-on="On" data-off="Off" checked>
                                             <label for="streamerChecker" class="badge">Streamer Notifier</label>
-                                            <input id="streamerChecker" onchange="togglePlugin()" name="toggle-test" type="checkbox" data-style="ios" data-toggle="toggle" data-size="xs" data-on="On" data-off="Off" checked> -->
+                                            <input id="streamerChecker" onchange="togglePlugin()" name="toggle-test" type="checkbox" data-style="ios" data-toggle="toggle" data-size="xs" data-on="On" data-off="Off" checked>
                                         </span>
                                     </div> -->
                             </div>
@@ -336,17 +337,8 @@
                     });
                 });
 
-                async function toggleDashboardSettings(){
-                    const element = event.target;
-                    if(element.id) return;
-                    // ex; onConnect
-                    const onSetting = await element.getAttribute('for');
-                    
-                    // ex; notifications
-                    const typeSetting = await element.parentElement.parentElement.parentElement.className.split(' ')[1];
-                    const nameOfElement = document.getElementById(onSetting);
-                    if(!onSetting || !typeSetting) return Toast.fire({icon: 'error', title: "You are spamming.", text: "We didn't take any action. Please refresh the page and re-try without spamming."});
-                    
+                async function toggleDashboardSettings(typeSetting, onSetting){
+                    if(!onSetting || !typeSetting) return Toast.fire({icon: 'error', title: "Something is fishy", text: "Oops something went wrong!"});
                     await axios.post(`${window.location.origin}/squad-api/dashboard/toggleDashboardSettings`, {
                         onSetting: onSetting,
                         typeSetting: typeSetting
