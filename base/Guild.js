@@ -60,6 +60,19 @@ module.exports = mongoose.model(
 							},
 						},
 					},
+					nameChecker: {
+						enabled: false,
+						kickMessage: "Your name is not human readable.",
+						showWhichLetters: true,
+						matchRegex: `[\u0400-\u04FF]|[\u4E00-\u9FA5][^"\n]`,
+						blacklist: [
+							"admin",
+							"hitler",
+							"nazi",
+							"fuck",
+							"pussy"
+						],
+					}
 				},
 				suggestions: false, // the channel in which the suggestions will be sent
 				modlogs: false, // the channel in which the moderation logs (mute, kick, ban, etc...) will be sent
