@@ -3,7 +3,8 @@ const express = require("express"),
 	router = express.Router(),
 	utils = require("../utils"),
 	multiparty = require("multiparty"),
-	fs = require("fs");
+	fs = require("fs"),
+	BM = require("@leventhan/battlemetrics");
 
 router.get("/", CheckAuth, async (req, res) => {
 	return res.json("Welcome to the SquadStatsJSPRO api!");
@@ -71,9 +72,18 @@ router.get("/", CheckAuth, async (req, res) => {
 }
  */
 router.get("/getServerInfo", CheckAuth, async (req, res) => {
-	const response = await utils.getBMStats(
-		req.client.config.squadBattleMetricsID
+	const options = {
+		token: req.client.config.apiKeys.battleMetrics,
+		serverID: req.client.config.squadBattleMetricsID,
+		game: process.env.GAMENAME || 'squad'
+	};
+
+	const battleMetrics = new BM(options);
+
+	const response = await battleMetrics.getServerInfoById(
+		battleMetrics.serverID
 	);
+	
 	const steamAccount = {
 		steam64id:
 			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
@@ -85,7 +95,7 @@ router.get("/getServerInfo", CheckAuth, async (req, res) => {
 			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
-		id: req.session.user.id,
+		id: req.session?.user?.id,
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
@@ -145,7 +155,7 @@ router.get("/getPlayersList", CheckAuth, async (req, res) => {
 				req.session?.passport?.user?.profileurl,
 		};
 		const discordAccount = {
-			id: req.session.user.id,
+			id: req.session?.user?.id,
 			username: req.session?.user?.username,
 			discriminator: req.session?.user?.discriminator,
 		};
@@ -189,7 +199,7 @@ router.get("/getNextMap", CheckAuth, async (req, res) => {
 				req.session?.passport?.user?.profileurl,
 		};
 		const discordAccount = {
-			id: req.session.user.id,
+			id: req.session?.user?.id,
 			username: req.session?.user?.username,
 			discriminator: req.session?.user?.discriminator,
 		};
@@ -231,7 +241,7 @@ router.post("/setNextMap", CheckAuth, async function (req, res) {
 			message: "You are doing something wrong.",
 		});
 
-	const userRole = await req.client.getRoles(req.session.user.id);
+	const userRole = await req.client.getRoles(req.session?.user?.id);
 
 	const canUser = await req.client.whoCan("setNextMap");
 
@@ -252,7 +262,7 @@ router.post("/setNextMap", CheckAuth, async function (req, res) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
-		id: req.session.user.id,
+		id: req.session?.user?.id,
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
@@ -284,7 +294,7 @@ router.post("/setCurrentMap", CheckAuth, async function (req, res) {
 			message: "You are doing something wrong.",
 		});
 
-	const userRole = await req.client.getRoles(req.session.user.id);
+	const userRole = await req.client.getRoles(req.session?.user?.id);
 
 	const canUser = await req.client.whoCan("setCurrentMap");
 
@@ -305,7 +315,7 @@ router.post("/setCurrentMap", CheckAuth, async function (req, res) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
-		id: req.session.user.id,
+		id: req.session?.user?.id,
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
@@ -361,7 +371,7 @@ router.get("/getCurrentMap", CheckAuth, async (req, res) => {
 				req.session?.passport?.user?.profileurl,
 		};
 		const discordAccount = {
-			id: req.session.user.id,
+			id: req.session?.user?.id,
 			username: req.session?.user?.username,
 			discriminator: req.session?.user?.discriminator,
 		};
@@ -403,7 +413,7 @@ router.post("/broadcast", CheckAuth, async function (req, res) {
 			message: "You are doing something wrong.",
 		});
 
-	const userRole = await req.client.getRoles(req.session.user.id);
+	const userRole = await req.client.getRoles(req.session?.user?.id);
 
 	const canUser = await req.client.whoCan("broadcast");
 
@@ -424,7 +434,7 @@ router.post("/broadcast", CheckAuth, async function (req, res) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
-		id: req.session.user.id,
+		id: req.session?.user?.id,
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
@@ -472,7 +482,7 @@ router.post("/kick", CheckAuth, async function (req, res) {
 			message: "You are doing something wrong.",
 		});
 
-	const userRole = await req.client.getRoles(req.session.user.id);
+	const userRole = await req.client.getRoles(req.session?.user?.id);
 
 	const canUser = await req.client.whoCan("kick");
 
@@ -493,7 +503,7 @@ router.post("/kick", CheckAuth, async function (req, res) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
-		id: req.session.user.id,
+		id: req.session?.user?.id,
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
@@ -522,7 +532,7 @@ router.post("/kick", CheckAuth, async function (req, res) {
 					req.session?.passport?.user?.id ||
 					req.session?.passport?.user?.steamid,
 				moderatorName: req.session.user.username,
-				moderator: req.session.user.id,
+				moderator: req.session?.user?.id,
 				typeModeration: "kick",
 				reason: req.body.reason,
 				endDate: null,
@@ -562,7 +572,7 @@ router.post("/warn", CheckAuth, async function (req, res) {
 			message: "You are doing something wrong.",
 		});
 
-	const userRole = await req.client.getRoles(req.session.user.id);
+	const userRole = await req.client.getRoles(req.session?.user?.id);
 
 	const canUser = await req.client.whoCan("warn");
 
@@ -583,7 +593,7 @@ router.post("/warn", CheckAuth, async function (req, res) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
-		id: req.session.user.id,
+		id: req.session?.user?.id,
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
@@ -608,7 +618,7 @@ router.post("/warn", CheckAuth, async function (req, res) {
 			moderatorSteamID:
 				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
 			moderatorName: req.session.user.username,
-			moderator: req.session.user.id,
+			moderator: req.session?.user?.id,
 			typeModeration: "warn",
 			reason: req.body.reason,
 			endDate: null,
@@ -648,7 +658,7 @@ router.post("/ban", CheckAuth, async function (req, res) {
 			message: "You are doing something wrong.",
 		});
 
-	const userRole = await req.client.getRoles(req.session.user.id);
+	const userRole = await req.client.getRoles(req.session?.user?.id);
 
 	const canUser = await req.client.whoCan("ban");
 
@@ -670,7 +680,7 @@ router.post("/ban", CheckAuth, async function (req, res) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
-		id: req.session.user.id,
+		id: req.session?.user?.id,
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
@@ -725,7 +735,7 @@ router.post("/ban", CheckAuth, async function (req, res) {
 						req.session?.passport?.user?.id ||
 						req.session?.passport?.user?.steamid,
 					moderatorName: req.session.user.username,
-					moderator: req.session.user.id,
+					moderator: req.session?.user?.id,
 					typeModeration: "ban",
 					reason: req.body.reason,
 					endDate: epochDuration,
@@ -768,7 +778,7 @@ router.post("/disbandSquad", CheckAuth, async function (req, res) {
 			message: "You are doing something wrong.",
 		});
 
-	const userRole = await req.client.getRoles(req.session.user.id);
+	const userRole = await req.client.getRoles(req.session?.user?.id);
 
 	const canUser = await req.client.whoCan("disbandSquad");
 
@@ -789,7 +799,7 @@ router.post("/disbandSquad", CheckAuth, async function (req, res) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
-		id: req.session.user.id,
+		id: req.session?.user?.id,
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
@@ -844,7 +854,7 @@ router.post("/removeFromSquad", CheckAuth, async function (req, res) {
 			message: "You are doing something wrong.",
 		});
 
-	const userRole = await req.client.getRoles(req.session.user.id);
+	const userRole = await req.client.getRoles(req.session?.user?.id);
 
 	const canUser = await req.client.whoCan("removeFromSquad");
 
@@ -865,7 +875,7 @@ router.post("/removeFromSquad", CheckAuth, async function (req, res) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
-		id: req.session.user.id,
+		id: req.session?.user?.id,
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
@@ -930,7 +940,7 @@ router.post("/moderation/getCount", CheckAuth, async function (req, res) {
 });
 
 router.post("/whitelist/import", CheckAuth, async function (req, res, next) {
-	const userRole = await req.client.getRoles(req.session.user.id);
+	const userRole = await req.client.getRoles(req.session?.user?.id);
 	const canSee = await req.client.canAccess("roles", req.userInfos.id);
 	if (!canSee) return next(new Error("You can't access this page"));
 	if (!userRole.includes("owner"))
@@ -950,7 +960,7 @@ router.post("/whitelist/import", CheckAuth, async function (req, res, next) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
-		id: req.session.user.id,
+		id: req.session?.user?.id,
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
@@ -1041,7 +1051,7 @@ router.post("/banlist/removeUserBanlist", CheckAuth, async function (req, res) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
-		id: req.session.user.id,
+		id: req.session?.user?.id,
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
@@ -1088,7 +1098,7 @@ router.post("/banlist/removeUserBanlist", CheckAuth, async function (req, res) {
 	@apiDescription Only the owner can get the url of the whitelists
  */
 router.get("/url", CheckAuth, async function (req, res) {
-	const userRole = await req.client.getRoles(req.session.user.id);
+	const userRole = await req.client.getRoles(req.session?.user?.id);
 	const canSee = await req.client.canAccess("roles", req.userInfos.id);
 	if (!canSee) return res.json({ status: "nok", message: "No access!" });
 	// Check if userRole has any of ["owner"]
@@ -1109,7 +1119,7 @@ router.get("/url", CheckAuth, async function (req, res) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
-		id: req.session.user.id,
+		id: req.session?.user?.id,
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
@@ -1153,7 +1163,7 @@ router.get("/url", CheckAuth, async function (req, res) {
 	@apiDescription Only the owner can regenerate the url of the whitelists
  */
 router.get("/url/regenerate", CheckAuth, async function (req, res) {
-	const userRole = await req.client.getRoles(req.session.user.id);
+	const userRole = await req.client.getRoles(req.session?.user?.id);
 	const canSee = await req.client.canAccess("roles", req.userInfos.id);
 	if (!canSee) return res.json({ status: "nok", message: "No access!" });
 	// Check if userRole has any of ["owner"]
@@ -1174,7 +1184,7 @@ router.get("/url/regenerate", CheckAuth, async function (req, res) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
-		id: req.session.user.id,
+		id: req.session?.user?.id,
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
@@ -1232,7 +1242,7 @@ router.post(
 				req.session?.passport?.user?.profileurl,
 		};
 		const discordAccount = {
-			id: req.session.user.id,
+			id: req.session?.user?.id,
 			username: req.session?.user?.username,
 			discriminator: req.session?.user?.discriminator,
 		};
@@ -1292,7 +1302,7 @@ router.post(
 				req.session?.passport?.user?.profileurl,
 		};
 		const discordAccount = {
-			id: req.session.user.id,
+			id: req.session?.user?.id,
 			username: req.session?.user?.username,
 			discriminator: req.session?.user?.discriminator,
 		};
@@ -1334,7 +1344,7 @@ router.post(
 				req.session?.passport?.user?.profileurl,
 		};
 		const discordAccount = {
-			id: req.session.user.id,
+			id: req.session?.user?.id,
 			username: req.session?.user?.username,
 			discriminator: req.session?.user?.discriminator,
 		};
@@ -1375,7 +1385,7 @@ router.post("/whitelist/addGroup", CheckAuth, async function (req, res) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
-		id: req.session.user.id,
+		id: req.session?.user?.id,
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
@@ -1422,7 +1432,7 @@ router.post(
 				req.session?.passport?.user?.profileurl,
 		};
 		const discordAccount = {
-			id: req.session.user.id,
+			id: req.session?.user?.id,
 			username: req.session?.user?.username,
 			discriminator: req.session?.user?.discriminator,
 		};
@@ -1464,7 +1474,7 @@ router.post("/whitelist/removeGroup", CheckAuth, async function (req, res) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
-		id: req.session.user.id,
+		id: req.session?.user?.id,
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
@@ -1500,7 +1510,7 @@ router.post("/roles/toggleRole", CheckAuth, async function (req, res) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const discordAccount = {
-		id: req.session.user.id,
+		id: req.session?.user?.id,
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};

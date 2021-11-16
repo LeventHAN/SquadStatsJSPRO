@@ -64,13 +64,6 @@ async function fetchUser(userData, client, query) {
 	return userInfos;
 }
 
-async function getBMStats(bmServer) {
-	const res = await axios.get(
-		`https://api.battlemetrics.com/servers/${bmServer}`
-	);
-	return res.data;
-}
-
 async function getTPS(client) {
 	let latestTPS = "";
 	await client.getLatestTPS((res) => {
@@ -88,4 +81,4 @@ async function getPreviusMap(client) {
 	return previusMap;
 }
 
-module.exports = { fetchUser, fetchGuild, getBMStats, getTPS, getPreviusMap };
+module.exports = { fetchUser, fetchGuild, getTPS, getPreviusMap };

@@ -31,6 +31,7 @@
 	},
 	"homepage": "https://github.com/11TStudio/SquadStatsJS-PRO#readme",
 	"dependencies": {
+		"@leventhan/battlemetrics": "^1.4.3",
 		"axios": "^0.21.1",
 		"btoa": "^1.2.1",
 		"chalk": "^4.1.0",
