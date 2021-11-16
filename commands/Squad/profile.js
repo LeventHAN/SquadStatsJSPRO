@@ -43,7 +43,7 @@ class Profile extends Command {
 
 		let steamUID;
 
-		let member = await client.resolveMember(args[0], message.guild);
+		let member = await client.resolveUser(args[0]);
 
 		if (!member) {
 			member = message.member;
