@@ -1,13 +1,13 @@
 <script>
 const currentMap = document.createElement("img")
 currentMap.classList.add("mx-auto","d-block","currentMap");
-currentMap.setAttribute("width", 150);
+currentMap.setAttribute("width", 550);
 currentMap.setAttribute("onError", "noImageFound('currentMap')");
 
 const nextMap = document.createElement("img")
 nextMap.classList.add(["mx-auto","d-block", "nextMap"]);
-nextMap.style.opacity = "0.35";
-nextMap.setAttribute("width", 150);
+nextMap.style.opacity = "0.75";
+nextMap.setAttribute("width", 350);
 nextMap.setAttribute("onError", "noImageFound('nextMap')")
 
 // will return object all avaible maps
@@ -21,13 +21,67 @@ async function getAllMaps() {
     return maps;
 }
 
+function editDistance(s1, s2) {
+  s1 = s1.toLowerCase();
+  s2 = s2.toLowerCase();
+
+  var costs = new Array();
+  for (var i = 0; i <= s1.length; i++) {
+    var lastValue = i;
+    for (var j = 0; j <= s2.length; j++) {
+      if (i == 0)
+        costs[j] = j;
+      else {
+        if (j > 0) {
+          var newValue = costs[j - 1];
+          if (s1.charAt(i - 1) != s2.charAt(j - 1))
+            newValue = Math.min(Math.min(newValue, lastValue),
+              costs[j]) + 1;
+          costs[j - 1] = lastValue;
+          lastValue = newValue;
+        }
+      }
+    }
+    if (i > 0)
+      costs[s2.length] = lastValue;
+  }
+  return costs[s2.length];
+}
+
+function compareSimilarity(s1,s2) {
+    var longer = s1;
+    var shorter = s2;
+    if (s1.length < s2.length) {
+        longer = s2;
+        shorter = s1;
+    }
+    var longerLength = longer.length;
+    if (longerLength == 0) {
+        return 1.0;
+    }
+    return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
+}
+
+async function getSimMap(arrayMaps, matchingLayer){
+    let mapName;
+    let mapSimScore = 0;
+    for(let i = 0; i < arrayMaps.length; i++){
+        arrayMaps[i] = arrayMaps[i].match(/^<option.*>(.*)<\/option>$/)[1];
+        if(compareSimilarity(arrayMaps[i], matchingLayer) > mapSimScore){
+            mapName = arrayMaps[i];
+            mapSimScore = compareSimilarity(arrayMaps[i], matchingLayer);
+        }
+    }
+
+    return mapName;
+}
 
 async function layerManager({action = "setNextMap"}){
     Swal.fire({
-        title: 'Select Next Map',
+        title: `Select ${(action === "setNextMap") ? "Next" : "Current"} Map`,
         input: 'select',
         inputOptions: await getAllMaps(),
-        inputPlaceholder: 'Maps',
+        inputPlaceholder: `Choose the ${(action === "setNextMap") ? "next" : "current"} layer...`,
         showCancelButton: true,
     }).then(async (result) => {
         if (result.isConfirmed) 
@@ -37,7 +91,6 @@ async function layerManager({action = "setNextMap"}){
                 if(i == result.value){
                     // get first match from maps[i] by this regex: "^<option.*>(.*)<\/option>$"
                     const mapName = maps[i].match(/^<option.*>(.*)<\/option>$/)[1];
-                    console.log(mapName);
                     await axios.post(`${window.location.origin}/squad-api/${action}`, {
                         layer: mapName
                     }).then((response) => {
@@ -64,45 +117,61 @@ async function layerManager({action = "setNextMap"}){
 }
 
 async function getCurrentMap() {
+    const maps = await getAllMaps();
     axios.get(`${window.location.origin}/squad-api/getCurrentMap`).then(async (res) =>{
         const layer = res.data.layer.replaceAll(" ", "_");
-        const url = `https://squadmaps.com/img/maps/thumbnails/${layer}.jpg`;
-        const t = await axios.get(url).catch(() => {
-            return false;
-        });
-        if(!t) return currentMap.setAttribute("src", `https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png`);
-
-        currentMap.setAttribute("alt", res.data.layer);
+        const mapName = await getSimMap(maps, layer);
         currentMap.setAttribute(
             "src", 
-            url
+            `https://squad-data.nyc3.cdn.digitaloceanspaces.com/main/${mapName}.jpg`
             );
+        currentMap.setAttribute("alt", res.data.layer);
         $(`.current`).append(currentMap);
         
+        const currentMapName = document.createElement("div");
+        currentMapName.classList.add("text-center");
+        currentMapName.innerHTML = res.data.layer;
+        $(`.current`).append(currentMapName);
+        const buttons = document.createElement("div");
+        buttons.classList.add("buttons", "mx-auto", "d-flex", "mt-2");
+        const setCurrentMap = document.createElement("button");
+        setCurrentMap.setAttribute("id", "setCurrentMap");
+        setCurrentMap.setAttribute("onclick", `layerManager({action: "setCurrentMap"});`);
+        setCurrentMap.setAttribute("type", "button");
+        setCurrentMap.classList.add("btn", "btn-primary", "mt-2d", "mx-auto", "d-inline-block");
+        setCurrentMap.innerHTML = "Change Map";
+        const setNextMap = document.createElement("button");
+        setNextMap.setAttribute("id", "setNextMap");
+        setNextMap.setAttribute("onclick", `layerManager({action: "setNextMap"});`);
+        setNextMap.setAttribute("type", "button");
+        setNextMap.classList.add("btn", "btn-primary", "mt-2d", "mx-auto", "d-inline-block");
+        setNextMap.innerHTML = "↷ Set Next Map";
+        buttons.appendChild(setCurrentMap);
+        buttons.appendChild(setNextMap);
+        $(`.current`).append(buttons);
+
     });
 }
 
 async function getNextMap() {
+    const maps = await getAllMaps();
     axios.get(`${window.location.origin}/squad-api/getNextMap`).then(async (res) =>{
         const layer = res.data.layer.replaceAll(" ", "_");
-        try{
-            nextMap.setAttribute("alt", res.data.layer);
-                nextMap.setAttribute(
-                    "src", 
-                    `https://squadmaps.com/img/maps/thumbnails/${layer}.jpg`
-                    );
-                nextMap.setAttribute("width", 130);
-                $(`.next`).append(nextMap);
-        } catch(err) {
-            nextMap.setAttribute("alt", res.data.layer);
-            nextMap.setAttribute(
-                "src", 
-                `https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png`
-                );
-                nextMap.setAttribute("width", 130);
+        const mapName = await getSimMap(maps, layer);
+        nextMap.setAttribute("alt", res.data.layer);
+        nextMap.setAttribute(
+            "src", 
+            `https://squad-data.nyc3.cdn.digitaloceanspaces.com/main/${mapName}.jpg`
+            );
+        nextMap.setAttribute("width", 250);
+                
+        $(`.next`).append(nextMap);
+        // add below div .next centered text of next map name
+        const nextMapName = document.createElement("div");
+        nextMapName.classList.add("text-center");
+        nextMapName.innerHTML = res.data.layer;
+        $(`.next`).append(nextMapName);
 
-            $(`.next`).append(nextMap);
-        }
     });
 }
 
@@ -119,18 +188,5 @@ window.onload = function(){
     getCurrentMap();
     getNextMap();
 }
-
-
-$(document).ready(async function() {
-    
-    $("#setNextMap").click(() => {
-        layerManager({action: "setNextMap"});
-    });
-    $("#setCurrentMap").click(() => {
-        layerManager({action: "setCurrentMap"});
-    });
-
-    
-});
 
 </script>

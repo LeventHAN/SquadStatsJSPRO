@@ -1,7 +1,6 @@
 const express = require("express"),
 	CheckAuth = require("../auth/CheckAuth"),
 	router = express.Router(),
-	utils = require("../utils"),
 	multiparty = require("multiparty"),
 	fs = require("fs"),
 	BM = require("@leventhan/battlemetrics");

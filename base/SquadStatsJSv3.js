@@ -691,8 +691,8 @@ class SquadStatsJSv3 extends Client {
 		await res
 			.add(
 				"PreviusMap", // object key
-				"SELECT layerClassName FROM DBLog_Matches ORDER BY startTime DESC LIMIT 1;",
-				"0", // default value when null, 0 or nothing
+				"SELECT layerClassName FROM DBLog_Matches WHERE endTime IS NULL ORDER BY startTime DESC LIMIT 1;",
+				"Not connected with DB", // default value when null, 0 or nothing
 				"layerClassName" // this is the name of the column
 			)
 			.then((res) => {
