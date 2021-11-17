@@ -1,13 +1,16 @@
+//<pre>
 /////////////////////////////////////////////////////////////////////////////////////////////
-//// Made by LeventHAN
+// Made by LeventHAN
+/////////////////////////////////////////////////////////////////////////////////////////////
 //// https://github.com/11TStudio                                                  
 /////////////////////////////////////////////////////////////////////////////////////////////
 // ----- Groups ----- //
 <% for(role in roles) { %>
-    Group=<%= role %>:<%= roles[role].permissions %>
+Group=<%= role %>:<%= roles[role].permissions %>
 <% }; %>
 
 // ----- Users ----- // 
 <% for(member in memberData) { %>
-    Admin=<%= member %>:<%= memberData[member].role %> // <%= memberData[member].description %>
+Admin=<%= member %>:<%= memberData[member].role %> // <%= memberData[member].description %>
 <% }; %>
+//</pre>
