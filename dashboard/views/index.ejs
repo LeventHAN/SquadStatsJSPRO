@@ -19,17 +19,18 @@
 						<div class="text-muted text-center mt-2 mb-3"><small>You are good to go!</small></div>
 					<% } %>
 					<div class="btn-wrapper text-center">
-					  
 						<% if(userSteam && userDiscord) { %>
-							<a href="/selector" class="btn btn-neutral btn-icon"></a>
+							<a href="/selector" class="btn btn-neutral btn-icon">
 							<span class="btn-inner--icon"><i class="ni ni-planet"></i></span>
 							<span class="btn-inner--text">Dashboard</span>
+							</a>
 						<% } else { %>
-							<a href="/login" class="btn btn-neutral btn-icon"></a>
+							<a href="/login" class="btn btn-neutral btn-icon">
 							<span class="btn-inner--icon"><i class="ni ni-circle-08"></i></span>
 							<span class="btn-inner--text">Login</span>
+							</a>
 						<% } %>
-					  </a>
+					  
 					</div>
 				  </div>
 				  <div class="card-body px-lg-5 py-lg-5">
