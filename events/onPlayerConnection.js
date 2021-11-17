@@ -46,11 +46,6 @@ module.exports = class {
 			(channel) => channel.id === channelID
 		);
 		
-		console.log(`Player ${playerName} connected.`);
-		console.log(`Some test: ${nameChecker.blacklist.some((x) => playerName.includes(x))}`);
-		console.log(`Filter test: ${nameChecker.blacklist.filter((x) => playerName.includes(x)).toString()}`);
-		
-		
 		// TODO check if playerData.player.steamID is admin. if user does have group that includes canseeadminchat than suppose it is admin.
 
 		const regex = new RegExp(nameChecker.matchRegex, "gi");
@@ -63,13 +58,12 @@ module.exports = class {
 					.match(regex)
 					.toString().length) || nameChecker.blacklist.includes(playerName)
 		) {
-			console.log(`${nameChecker.kickMessage + " "}${nameChecker.showWhichLetters ? (nameChecker.blacklist.some((x) => playerName.includes(x)) ? nameChecker.blacklist.filter((x) => playerName.includes(x)).toString() : playerName.match(regex).toString()) : ""}`);
-			// client.socket.emit(
-			// 	"rcon.execute",
-			// 	`AdminKick ${
-			// 		playerData.player.steamID
-			// 	} ${nameChecker.kickMessage + " "}${nameChecker.showWhichLetters ? (nameChecker.blacklist.some((x) => playerName.includes(x)) ? nameChecker.blacklist.filter((x) => playerName.includes(x)).toString() : playerName.match(regex).toString()) : ""}`
-			// );
+			client.socket.emit(
+				"rcon.execute",
+				`AdminKick ${
+					playerData.player.steamID
+				} ${nameChecker.kickMessage + " "}${nameChecker.showWhichLetters ? (nameChecker.blacklist.some((x) => playerName.includes(x)) ? nameChecker.blacklist.filter((x) => playerName.includes(x)).toString() : playerName.match(regex).toString()) : ""}`
+			);
 			// save kick log to audit schema
 			const moreDetails = {
 				steamID: playerData.player.steamID,
@@ -85,12 +79,11 @@ module.exports = class {
 				details: { details: moreDetails },
 			});
 			await log.save();
-			await channel.send(
-				embedBuilder(
-					`${playerName} was kicked because he has not readable name!`
-				)
-					.setDescription("The player information follows;")
-					.addField("Name:", `${playerName}`, true)
+
+			const kickEmbed = new Discord.MessageEmbed()
+				.setAuthor("BAD NAME CHECKER")
+				.setDescription(`${playerName} was kicked because he has not readable name!`)
+				.addField("Name:", `${playerName}`, true)
 					.addField("SteamID:", `${playerData.player.steamID}`, true)
 					.addField(
 						"Letters/Name that should be changed:",
@@ -100,7 +93,7 @@ module.exports = class {
 					.setColor("#fc1d00")
 					.setFooter(client.config.owner.name)
 					.setTimestamp()
-			);
+			return message.channel.send({ embeds: [kickEmbed] });
 		}
 	}
 };

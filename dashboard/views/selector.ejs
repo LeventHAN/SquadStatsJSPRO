@@ -15,52 +15,18 @@
 				<div class="card bg-gradient-neutral shadow p-5">
 
 					<div class="row">
-					<% if(userDiscord.displayedGuilds){ userDiscord.displayedGuilds.forEach(function(guild) { %>
-						<!-- Displays 4 servers by line -->
-						<div class="col-md-3">
-							<div class="box box-solid m-2">
-								<div class="box-header text-center">
-									<h3 style="text-align: center !important;" class="box-title server-name"><i class="fas fa-crown"></i> <%= guild.name %></h3>
-								</div>
-								<!-- /.box-header -->
-								<div class="box-body m-2">
-									<div class="text-center">
-										<img src="<%= guild.iconURL %>" style="border-radius:100%" width="100" height="100" class="img-fluid">
-									</div>
-								</div>
-								<!-- /.box-body -->
-								<div class="box-footer mb-3">
-									<a href="<%= guild.settingsUrl %>"><button class="btn btn-block btn-success"><%= translate("dashboard:MANAGE") %></button></a>
-								</div>
-								<!-- /.box-footer -->
+					<!-- Center a big :( Emoji and write below it cenetered "We will shortly fill this page with amazing content for you!"-->
+						<div class="col-lg-12">
+							<div class="text-center">
+								<i class="fas fa-smile-wink fa-10x"></i>
+								<h1 class="display-4">We will shortly fill this page with amazing content for you!</h1>
 							</div>
-							<!-- /.box -->
 						</div>
-						<!-- /.col -->
-					<% }); } else { %>
-						<div class="col-md-12">
-							<div class="box box-warning">
-								<div class="box-header with-border">
-									<h3 class="box-title"><%= translate("dashboard:NO_SERVER") %></h3>
-									<div class="box-tools pull-right">
-									<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-									</button>
-									</div>
-									<!-- /.box-tools -->
-								</div>
-								<!-- /.box-header -->
-								<div class="box-body">
-									<%= translate("dashboard:NO_SERVER_CONTENT") %>
-								</div>
-								<!-- /.box-body -->
-							</div>
-							<!-- /.box -->
-						</div>
-					<% } %>
+					</div>
 				</div>
 				<!-- Footer includes credits and version -->
-			</div>
 			<%- include('./partials/footer') %>
+			</div>
 		</div>
 		<%- include('./partials/scripts') %>
 	</body>
