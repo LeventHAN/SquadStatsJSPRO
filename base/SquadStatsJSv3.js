@@ -217,7 +217,7 @@ class SquadStatsJSv3 extends Client {
 
 	// Will check if the user has a steam account linked to them and send back the steam data if so
 	async linkedSteamAccount(userID) {
-		const userData = await this.usersData.findOne({ id: userID });
+		const userData = await this.usersData.findOne({ "steam.steamid": userID });
 		if (!userData) return false;
 		return userData.steam;
 	}
