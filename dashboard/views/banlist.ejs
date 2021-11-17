@@ -1,3 +1,5 @@
-<pre>
-    <% for(ban in bans) { %>[<%= bans[ban].moderator %>] Banned:<%= bans[ban].steamID %>:<%= bans[ban].endDate %> // <%= bans[ban].reason %><br><% }; %>
-</pre>
+//<pre>
+<% for(ban in bans) { %>
+[<%= bans[ban].moderator %>] Banned:<%= bans[ban].steamID %>:<%= bans[ban].endDate %> // <%= bans[ban].reason %>
+<% }; %>
+//</pre>
