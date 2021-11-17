@@ -43,14 +43,16 @@ class Profile extends Command {
 
 		let steamUID;
 
-		let member = await client.resolveUser(args[0]);
+		let member;
+
+		if(args[0])
+			member = await client.resolveUser(args[0]);		
 
 		if (!member) {
-			member = message.member;
+			member = message.member.user;
 		}
-
 		// Check if the user is a bot
-		if (member.user.bot) {
+		if (member.bot) {
 			return message.error("squad/profile:BOT_USER");
 		}
 
@@ -103,9 +105,9 @@ class Profile extends Command {
 			const profileEmbed = new Discord.MessageEmbed()
 				.setAuthor(
 					message.translate("squad/profile:TITLE", {
-						username: member.user.tag,
+						username: member.tag,
 					}),
-					member.user.displayAvatarURL()
+					member.displayAvatarURL()
 				)
 				.setDescription(
 					userData.bio
