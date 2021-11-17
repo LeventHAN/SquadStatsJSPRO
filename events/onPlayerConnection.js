@@ -1,13 +1,4 @@
-const { MessageEmbed } = require("discord.js");
-
-/**Builds an embed message.
- *
- * @param {String} title - The title of the embed message
- * @returns {MessageEmbed} Discord embed message
- */
-const embedBuilder = (title) => {
-	return new MessageEmbed().setTitle(`${title}`);
-};
+const Discord = require("discord.js");
 
 /**Event on player connection.
  * - Current functions;
@@ -84,16 +75,16 @@ module.exports = class {
 				.setAuthor("BAD NAME CHECKER")
 				.setDescription(`${playerName} was kicked because he has not readable name!`)
 				.addField("Name:", `${playerName}`, true)
-					.addField("SteamID:", `${playerData.player.steamID}`, true)
-					.addField(
-						"Letters/Name that should be changed:",
-						`${nameChecker.showWhichLetters ? (nameChecker.blacklist.some((x) => playerName.includes(x)) ? nameChecker.blacklist.filter((x) => playerName.includes(x)).toString() : playerName.match(regex).toString()) : "Not enabled."}`,
-						true
-					)
-					.setColor("#fc1d00")
-					.setFooter(client.config.owner.name)
-					.setTimestamp()
-			return message.channel.send({ embeds: [kickEmbed] });
+				.addField("SteamID:", `${playerData.player.steamID}`, true)
+				.addField(
+					"Letters/Name that should be changed:",
+					`${nameChecker.showWhichLetters ? (nameChecker.blacklist.some((x) => playerName.includes(x)) ? nameChecker.blacklist.filter((x) => playerName.includes(x)).toString() : playerName.match(regex).toString()) : "Not enabled."}`,
+					true
+				)
+				.setColor("#fc1d00")
+				.setFooter(client.config.owner.name)
+				.setTimestamp();
+			return channel.send({ embeds: [kickEmbed] });
 		}
 	}
 };
