@@ -1,6 +1,6 @@
 {
 	"name": "SquadStatsJS-pro",
-	"version": "2.1.0",
+	"version": "2.1.1",
 	"description": "An advanced version of SquadStatsJS (tracking your squad stats) with advanced discord commands to manage your discord server.",
 	"main": "index.js",
 	"scripts": {
@@ -31,7 +31,7 @@
 	},
 	"homepage": "https://github.com/11TStudio/SquadStatsJS-PRO#readme",
 	"dependencies": {
-		"@leventhan/battlemetrics": "^1.4.3",
+		"@leventhan/battlemetrics": "^1.4.8",
 		"axios": "^0.21.1",
 		"btoa": "^1.2.1",
 		"chalk": "^4.1.0",
