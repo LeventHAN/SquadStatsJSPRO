@@ -319,7 +319,7 @@ router.post("/setCurrentMap", CheckAuth, async function (req, res) {
 		discriminator: req.session?.user?.discriminator,
 	};
 	const moreDetails = {
-		newLayer: req.body.layer,
+		nextLayer: req.body.layer,
 	};
 
 	const socket = req.client.socket;
