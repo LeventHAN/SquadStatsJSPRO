@@ -61,14 +61,10 @@ class Report extends Command {
 			.setColor(data.config.embed.color)
 			.setFooter(data.config.embed.footer);
 
-		const success = Discord.Util.parseEmoji(
-			this.client.customEmojis.success
-		).id;
-		const error = Discord.Util.parseEmoji(this.client.customEmojis.error).id;
 
 		repChannel.send({ embeds: [embed] }).then(async (m) => {
-			await m.react(success);
-			await m.react(error);
+			await m.react("👍");
+			await m.react("👎");
 		});
 
 		message.success("general/report:SUCCESS", {
