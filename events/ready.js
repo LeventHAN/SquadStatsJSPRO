@@ -14,6 +14,26 @@ module.exports = class {
 			socket.on("connect_error", (err) => {
 				return client.logger.log(err, "ERROR");
 			});
+			// /* Squad Creating Plugin */
+			// 	await client.emit("squadCreating", squadVotingGuild, "851451690020110346", socket);
+			//
+			client.logger.log(
+				"Loading PLAYER_CONNECTED event.",
+				"log"
+			);
+			socket.on("PLAYER_CONNECTED", async (playerData) => {
+				// here all events that relate with player connection
+				
+				// Name checker plugin
+				if(nameChecker.enabled) {
+					await client.emit(
+						"onPlayerConnection",
+						client.config.support.logs,
+						playerData,
+						nameChecker
+					);
+				}
+			});
 		}
 		// Logs some informations using the logger file
 		client.logger.log(
@@ -21,22 +41,7 @@ module.exports = class {
 			"log"
 		);
 
-		// /* Squad Creating Plugin */
-		// 	await client.emit("squadCreating", squadVotingGuild, "851451690020110346", socket);
-		//
-		socket.on("PLAYER_CONNECTED", async (playerData) => {
-			// here all events that relate with player connection
-
-			// Name checker plugin
-			if(nameChecker.enabled) {
-				await client.emit(
-					"onPlayerConnection",
-					client.config.support.logs,
-					playerData,
-					nameChecker
-				);
-			}
-		});
+		
 
 		client.logger.log(
 			`${client.user.tag}, ready to serve ${client.users.cache.size}.`,

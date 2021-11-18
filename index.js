@@ -18,10 +18,11 @@ const readConfig = async () => {
 	client.config = config
 		? await client.parseConfig(config)
 		: await client.parseConfig(
-				await client.readConfig(configPath || "./config.json")
+			await client.readConfig(configPath || "./config.json")
 		  );
 };
 const init = async () => {
+	await readConfig();
 	// Search for all commands
 	const directories = await readdir("./commands/");
 	client.logger.log(
@@ -39,6 +40,10 @@ const init = async () => {
 				}
 			});
 	});
+
+
+	// Hook the socket.io
+	await client.hookSocketIO();
 
 	// Then we load events, which will include our message and ready event.
 	const evtFiles = await readdir("./events/");
@@ -60,8 +65,8 @@ const init = async () => {
 				info.timeDifference
 					? info.timeDifference
 					: info.timeout
-					? info.timeout
-					: "Unknown timeout "
+						? info.timeout
+						: "Unknown timeout "
 			}`
 		);
 	});
@@ -89,12 +94,10 @@ const init = async () => {
 	// Create the whitelist groups if not existing
 	await client.createWhitelist();
 
-	await client.hookSocketIO();
+	
 	// Create the database connection
 	client.pool = await client.setPool();
 };
-
-readConfig();
 init();
 
 // if there are errors, log them
