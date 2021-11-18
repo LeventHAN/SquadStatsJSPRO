@@ -24,11 +24,6 @@ module.exports = async (req, res, next) => {
 		if (ip) {
 			req.session.user.lastIp = ip[0];
 		}
-		// Link the steam account with the user
-		await req.client.linkSteamAccount(
-			req.session.user.id,
-			req.session?.passport?.user || req.userInfos.steam
-		);
 		return next();
 	}
 	let redirectURL =

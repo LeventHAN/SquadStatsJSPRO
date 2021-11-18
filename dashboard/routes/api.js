@@ -1522,7 +1522,7 @@ router.post("/roles/toggleRole", CheckAuth, async function (req, res) {
 		req.body.role
 	);
 	const log = await req.client.addLog({
-		action: `${status.toUpperCase()}`,
+		action: `ROLE_${status.toUpperCase()}`,
 		author: { discord: discordAccount, steam: steamAccount },
 		ip: req.session.user.lastIp,
 		details: { details: moreDetails },
