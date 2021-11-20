@@ -575,19 +575,7 @@ class SquadStatsJSv3 extends Client {
 	async getAllDiffrentRoles() {
 		const perms = await this.permission.findOne({});
 		if (!perms) return;
-
-		const roles = [];
-		// loop trough perms.canSee and put all values to roles
-		for (const key in perms.canSee) {
-			if (perms.canSee[key]) {
-				// loop trough the roles
-				for (let i = 0; i < perms.canSee[key].length; i++) {
-					roles.push(perms.canSee[key][i]);
-				}
-			}
-		}
-		// remove duplicates
-		return [...new Set(roles)];
+		return perms.allRoles;		
 	}
 
 	async getAllPagesCanSee() {
@@ -604,12 +592,7 @@ class SquadStatsJSv3 extends Client {
 	async getAllActionsWhoCan() {
 		const perms = await this.permission.findOne({});
 		if (!perms) return;
-		// look inside canSee and whoCan and put all diffrent values in an array
-		const actions = [];
-		for (const key in perms.whoCan) {
-			if (perms.whoCan[key]) actions.push(key);
-		}
-		return actions;
+		return perms.whoCan;
 	}
 
 	// Check if userID can access/see the route/page
@@ -823,6 +806,52 @@ class SquadStatsJSv3 extends Client {
 		}
 		await user.save();
 		return action;
+	}
+
+	async toggleWhoCan(typeAction, role) {
+		const permissions = await this.permission.findOne({});
+		if (!permissions) return false;
+		if(permissions.whoCan[typeAction].includes(role)){
+			permissions.whoCan[typeAction] = permissions.whoCan[typeAction].filter((r) => r !== role);
+			// mark modified and save
+			await permissions.markModified("whoCan");
+			await permissions.save();
+			return "removed";
+		} else {
+			permissions.whoCan[typeAction].push(role);
+			// mark modified and save
+			await permissions.markModified("whoCan");
+			await permissions.save();
+			return "added";
+		}
+	}
+
+	async addUserRole(role) {
+		const permissions = await this.permission.findOne({});
+		if (!permissions) return false;
+		permissions.allRoles.push(role);
+		// mark modified and save
+		await permissions.markModified("allRoles");
+		await permissions.save();
+		return true;
+	}
+
+	async removeUserRole(role) {
+		const permissions = await this.permission.findOne({});
+		if (!permissions) return false;
+		permissions.allRoles = permissions.allRoles.filter((r) => r !== role);
+		for (const key in permissions.whoCan) {
+			permissions.whoCan[key] = permissions.whoCan[key].filter((r) => r !== role);
+		}
+		for (const key in permissions.canSee) {
+			permissions.canSee[key] = permissions.canSee[key].filter((r) => r !== role);
+		}
+		// mark modified and save
+		await permissions.markModified("allRoles");
+		await permissions.markModified("whoCan");
+		await permissions.markModified("canSee");
+		await permissions.save();
+		return true;
 	}
 
 	// This function is used to resolve a user from a string (his name or id for example when searching it)

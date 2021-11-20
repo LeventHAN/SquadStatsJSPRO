@@ -1532,6 +1532,132 @@ router.post("/roles/toggleRole", CheckAuth, async function (req, res) {
 	return res.json({ status: "ok", message: `${status.toUpperCase()}` });
 });
 
+router.post("/roles/toggleWhoCan", CheckAuth, async function (req, res) {
+	if (!req.body.typeAction || !req.body.role)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
+	const steamAccount = {
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
+	};
+	const discordAccount = {
+		id: req.session?.user?.id,
+		username: req.session?.user?.username,
+		discriminator: req.session?.user?.discriminator,
+	};
+	const moreDetails = {
+		typeAction: req.body.typeAction,
+		role: req.body.role,
+	};
+	const status = await req.client.toggleWhoCan(
+		req.body.typeAction,
+		req.body.role
+	);
+	if(!status) return res.json({ status: "nok", message: "Something is not good with the permissions schema!" });
+	const msg = status === "added" ? "ADDED" : "REMOVED";
+	const log = await req.client.addLog({
+		action: `WHO_CAN_${req.body.typeAction.toUpperCase()}_${msg.toUpperCase()}_${req.body.role.toUpperCase()}`,
+		author: { discord: discordAccount, steam: steamAccount },
+		ip: req.session.user.lastIp,
+		details: { details: moreDetails },
+	});
+	await log.save();
+	// return ok status
+	return res.json({ status: "ok", message: `${status.toUpperCase()}` });
+});
+
+router.post("/roles/addRole", CheckAuth, async function (req, res) {
+	if (!req.body.role)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
+
+	const steamAccount = {
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
+	};
+	const discordAccount = {
+		id: req.session?.user?.id,
+		username: req.session?.user?.username,
+		discriminator: req.session?.user?.discriminator,
+	};
+	const moreDetails = {
+		role: req.body.role,
+	};
+		
+	const status = await req.client.addUserRole(
+		req.body.role
+	);
+	if(!status) return res.json({ status: "nok", message: "Something is not good with the permissions schema!" });
+	const log = await req.client.addLog({
+		action: "ADD_NEW_ROLE",
+		author: { discord: discordAccount, steam: steamAccount },
+		ip: req.session.user.lastIp,
+		details: { details: moreDetails },
+	});
+	await log.save();
+	// return ok status
+	return res.json({ status: "ok", message: "The new role is added!" });
+});
+
+router.post("/roles/removeRole", CheckAuth, async function (req, res) {
+	if (!req.body.role)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
+	
+	if(req.body.role === "owner") return res.json({ status: "nok", message: "You can't remove the owner role!" });
+	const steamAccount = {
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
+	};
+	const discordAccount = {
+		id: req.session?.user?.id,
+		username: req.session?.user?.username,
+		discriminator: req.session?.user?.discriminator,
+	};
+	const moreDetails = {
+		role: req.body.role,
+	};
+		
+	const status = await req.client.removeUserRole(
+		req.body.role
+	);
+	if(!status) return res.json({ status: "nok", message: "Something is not good with the permissions schema!" });
+	const log = await req.client.addLog({
+		action: "REMOVE_ROLE",
+		author: { discord: discordAccount, steam: steamAccount },
+		ip: req.session.user.lastIp,
+		details: { details: moreDetails },
+	});
+	await log.save();
+	// return ok status
+	return res.json({ status: "ok", message: "The new role is added!" });
+});
+
+
 router.post(
 	"/dashboard/toggleShowNotifications",
 	CheckAuth,

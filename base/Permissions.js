@@ -26,6 +26,16 @@ const permissionsSchema = new mongoose.Schema({
 			setCurrentMap: ["owner", "admin", "moderator"],
 		},
 	},
+	allRoles: {
+		type: Array,
+		default: [
+			"owner",
+			"superadmin",
+			"admin",
+			"moderator",
+			"user"
+		],
+	}
 });
 
 module.exports = mongoose.model("Permissions", permissionsSchema);

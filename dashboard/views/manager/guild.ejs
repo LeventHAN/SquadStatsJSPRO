@@ -223,15 +223,11 @@
                                 </form>
                             </div>
                         </div>
-                        <div class="form-row mt-4">
-                            <div class="col-md-12">
-                                <!-- SQUAD CONFIGURATION -->
-                                <div class="box box-success">
-                                    <div class="box-header with-border"><h3 class="box-title">Add User Roles</h3></div>
-                                        <!-- /.box-header -->
-                                    <div class="box-body">
-                                        <!-- make a table with allUsers -->
-                                        <table class="datatable table table-bordered table-striped">
+                    </div>
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                
+                                        <table class="datatable table table-bordered table-striped" style="width: 100% !important;">
                                             <thead>
                                                 <tr>
                                                     <th>User</th>
@@ -261,15 +257,72 @@
                                                 <% } %>
                                             </tbody>
                                         </table>
+                                        <!-- <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>User</th>
+                                                    <th>Roles</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% for(action in allActions) { %>
+                                                    <tr>
+                                                        <td> 
+                                                            <div class="media align-items-center">
+                                                                <span class="mb-0 text-sm font-weight-bold"><%= action %></span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <% for(let i = 0; i < allActions[action].length; i++) { %>
+                                                                <input id="<%= action+':-:'+allActions[action][i] %>" onchange="toggleWhoCan('<%=action%>', '<%=allActions[action][i]%>')" name="toggle-test" type="checkbox" data-style="ios" data-toggle="toggle" data-size="xs" data-on="<%= allActions[action][i] %>" data-off="<%= allActions[action][i] %>" checked>
+                                                            <% }; %>
+                                                        </td>
+                                                    </tr>
+                                                <% } %>
+                                            </tbody>
+                                        </table> -->
+                        </div>
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Panel Roles</h3>
+                        </div>
+                        <div class="row">
+                        <% for(i in allRoles){ %>
+                            <div class="col-sm-3 m-2">
+                                <div class="card">
+                                    <div class="card-body">
+                                    <span class="card-title badge badge-dark" style="font-size: 1.5em !important;"><%= allRoles[i] %><span class="text-warning" style="font-weight: 900; padding: 5px; cursor: pointer;" onclick="removeRole('<%= allRoles[i] %>')">x</span></span>
+                                        <div class="text-center"> 
+                                            <% for(action in allActions) { %>
+                                                <% if(allActions[action].includes(allRoles[i])) { %>
+                                                    <span class="badge badge-pill badge-primary" style="text-align: center"><%= action %> <span id="<%= action %>:-:<%= allRoles[i] %>" class="badge-pill text-warning" style="font-weight: 900; padding: 5px; cursor: pointer;" onclick="toggleWhoCan('<%= action %>', '<%= allRoles[i] %>')"> x </span></span>
+                                                <% } else { %>   
+                                                    <span class="badge badge-pill badge-primary" style="text-align: center"><%= action %> <span id="<%= action %>:-:<%= allRoles[i] %>" class="badge-pill text-success" style="font-weight: 900; padding: 5px; cursor: pointer;" onclick="toggleWhoCan('<%= action %>', '<%= allRoles[i] %>')"> Add </span></span>
+                                                <% } %>  
+                                            <% } %>              
+                                            
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>  
+                        <% } %>
+
+                        <div onclick="addRole()" class="col-sm-3 m-2" style="cursor: pointer;">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="text-center"> 
+                                        <span style="font-size: 5rem;">+</span><br>
+                                        <span class="card-title badge badge-dark" style="font-size: 1.5em !important;">Add a new role</span>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
                         
                     <div>
 				</section>
                 <div class="row mt-4">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="box box-success">
                             <div class="box-header with-border"><h3 class="box-title">Some other settings</h3></div>
                             <div class="box-body">
@@ -335,6 +388,7 @@
                             { responsivePriority: 2, targets: -1 }
                         ]
                     });
+                    $('.datatable').css('width", "100%')
                 });
 
                 async function toggleDashboardSettings(typeSetting, onSetting){
@@ -372,6 +426,77 @@
                         Toast.fire({icon: 'error', title: error});
                     });
                 }
+
+                async function toggleWhoCan(typeAction, role){
+                    if(!role || !typeAction) return Toast.fire({icon: 'error', title: "Something is fishy", text: "Oops something went wrong!"});
+                    await axios.post(`${window.location.origin}/squad-api/roles/toggleWhoCan`, {
+                        typeAction: typeAction,
+                        role: role
+                    }).then(function (response) {
+                        if(response.data.status != "ok") return Toast.fire({icon: 'error', title: response.data.message});
+                        Toast.fire({icon: 'success', title: response.data.message});
+                        const span = document.getElementById(`${typeAction}:-:${role}`);
+
+                        switch(response.data.message){
+                            case "ADDED":
+                                span.innerText = " x ";
+                                span.classList.add("text-warning");
+                                span.classList.remove("text-success");
+                                break;
+                            case "REMOVED":
+                                span.innerText = " Add ";
+                                span.classList.add("text-success");
+                                span.classList.remove("text-warning");
+                                break;
+                        }
+                        
+                        span.classList.remove("text-danger");
+                        span.classList.add("text-success");
+
+                    }).catch(function (error) {
+                        Toast.fire({icon: 'error', title: error});
+                    });
+                }
+
+                async function addRole(){
+                    Swal.fire({
+                        title: "Add Role",
+                        text: "Enter the name of the role you want to add",
+                        input: 'text',
+                        inputAttributes: {
+                            autocapitalize: 'off'
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: 'Add',
+                        preConfirm: (role) => {
+                            if(!role) return Toast.fire({icon: 'error', title: "Please enter a role name"});
+                            return axios.post(`${window.location.origin}/squad-api/roles/addRole`, {
+                                role: role
+                            }).then(function (response) {
+                                if(response.data.status != "ok") return Toast.fire({icon: 'error', title: response.data.message});
+                                Toast.fire({icon: 'success', title: response.data.message});
+                                window.location.reload();
+                            }).catch(function (error) {
+                                Toast.fire({icon: 'error', title: error});
+                            });
+                        }
+                    })
+                }
+
+                async function removeRole(role){
+                    if(!role) return Toast.fire({icon: 'error', title: "Something is fishy", text: "Oops something went wrong!"});
+                    await axios.post(`${window.location.origin}/squad-api/roles/removeRole`, {
+                        role: role
+                    }).then(function (response) {
+                        if(response.data.status != "ok") return Toast.fire({icon: 'error', title: response.data.message});
+                        Toast.fire({icon: 'success', title: response.data.message});
+                        // refresh the page
+                        window.location.reload();
+                    }).catch(function (error) {
+                        Toast.fire({icon: 'error', title: error});
+                    });
+                }
+
 
                 // // Show Notifications
                 // await axios.post('/squad-api/dashboard/toggleShowNotifications', {

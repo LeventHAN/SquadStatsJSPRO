@@ -15,4 +15,10 @@ span svg {
     margin-left: auto;
     width: 200px;
     height: 200px;
-  }
+}
+
+.crossBadge {
+    font-size: 0.5em;
+    color: rgb(49, 67, 165);
+    font-weight: 900;
+}
