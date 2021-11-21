@@ -436,11 +436,11 @@ async function ban(steamID) {
                 const length = document.getElementById('banLength').value;
                 let banTime = `${length}${type}`;
                 if (!reason) return Swal.fire(`Error`, `Reason cannot be empty.`, `error`);
-                if (!length) return Swal.fire(`Error`, `Ban Length cannot be empty`, `error`);
+                if (!length || type !== "P") return Swal.fire(`Error`, `Ban Length cannot be empty`, `error`);
                 await axios.post(`${window.location.origin}/squad-api/ban`, {
                     steamUID: steamID,
                     reason: reason,
-                    duration: banTime
+                    duration: type === "P" ? "0P" : banTime
                 })
                     .then((response) => {
                         if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
