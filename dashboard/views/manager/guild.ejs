@@ -297,8 +297,17 @@
                                                     <span class="badge badge-pill badge-primary" style="text-align: center"><%= action %> <span id="<%= action %>:-:<%= allRoles[i] %>" class="badge-pill text-warning" style="font-weight: 900; padding: 5px; cursor: pointer;" onclick="toggleWhoCan('<%= action %>', '<%= allRoles[i] %>')"> x </span></span>
                                                 <% } else { %>   
                                                     <span class="badge badge-pill badge-primary" style="text-align: center"><%= action %> <span id="<%= action %>:-:<%= allRoles[i] %>" class="badge-pill text-success" style="font-weight: 900; padding: 5px; cursor: pointer;" onclick="toggleWhoCan('<%= action %>', '<%= allRoles[i] %>')"> Add </span></span>
-                                                <% } %>  
-                                            <% } %>              
+                                                <% } %>
+                                            <% } %>
+                                            <hr>
+                                            <% for(page in allCanSee) { %>
+                                                <% if(allCanSee[page].includes(allRoles[i])) { %>
+                                                    <span class="badge badge-pill badge-primary" style="text-align: center"><%= page %> <span id="<%= page %>:-:<%= allRoles[i] %>" class="badge-pill text-warning" style="font-weight: 900; padding: 5px; cursor: pointer;" onclick="toggleCanSee('<%= page %>', '<%= allRoles[i] %>')"> x </span></span>
+                                                <% } else { %>   
+                                                    <span class="badge badge-pill badge-primary" style="text-align: center"><%= page %> <span id="<%= page %>:-:<%= allRoles[i] %>" class="badge-pill text-success" style="font-weight: 900; padding: 5px; cursor: pointer;" onclick="toggleCanSee('<%= page %>', '<%= allRoles[i] %>')"> Add </span></span>
+                                                <% } %>
+                                            <% } %>
+                                                      
                                             
                                         </div>
                                     </div>
@@ -436,6 +445,37 @@
                         if(response.data.status != "ok") return Toast.fire({icon: 'error', title: response.data.message});
                         Toast.fire({icon: 'success', title: response.data.message});
                         const span = document.getElementById(`${typeAction}:-:${role}`);
+
+                        switch(response.data.message){
+                            case "ADDED":
+                                span.innerText = " x ";
+                                span.classList.add("text-warning");
+                                span.classList.remove("text-success");
+                                break;
+                            case "REMOVED":
+                                span.innerText = " Add ";
+                                span.classList.add("text-success");
+                                span.classList.remove("text-warning");
+                                break;
+                        }
+                        
+                        span.classList.remove("text-danger");
+                        span.classList.add("text-success");
+
+                    }).catch(function (error) {
+                        Toast.fire({icon: 'error', title: error});
+                    });
+                }
+
+                async function toggleCanSee(page, role){
+                    if(!role || !page) return Toast.fire({icon: 'error', title: "Something is fishy", text: "Oops something went wrong!"});
+                    await axios.post(`${window.location.origin}/squad-api/roles/toggleCanSee`, {
+                        page: page,
+                        role: role
+                    }).then(function (response) {
+                        if(response.data.status != "ok") return Toast.fire({icon: 'error', title: response.data.message});
+                        Toast.fire({icon: 'success', title: response.data.message});
+                        const span = document.getElementById(`${page}:-:${role}`);
 
                         switch(response.data.message){
                             case "ADDED":

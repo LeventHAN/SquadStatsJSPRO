@@ -826,6 +826,24 @@ class SquadStatsJSv3 extends Client {
 		}
 	}
 
+	async toggleCanSee(page, role) {
+		const permissions = await this.permission.findOne({});
+		if (!permissions) return false;
+		if(permissions.canSee[page].includes(role)){
+			permissions.canSee[page] = permissions.canSee[page].filter((r) => r !== role);
+			// mark modified and save
+			await permissions.markModified("canSee");
+			await permissions.save();
+			return "removed";
+		} else {
+			permissions.canSee[page].push(role);
+			// mark modified and save
+			await permissions.markModified("canSee");
+			await permissions.save();
+			return "added";
+		}
+	}
+
 	async addUserRole(role) {
 		const permissions = await this.permission.findOne({});
 		if (!permissions) return false;

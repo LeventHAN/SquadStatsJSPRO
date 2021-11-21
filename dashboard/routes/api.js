@@ -1574,6 +1574,49 @@ router.post("/roles/toggleWhoCan", CheckAuth, async function (req, res) {
 	return res.json({ status: "ok", message: `${status.toUpperCase()}` });
 });
 
+router.post("/roles/toggleCanSee", CheckAuth, async function (req, res) {
+	if (!req.body.page || !req.body.role)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
+
+	const steamAccount = {
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
+	};
+	const discordAccount = {
+		id: req.session?.user?.id,
+		username: req.session?.user?.username,
+		discriminator: req.session?.user?.discriminator,
+	};
+	const moreDetails = {
+		page: req.body.page,
+		role: req.body.role,
+	};
+	const status = await req.client.toggleCanSee(
+		req.body.page,
+		req.body.role
+	);
+	if(!status) return res.json({ status: "nok", message: "Something is not good with the permissions schema!" });
+	const msg = status === "added" ? "ADDED" : "REMOVED";	
+	const log = await req.client.addLog({
+		action: `CAN_SEE_${req.body.page.toUpperCase()}_${msg.toUpperCase()}_${req.body.role.toUpperCase()}`,
+		author: { discord: discordAccount, steam: steamAccount },
+		ip: req.session.user.lastIp,
+		details: { details: moreDetails },
+	});
+	await log.save();
+	// return ok status
+	return res.json({ status: "ok", message: `${status.toUpperCase()}` });
+});
+
 router.post("/roles/addRole", CheckAuth, async function (req, res) {
 	if (!req.body.role)
 		return res.json({
