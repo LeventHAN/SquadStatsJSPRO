@@ -224,6 +224,9 @@
                             </div>
                         </div>
                     </div>
+                        <div class="box-header with-border">
+                            <h3 class="box-title">All Users</h3>
+                        </div>
                         <div class="row mt-4">
                             <div class="col-12">
                                 
@@ -236,6 +239,7 @@
                                             </thead>
                                             <tbody>
                                                 <% for(var i = 0; i < allUsers.length; i++) { %>
+                                                    <% if(allUsers[i].steam) { %>
                                                     <tr>
                                                         <td> 
                                                             <div class="media align-items-center">
@@ -254,33 +258,10 @@
                                                             <% } %>
                                                           </td>
                                                     </tr>
+                                                    <% } %>
                                                 <% } %>
                                             </tbody>
                                         </table>
-                                        <!-- <table class="table table-bordered table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>User</th>
-                                                    <th>Roles</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% for(action in allActions) { %>
-                                                    <tr>
-                                                        <td> 
-                                                            <div class="media align-items-center">
-                                                                <span class="mb-0 text-sm font-weight-bold"><%= action %></span>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <% for(let i = 0; i < allActions[action].length; i++) { %>
-                                                                <input id="<%= action+':-:'+allActions[action][i] %>" onchange="toggleWhoCan('<%=action%>', '<%=allActions[action][i]%>')" name="toggle-test" type="checkbox" data-style="ios" data-toggle="toggle" data-size="xs" data-on="<%= allActions[action][i] %>" data-off="<%= allActions[action][i] %>" checked>
-                                                            <% }; %>
-                                                        </td>
-                                                    </tr>
-                                                <% } %>
-                                            </tbody>
-                                        </table> -->
                         </div>
                         <div class="box-header with-border">
                             <h3 class="box-title">Panel Roles</h3>
@@ -307,8 +288,6 @@
                                                     <span class="badge badge-pill badge-primary" style="text-align: center"><%= page %> <span id="<%= page %>:-:<%= allRoles[i] %>" class="badge-pill text-success" style="font-weight: 900; padding: 5px; cursor: pointer;" onclick="toggleCanSee('<%= page %>', '<%= allRoles[i] %>')"> Add </span></span>
                                                 <% } %>
                                             <% } %>
-                                                      
-                                            
                                         </div>
                                     </div>
                                 </div>
