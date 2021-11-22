@@ -180,7 +180,7 @@ Soon there will be more examples and screenshots!
 
 - [SquadJS](https://github.com/Thomas-Smyth/SquadJS) - The reason this bot is made.
 - The [Contributors](https://github.com/11TStudio/SquadStatsJSPRO/graphs/contributors), for helping me build this amazing multi-purpose bot.
-- My mom for feeding me while I was coding.
+- My [Sponsors](https://github.com/sponsors/11TStudio?preview=true), for supporting me and giving me the possibility to make this project.
 
 ## License
 

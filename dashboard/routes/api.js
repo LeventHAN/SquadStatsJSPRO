@@ -1034,7 +1034,7 @@ router.get("/banlist/:token", async function (req, res) {
 });
 
 router.post("/banlist/removeUserBanlist", CheckAuth, async function (req, res) {
-	if (!req.body.steamUID || !req.body.reason)
+	if (!req.body.steamUID || !req.body.reason || !req.body.endDate)
 		return res.json({
 			status: "nok",
 			message: "You are doing something wrong.",
@@ -1058,7 +1058,7 @@ router.post("/banlist/removeUserBanlist", CheckAuth, async function (req, res) {
 		player: req.body.steamUID,
 		reason: req.body.reason,
 	};
-	await req.client.removeUserBanlist(req.body.steamUID);
+	await req.client.removeUserBanlist(req.body.steamUID, req.body.endDate);
 	const log = await req.client.addLog({
 		action: "PLAYER_BANLIST_REMOVED",
 		author: { discord: discordAccount, steam: steamAccount },
@@ -1067,6 +1067,18 @@ router.post("/banlist/removeUserBanlist", CheckAuth, async function (req, res) {
 	});
 	await log.save();
 	return res.json({ status: "ok", message: "Player removed from banlist!" });
+});
+
+router.post("/mapvote/start", CheckAuth, async function (req, res) {
+	const layers = [
+		"Layer 1",
+		"Layer 2",
+		"Layer 3"
+	];
+	console.log("API IS GOING TO EMIT");
+	await req.client.emit("ditIsTest", layers);
+	console.log("API DID EMIT AND PROCEED");
+	return res.json({ status: "ok", message: "Mapvote started!" });
 });
 
 /**

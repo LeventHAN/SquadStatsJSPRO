@@ -16,51 +16,57 @@
                 <%- include('./partials/navbar') %>
                     <!-- Header -->
                     <%- include('./partials/header') %>
+                    <%- include('./partials/scripts') %>
 
                         <div class="container-fluid mt--7">
                             <div class="card bg-gradient-neutral shadow p-5">
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-3">
                                         <div class="card mt-4">
                                             <div class="card-body">
-                                                <h4 class="card-title">
+                                                <h2 class="card-title">
                                                     <i class="fas fa-gavel"></i>
                                                     <span>Offline Ban</span>
+                                                </h2>
+                                                <h4 class="card-title">
+                                                    <span>User Steam64ID</span>
                                                 </h4>
-                                                <input minlength="10" maxlength="18"
+                                                <input minlength="17" maxlength="17"
                                                     class="form-control text-center mx-auto"
                                                     autocomplete="off"
-                                                    placeholder="Type STEAM64ID" id="steamID"></input>
+                                                    placeholder="STEAM64ID" id="steamID"></input>
                                                 <div class="all mx-auto d-flex">
-                                                    <div class='length mx-auto text-center d-inline-block'>
-                                                        <h4>Length</h4>
-                                                        <input type='number' min="1" id='banLength' class='swal2-input'
-                                                            style='position:relative; bottom: 20px; max-width: 100px; height: 47px;'></input>
-                                                    </div>
-                                                    <div class='type mx-auto  text-center d-inline-block'>
+                                                    <div class='type mx-auto'>
                                                         <h5>Type</h5>
-                                                        <select id='selection' class="swal2-select"
-                                                            style='position:relative; border: 1px solid #d9d9d9; border-radius: 5px; bottom: 22px; min-width: 100px; min-height: 50px;'>
+                                                        <select id='selection' class="custom-select" style="min-width: 8rem;">
                                                             <option id="m">Minutes</option>
                                                             <option id="d">Days</option>
                                                             <option id="M">Months</option>
                                                             <option id="P">Perma</option>
                                                         </select>
+                                                        <div class='length mx-auto'>
+                                                            <h4>Length</h4>
+                                                            <input type='number' id='banLength' class="custom-select" style="min-width: 2rem;"></input>
+                                                        </div>
+                                                        <div class='reason mx-auto'>
+                                                            <h4>Reason:</h4>
+                                                            <input id='reason' class='input-group-text'
+                                                                style='min-width: 2rem;'></input>
+                                                        </div>
                                                     </div>
+                                                    
                                                 </div>
-                                                <div class='reason mx-auto text-center d-block' style='width:400px'>
-                                                    <h2>Reason:</h2>
-                                                    <input id='reason' class='swal2-input mx-auto d-block'
-                                                        style='position:relative; bottom: 5px; width: 400px;'></input>
-                                                </div>
+                                                
                                             </div>
-                                            <button type="button" class="btn btn-primary mt-2"
-                                                onclick="banPlayer()">Ban</button>
+                                            <div class="d-flex justify-content-center">
+                                            <div class="col-6 text-center">
+                                                <button type="button" class="btn btn-lg btn-primary mt-2 mb-4"
+                                                    onclick="banPlayer()"><i class="fas fa-gavel"></i> Ban</button>
+                                            </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-8 mt-4">
                                         <div>
                                             <div class="widget-user-header bg-aqua-active">
                                                 <h3 class="widget-user-username">Banned Users</h3>
@@ -68,6 +74,7 @@
                                             <table id="datatable" class="table datatable">
                                                 <thead>
                                                     <tr>
+                                                        <th>Expired</th>
                                                         <th>SteamID</th>
                                                         <th>Reason</th>
                                                         <th>Expire Date</th>
@@ -79,31 +86,45 @@
                                                     <% for(user in allBannedUsers) {%>
                                                         <tr id="<%- allBannedUsers[user].steamID %>">
                                                             <td>
+                                                                <%= allBannedUsers[user].active ? "🟢 Active" : "🔴 Expired" %>
+                                                            </td>
+                                                            <td>
                                                                 <%- allBannedUsers[user].steamID %>
                                                             </td>
                                                             <td>
-                                                                <%- allBannedUsers[user].reason %>
+                                                                <span id="tippy_<%- user %>"><%- (allBannedUsers[user].reason.length > 15) ? allBannedUsers[user].reason.substring(0, 15) + "..." : allBannedUsers[user].reason %></span>
                                                             </td>
                                                             <td>
                                                                 <%- (allBannedUsers[user].endDate == "0") ? "Permanant Ban" : new Date( allBannedUsers[user].endDate ).toLocaleString( { hour12:false } ) %>
                                                             </td>
                                                             <td>
-                                                                <%- allBannedUsers[user].moderator %>
+                                                                <%- allBannedUsers[user].moderatorName %>
                                                             </td>
-                                                            <td>
-                                                                <button
-                                                                    onclick="removeBan('<%- allBannedUsers[user].steamID %>')"
-                                                                    class="btn btn-outline-primary badge rounded-pill active">Remove</button>
-                                                            </td>
+                                                            <% if(allBannedUsers[user].active) {%>
+                                                                <td>
+                                                                    <button onclick="removeBan('<%- allBannedUsers[user].steamID %>', '<%- allBannedUsers[user].endDate %>')" class="btn btn-outline-primary badge rounded-pill active">Expire</button>
+                                                                </td>
+                                                            <% } else { %>
+                                                                <td>
+                                                                </td>
+                                                            <% } %>
                                                         </tr>
-                                                        <% }; %>
+                                                        <script>
+                                                            tippy(document.getElementById(`tippy_<%= user %>`), {
+                                                                    content: `<%= allBannedUsers[user].reason %>`,
+                                                                    allowHTML: false,
+                                                                    zIndex: 1,
+                                                                    maxWidth: '18rem',
+                                                                    trigger: 'mouseenter click',
+                                                                    interactive: true,
+                                                                });
+                                                        </script>
+                                                    <% }; %>
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
                                 </div>
-                                
-                                <hr>
                                 <hr>
                                 <div class="row">
                                     <div class="col-md-6">
@@ -123,7 +144,7 @@
                 <!-- /.content-wrapper -->
             <%- include('./partials/footer') %>
                     <!-- ./wrapper -->
-            <%- include('./partials/scripts') %>
+            
             <script>
                 // if selection option is changed and choosen option is "P" then disable the length input field
                 $('#selection').change(function () {

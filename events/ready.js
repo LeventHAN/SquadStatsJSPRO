@@ -10,6 +10,12 @@ module.exports = class {
 		const client = this.client;
 		const socket = client.socket;
 		const nameChecker = await client.getNameCheckerConfig();
+		
+
+		client.on("ditIsTest", (layers) => {
+			console.log("ik heb de test gekregen.", layers);
+		});
+
 		if (socket) {
 			socket.on("connect_error", (err) => {
 				return client.logger.log(err, "ERROR");
@@ -21,6 +27,8 @@ module.exports = class {
 				"Loading PLAYER_CONNECTED event.",
 				"log"
 			);
+
+			// When player is connected.
 			socket.on("PLAYER_CONNECTED", async (playerData) => {
 				// here all events that relate with player connection
 				
@@ -34,6 +42,15 @@ module.exports = class {
 					);
 				}
 			});
+
+			// When players writes something
+			// socket.on("CHAT_MESSAGE", async (messageData) => {
+			// });
+
+			// When player goes in to admin camera
+			// socket.on("POSSESSED_ADMIN_CAMERA", async (playerData) => {
+			// 	// here all events that relate with player connection
+			// });
 		}
 		// Logs some informations using the logger file
 		client.logger.log(

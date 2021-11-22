@@ -81,6 +81,7 @@
     // When loading the page, the datatable is created
     $(document).ready(() => {
         usersTable = $('#datatable').DataTable({
+            "order": [[0, "desc"]],
             destroy: true,
             bAutoWidth: false,
             "scrollCollapse": true,
@@ -130,7 +131,7 @@
         })
     }
 
-    async function removeBan(steamID) {
+    async function removeBan(steamID, endDate) {
         Swal.fire({
             title: 'Reason of removal:',
             input: 'text',
@@ -144,23 +145,25 @@
             if (result.isConfirmed) {
                 await axios.post(`${window.location.origin}/squad-api/banlist/removeUserBanlist`, {
                     steamUID: steamID,
-                    reason: result.value
+                    reason: result.value,
+                    endDate: endDate
                 })
-                    .then((response) => {
+                    .then(async (response) => {
                         if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
                         if (response.data.status === "ok") {
                             Toast.fire({
                                 icon: 'success',
-                                title: 'Player has been removed.'
+                                title: 'Ban is modified.'
                             })
-                            // Remove the row and refresh the datatable
-                            usersTable.row(document.getElementById(steamID)).remove().draw();
+                            let status = document.getElementById(steamID);
+                            status.cells[0].innerText = "🔴 Expired";
+                            status.cells[5].innerHTML = "";
+                            await usersTable.row(document.getElementById(steamID)).draw();
                         }
                         if (response.data.status === "nok") {
                             Swal.fire(`There was an error`, response.data.message, `error`);
                         }
-                    })
-                    .catch((error) => {
+                    }).catch((error) => {
                         return Swal.fire(`Error`, `Error: ${error}`, `error`);
                     });
             }

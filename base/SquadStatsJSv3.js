@@ -376,11 +376,12 @@ class SquadStatsJSv3 extends Client {
 		return whitelist.memberData;
 	}
 
-	async removeUserBanlist(steamID) {
-		await this.moderation.findOneAndUpdate(
-			{ steamID: steamID, endDate: { $gt: Date.now() } },
-			{ $set: { endDate: Date.now() } }
+	async removeUserBanlist(steamID, endDate) {
+		const ban = await this.moderation.findOne(
+			{ steamID: steamID, endDate: endDate}
 		);
+		ban.active = false;
+		await ban.save();
 		return true;
 	}
 
