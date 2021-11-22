@@ -360,12 +360,7 @@ class SquadStatsJSv3 extends Client {
 
 	async getBanlist() {
 		const bans = await this.moderation.find({});
-		const onList = [];
-		bans.forEach((element) => {
-			if (element.typeModeration == "ban" && element.endDate > Date.now())
-				return onList.push(element);
-		});
-		return onList;
+		return bans.filter(ban => ban.typeModeration === "ban");
 	}
 
 	// Returns the whitelist roles only (Groups)

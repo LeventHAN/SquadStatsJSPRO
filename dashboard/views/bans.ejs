@@ -20,49 +20,8 @@
                         <div class="container-fluid mt--7">
                             <div class="card bg-gradient-neutral shadow p-5">
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div>
-                                            <div class="widget-user-header bg-aqua-active">
-                                                <h3 class="widget-user-username">Banned Users</h3>
-                                            </div>
-                                            <table id="datatable" class="table datatable">
-                                                <thead>
-                                                    <tr>
-                                                        <th>SteamID</th>
-                                                        <th>Reason</th>
-                                                        <th>Expire Date</th>
-                                                        <th>Moderator</th>
-                                                        <th>Actions</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <% for(const user in banlisted) {%>
-                                                        <tr id="<%- banlisted[user].steamID %>">
-                                                            <td>
-                                                                <%- banlisted[user].steamID %>
-                                                            </td>
-                                                            <td>
-                                                                <%- banlisted[user].reason %>
-                                                            </td>
-                                                            <td>
-                                                                <%- new Date( banlisted[user].endDate ).toLocaleString( { hour12:false } ) %>
-                                                            </td>
-                                                            <td>
-                                                                <%- banlisted[user].moderator %>
-                                                            </td>
-                                                            <td>
-                                                                <button
-                                                                    onclick="removeBanlist('<%- banlisted[user].steamID %>')"
-                                                                    class="btn btn-outline-primary badge rounded-pill active">Remove</button>
-                                                            </td>
-                                                        </tr>
-                                                        <% }; %>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="card bg-gradient-neutral shadow p-2">
+                                    <div class="col-md-12">
+                                        <div class="card mt-4">
                                             <div class="card-body">
                                                 <h4 class="card-title">
                                                     <i class="fas fa-gavel"></i>
@@ -70,6 +29,7 @@
                                                 </h4>
                                                 <input minlength="10" maxlength="18"
                                                     class="form-control text-center mx-auto"
+                                                    autocomplete="off"
                                                     placeholder="Type STEAM64ID" id="steamID"></input>
                                                 <div class="all mx-auto d-flex">
                                                     <div class='length mx-auto text-center d-inline-block'>
@@ -99,6 +59,50 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div>
+                                            <div class="widget-user-header bg-aqua-active">
+                                                <h3 class="widget-user-username">Banned Users</h3>
+                                            </div>
+                                            <table id="datatable" class="table datatable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>SteamID</th>
+                                                        <th>Reason</th>
+                                                        <th>Expire Date</th>
+                                                        <th>Moderator</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% for(user in allBannedUsers) {%>
+                                                        <tr id="<%- allBannedUsers[user].steamID %>">
+                                                            <td>
+                                                                <%- allBannedUsers[user].steamID %>
+                                                            </td>
+                                                            <td>
+                                                                <%- allBannedUsers[user].reason %>
+                                                            </td>
+                                                            <td>
+                                                                <%- (allBannedUsers[user].endDate == "0") ? "Permanant Ban" : new Date( allBannedUsers[user].endDate ).toLocaleString( { hour12:false } ) %>
+                                                            </td>
+                                                            <td>
+                                                                <%- allBannedUsers[user].moderator %>
+                                                            </td>
+                                                            <td>
+                                                                <button
+                                                                    onclick="removeBan('<%- allBannedUsers[user].steamID %>')"
+                                                                    class="btn btn-outline-primary badge rounded-pill active">Remove</button>
+                                                            </td>
+                                                        </tr>
+                                                        <% }; %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <hr>
                                 <hr>
                                 <div class="row">
@@ -117,9 +121,19 @@
 
             <%- include('./partials/whiteban') %>
                 <!-- /.content-wrapper -->
-                <%- include('./partials/footer') %>
+            <%- include('./partials/footer') %>
                     <!-- ./wrapper -->
-                    <%- include('./partials/scripts') %>
+            <%- include('./partials/scripts') %>
+            <script>
+                // if selection option is changed and choosen option is "P" then disable the length input field
+                $('#selection').change(function () {
+                    if ($(this).val() == "Perma") {
+                        $('#banLength').prop('disabled', true);
+                    } else {
+                        $('#banLength').prop('disabled', false);
+                    }
+                });
+            </script>
 
     </body>
 

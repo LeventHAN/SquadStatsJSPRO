@@ -10,14 +10,13 @@ router.get("/", CheckAuth, async function (req, res) {
 	const canSee = await req.client.canAccess("roles", req.userInfos.id);
 	if (!canSee) return res.json({ status: "nok", message: "No access!" });
 
-	const bans = await req.client.getBanlist();
 	res.render("bans", {
 		userRoles: await req.client.getRoles(req.session.user.id),
 		playerAmount: await req.client.getPlayersLength(),
 		c: req.client,
 		allCanSee: canSeeArray,
 		latestTPS: await utils.getTPS(req.client),
-		banlisted: bans,
+		allBannedUsers: await req.client.getBanlist(),
 		ownerID: req.client.config.owner.id,
 		serverID: req.client.config.serverID,
 		userDiscord: req.userInfos,

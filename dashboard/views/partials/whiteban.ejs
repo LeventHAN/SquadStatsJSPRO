@@ -130,7 +130,7 @@
         })
     }
 
-    async function removeBanlist(steamID) {
+    async function removeBan(steamID) {
         Swal.fire({
             title: 'Reason of removal:',
             input: 'text',
@@ -285,38 +285,39 @@
         const type = selection.options[selection.selectedIndex].id;
         const reason = document.getElementById('reason').value;
         const length = document.getElementById('banLength').value;
-        const id = document.getElementById('steamID').value;
+        const bannedSteamID = document.getElementById('steamID').value;
+        
         let banTime = `${length}${type}`;
         if (!reason) return Swal.fire(`Error`, `Reason cannot be empty.`, `error`);
-        if (!id) return Swal.fire(`Error`, `ID cannot be empty.`, `error`);
-        if (!length) return Swal.fire(`Error`, `Ban Length cannot be empty`, `error`);
+        if (!bannedSteamID) return Swal.fire(`Error`, `Fill in the Steam64ID, it cannot be empty.`, `error`);
+        if (!length && type !== "P") return Swal.fire(`Error`, `Ban Length cannot be empty`, `error`);
         await axios.post(`${window.location.origin}/squad-api/ban`, {
-            steamUID: id,
+            steamUID: bannedSteamID,
             reason: reason,
-            duration: banTime
+            duration: type === "P" ? "0P" : banTime
         })
-            .then((response) => {
-                if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
-                if (response.data.status === "ok") {
-                    location.reload();
-                    Toast.fire({
-                        icon: 'success',
-                        title: 'Player has been banned.'
-                    })
-                }
-                if (response.data.status === "nok") {
-                    Swal.fire(`There was an error`, `We couldn't ban the player. Please try again later.`, `error`);
-                }
-                if (response.data.status === "nok2") {
-                    Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
-                }
-                if (response.data.status === "nok3") {
-                    Swal.fire(`Already Banned`, `This player already banned.`, `warning`);
-                }
-            })
-            .catch((error) => {
-                return Swal.fire(`Error`, `Error: ${error}`, `error`);
-            });
+        .then((response) => {
+            if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+            if (response.data.status === "ok") {
+                location.reload();
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Player has been banned.'
+                })
+            }
+            if (response.data.status === "nok") {
+                Swal.fire(`There was an error`, `We couldn't ban the player. Please try again later.`, `error`);
+            }
+            if (response.data.status === "nok2") {
+                Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
+            }
+            if (response.data.status === "nok3") {
+                Swal.fire(`Already Banned`, `This player already banned.`, `warning`);
+            }
+        })
+        .catch((error) => {
+            return Swal.fire(`Error`, `Error: ${error}`, `error`);
+        });
     }
 
     $('input[type="checkbox"]').change(function () {
