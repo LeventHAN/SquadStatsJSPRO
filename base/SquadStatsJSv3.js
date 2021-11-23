@@ -5,7 +5,8 @@ const util = require("util"),
 	fs = require("fs"),
 	moment = require("moment"),
 	MYSQLPromiseObjectBuilder = require("./MYSQLPromiseObjectBuilder.js"),
-	axios = require("axios");
+	axios = require("axios"),
+	BM = require("@leventhan/battlemetrics");
 
 const mysql = require("mysql");
 moment.relativeTimeThreshold("s", 60);
@@ -33,6 +34,7 @@ class SquadStatsJSv3 extends Client {
 		});
 		// init axios here
 		this.axios = axios;
+		this.BattleMetrics = null;
 		this.config = {};
 		this.customEmojis = require("../emojis.json"); // load the bot's emojis
 		this.languages = require("../languages/language-meta.json"); // Load the bot's languages
@@ -66,6 +68,16 @@ class SquadStatsJSv3 extends Client {
 		this.databaseCache.usersReminds = new Collection(); // members with active reminds
 		this.databaseCache.mutedUsers = new Collection(); // members who are currently muted
 		this.socket = null;
+	}
+
+
+	async setUpBM(){
+		this.BattleMetrics = new BM({
+			token: this.config.apiKeys.battleMetrics,
+			serverID: this.config.squadBattleMetricsID,
+			game: process.env.BM_GAME || "squad",
+		});
+		this.logger.log("BattleMetrics Module is initialized.", "log");
 	}
 
 	async hookSocketIO() {

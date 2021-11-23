@@ -44,6 +44,8 @@ const init = async () => {
 
 	// Hook the socket.io
 	await client.hookSocketIO();
+	// Init the BM API
+	await client.setUpBM();
 
 	// Then we load events, which will include our message and ready event.
 	const evtFiles = await readdir("./events/");
