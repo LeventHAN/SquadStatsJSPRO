@@ -122,6 +122,7 @@ module.exports = class {
 					},
 				});
 			}
+			
 		});
 
 		async function getWinner() {
@@ -172,6 +173,10 @@ module.exports = class {
 			if (!winner) return sendNoWinner();
 			sendBroadcast(winner);
 		}
+
+		client.wait(parseInt(length) * 1000 * 60).then(() => {
+			endMapVote();
+		});
 
 		// const channel = client.channels.cache.find(
 		// 	(channel) => channel.id === channelID
