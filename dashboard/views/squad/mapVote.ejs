@@ -207,11 +207,6 @@
 				});
 			});
 
-
-			<% c.on("PLAYER_VOTED", async (currentResuls) => { %>
-				<%= console.log(`<b>A Vote Recorded:</b><br><b>Current Results:</b> <br><span style="text-color: lightblue">Layer: ${currentResuls[0].layer} - votes: ${currentResuls[0].votes}</span><br><span style="text-color: lightblue">Layer: ${currentResuls[1].layer} - votes: ${currentResuls[1].votes}</span><br><span style="text-color: lightblue">Layer: ${currentResuls[2].layer} - votes: ${currentResuls[2].votes}</span>`) %>
-			<% }); %>
-
 			socket.on("SJSPRO_MAPVOTE_VOTED", async (result, map, currentResuls) => {
 				new Noty({
                     theme: 'nest',

@@ -106,6 +106,7 @@ module.exports = class {
 				});
 			}
 		});
+		
 		client.wait(parseInt(length) * 1000 * 60).then(() => {
 			endMapVote();
 		});
@@ -129,6 +130,10 @@ module.exports = class {
 			socket.emit(
 				"rcon.execute",
 				`AdminBroadcast The winner for the map vote is: ${winner} - SquadStatsJSPRO`,
+			);
+			socket.emit(
+				"rcon.execute",
+				`AdminSetNextLayer ${winner}`,
 			);
 		}
 
