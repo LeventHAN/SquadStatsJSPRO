@@ -37,10 +37,13 @@ module.exports = class {
 		// 	},
 		// });
 		// return;
-
+		console.log("AdminBroadcast Map vote is starting! You have ${length} minutes to vote. - SquadStatsJSPRO");
 		socket.emit(
 			"rcon.execute",
 			`AdminBroadcast Map vote is starting! You have ${length} minutes to vote. - SquadStatsJSPRO`,
+			() => {
+				console.log("Executed?");
+			}
 		);
 		client.wait(8000).then(() => {
 			socket.emit(
