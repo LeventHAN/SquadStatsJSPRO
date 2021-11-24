@@ -40,11 +40,13 @@ module.exports = class {
 		// return;
 		const broadcastIsStarting = `AdminBroadcast Map vote is starting! You have ${length} minutes to vote. - SquadStatsJSPRO`;
 		const listLayers = `AdminBroadcast [1] - ${layers[0]} | [2] - ${layers[1]} | [3] - ${layers[2]}`;
-		console.log("AdminBroadcast Map vote is starting! You have ${length} minutes to vote. - SquadStatsJSPRO");
+		console.log(`AdminBroadcast Map vote is starting! You have ${length} minutes to vote. - SquadStatsJSPRO`);
+		
 		socket.emit(
 			"rcon.broadcast",
 			broadcastIsStarting
 		);
+
 		client.wait(8000).then(() => {
 			socket.emit(
 				"rcon.broadcast",
@@ -100,6 +102,10 @@ module.exports = class {
 						console.log(response);
 					}
 				);
+				socket.emit(
+					"rcon.broadcast",
+					listLayers
+				);
 				voteResults[(parseInt(voteMatch[1])-1)]++;
 				socket.emit("SJSPRO_MAPVOTE_VOTED", messageData, layers[voteMatch], {
 					0: {
@@ -116,46 +122,6 @@ module.exports = class {
 					},
 				});
 			}
-		});
-
-		client.wait(parseInt(length)/6 * 1000 * 60).then(() => {
-			socket.emit(
-				"rcon.broadcast",
-				listLayers
-			);
-			client.wait(parseInt(length)/6 * 1000 * 60).then(() => {
-				socket.emit(
-					"rcon.broadcast",
-					listLayers
-				);
-				client.wait(parseInt(length)/6 * 1000 * 60).then(() => {
-					socket.emit(
-						"rcon.broadcast",
-						listLayers
-					);
-					client.wait(parseInt(length)/6 * 1000 * 60).then(() => {
-						socket.emit(
-							"rcon.broadcast",
-							listLayers
-						);
-						client.wait(parseInt(length)/6 * 1000 * 60).then(() => {
-							socket.emit(
-								"rcon.broadcast",
-								listLayers
-							);
-							client.wait(parseInt(length)/6 * 1000 * 60).then(() => {
-								socket.emit(
-									"rcon.broadcast",
-									listLayers
-								);
-								client.wait(parseInt(length)/6 * 1000 * 60).then(() => {
-									endMapVote();
-								});
-							});
-						});
-					});
-				});
-			});
 		});
 
 		async function getWinner() {
