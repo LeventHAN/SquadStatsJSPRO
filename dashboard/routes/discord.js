@@ -96,7 +96,9 @@ router.get("/callback", async (req, res) => {
 	const ip = (req.headers["x-forwarded-for"] || req.socket.remoteAddress).match(
 		regIp
 	);
-	const redirectURL = (await req.client.linkedSteamAccount(req.session?.passport?.user?.steamid))
+	const redirectURL = (await req.client.linkedSteamAccount(
+		req.session?.passport?.user?.steamid
+	))
 		? req.client.states[req.query.state]
 		: "/auth/steam";
 	// save the user's tag so we can use it later

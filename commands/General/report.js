@@ -61,7 +61,6 @@ class Report extends Command {
 			.setColor(data.config.embed.color)
 			.setFooter(data.config.embed.footer);
 
-
 		repChannel.send({ embeds: [embed] }).then(async (m) => {
 			await m.react("👍");
 			await m.react("👎");

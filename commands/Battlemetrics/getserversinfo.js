@@ -34,39 +34,64 @@ class GetServerInfo extends Command {
 
 		// check it is not a bot
 		if (message.author.bot) return;
-		
-		const collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 60000 });
+
+		const collector = new Discord.MessageCollector(
+			message.channel,
+			(m) => m.author.id === message.author.id,
+			{ time: 60000 }
+		);
 		const embed = new Discord.MessageEmbed()
 			.setColor(client.config.color)
 			.setAuthor(message.author.tag, message.author.displayAvatarURL())
 			.setTitle("BattleMetrics Servers")
-			.setDescription("How much results should we return? Maximum 100. Write `cancel` to cancel.")
-			.setFooter(`Requested by ${message.author.tag}`, message.author.displayAvatarURL());
+			.setDescription(
+				"How much results should we return? Maximum 100. Write `cancel` to cancel."
+			)
+			.setFooter(
+				`Requested by ${message.author.tag}`,
+				message.author.displayAvatarURL()
+			);
 		const firstSend = await message.channel.send({ embeds: [embed] });
-		
-		collector.on("collect", m => {
+
+		collector.on("collect", (m) => {
 			// delete embed
 			firstSend.delete();
 			if (m.content.toLowerCase() === "cancel") {
 				collector.stop("cancelled");
 				return message.channel.send(`${message.author} cancelled the command.`);
 			}
-			if (isNaN(m.content)) return message.channel.send(`${message.author} please write a number.`);
-			if (m.content > 100) return message.channel.send(`${message.author} please write a number less than 100.`);
-			if (m.content < 1) return message.channel.send(`${message.author} please write a number greater than 1.`);
+			if (isNaN(m.content))
+				return message.channel.send(`${message.author} please write a number.`);
+			if (m.content > 100)
+				return message.channel.send(
+					`${message.author} please write a number less than 100.`
+				);
+			if (m.content < 1)
+				return message.channel.send(
+					`${message.author} please write a number greater than 1.`
+				);
 			pageSize = m.content;
 			collector.stop(true);
 		});
 		collector.on("end", async () => {
 			pageSize = pageSize || 10;
-			const secondCollector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 60000 });
+			const secondCollector = new Discord.MessageCollector(
+				message.channel,
+				(m) => m.author.id === message.author.id,
+				{ time: 60000 }
+			);
 
 			const secondEmbed = new Discord.MessageEmbed()
 				.setColor(client.config.color)
 				.setAuthor(message.author.tag, message.author.displayAvatarURL())
 				.setTitle("BattleMetrics Servers")
-				.setDescription("Filter on which country? Write `Skip` to skip or write the country CODE name (ex: DE, TR, US, etc...)")
-				.setFooter(`Requested by ${message.author.tag}`, message.author.displayAvatarURL());
+				.setDescription(
+					"Filter on which country? Write `Skip` to skip or write the country CODE name (ex: DE, TR, US, etc...)"
+				)
+				.setFooter(
+					`Requested by ${message.author.tag}`,
+					message.author.displayAvatarURL()
+				);
 			const secondSend = await message.channel.send({ embeds: [secondEmbed] });
 			await secondCollector.on("collect", () => {
 				// delete embed
@@ -77,42 +102,53 @@ class GetServerInfo extends Command {
 				if (secondReason === "time") {
 					return message.channel.send(`${message.author} you took too long.`);
 				} else {
-					country = secondCollected.first().content.toUpperCase() === "SKIP" ? null : secondCollected.first().content.toUpperCase();
+					country =
+						secondCollected.first().content.toUpperCase() === "SKIP"
+							? null
+							: secondCollected.first().content.toUpperCase();
 				}
-				
+
 				console.log(pageSize);
-				if(country) {
-					try{
-						servers = await BM.getAllServersByServerNameCountryAndGame(serverName, country, BM.game, pageSize);
-					} catch(e) {
+				if (country) {
+					try {
+						servers = await BM.getAllServersByServerNameCountryAndGame(
+							serverName,
+							country,
+							BM.game,
+							pageSize
+						);
+					} catch (e) {
 						return message.channel.send(`${message.author} an error occured.`);
 					}
 				} else {
-					try{
-						servers = await BM.getServerInfoByNameAndGame(serverName, BM.game, pageSize);
-					} catch(e) {
+					try {
+						servers = await BM.getServerInfoByNameAndGame(
+							serverName,
+							BM.game,
+							pageSize
+						);
+					} catch (e) {
 						return message.channel.send(`${message.author} an error occured.`);
 					}
 				}
 
-				
 				let serverList = "";
-				for(let i = 0; i < servers.length; i++) {
+				for (let i = 0; i < servers.length; i++) {
 					serverList += `${servers[i].name} - ${servers[i].players} players\n`;
 				}
-				if(serverList === "")
-					return message.channel.send("No servers found.");
-				
+				if (serverList === "") return message.channel.send("No servers found.");
+
 				const embedResult = new Discord.MessageEmbed()
 					.setTitle("Found Servers;")
 					.setDescription(serverList)
 					.setColor(client.config.color)
-					.setFooter(`Requested by ${message.author.tag}`, message.author.displayAvatarURL());
+					.setFooter(
+						`Requested by ${message.author.tag}`,
+						message.author.displayAvatarURL()
+					);
 				await message.channel.send({ embeds: [embedResult] });
-				
 			});
 		});
-		
 	}
 }
 

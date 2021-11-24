@@ -15,7 +15,7 @@ module.exports = class {
 
 	async run(channelID, playerData, nameChecker) {
 		const client = this.client;
-		if(!playerData.player) return;
+		if (!playerData.player) return;
 		const playerName = playerData.player.name;
 		/*
 		Example response for nameChecker:
@@ -36,24 +36,31 @@ module.exports = class {
 		const channel = client.channels.cache.find(
 			(channel) => channel.id === channelID
 		);
-		
+
 		// TODO check if playerData.player.steamID is admin. if user does have group that includes canseeadminchat than suppose it is admin.
 
 		const regex = new RegExp(nameChecker.matchRegex, "gi");
 		if (
 			(!!playerName.match(regex) &&
-			(playerName.length / 2 <= 1
-				? playerName.length
-				: Math.ceil(playerName.length / 2)) <=
-				playerName
-					.match(regex)
-					.toString().length) || nameChecker.blacklist.includes(playerName)
+				(playerName.length / 2 <= 1
+					? playerName.length
+					: Math.ceil(playerName.length / 2)) <=
+					playerName.match(regex).toString().length) ||
+			nameChecker.blacklist.includes(playerName)
 		) {
 			client.socket.emit(
 				"rcon.execute",
-				`AdminKick ${
-					playerData.player.steamID
-				} ${nameChecker.kickMessage + " "}${nameChecker.showWhichLetters ? (nameChecker.blacklist.some((x) => playerName.includes(x)) ? nameChecker.blacklist.filter((x) => playerName.includes(x)).toString() : playerName.match(regex).toString()) : ""}`
+				`AdminKick ${playerData.player.steamID} ${
+					nameChecker.kickMessage + " "
+				}${
+					nameChecker.showWhichLetters
+						? nameChecker.blacklist.some((x) => playerName.includes(x))
+							? nameChecker.blacklist
+									.filter((x) => playerName.includes(x))
+									.toString()
+							: playerName.match(regex).toString()
+						: ""
+				}`
 			);
 			// save kick log to audit schema
 			const moreDetails = {
@@ -73,12 +80,22 @@ module.exports = class {
 
 			const kickEmbed = new Discord.MessageEmbed()
 				.setAuthor("BAD NAME CHECKER")
-				.setDescription(`${playerName} was kicked because he has not readable name!`)
+				.setDescription(
+					`${playerName} was kicked because he has not readable name!`
+				)
 				.addField("Name:", `${playerName}`, true)
 				.addField("SteamID:", `${playerData.player.steamID}`, true)
 				.addField(
 					"Letters/Name that should be changed:",
-					`${nameChecker.showWhichLetters ? (nameChecker.blacklist.some((x) => playerName.includes(x)) ? nameChecker.blacklist.filter((x) => playerName.includes(x)).toString() : playerName.match(regex).toString()) : "Not enabled."}`,
+					`${
+						nameChecker.showWhichLetters
+							? nameChecker.blacklist.some((x) => playerName.includes(x))
+								? nameChecker.blacklist
+										.filter((x) => playerName.includes(x))
+										.toString()
+								: playerName.match(regex).toString()
+							: "Not enabled."
+					}`,
 					true
 				)
 				.setColor("#fc1d00")

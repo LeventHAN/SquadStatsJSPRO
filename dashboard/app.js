@@ -27,6 +27,7 @@ module.exports.load = async (client) => {
 
 	/* Routers */
 	const mainRouter = require("./routes/index"),
+		mapVoteRouter = require("./routes/mapVote"),
 		playersRouter = require("./routes/players"),
 		profileRouter = require("./routes/profile"),
 		dashboardRouter = require("./routes/dashboard"),
@@ -39,7 +40,7 @@ module.exports.load = async (client) => {
 		steamRouter = require("./routes/steam"),
 		guildManagerRouter = require("./routes/guild-manager"),
 		logsRouter = require("./routes/logs"),
-		mapRotationRouter = require("./routes/mapRotation.js");
+		mapRotationRouter = require("./routes/mapVote");
 
 	const eventsToBroadcast = [
 		"CHAT_MESSAGE",
@@ -61,7 +62,7 @@ module.exports.load = async (client) => {
 		"TICK_RATE",
 		"PLAYER_TEAM_CHANGE",
 		"PLAYER_SQUAD_CHANGE",
-		"UPDATED_PLAYER_INFORMATION",
+		//"UPDATED_PLAYER_INFORMATION", undefined ?
 		"UPDATED_LAYER_INFORMATION",
 		"UPDATED_A2S_INFORMATION",
 		"PLAYER_AUTO_KICKED",
@@ -69,6 +70,8 @@ module.exports.load = async (client) => {
 		"PLAYER_KICKED",
 		"PLAYER_BANNED",
 		"SQUAD_CREATED",
+		"SJSPRO_MAPVOTE_VOTED",
+		"SJSPRO_MAPVOTE_ENDED",
 	];
 
 	passport.serializeUser(function (user, done) {
@@ -179,6 +182,7 @@ module.exports.load = async (client) => {
 		.use("/steam", steamRouter)
 		.use("/bans", banlistRouter)
 		.use("/", mainRouter)
+		.use("/mapvote", mapVoteRouter)
 		.use("/players", playersRouter)
 		.use("/profile", profileRouter)
 		.use("/dashboard", dashboardRouter)

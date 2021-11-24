@@ -41,10 +41,10 @@ const moderationSchema = new mongoose.Schema({
 		type: Number,
 		default: null,
 	},
-	active : {
+	active: {
 		type: Boolean,
 		default: true,
-	}
+	},
 });
 
 module.exports = mongoose.model("Moderation", moderationSchema);

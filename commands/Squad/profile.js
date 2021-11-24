@@ -45,8 +45,7 @@ class Profile extends Command {
 
 		let member;
 
-		if(args[0])
-			member = await client.resolveUser(args[0]);		
+		if (args[0]) member = await client.resolveUser(args[0]);
 
 		if (!member) {
 			member = message.member.user;

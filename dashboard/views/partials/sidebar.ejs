@@ -110,7 +110,12 @@
             <% } %>
             <% if(hasCommonElements(userRoles, allCanSee.players)){ %>
               <a class="nav-link" href="/players">
-                <i class="ni ni-tv-2 text-primary"></i> Live Players™️
+                <i class="ni ni-sound-wave text-primary"></i> Live Players™️
+              </a>
+            <% } %>
+            <% if(hasCommonElements(userRoles, allCanSee.mapVote)){ %>
+              <a class="nav-link" href="/mapvote">
+                <i class="ni ni-square-pin text-primary"></i> Map Vote
               </a>
             <% } %>
             <% if(hasCommonElements(userRoles, allCanSee.profile)){ %>
@@ -191,7 +196,7 @@
             <i class="ni ni-ui-04 text-black"></i> Configure Server
           </a>
         <% } %>
-        <% if(hasCommonElements(userRoles, allCanSee.roles)){ %>
+        <% if(hasCommonElements(userRoles, allCanSee.bans)){ %>
           <a class="nav-link" href="/roles">
             <i class="ni ni-badge text-blue"></i> Server Whitelists
           </a>

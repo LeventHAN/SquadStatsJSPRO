@@ -18,7 +18,7 @@ const readConfig = async () => {
 	client.config = config
 		? await client.parseConfig(config)
 		: await client.parseConfig(
-			await client.readConfig(configPath || "./config.json")
+				await client.readConfig(configPath || "./config.json")
 		  );
 };
 const init = async () => {
@@ -40,7 +40,6 @@ const init = async () => {
 				}
 			});
 	});
-
 
 	// Hook the socket.io
 	await client.hookSocketIO();
@@ -67,8 +66,8 @@ const init = async () => {
 				info.timeDifference
 					? info.timeDifference
 					: info.timeout
-						? info.timeout
-						: "Unknown timeout "
+					? info.timeout
+					: "Unknown timeout "
 			}`
 		);
 	});
@@ -96,7 +95,6 @@ const init = async () => {
 	// Create the whitelist groups if not existing
 	await client.createWhitelist();
 
-	
 	// Create the database connection
 	client.pool = await client.setPool();
 };

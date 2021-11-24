@@ -70,8 +70,7 @@ class SquadStatsJSv3 extends Client {
 		this.socket = null;
 	}
 
-
-	async setUpBM(){
+	async setUpBM() {
 		this.BattleMetrics = new BM({
 			token: this.config.apiKeys.battleMetrics,
 			serverID: this.config.squadBattleMetricsID,
@@ -286,14 +285,14 @@ class SquadStatsJSv3 extends Client {
 		}
 	}
 
-	async getNameCheckerConfig(){
+	async getNameCheckerConfig() {
 		const guild = await this.findOrCreateGuild({ id: this.config.serverID });
 		return {
 			enabled: guild.plugins.squad.nameChecker.enabled,
 			kickMessage: guild.plugins.squad.nameChecker.kickMessage,
 			showWhichLetters: guild.plugins.squad.nameChecker.showWhichLetters,
 			blacklist: guild.plugins.squad.nameChecker.blacklist,
-			matchRegex: guild.plugins.squad.nameChecker.matchRegex
+			matchRegex: guild.plugins.squad.nameChecker.matchRegex,
 		};
 	}
 
@@ -372,7 +371,7 @@ class SquadStatsJSv3 extends Client {
 
 	async getBanlist() {
 		const bans = await this.moderation.find({});
-		return bans.filter(ban => ban.typeModeration === "ban");
+		return bans.filter((ban) => ban.typeModeration === "ban");
 	}
 
 	// Returns the whitelist roles only (Groups)
@@ -389,9 +388,10 @@ class SquadStatsJSv3 extends Client {
 	}
 
 	async removeUserBanlist(steamID, endDate) {
-		const ban = await this.moderation.findOne(
-			{ steamID: steamID, endDate: endDate}
-		);
+		const ban = await this.moderation.findOne({
+			steamID: steamID,
+			endDate: endDate,
+		});
 		ban.active = false;
 		await ban.save();
 		return true;
@@ -583,7 +583,7 @@ class SquadStatsJSv3 extends Client {
 	async getAllDiffrentRoles() {
 		const perms = await this.permission.findOne({});
 		if (!perms) return;
-		return perms.allRoles;		
+		return perms.allRoles;
 	}
 
 	async getAllPagesCanSee() {
@@ -819,8 +819,10 @@ class SquadStatsJSv3 extends Client {
 	async toggleWhoCan(typeAction, role) {
 		const permissions = await this.permission.findOne({});
 		if (!permissions) return false;
-		if(permissions.whoCan[typeAction].includes(role)){
-			permissions.whoCan[typeAction] = permissions.whoCan[typeAction].filter((r) => r !== role);
+		if (permissions.whoCan[typeAction].includes(role)) {
+			permissions.whoCan[typeAction] = permissions.whoCan[typeAction].filter(
+				(r) => r !== role
+			);
 			// mark modified and save
 			await permissions.markModified("whoCan");
 			await permissions.save();
@@ -837,8 +839,10 @@ class SquadStatsJSv3 extends Client {
 	async toggleCanSee(page, role) {
 		const permissions = await this.permission.findOne({});
 		if (!permissions) return false;
-		if(permissions.canSee[page].includes(role)){
-			permissions.canSee[page] = permissions.canSee[page].filter((r) => r !== role);
+		if (permissions.canSee[page].includes(role)) {
+			permissions.canSee[page] = permissions.canSee[page].filter(
+				(r) => r !== role
+			);
 			// mark modified and save
 			await permissions.markModified("canSee");
 			await permissions.save();
@@ -867,10 +871,14 @@ class SquadStatsJSv3 extends Client {
 		if (!permissions) return false;
 		permissions.allRoles = permissions.allRoles.filter((r) => r !== role);
 		for (const key in permissions.whoCan) {
-			permissions.whoCan[key] = permissions.whoCan[key].filter((r) => r !== role);
+			permissions.whoCan[key] = permissions.whoCan[key].filter(
+				(r) => r !== role
+			);
 		}
 		for (const key in permissions.canSee) {
-			permissions.canSee[key] = permissions.canSee[key].filter((r) => r !== role);
+			permissions.canSee[key] = permissions.canSee[key].filter(
+				(r) => r !== role
+			);
 		}
 		// mark modified and save
 		await permissions.markModified("allRoles");
@@ -948,7 +956,7 @@ class SquadStatsJSv3 extends Client {
 	}
 
 	async toggleDashboardSettings(typeSetting, actionType) {
-		switch(typeSetting) {
+		switch (typeSetting) {
 			case "notifications":
 				await this.toggleShowNotifications(actionType);
 				break;

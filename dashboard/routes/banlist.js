@@ -7,7 +7,7 @@ const express = require("express"),
 // Gets profile page
 router.get("/", CheckAuth, async function (req, res) {
 	const canSeeArray = await req.client.getAllCanSee();
-	const canSee = await req.client.canAccess("roles", req.userInfos.id);
+	const canSee = await req.client.canAccess("bans", req.userInfos.id);
 	if (!canSee) return res.json({ status: "nok", message: "No access!" });
 
 	res.render("bans", {

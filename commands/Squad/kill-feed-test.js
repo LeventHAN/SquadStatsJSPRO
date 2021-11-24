@@ -26,7 +26,6 @@ class ServerTickRate extends Command {
 			cooldown: 1000,
 		});
 		this.client = client;
-		this.pool = null;
 	}
 
 	async run(message) {

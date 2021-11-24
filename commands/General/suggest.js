@@ -51,7 +51,6 @@ class Suggest extends Command {
 			.setColor(data.config.embed.color)
 			.setFooter(data.config.embed.footer);
 
-
 		suggChannel.send({ embeds: [embed] }).then(async (m) => {
 			await m.react("👍");
 			await m.react("👎");

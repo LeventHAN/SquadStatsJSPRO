@@ -71,14 +71,16 @@ router.post("/steam/delete", CheckAuth, async (req, res) => {
 			message: "You are doing something wrong.",
 		});
 
-	const userSteamAccount = await req.client.linkedSteamAccount(req.body.steamid);
+	const userSteamAccount = await req.client.linkedSteamAccount(
+		req.body.steamid
+	);
 	if (!userSteamAccount)
 		return res.json({ status: "nok", message: "There is no account linked." });
 	if (
 		userSteamAccount.steamid !== req.body.steamid &&
-			(!userFromToken.roles.includes("owner") ||
-		!userFromToken.roles.includes("admin")
-			))
+		(!userFromToken.roles.includes("owner") ||
+			!userFromToken.roles.includes("admin"))
+	)
 		return res.json({
 			status: "nok",
 			message: "You are doing something wrong.",

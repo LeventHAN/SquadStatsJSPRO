@@ -10,11 +10,6 @@ module.exports = class {
 		const client = this.client;
 		const socket = client.socket;
 		const nameChecker = await client.getNameCheckerConfig();
-		
-
-		client.on("ditIsTest", (layers) => {
-			console.log("ik heb de test gekregen.", layers);
-		});
 
 		if (socket) {
 			socket.on("connect_error", (err) => {
@@ -23,17 +18,14 @@ module.exports = class {
 			// /* Squad Creating Plugin */
 			// 	await client.emit("squadCreating", squadVotingGuild, "851451690020110346", socket);
 			//
-			client.logger.log(
-				"Loading PLAYER_CONNECTED event.",
-				"log"
-			);
+			client.logger.log("Loading PLAYER_CONNECTED event.", "log");
 
 			// When player is connected.
 			socket.on("PLAYER_CONNECTED", async (playerData) => {
 				// here all events that relate with player connection
-				
+
 				// Name checker plugin
-				if(nameChecker.enabled) {
+				if (nameChecker.enabled) {
 					await client.emit(
 						"onPlayerConnection",
 						client.config.support.logs,
@@ -57,8 +49,6 @@ module.exports = class {
 			`Loading a total of ${client.commands.size} command(s).`,
 			"log"
 		);
-
-		
 
 		client.logger.log(
 			`${client.user.tag}, ready to serve ${client.users.cache.size}.`,

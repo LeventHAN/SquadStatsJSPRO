@@ -39,7 +39,6 @@ router.get("/:serverID", CheckAuth, async (req, res) => {
 	const notificationSettings = await req.client.getShowNotifications();
 	const updatePlayersTable = await req.client.getUpdatePlayersTable();
 
-
 	res.render("manager/guild", {
 		notificationSettings: notificationSettings,
 		updatePlayersTable: updatePlayersTable,
