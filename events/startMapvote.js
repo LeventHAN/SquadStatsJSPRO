@@ -43,18 +43,12 @@ module.exports = class {
 		console.log("AdminBroadcast Map vote is starting! You have ${length} minutes to vote. - SquadStatsJSPRO");
 		socket.emit(
 			"rcon.broadcast",
-			broadcastIsStarting,
-			() => {
-				console.log("Executed Starting?");
-			}
+			broadcastIsStarting
 		);
 		client.wait(8000).then(() => {
 			socket.emit(
 				"rcon.broadcast",
-				listLayers,
-				() => {
-					console.log("Executed List Layers?");
-				}
+				listLayers
 			);
 		});
 
@@ -123,47 +117,85 @@ module.exports = class {
 				});
 			}
 		});
-		
-		client.wait(parseInt(length) * 1000 * 60).then(() => {
-			endMapVote();
+
+		client.wait(parseInt(length)/6 * 1000 * 60).then(() => {
+			socket.emit(
+				"rcon.broadcast",
+				listLayers
+			);
+			client.wait(parseInt(length)/6 * 1000 * 60).then(() => {
+				socket.emit(
+					"rcon.broadcast",
+					listLayers
+				);
+				client.wait(parseInt(length)/6 * 1000 * 60).then(() => {
+					socket.emit(
+						"rcon.broadcast",
+						listLayers
+					);
+					client.wait(parseInt(length)/6 * 1000 * 60).then(() => {
+						socket.emit(
+							"rcon.broadcast",
+							listLayers
+						);
+						client.wait(parseInt(length)/6 * 1000 * 60).then(() => {
+							socket.emit(
+								"rcon.broadcast",
+								listLayers
+							);
+							client.wait(parseInt(length)/6 * 1000 * 60).then(() => {
+								socket.emit(
+									"rcon.broadcast",
+									listLayers
+								);
+								client.wait(parseInt(length)/6 * 1000 * 60).then(() => {
+									endMapVote();
+								});
+							});
+						});
+					});
+				});
+			});
 		});
 
 		async function getWinner() {
+			let total = 0;
+			for (const key in voteResults) {
+				total += voteResults[key];
+			}
 			const voteResultsArray = Object.values(voteResults);
 			const maxVote = Math.max(...voteResultsArray); // get the element with the most votes
-			if (maxVote < parseInt(minVoters)) {
+			if (total < parseInt(minVoters)) {
 				return false;
 			}
 			const maxVoteIndex = voteResultsArray.indexOf(maxVote); // get the index of the element with the most votes
-
 			// the winner;
 			return layers[maxVoteIndex]; // get the layer with the most votes
 		}
 
 		async function sendBroadcast(winner) {
+			const message = `The winner for the map vote is: ${winner} - SquadStatsJSPRO`;
 			console.log(
-				`AdminBroadcast The winner for the map vote is: ${winner} - SquadStatsJSPRO`
+				message
 			);
 			socket.emit(
 				"rcon.broadcast",
-				`AdminBroadcast The winner for the map vote is: ${winner} - SquadStatsJSPRO`,
+				message,
 			);
 			socket.emit(
 				"rcon.execute",
-				`AdminSetNextLayer ${winner}`,
-				() => {
-					console.log("Executed SetNextLayer?");
-				}
+				`AdminSetNextLayer ${winner}`
 			);
 		}
 
 		async function sendNoWinner() {
+			const message = "No winner for the map vote - SquadStatsJSPRO";
 			console.log(
-				"AdminBroadcast No winner for the map vote - SquadStatsJSPRO"
+				message
 			);
 			socket.emit(
 				"rcon.broadcast",
-				"AdminBroadcast No winner for the map vote - SquadStatsJSPRO",
+				message,
 			);
 		}
 
