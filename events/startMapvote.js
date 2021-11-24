@@ -12,6 +12,7 @@ module.exports = class {
 	}
 
 	async run(layers, length, minVoters) {
+		
 		const client = this.client;
 		const socket = client.socket;
 		const voteResults = {
@@ -37,18 +38,23 @@ module.exports = class {
 		// 	},
 		// });
 		// return;
+		const broadcastIsStarting = `AdminBroadcast Map vote is starting! You have ${length} minutes to vote. - SquadStatsJSPRO`;
+		const listLayers = `AdminBroadcast [1] - ${layers[0]} | [2] - ${layers[1]} | [3] - ${layers[2]}`;
 		console.log("AdminBroadcast Map vote is starting! You have ${length} minutes to vote. - SquadStatsJSPRO");
 		socket.emit(
-			"rcon.execute",
-			`AdminBroadcast Map vote is starting! You have ${length} minutes to vote. - SquadStatsJSPRO`,
+			"rcon.broadcast",
+			broadcastIsStarting,
 			() => {
-				console.log("Executed?");
+				console.log("Executed Starting?");
 			}
 		);
 		client.wait(8000).then(() => {
 			socket.emit(
-				"rcon.execute",
-				`AdminBroadcast [1] - ${layers[0]} | [2] - ${layers[1]} | [3] - ${layers[2]}`,
+				"rcon.broadcast",
+				listLayers,
+				() => {
+					console.log("Executed List Layers?");
+				}
 			);
 		});
 
@@ -83,14 +89,22 @@ module.exports = class {
 			if (voteMatch) {
 				if(votedPlayers.includes(messageData.steamID)){
 					return socket.emit(
-						"rcon.execute",
-						`AdminWarn ${messageData.steamID} ${messageData.name} - You can only vote 1 time.`
+						"rcon.warn",
+						`${messageData.steamID}`,
+						`${messageData.name} - You can only vote 1 time.`,
+						(response) => {
+							console.log(response);
+						}
 					);
 				}
 				votedPlayers.push(messageData.steamID);
 				socket.emit(
-					"rcon.execute",
-					`AdminWarn ${messageData.steamID} - ${messageData.name} you did vote for ${layers[parseInt(voteMatch[1])-1]}.`
+					"rcon.warn",
+					`${messageData.steamID}`,
+					`${messageData.name} you did vote for ${layers[parseInt(voteMatch[1])-1]}.`,
+					(response) => {
+						console.log(response);
+					}
 				);
 				voteResults[(parseInt(voteMatch[1])-1)]++;
 				socket.emit("SJSPRO_MAPVOTE_VOTED", messageData, layers[voteMatch], {
@@ -131,12 +145,15 @@ module.exports = class {
 				`AdminBroadcast The winner for the map vote is: ${winner} - SquadStatsJSPRO`
 			);
 			socket.emit(
-				"rcon.execute",
+				"rcon.broadcast",
 				`AdminBroadcast The winner for the map vote is: ${winner} - SquadStatsJSPRO`,
 			);
 			socket.emit(
 				"rcon.execute",
 				`AdminSetNextLayer ${winner}`,
+				() => {
+					console.log("Executed SetNextLayer?");
+				}
 			);
 		}
 
@@ -145,7 +162,7 @@ module.exports = class {
 				"AdminBroadcast No winner for the map vote - SquadStatsJSPRO"
 			);
 			socket.emit(
-				"rcon.execute",
+				"rcon.broadcast",
 				"AdminBroadcast No winner for the map vote - SquadStatsJSPRO",
 			);
 		}
