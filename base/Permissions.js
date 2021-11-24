@@ -5,37 +5,37 @@ const permissionsSchema = new mongoose.Schema({
 		type: Object,
 		default: {
 			manage: ["owner"],
-			dashboard: ["owner", "admin", "moderator"],
-			players: ["owner", "admin", "moderator"], // whoCan will determine the actions here...
-			roles: ["owner", "admin"],
+			dashboard: ["owner", "superadmin", "admin", "moderator"],
+			players: ["owner", "superadmin", "admin", "moderator"], // whoCan will determine the actions here...
+			roles: ["owner", "superadmin", "admin"],
+			bans: ["owner", "superadmin", "admin"],
 			logs: ["owner"],
 			profile: ["user"],
+			mapVote: ["owner", "superadmin", "admin", "moderator"],
+			mapRotation: ["owner", "superadmin", "admin", "moderator"],
 		},
 	},
 	whoCan: {
 		type: Object,
 		default: {
-			kick: ["owner", "admin", "moderator"],
-			ban: ["owner", "admin"],
-			broadcast: ["owner", "admin", "moderator"],
-			warn: ["owner", "admin", "moderator"],
-			disbandSquad: ["owner", "admin", "moderator"],
-			removeFromSquad: ["owner", "admin", "moderator"],
-			unlinkSteam: ["owner", "admin", "moderator", "user"],
-			setNextMap: ["owner", "admin", "moderator"],
-			setCurrentMap: ["owner", "admin", "moderator"],
+			kick: ["owner", "superadmin", "admin", "moderator"],
+			ban: ["owner", "superadmin", "admin", "moderator"],
+			broadcast: ["owner", "superadmin", "admin", "moderator"],
+			warn: ["owner", "superadmin", "admin", "moderator"],
+			disbandSquad: ["owner", "superadmin", "admin", "moderator"],
+			removeFromSquad: ["owner", "superadmin", "admin", "moderator"],
+			unlinkSteam: ["owner", "superadmin", "admin", "moderator", "user"],
+			setNextMap: ["owner", "superadmin", "admin", "moderator"],
+			setCurrentMap: ["owner", "superadmin", "admin", "moderator"],
+			mapRotation: ["owner", "superadmin", "admin", "moderator"],
+			startMapVote: ["owner", "superadmin", "admin", "moderator"],
+			teamForceChange: ["owner", "superadmin", "admin", "moderator"],
 		},
 	},
 	allRoles: {
 		type: Array,
-		default: [
-			"owner",
-			"superadmin",
-			"admin",
-			"moderator",
-			"user"
-		],
-	}
+		default: ["owner", "superadmin", "admin", "moderator", "user"],
+	},
 });
 
 module.exports = mongoose.model("Permissions", permissionsSchema);

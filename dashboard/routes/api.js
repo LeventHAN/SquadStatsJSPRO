@@ -71,18 +71,10 @@ router.get("/", CheckAuth, async (req, res) => {
 }
  */
 router.get("/getServerInfo", CheckAuth, async (req, res) => {
-	const options = {
-		token: req.client.config.apiKeys.battleMetrics,
-		serverID: req.client.config.squadBattleMetricsID,
-		game: process.env.GAMENAME || 'squad'
-	};
-
-	const battleMetrics = new BM(options);
-
-	const response = await battleMetrics.getServerInfoById(
-		battleMetrics.serverID
+	const response = await req.client.BattleMetrics.getServerInfoById(
+		req.client.BattleMetrics.serverID
 	);
-	
+
 	const steamAccount = {
 		steam64id:
 			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
@@ -627,6 +619,62 @@ router.post("/warn", CheckAuth, async function (req, res) {
 	});
 });
 
+router.post("/forceTeamChange", CheckAuth, async function (req, res) {
+	if (!req.body.steamUID || !req.body.reason) {
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
+	}
+	const userRole = await req.client.getRoles(req.session?.user?.id);
+
+	const canUser = await req.client.whoCan("teamForceChange");
+
+	if (!canUser.some((role) => userRole.includes(role)))
+		return res.json({
+			status: "nok2",
+			message: "You are not allowed to do this.",
+		});
+
+	const steamAccount = {
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
+	};
+	const discordAccount = {
+		id: req.session?.user?.id,
+		username: req.session?.user?.username,
+		discriminator: req.session?.user?.discriminator,
+	};
+	const moreDetails = {
+		player: req.body.steamUID,
+		reason: req.body.reason,
+	};
+
+	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
+	const socket = req.client.socket;
+	// debug
+	socket.emit(
+		"rcon.execute",
+		`AdminForceTeamChange ${moreDetails.player}`,
+		async () => {
+			const log = await req.client.addLog({
+				action: "PLAYER_FORCE_TEAMCHANGE",
+				author: { discord: discordAccount, steam: steamAccount },
+				ip: req.session.user.lastIp,
+				details: { details: moreDetails },
+			});
+			await log.save();
+			return res.json({ status: "ok", message: "Player team changed!" });
+		}
+	);
+});
+
 /**
  * @api {post} /squad-api/ban Ban players
  * @apiName ban
@@ -1070,14 +1118,56 @@ router.post("/banlist/removeUserBanlist", CheckAuth, async function (req, res) {
 });
 
 router.post("/mapvote/start", CheckAuth, async function (req, res) {
-	const layers = [
-		"Layer 1",
-		"Layer 2",
-		"Layer 3"
-	];
-	console.log("API IS GOING TO EMIT");
-	await req.client.emit("ditIsTest", layers);
-	console.log("API DID EMIT AND PROCEED");
+	if (!req.body.layers || !req.body.timeOut || !req.body.minVote)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
+
+	const userRole = await req.client.getRoles(req.session?.user?.id);
+	const canUser = await req.client.whoCan("startMapVote");
+
+	if (!canUser.some((role) => userRole.includes(role)))
+		return res.json({
+			status: "nok2",
+			message: "You are not allowed to do this.",
+		});
+
+	const steamAccount = {
+		steam64id:
+			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
+	};
+	const discordAccount = {
+		id: req.session?.user?.id,
+		username: req.session?.user?.username,
+		discriminator: req.session?.user?.discriminator,
+	};
+	const moreDetails = {
+		layers: req.body.layers,
+		length: req.body.timeOut,
+		minVote: req.body.minVote,
+	};
+
+	const log = await req.client.addLog({
+		action: "MAP_VOTE_STARTED",
+		author: { discord: discordAccount, steam: steamAccount },
+		ip: req.session.user.lastIp,
+		details: { details: moreDetails },
+	});
+	await log.save();
+
+	await req.client.emit(
+		"startMapvote",
+		moreDetails.layers,
+		moreDetails.length,
+		moreDetails.minVote
+	);
 	return res.json({ status: "ok", message: "Mapvote started!" });
 });
 
@@ -1573,7 +1663,11 @@ router.post("/roles/toggleWhoCan", CheckAuth, async function (req, res) {
 		req.body.typeAction,
 		req.body.role
 	);
-	if(!status) return res.json({ status: "nok", message: "Something is not good with the permissions schema!" });
+	if (!status)
+		return res.json({
+			status: "nok",
+			message: "Something is not good with the permissions schema!",
+		});
 	const msg = status === "added" ? "ADDED" : "REMOVED";
 	const log = await req.client.addLog({
 		action: `WHO_CAN_${req.body.typeAction.toUpperCase()}_${msg.toUpperCase()}_${req.body.role.toUpperCase()}`,
@@ -1612,12 +1706,13 @@ router.post("/roles/toggleCanSee", CheckAuth, async function (req, res) {
 		page: req.body.page,
 		role: req.body.role,
 	};
-	const status = await req.client.toggleCanSee(
-		req.body.page,
-		req.body.role
-	);
-	if(!status) return res.json({ status: "nok", message: "Something is not good with the permissions schema!" });
-	const msg = status === "added" ? "ADDED" : "REMOVED";	
+	const status = await req.client.toggleCanSee(req.body.page, req.body.role);
+	if (!status)
+		return res.json({
+			status: "nok",
+			message: "Something is not good with the permissions schema!",
+		});
+	const msg = status === "added" ? "ADDED" : "REMOVED";
 	const log = await req.client.addLog({
 		action: `CAN_SEE_${req.body.page.toUpperCase()}_${msg.toUpperCase()}_${req.body.role.toUpperCase()}`,
 		author: { discord: discordAccount, steam: steamAccount },
@@ -1654,11 +1749,13 @@ router.post("/roles/addRole", CheckAuth, async function (req, res) {
 	const moreDetails = {
 		role: req.body.role,
 	};
-		
-	const status = await req.client.addUserRole(
-		req.body.role
-	);
-	if(!status) return res.json({ status: "nok", message: "Something is not good with the permissions schema!" });
+
+	const status = await req.client.addUserRole(req.body.role);
+	if (!status)
+		return res.json({
+			status: "nok",
+			message: "Something is not good with the permissions schema!",
+		});
 	const log = await req.client.addLog({
 		action: "ADD_NEW_ROLE",
 		author: { discord: discordAccount, steam: steamAccount },
@@ -1676,8 +1773,12 @@ router.post("/roles/removeRole", CheckAuth, async function (req, res) {
 			status: "nok",
 			message: "You are doing something wrong.",
 		});
-	
-	if(req.body.role === "owner") return res.json({ status: "nok", message: "You can't remove the owner role!" });
+
+	if (req.body.role === "owner")
+		return res.json({
+			status: "nok",
+			message: "You can't remove the owner role!",
+		});
 	const steamAccount = {
 		steam64id:
 			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
@@ -1696,11 +1797,13 @@ router.post("/roles/removeRole", CheckAuth, async function (req, res) {
 	const moreDetails = {
 		role: req.body.role,
 	};
-		
-	const status = await req.client.removeUserRole(
-		req.body.role
-	);
-	if(!status) return res.json({ status: "nok", message: "Something is not good with the permissions schema!" });
+
+	const status = await req.client.removeUserRole(req.body.role);
+	if (!status)
+		return res.json({
+			status: "nok",
+			message: "Something is not good with the permissions schema!",
+		});
 	const log = await req.client.addLog({
 		action: "REMOVE_ROLE",
 		author: { discord: discordAccount, steam: steamAccount },
@@ -1711,7 +1814,6 @@ router.post("/roles/removeRole", CheckAuth, async function (req, res) {
 	// return ok status
 	return res.json({ status: "ok", message: "The new role is added!" });
 });
-
 
 router.post(
 	"/dashboard/toggleShowNotifications",
@@ -1773,8 +1875,11 @@ router.post(
 				status: "nok",
 				message: "You are doing something wrong.",
 			});
-		
-		await req.client.toggleDashboardSettings(req.body.typeSetting, req.body.onSetting);
+
+		await req.client.toggleDashboardSettings(
+			req.body.typeSetting,
+			req.body.onSetting
+		);
 		return res.json({ status: "ok", message: "Toggled!" });
 	}
 );
