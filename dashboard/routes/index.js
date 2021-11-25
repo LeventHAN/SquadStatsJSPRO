@@ -36,11 +36,22 @@ router.get("/index", async (req, res) => {
 
 router.get("/selector", CheckAuth, async (req, res) => {
 	const allCanSeeRoles = await req.client.getAllCanSee();
+	const info = [];
+	await req.userInfos.displayedGuilds.forEach(function(guild) {
+		if (guild.id === req.client.config.serverID) {
+			info.push({
+				name: guild.name,
+				icon: guild.iconURL,
+				settingsURL: guild.settingsUrl
+			});
+		}
+	});
 
 	res.render("selector", {
 		userRoles: await req.client.getRoles(req.session.user.id),
 		c: req.client,
 		latestTPS: await utils.getTPS(req.client),
+		guild: info[0],
 		playerAmount: await req.client.getPlayersLength(),
 		ownerID: req.client.config.owner.id,
 		allCanSee: allCanSeeRoles,

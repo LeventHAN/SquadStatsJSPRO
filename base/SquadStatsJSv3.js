@@ -211,19 +211,35 @@ class SquadStatsJSv3 extends Client {
 	}
 
 	// Will get the user data via userID and will put the given steam object in it and save it.
-	async linkSteamAccount(userID, steamObj) {
+	async linkSteamAccount(userID, steamObj, attempt = 0) {
 		// In case something goes wrong, we want to make sure we don't have a steam account linked to this user
 		if (steamObj.id) {
 			const userData = await this.findOrCreateUser({ id: userID });
 			if (!userData) return;
 			// check if userData has a steam account
 			if (!userData.steam) {
-				userData.steam = steamObj._json;
-				await userData.markModified("steam");
-				await userData.save();
+				const playerBattleMetrics = await this.BattleMetrics.getPlayerInfoBy("steamID", steamObj.id);
+				if(!playerBattleMetrics?.data[0]?.id) {
+					if(attempt > 3){
+						this.logger.log(`Unable to get BM ID from BattleMetrics API for DiscordID: ${userID} - Name: ${steamObj.displayName}. Attempting to save only steam details.`, "error");
+						userData.steam = steamObj._json;
+						await userData.markModified("steam");
+						await userData.save();
+						return;
+					}
+					attempt++;
+					this.wait(1500).then(
+						() => this.linkSteamAccount(userID, steamObj, attempt)
+					);
+				} else {
+					userData.battleMetricsID = playerBattleMetrics?.data[0]?.id;
+					userData.steam = steamObj._json;
+					await userData.markModified("steam");
+					await userData.save();
+					return;
+				}
 			}
 		}
-		return;
 	}
 
 	// Will check if the user has a steam account linked to them and send back the steam data if so

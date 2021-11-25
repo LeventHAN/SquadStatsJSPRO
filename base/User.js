@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
 	name: { type: String, default: null }, // Discord name of the user
 	discriminator: { type: String, default: null }, // Discord discriminator of the user
 	steam: { type: Object, default: null }, // Steam ID of the user
+	battleMetricsID: { type: String, default: null }, // Battlemetrics ID of the user
 	bio: { type: String }, // Biography of the user
 
 	/* STATS */
