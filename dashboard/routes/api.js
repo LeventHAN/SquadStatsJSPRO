@@ -1117,60 +1117,6 @@ router.post("/banlist/removeUserBanlist", CheckAuth, async function (req, res) {
 	return res.json({ status: "ok", message: "Player removed from banlist!" });
 });
 
-router.post("/mapvote/start", CheckAuth, async function (req, res) {
-	if (!req.body.layers || !req.body.timeOut || !req.body.minVote)
-		return res.json({
-			status: "nok",
-			message: "You are doing something wrong.",
-		});
-
-	const userRole = await req.client.getRoles(req.session?.user?.id);
-	const canUser = await req.client.whoCan("startMapVote");
-
-	if (!canUser.some((role) => userRole.includes(role)))
-		return res.json({
-			status: "nok2",
-			message: "You are not allowed to do this.",
-		});
-
-	const steamAccount = {
-		steam64id:
-			req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
-		displayName:
-			req.session?.passport?.user?.displayName ||
-			req.session?.passport?.user?.personaname,
-		identifier:
-			req.session?.passport?.user?.identifier ||
-			req.session?.passport?.user?.profileurl,
-	};
-	const discordAccount = {
-		id: req.session?.user?.id,
-		username: req.session?.user?.username,
-		discriminator: req.session?.user?.discriminator,
-	};
-	const moreDetails = {
-		layers: req.body.layers,
-		length: req.body.timeOut,
-		minVote: req.body.minVote,
-	};
-
-	const log = await req.client.addLog({
-		action: "MAP_VOTE_STARTED",
-		author: { discord: discordAccount, steam: steamAccount },
-		ip: req.session.user.lastIp,
-		details: { details: moreDetails },
-	});
-	await log.save();
-
-	await req.client.emit(
-		"startMapvote",
-		moreDetails.layers,
-		moreDetails.length,
-		moreDetails.minVote
-	);
-	return res.json({ status: "ok", message: "Mapvote started!" });
-});
-
 /**
  * @api {get} /roles/url Get the URL of the whitelists
  * @apiName whitelistURL

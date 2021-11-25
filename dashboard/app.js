@@ -182,7 +182,6 @@ module.exports.load = async (client) => {
 		.use("/steam", steamRouter)
 		.use("/bans", banlistRouter)
 		.use("/", mainRouter)
-		.use("/mapvote", mapVoteRouter)
 		.use("/players", playersRouter)
 		.use("/profile", profileRouter)
 		.use("/dashboard", dashboardRouter)
