@@ -48,18 +48,6 @@ module.exports = mongoose.model(
 						password: null,
 						serverID: null,
 					},
-					mapVote: {
-						enabled: false,
-						active: false,
-						rotations: {
-							type: Object,
-							default: {
-								Default: {
-									layers: [],
-								},
-							},
-						},
-					},
 					nameChecker: {
 						enabled: false,
 						kickMessage: "Your name is not human readable.",

@@ -27,7 +27,6 @@ module.exports.load = async (client) => {
 
 	/* Routers */
 	const mainRouter = require("./routes/index"),
-		mapVoteRouter = require("./routes/mapVote"),
 		playersRouter = require("./routes/players"),
 		profileRouter = require("./routes/profile"),
 		dashboardRouter = require("./routes/dashboard"),
@@ -40,7 +39,7 @@ module.exports.load = async (client) => {
 		steamRouter = require("./routes/steam"),
 		guildManagerRouter = require("./routes/guild-manager"),
 		logsRouter = require("./routes/logs"),
-		mapRotationRouter = require("./routes/mapVote");
+		mapRotationRouter = require("./routes/mapRotation");
 
 	const eventsToBroadcast = [
 		"CHAT_MESSAGE",

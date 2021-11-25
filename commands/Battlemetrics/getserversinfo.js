@@ -108,7 +108,6 @@ class GetServerInfo extends Command {
 							: secondCollected.first().content.toUpperCase();
 				}
 
-				console.log(pageSize);
 				if (country) {
 					try {
 						servers = await BM.getAllServersByServerNameCountryAndGame(
@@ -134,6 +133,7 @@ class GetServerInfo extends Command {
 
 				let serverList = "";
 				for (let i = 0; i < servers.length; i++) {
+					if(servers[i].status === "dead") continue;
 					serverList += `${servers[i].name} - ${servers[i].players} players\n`;
 				}
 				if (serverList === "") return message.channel.send("No servers found.");
