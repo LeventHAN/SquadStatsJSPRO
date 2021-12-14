@@ -15,7 +15,6 @@ router.get("/", CheckAuth, async (req, res, next) => {
 		updateSettings: responseUpdate,
 		userRoles: await req.client.getRoles(req.session.user.id),
 		c: req.client,
-		latestTPS: await req.client.getTPS(),
 		playerAmount: await req.client.getPlayersLength(),
 		userDiscord: req.userInfos,
 		allCanSee: canSeeArray,

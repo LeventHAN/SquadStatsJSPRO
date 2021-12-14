@@ -15,7 +15,6 @@ router.get("/", CheckAuth, async function (req, res) {
 		playerAmount: await req.client.getPlayersLength(),
 		c: req.client,
 		allCanSee: canSeeArray,
-		latestTPS: await req.client.getTPS(),
 		allBannedUsers: await req.client.getBanlist(),
 		ownerID: req.client.config.owner.id,
 		serverID: req.client.config.serverID,

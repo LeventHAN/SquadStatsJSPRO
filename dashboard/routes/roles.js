@@ -18,7 +18,6 @@ router.get("/", CheckAuth, async function (req, res) {
 		c: req.client,
 		roles: roles,
 		allCanSee: canSeeArray,
-		latestTPS: await req.client.getTPS(),
 		whitelisted: whitelisted,
 		ownerID: req.client.config.owner.id,
 		serverID: req.client.config.serverID,

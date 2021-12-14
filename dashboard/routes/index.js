@@ -12,7 +12,6 @@ router.get("/index", async (req, res) => {
 		return res.render("index", {
 			c: req.client,
 			userRoles: await req.client.getRoles(req.session.user.id),
-			latestTPS: await req.client.getTPS(),
 			ownerID: req.client.config.owner.id,
 			serverID: req.client.config.serverID,
 			userDiscord: req.userInfos,
@@ -52,7 +51,6 @@ router.get("/selector", CheckAuth, async (req, res) => {
 	res.render("selector", {
 		userRoles: await req.client.getRoles(req.session.user.id),
 		c: req.client,
-		latestTPS: await req.client.getTPS(),
 		guild: info[0],
 		playerAmount: await req.client.getPlayersLength(),
 		ownerID: req.client.config.owner.id,

@@ -580,19 +580,6 @@ class SquadStatsJSv3 extends Client {
 		return await this.players.then((players) => players.length);
 	}
 
-	async getTPS()
-	{
-		if (!this.socket) return "0";
-		this.tps;
-		const response = new Promise((res) => {
-			this.socket.emit("TICK_RATE", async (data) => {
-				res(data);
-			});
-		});
-		this.tps = response;
-		return await this.tps;
-	}
-
 	// Will return the users dashboard roles ("owner", "admin", etc..)
 	async getRoles(userID) {
 		// search the roles for the userID
@@ -723,21 +710,6 @@ class SquadStatsJSv3 extends Client {
 				"SELECT layerClassName FROM DBLog_Matches WHERE endTime IS NULL ORDER BY startTime DESC LIMIT 1;",
 				"Not connected with DB", // default value when null, 0 or nothing
 				"layerClassName" // this is the name of the column
-			)
-			.then((res) => {
-				return callback(res);
-			});
-	}
-
-	async getLatestTPS(callback) {
-		const pool = this.pool;
-		const res = new MYSQLPromiseObjectBuilder(pool);
-		await res
-			.add(
-				"latestTPS", // object key
-				"SELECT tickRate AS latestTPS FROM DBLog_TickRates ORDER BY time DESC LIMIT 1;",
-				"0", // default value when null, 0 or nothing
-				"latestTPS" // this is the name of the column
 			)
 			.then((res) => {
 				return callback(res);
