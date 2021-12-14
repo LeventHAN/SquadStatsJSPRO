@@ -742,11 +742,11 @@ router.post("/ban", CheckAuth, async function (req, res) {
 	// debug
 	const activeBans = await req.client.moderation
 		.find({ 
-				steamID: moreDetails.player,
-			    typeModeration: "ban", 
-				active: true 
-			});
-	if (activeBans.length == 0 || moreDetails.isNew) {
+			SteamID: moreDetails.player,
+			typeModeration: "ban", 
+			active: true 
+		});
+	if (activeBans.length === 0 || moreDetails.isNew) {
 		socket.emit(
 			"rcon.execute",
 			`AdminBan ${moreDetails.player} ${moreDetails.duration} ${moreDetails.reason}`,
