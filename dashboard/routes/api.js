@@ -735,15 +735,18 @@ router.post("/ban", CheckAuth, async function (req, res) {
 		player: req.body.steamUID,
 		reason: req.body.reason,
 		duration: req.body.duration,
+		isNew: req?.body?.isNew || false
 	};
 	// { action: action, author: {discord: discordDetails, steam: steamDetails}, details: {details: moreDetails} }
 	const socket = req.client.socket;
 	// debug
-	const check = await req.client.moderation
-		.find({ steamID: moreDetails.player })
-		.where("endDate")
-		.gt(Date.now());
-	if (check.length == 0) {
+	const activeBans = await req.client.moderation
+		.find({ 
+				steamID: moreDetails.player,
+			    typeModeration: "ban", 
+				active: true 
+			});
+	if (activeBans.length == 0 || moreDetails.isNew) {
 		socket.emit(
 			"rcon.execute",
 			`AdminBan ${moreDetails.player} ${moreDetails.duration} ${moreDetails.reason}`,
@@ -792,9 +795,107 @@ router.post("/ban", CheckAuth, async function (req, res) {
 			}
 		);
 	} else {
-		return res.json({ status: "nok3", message: "Player already banned!" });
+		return res.json({ status: "nok3", bans: activeBans });
 	}
 });
+
+/**
+ * @api {post} /squad-api/editBan Ban players
+ * @apiName editBan
+ * @apiGroup Admin
+ *
+ * @apiParam (Login) {String} apiToken Your api token
+ * @apiParam {String} player The Steam64 of the player to be banned.
+ * @apiParam {String} reason The New Reason of the ban.
+ * @apiParam {String} oldDate The Currrent duration of the ban.
+ * @apiParam {String} newDate The New duration of the ban.
+ *
+ * @apiSuccess {Object} status The status of the request.
+ * @apiSuccessExample {json} Success-Response:
+ *    HTTP/1.1 200 OK
+	{
+		"status": "ok",
+		"message": "Player banned!"
+	}
+ * @apiErrorExample {json} Error-Response:
+ * {
+		"status": "nok",
+		"message": "You are doing something wrong."
+	}
+ */
+
+	router.post("/editBan", CheckAuth, async function (req, res) {
+		if (!req.body.steamUID || !req.body.reason || !req.body.newDate || !req.body.currentDate)
+			return res.json({
+				status: "nok",
+				message: "You are doing something wrong.",
+			});
+	
+		const userRole = await req.client.getRoles(req.session.user.id);
+	
+		const canUser = await req.client.whoCan("ban");
+	
+		if (!canUser.some((role) => userRole.includes(role)))
+			return res.json({
+				status: "nok2",
+				message: "You are not allowed to do this.",
+			});
+	
+		// TODO: check if the duration is valid
+		const steamAccount = {
+			steam64id:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			displayName:
+				req.session?.passport?.user?.displayName ||
+				req.session?.passport?.user?.personaname,
+			identifier:
+				req.session?.passport?.user?.identifier ||
+				req.session?.passport?.user?.profileurl,
+		};
+		const discordAccount = {
+			id: req.session.user.id,
+			username: req.session?.user?.username,
+			discriminator: req.session?.user?.discriminator,
+		};
+		const moreDetails = {
+			player: req.body.steamUID,
+			reason: req.body.reason,
+			currentDate: req.body.currentDate,
+			newDate: req.body.newDate
+		};
+			let banNumber = moreDetails.newDate.match(/\d+/g);
+			banNumber = parseInt(banNumber);
+			const banLetter = moreDetails.newDate.match(/[a-zA-Z]/g)[0];
+			let epochDuration;
+			switch (banLetter) {
+				case "m":
+					epochDuration = Date.now() + banNumber * 1000 * 60;
+					break;
+				case "d":
+					epochDuration = Date.now() + banNumber * 1000 * 60 * 60 * 24;
+					break;
+				case "M":
+					epochDuration = Date.now() + banNumber * 1000 * 60 * 60 * 24 * 30;
+					break;
+				case "P":
+					epochDuration = 0;
+					break;
+				default:
+					epochDuration = Date.now() + 1 * 1000 * 60; // 1 minute ban FAST BAN
+					break;
+			}
+			await req.client.editBan(moreDetails.player,moreDetails.currentDate, epochDuration, moreDetails.reason);
+			const log = await req.client.addLog({
+				action: "PLAYER_BANNED",
+				author: { discord: discordAccount, steam: steamAccount },
+				ip: req.session.user.lastIp,
+				details: { details: moreDetails },
+			});
+			await log.save();
+			return res.json({ status: "ok", message: "Ban edited!" });
+	});
+	
+
 
 /**
  * @api {post} /squad-api/disbandSquad Disband squads

@@ -47,7 +47,7 @@ router.get("/:serverID", CheckAuth, async (req, res) => {
 		allCanSee: allCanSeeRoles,
 		allActions: allActions,
 		role: await req.client.getRoles(req.session.user.id),
-		latestTPS: await utils.getTPS(req.client),
+		latestTPS: await req.client.getTPS(),
 		playerAmount: await req.client.getPlayersLength(),
 		ownerID: req.client.config.owner.id,
 		serverID: req.client.config.serverID,

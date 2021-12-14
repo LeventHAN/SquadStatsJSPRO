@@ -11,7 +11,7 @@ router.get("/", CheckAuth, async (req, res, next) => {
 
 	res.render("dashboard", {
 		userRoles: await req.client.getRoles(req.session.user.id),
-		latestTPS: await utils.getTPS(req.client),
+		latestTPS: await req.client.getTPS(),
 		previusMap: await utils.getPreviusMap(req.client),
 		playerAmount: await req.client.getPlayersLength(),
 		c: req.client,

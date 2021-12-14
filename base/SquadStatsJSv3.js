@@ -387,7 +387,16 @@ class SquadStatsJSv3 extends Client {
 
 	async getBanlist() {
 		const bans = await this.moderation.find({});
-		return bans.filter((ban) => ban.typeModeration === "ban");
+		return bans.filter(ban => ban.typeModeration === "ban");
+	}
+
+	async editBan(steamID, oldDate, newDate, reason)
+	{
+		await this.moderation.findOneAndUpdate(
+			{ steamID: steamID, endDate: oldDate },
+			{ $set: { endDate: newDate, reason: reason } }
+		);
+		return true;
 	}
 
 	// Returns the whitelist roles only (Groups)
@@ -569,6 +578,19 @@ class SquadStatsJSv3 extends Client {
 		});
 		this.players = response;
 		return await this.players.then((players) => players.length);
+	}
+
+	async getTPS()
+	{
+		if (!this.socket) return "0";
+		this.tps;
+		const response = new Promise((res) => {
+			this.socket.emit("TICK_RATE", async (data) => {
+				res(data);
+			});
+		});
+		this.tps = response;
+		return await this.tps;
 	}
 
 	// Will return the users dashboard roles ("owner", "admin", etc..)

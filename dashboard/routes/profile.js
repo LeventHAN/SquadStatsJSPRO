@@ -8,7 +8,7 @@ router.get("/", CheckAuth, async (req, res) => {
 
 	res.render("profile", {
 		c: req.client,
-		latestTPS: await utils.getTPS(req.client),
+		latestTPS: await req.client.getTPS(),
 		ownerID: req.client.config.owner.id,
 		userRoles: await req.client.getRoles(req.session.user.id),
 		allCanSee: canSeeArray,
