@@ -387,7 +387,7 @@ class SquadStatsJSv3 extends Client {
 
 	async getBanlist() {
 		const bans = await this.moderation.find({});
-		return bans.filter(ban => ban.typeModeration === "ban");
+		return bans.filter((ban) => ban.typeModeration === "ban");
 	}
 
 	async editBan(steamID, oldDate, newDate, reason)
