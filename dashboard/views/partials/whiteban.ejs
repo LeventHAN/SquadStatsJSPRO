@@ -297,9 +297,9 @@
         await axios.post(`${window.location.origin}/squad-api/ban`, {
             steamUID: bannedSteamID,
             reason: reason,
-            duration: type === "P" ? "0P" : banTime
+            duration: type === "P" ? "0P" : banTime,
         })
-        .then((response) => {
+        .then( async (response) => {
             if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
             if (response.data.status === "ok") {
                 location.reload();
@@ -314,15 +314,211 @@
             if (response.data.status === "nok2") {
                 Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
             }
-            if (response.data.status === "nok3") {
-                Swal.fire(`Already Banned`, `This player already banned.`, `warning`);
+                if (response.data.status === "nok3") {
+                    const bans = response.data.bans;
+                    await Swal.fire({
+                        icon: 'question',
+                        title: 'Current Bans:',
+                        showConfirmButton: true,
+                        confirmButtonText: "New Ban",
+                        showCancelButton: true,
+                        denyButtonText: `Cancel`,
+                        width: 900,
+                        html:
+                            `
+                        <div class='container mx-auto text-center'>
+                            <div id='current-bans' class='d-block mx-auto text-center'> </div>
+                            <div id='buttons'> </div>                            
+                        </div>`,
+                        didOpen: () => {
+                            const divBans = document.getElementById('current-bans');
+                            const table = document.createElement('div');
+                            const buttons = document.getElementById('buttons')
+                            const butDiv = document.createElement('div');
+                            table.innerHTML = `
+                                    <div class='mx-auto text-center'>
+                                        <table id="datatable" class="table datatable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>SteamID</th>
+                                                        <th>Reason</th>
+                                                        <th>Expire Date</th>
+                                                        <th>Moderator</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id='elements'></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                `;
+                            divBans.append(table);
+                            for (const user in bans) {
+                                const divBan = document.createElement('tr');
+                                const elements = document.getElementById('elements')
+                                divBan.innerHTML = `
+                                <td>
+                                    ${bans[user].steamID} 
+                                </td>               
+                                <td>
+                                    ${bans[user].reason} 
+                                </td>    
+                                <td>
+                                    ${bans[user].endDate == 0 ? "Permanent" : new Date( bans[user].endDate ).toLocaleString( { hour12:false } ) } 
+                                </td>    
+                                <td>
+                                    ${bans[user].moderator} 
+                                </td>                         
+                                <td>
+                                    <button onclick="removeBanlist('${bans[user].steamID}', '${bans[user].endDate}')" class="btn btn-outline-danger badge rounded-pill active">Remove</button>
+                                    <button onclick="editBanlist('${bans[user].steamID}', '${bans[user].endDate}', '${bans[user].reason}')" class="btn btn-outline-success badge rounded-pill active">Edit</button>
+                                </td>
+                                `;
+                                elements.append(divBan);
+                            }
+                        }
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                                Swal.fire({
+                                    title: 'Ban Details:',
+                                    html:
+                                        `<div class='d-flex mx-auto'>
+                <div class='length mx-auto d-inline-block'>
+                    <h4>Length</h4>
+                    <input type='number' min="1" id='add_banLength' class='swal2-input' style='position:relative; bottom: 20px; max-width: 100px; height: 47px;'></input>
+                </div>
+                <div class='type mx-auto d-inline-block'>
+                    <h5>Type</h5>
+                    <select id='add_selection' class="swal2-select" style='position:relative; border: 1px solid #d9d9d9; border-radius: 5px; bottom: 22px; min-width: 100px; min-height 50px;'>
+                        <option id="m">Minutes</option>
+                        <option id="d">Days</option>
+                        <option id="M">Months</option>
+                        <option id="P">Perma</option>
+                    </select>
+                </div>
+            </div>
+            <div class='reason mx-auto text-center d-block' style='width:400px'>
+                    <h2>Reason:</h2>
+                    <input id='add_reason' class='swal2-input mx-auto d-block' style='position:relative; bottom: 5px; width: 400px;'></input>
+            </div>
+            </div>`,
+                                    inputAttributes: {
+                                        autocapitalize: 'off'
+                                    },
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Ban',
+                                    allowOutsideClick: () => !Swal.isLoading()
+                                }).then(async (result) => {
+                                    if (result.isConfirmed) {
+                                        const selection = document.getElementById('add_selection');
+                                        const type = selection.options[selection.selectedIndex].id;
+                                        const reason = document.getElementById('add_reason').value;
+                                        const length = document.getElementById('add_banLength').value;
+                                        let banTime = `${length}${type}`;
+                                        if (!reason) return Swal.fire(`Error`, `Reason cannot be empty.`, `error`);
+                                        if (!length) return Swal.fire(`Error`, `Ban Length cannot be empty`, `error`);
+                                        await axios.post(`${window.location.origin}/squad-api/ban`, {
+                                            steamUID: bans[0].steamID,
+                                            reason: reason,
+                                            duration: banTime,
+                                            isNew: true
+                                        })
+                                            .then((response) => {
+                                                if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                                                if (response.data.status === "ok") {
+                                                    if (window.location.href === `${window.location.origin}/players`) {
+                                                        location.reload();
+                                                    }
+                                                    Toast.fire({
+                                                        icon: 'success',
+                                                        title: 'Player has been banned.'
+                                                    })
+                                                }
+                                                if (response.data.status === "nok") {
+                                                    Swal.fire(`There was an error`, `We couldn't ban the player. Please try again later.`, `error`);
+                                                }
+                                                if (response.data.status === "nok2") {
+                                                    Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
+                                                }
+                                            })
+                                            .catch((error) => {
+                                                return Swal.fire(`Error`, `Error: ${error}`, `error`);
+                                            });
+                                    }
+                                })
+                        }
+                    })
+                }
+            })
+            .catch((error) => {
+                return Swal.fire(`Error`, `Error: ${error}`, `error`);
+            });
+        }
+
+        async function editBanlist(steamID, endDate, reason) {
+        await Swal.fire({
+            icon: 'warning',
+            title: 'Editing Ban',
+            showConfirmButton: true,
+            confirmButtonText: "Edit Ban",
+            showCancelButton: true,
+            denyButtonText: `Cancel`,
+            html:
+                `
+            <div class='d-flex mx-auto'>
+                <div class='length mx-auto d-inline-block'>
+                    <h4>Length</h4>
+                    <input type='number' min="1" id='newBanLength' class='swal2-input' style='position:relative; bottom: 20px; max-width: 100px; height: 47px;'></input>
+                </div>
+                <div class='type mx-auto d-inline-block'>
+                    <h5>Type</h5>
+                    <select id='newSelection' class="swal2-select" style='position:relative; border: 1px solid #d9d9d9; border-radius: 5px; bottom: 22px; min-width: 100px; min-height 50px;'>
+                        <option id="m">Minutes</option>
+                        <option id="d">Days</option>
+                        <option id="M">Months</option>
+                        <option id="P">Perma</option>
+                    </select>
+                </div>
+            </div>
+            <div class='reason mx-auto text-center d-block' style='width:400px'>
+                <h2>Reason:</h2>
+                <input id='newReasons' class='swal2-input mx-auto d-block' style='position:relative; bottom: 5px; width: 400px;'></input>
+            </div>
+            `
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const selection = document.getElementById('newSelection');
+                const type = selection.options[selection.selectedIndex].id;
+                const reason = document.getElementById('newReasons').value;
+                const length = document.getElementById('newBanLength').value;
+                let banTime = `${length}${type}`;
+                if (!reason) return Swal.fire(`Error`, `Reason cannot be empty.`, `error`);
+                if (!length) return Swal.fire(`Error`, `Ban Length cannot be empty`, `error`);
+                await axios.post(`${window.location.origin}/squad-api/editBan`, {
+                    steamUID: steamID,
+                    reason: reason,
+                    currentDate: endDate,
+                    newDate: banTime
+                })
+                    .then(async (response) => {
+                        if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                        if (response.data.status === "ok") {
+                            location.reload();
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Player has been banned.'
+                            })
+                        }
+                        if (response.data.status === "nok") {
+                            Swal.fire(`There was an error`, `We couldn't ban the player. Please try again later.`, `error`);
+                        }
+                        if (response.data.status === "nok2") {
+                            Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
+                        }
+                    })
             }
         })
-        .catch((error) => {
-            return Swal.fire(`Error`, `Error: ${error}`, `error`);
-        });
     }
-
     $('input[type="checkbox"]').change(function () {
         $(`label[for="${this.id}"]`).toggleClass('active');
     });

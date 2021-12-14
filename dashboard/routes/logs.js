@@ -11,7 +11,6 @@ router.get("/", CheckAuth, async (req, res) => {
 	res.render("logs", {
 		c: req.client,
 		ownerID: req.client.config.owner.id,
-		latestTPS: await utils.getTPS(req.client),
 		playerAmount: await req.client.getPlayersLength(),
 		userRoles: await req.client.getRoles(req.session.user.id),
 		allCanSee: canSeeArray,

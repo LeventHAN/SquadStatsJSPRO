@@ -64,13 +64,6 @@ async function fetchUser(userData, client, query) {
 	return userInfos;
 }
 
-async function getTPS(client) {
-	let latestTPS = "";
-	await client.getLatestTPS((res) => {
-		latestTPS = res;
-	});
-	return latestTPS;
-}
 
 async function getPreviusMap(client) {
 	let previusMap = "";
@@ -81,4 +74,4 @@ async function getPreviusMap(client) {
 	return previusMap;
 }
 
-module.exports = { fetchUser, fetchGuild, getTPS, getPreviusMap };
+module.exports = { fetchUser, fetchGuild, getPreviusMap };

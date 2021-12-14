@@ -390,6 +390,15 @@ class SquadStatsJSv3 extends Client {
 		return bans.filter((ban) => ban.typeModeration === "ban");
 	}
 
+	async editBan(steamID, oldDate, newDate, reason)
+	{
+		await this.moderation.findOneAndUpdate(
+			{ steamID: steamID, endDate: oldDate },
+			{ $set: { endDate: newDate, reason: reason } }
+		);
+		return true;
+	}
+
 	// Returns the whitelist roles only (Groups)
 	async getWhitelistRoles() {
 		const whitelist = await this.whitelists.findOne({});
@@ -701,21 +710,6 @@ class SquadStatsJSv3 extends Client {
 				"SELECT layerClassName FROM DBLog_Matches WHERE endTime IS NULL ORDER BY startTime DESC LIMIT 1;",
 				"Not connected with DB", // default value when null, 0 or nothing
 				"layerClassName" // this is the name of the column
-			)
-			.then((res) => {
-				return callback(res);
-			});
-	}
-
-	async getLatestTPS(callback) {
-		const pool = this.pool;
-		const res = new MYSQLPromiseObjectBuilder(pool);
-		await res
-			.add(
-				"latestTPS", // object key
-				"SELECT tickRate AS latestTPS FROM DBLog_TickRates ORDER BY time DESC LIMIT 1;",
-				"0", // default value when null, 0 or nothing
-				"latestTPS" // this is the name of the column
 			)
 			.then((res) => {
 				return callback(res);
