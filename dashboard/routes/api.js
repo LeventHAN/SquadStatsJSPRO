@@ -742,7 +742,7 @@ router.post("/ban", CheckAuth, async function (req, res) {
 	// debug
 	const activeBans = await req.client.moderation
 		.find({ 
-			SteamID: moreDetails.player,
+			steamID: moreDetails.player,
 			typeModeration: "ban", 
 			active: true 
 		});
