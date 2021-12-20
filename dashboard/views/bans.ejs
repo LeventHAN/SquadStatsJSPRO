@@ -16,7 +16,6 @@
                 <%- include('./partials/navbar') %>
                     <!-- Header -->
                     <%- include('./partials/header') %>
-                    <%- include('./partials/scripts') %>
 
                         <div class="container-fluid mt--7">
                             <div class="card bg-gradient-neutral shadow p-5">
@@ -95,7 +94,7 @@
                                                                 <span id="tippy_<%- user %>"><%- (allBannedUsers[user].reason.length > 15) ? allBannedUsers[user].reason.substring(0, 15) + "..." : allBannedUsers[user].reason %></span>
                                                             </td>
                                                             <td>
-                                                                <%- (allBannedUsers[user].endDate == "0") ? "Permanant Ban" : new Date( allBannedUsers[user].endDate ).toLocaleString( { hour12:false } ) %>
+                                                                <%- (allBannedUsers[user].endDate == "0") ? "Permanent Ban" : new Date( allBannedUsers[user].endDate ).toLocaleString( { hour12:false } ) %>
                                                             </td>
                                                             <td>
                                                                 <%- allBannedUsers[user].moderatorName %>
@@ -103,6 +102,7 @@
                                                             <% if(allBannedUsers[user].active) {%>
                                                                 <td>
                                                                     <button onclick="removeBan('<%- allBannedUsers[user].steamID %>', '<%- allBannedUsers[user].endDate %>')" class="btn btn-outline-primary badge rounded-pill active">Expire</button>
+                                                                    <button onclick="editBanList('<%- allBannedUsers[user].steamID %>', '<%- allBannedUsers[user].endDate %>')" class="btn btn-outline-primary badge rounded-pill active">Edit</button>
                                                                 </td>
                                                             <% } else { %>
                                                                 <td>

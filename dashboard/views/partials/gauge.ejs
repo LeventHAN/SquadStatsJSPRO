@@ -81,7 +81,10 @@
         }
     }
     );
-    gaugeTPS.setValueAnimated(<%- latestTPS %>, 2);
+    
+    socket.on("TICK_RATE", async (data) => {
+        gaugeTPS.setValueAnimated(data.tickRate, 2);
+    });
 
     let unset;
     let usetTitle = document.getElementById("headerTitle4");
@@ -109,5 +112,6 @@
         }
     }
     );
-    unset.setValueAnimated(<%- latestTPS %>, 2);
+
+    unset.setValueAnimated(50, 2);
 </script>
