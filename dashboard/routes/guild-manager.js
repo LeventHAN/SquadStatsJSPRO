@@ -5,7 +5,23 @@ const express = require("express"),
 	version = require("../../package.json").version;
 
 router.get("/:serverID", CheckAuth, async (req, res) => {
+
 	const allCanSeeRoles = await req.client.getAllCanSee();
+	const canSee = await req.client.canAccess("manage", req.userInfos.id);
+	if (!canSee){
+		return res.render("404", {
+			userRoles: await req.client.getRoles(req.session.user.id),
+			ownerID: req.client.config.owner.id,
+			serverID: req.client.config.serverID,
+			userDiscord: req.userInfos,
+			translate: req.translate,
+			currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`,
+		});
+	}
+
+
+
+	
 	const guild = req.client.guilds.cache.get(req.params.serverID);
 
 	if (
