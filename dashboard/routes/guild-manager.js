@@ -18,10 +18,6 @@ router.get("/:serverID", CheckAuth, async (req, res) => {
 			currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`,
 		});
 	}
-
-
-
-	
 	const guild = req.client.guilds.cache.get(req.params.serverID);
 
 	if (
