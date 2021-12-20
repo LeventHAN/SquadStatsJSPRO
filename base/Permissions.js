@@ -11,6 +11,7 @@ const permissionsSchema = new mongoose.Schema({
 			bans: ["owner", "superadmin", "admin"],
 			logs: ["owner"],
 			profile: ["user"],
+			clans: ["user"],
 			mapRotation: ["owner", "superadmin", "admin", "moderator"],
 		},
 	},
@@ -28,11 +29,19 @@ const permissionsSchema = new mongoose.Schema({
 			setCurrentMap: ["owner", "superadmin", "admin", "moderator"],
 			mapRotation: ["owner", "superadmin", "admin", "moderator"],
 			teamForceChange: ["owner", "superadmin", "admin", "moderator"],
+			createClan: ["owner", "superadmin", "clan leader"],
+			setWhitelistLimit: ["owner", "superadmin", "clan leader", "clan manager"],
+			disbandClan: ["owner", "superadmin", "clan leader"],
+			kickFromClan: ["owner", "superadmin", "clan leader", "clan manager"],
+			CLgiveWhitelist: ["owner", "superadmin", "clan leader", "clan manager"],
+			CLremoveWhitelist: ["owner", "superadmin", "clan leader", "clan manager"],
+			manageClanReqruitement: ["owner", "superadmin", "clan leader", "clan manager"],
+			clanApplications: ["owner", "superadmin", "clan leader", "clan manager"],
 		},
 	},
 	allRoles: {
 		type: Array,
-		default: ["owner", "superadmin", "admin", "moderator", "user"],
+		default: ["owner", "superadmin", "admin", "moderator", "clan leader", "clan manager", "user"],
 	},
 });
 

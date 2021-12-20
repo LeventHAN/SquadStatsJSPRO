@@ -1,0 +1,134 @@
+<script>
+        async function addClan()
+        {
+            Swal.fire({
+                title: 'Clan Creation:',
+                html:
+                    `
+                    <div class='name mx-auto text-center'>
+                        <h2 class='text-center mx-auto'>Clan Name</h2>
+                        <input id='clanName' class='swal2-input mx-auto d-block' style='position:relative; bottom: 5px;'></input>
+                    </div>
+                    <div class='logo mx-auto text-center' >
+                        <h2>Logo Link</h2>
+                        <input id='clanLogo' class='swal2-input mx-auto d-block' style='position:relative; bottom: 5px;'></input>
+                    </div>
+                    <div class='banner mx-auto text-center'>
+                            <h2>Banner Link</h2>
+                            <input id='clanBanner' class='swal2-input mx-auto d-block' style='position:relative; bottom: 5px;'></input>
+                    </div>
+                    `,
+                inputAttributes: {
+                    autocapitalize: 'off'
+                },
+                width: 800,
+                showCancelButton: true,
+                confirmButtonText: 'Create',
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then(async (result) => {
+                if (result.isConfirmed) 
+                {
+                    const name = document.getElementById('clanName').value;
+                    const logo = document.getElementById('clanLogo').value;
+                    const banner = document.getElementById('clanBanner').value;
+                    if(!name) return Swal.fire(`Error`, `Inputs cannot be empty.`, `error`);
+                    await axios.post(`${window.location.origin}/squad-api/addClan`, {
+                        clanName: name,
+                        clanLogo: logo ? logo : "https://camo.githubusercontent.com/5e046e6dcd957a12d637faa3f51d9b0caaaba565f1b5464cdb426233a617f768/68747470733a2f2f692e696d6775722e636f6d2f5143784f534b352e706e67",
+                        clanBanner: banner ? banner : null
+                    })
+                    .then((response) => {
+                            if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                            if (response.data.status === "ok") {
+                                Toast.fire({
+                                    icon: 'success',
+                                    title: 'Clan created!.'
+                                })
+                                location.reload();
+                            }
+                            if (response.data.status === "nok") {
+                                Swal.fire(`There was an error`, `Couldn't create the clan. Please try another name or leave your current clan.`, `error`);
+                            }
+                            if (response.data.status === "nok2") {
+                                Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
+                            }
+                        })
+                        .catch((error) => {
+                            return Swal.fire(`Error`, `Error: ${error}`, `error`);
+                        });
+                    }		
+            })
+        }
+
+        async function applyApp(steamID, clanID)
+        {
+            if( !steamID || !clanID ) return console.log("no info");
+            Swal.fire({
+                title: 'Application Details:',
+                html:
+                    `
+                <div class='p-info d-flex flex-wrap'>
+                    <div class='reason mx-auto text-center'>
+                        <h2 class='text-center mx-auto'>Applicant Name</h2>
+                        <input id='reason' disabled class='swal2-input mx-auto d-block' name="<%- userSteam.personaname %>" placeholder="<%- userSteam.personaname %>" style='position:relative; bottom: 5px;'></input>
+                    </div>
+                    <div class='reason mx-auto text-center' >
+                        <h2>Steam64</h2>
+                        <input id='reason' disabled class='swal2-input mx-auto d-block' name="<%- userSteam.steamid %>" placeholder="<%- userSteam.steamid %>" style='position:relative; bottom: 5px;'></input>
+                    </div>
+                </div>
+                <div class='p-info d-flex flex-wrap'>
+                    <div class='playHour mx-auto text-center'>
+                            <h2>Play Hour</h2>
+                            <input id='playHour' class='swal2-input mx-auto d-block' style='position:relative; bottom: 5px;'></input>
+                    </div>
+                    <div class='previous mx-auto text-center'>
+                            <h2 class='d-block'>Previous Clan</h2>
+                            <input id='previous' class='swal2-input mx-auto d-block' style='position:relative; bottom: 5px;'></input>
+                    </div>
+                </div>
+                    <br>
+                    <h2>Additional Info</h2><textarea maxlength="250" aria-label="Type your message here" class="swal2-textarea" placeholder="Type your message here..." id="swal2-input" style="width: 500px;"></textarea>
+                    `,
+                inputAttributes: {
+                    autocapitalize: 'off'
+                },
+                width: 800,
+                showCancelButton: true,
+                confirmButtonText: 'Send',
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const additional = document.getElementById('swal2-input').value;
+                    const playHour = document.getElementById('playHour').value;
+                    const oldClan = document.getElementById('previous').value;
+                    if ( !playHour ) return Swal.fire(`Error`, `Inputs cannot be empty.`, `error`);
+                    await axios.post(`${window.location.origin}/squad-api/clanAddApplication`, {
+                        clan: clanID,
+                        oldClan: oldClan ? oldClan : "",
+                        playHour: playHour ? playHour : 0,
+                        additional: additional ? additional : ""
+                    })
+                        .then((response) => {
+                            if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                            if (response.data.status === "ok") {
+                                Toast.fire({
+                                    icon: 'success',
+                                    title: 'Application sent!.'
+                                })
+                                location.reload();
+                            }
+                            if (response.data.status === "nok") {
+                                Swal.fire(`There was an error`, `We couldn't send the app. Please try again later.`, `error`);
+                            }
+                            if (response.data.status === "nok2") {
+                                Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
+                            }
+                        })
+                        .catch((error) => {
+                            return Swal.fire(`Error`, `Error: ${error}`, `error`);
+                        });
+                }
+            })
+        }
+</script>

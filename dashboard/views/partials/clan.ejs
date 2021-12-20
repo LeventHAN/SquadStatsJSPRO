@@ -1,0 +1,246 @@
+<script>
+
+$(document).ready(function () {
+        $('.datatable').DataTable({
+            bAutoWidth: true,
+            aoColumns: [{ sWidth: "1%", }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }],
+            "scrollCollapse": true,
+            "info": true,
+            "paging": true
+        });
+    });
+
+    const clanLimit = "<%- clanWhiteLimit %>";
+    let amountWhite = "<%- clanWhitelisted %>";
+
+    async function leaveClan(steamID) {
+        await Swal.fire({
+            title: 'Leaving Clan',
+            input: 'checkbox',
+            inputValue: 0,
+            inputPlaceholder:
+                'I\'m sure',
+            confirmButtonText:
+                'Continue <i class="fa fa-arrow-right"></i>',
+            inputValidator: (result) => {
+                return !result && 'You need to check the box'
+            }
+        }).then(async (result) => {
+            if (result.isConfirmed) {   
+                await axios.post(`${window.location.origin}/squad-api/clan/leaveClan`, {
+                    steamID: steamID
+                }).then(function (response) {
+                    if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                    if (response.data.status === "ok") {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'You\'ve left your clan!'
+                        })
+                        window.location.href = `${window.location.origin}/clans`;
+                    }
+                }).catch(function (error) {
+                    Toast.fire({ icon: 'error', title: error });
+                });
+            }
+        });
+    }
+
+
+        async function AddWL(steamID) {
+            if (!steamID) return console.log("no SteamID");
+            if (clanLimit < (amountWhite + 1)) return console.log("Limit Reached");
+            await axios.post(`${window.location.origin}/squad-api/whitelist/clan/addUserWhitelist`, {
+                steamID: steamID
+            }).then((response) => {
+                if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                if (response.data.status === "ok") {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Whitelist added!'
+                    });
+                    location.reload();
+                    // remove the active class from the button inside the div role, and where permission matches exactly with the content of the button
+                }
+                if (response.data.status === "nok") {
+                    Swal.fire(`There was an error`, response.data.message, `error`);
+                }
+            })
+                .catch((error) => {
+                    return Swal.fire(`Error`, `${error}`, `error`);
+                });
+        }
+        async function RemoveWL(steamID) {
+            if (!steamID) return console.log("no SteamID");
+            if (clanLimit < (amountWhite - 1)) return console.log("Limit Reached");
+
+            await axios.post(`${window.location.origin}/squad-api/whitelist/clan/removeUserWhitelist`, {
+                steamID: steamID
+            }).then((response) => {
+                if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                if (response.data.status === "ok") {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Whitelist removed!'
+                    });
+                    location.reload();
+                    // remove the active class from the button inside the div role, and where permission matches exactly with the content of the button
+                }
+                if (response.data.status === "nok") {
+                    Swal.fire(`There was an error`, response.data.message, `error`);
+                }
+            })
+                .catch((error) => {
+                    return Swal.fire(`Error`, `${error}`, `error`);
+                });
+        }
+
+        async function showApps(clanID) {
+            await Swal.fire({
+                icon: 'question',
+                title: 'Current Applications:',
+                showConfirmButton: true,
+                confirmButtonText: "Close",
+                showCancelButton: true,
+                denyButtonText: `Cancel`,
+                width: 900,
+                html:
+                    `
+                        <div class='container mx-auto text-center'>
+                            <div id='current-apps' class='d-block mx-auto text-center'> </div>
+                            <div id='buttons'> </div>                            
+                        </div>`,
+                didOpen: async () => {
+                    const divBans = document.getElementById('current-bans');
+                    const table = document.createElement('div');
+                    const buttons = document.getElementById('buttons')
+                    const butDiv = document.createElement('div');
+                    table.innerHTML = `
+                                    <div class='mx-auto text-center'>
+                                        <table id="datatable" class="table datatable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>SteamID</th>
+                                                        <th>Play Hour</th>
+                                                        <th>Previous Clan</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id='elements'></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                `;
+                    divBans.append(table);
+                    await axios.post(`${window.location.origin}/squad-api/clan/getApplications`, {
+                        clanID: clanID,
+                    }).then((response) => {
+                        if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                        if (response.data.status === "ok") {
+                            const apps = response.data.content;
+                            for (const user in apps) {
+                                const divBan = document.createElement('tr');
+                                const elements = document.getElementById('elements')
+                                divBan.innerHTML = `
+                                            <td>
+                                                ${apps[user].steamID} 
+                                            </td>               
+                                            <td>
+                                                ${apps[user].playHour} 
+                                            </td>    
+                                            <td>
+                                                ${apps[user].oldClan ? apps[user].oldClan : "None"} 
+                                            </td>                      
+                                            <td>
+                                                <button onclick="showDetails('${apps[user].steamID}', '${clanID}')" class="btn btn-outline-primary badge rounded-pill active">Details</button>
+                                                <button onclick="acceptApp('${apps[user].steamID}', '${clanID}')" class="btn btn-outline-success badge rounded-pill active">Accept</button>
+                                                <button onclick="rejectApp('${apps[user].steamID}', '${clanID}')" class="btn btn-outline-danger badge rounded-pill active">Reject</button>
+                                            </td>
+                                            `;
+                                elements.append(divBan);
+                            }
+                        }
+                        if (response.data.status === "nok") {
+                            Swal.fire(`There was an error`, response.data.message, `error`);
+                        }
+                    })
+                }
+            })
+        }
+
+        async function giveManager(steamID) {
+            await axios.post(`${window.location.origin}/squad-api/roles/toggleRole`, {
+                userId: steamID,
+                role: "clan manager",
+            }).then(function (response) {
+                if (response.data.status != "ok") return Toast.fire({ icon: 'error', title: response.data.message });
+                switch (response.data.message) {
+                    case 'REMOVED':
+                        Toast.fire({ icon: 'info', title: `Clan Manager removed!` });
+                        break;
+                    case 'ADDED':
+                        Toast.fire({ icon: 'info', title: `Clan Manager added!` });
+                        break;
+                    default:
+                        Toast.fire({ icon: 'error', title: response.data.message });
+                        break;
+                }
+                location.reload();
+            }).catch(function (error) {
+                Toast.fire({ icon: 'error', title: error });
+            });
+        }
+        async function kickMember(steamID) {
+            await axios.post(`${window.location.origin}/squad-api/clan/kickFromClan`, {
+                steamID: steamID
+            }).then(function (response) {
+                if (response.data.status != "ok") return Toast.fire({ icon: 'error', title: response.data.message });
+                else {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Member Kicked!'
+                    });
+                    location.reload();
+                }
+            }).catch(function (error) {
+                Toast.fire({ icon: 'error', title: error });
+            });
+        }
+
+        async function acceptApp(steamID, clanID) {
+            await axios.post(`${window.location.origin}/squad-api/clan/acceptApplications`, {
+                clanID: clanID,
+                steamID: steamID
+            }).then((response) => {
+                if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                if (response.data.status === "ok") {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'App Accepted!'
+                    });
+                    location.reload();
+                }
+                if (response.data.status === "nok") {
+                    Swal.fire(`There was an error`, response.data.message, `error`);
+                }
+            })
+        }
+        async function rejectApp(steamID, clanID) {
+            await axios.post(`${window.location.origin}/squad-api/clan/rejectApplications`, {
+                clanID: clanID,
+                steamID: steamID
+            }).then((response) => {
+                if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                if (response.data.status === "ok") {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'App Rejected!'
+                    });
+                    location.reload();
+                }
+                if (response.data.status === "nok") {
+                    Swal.fire(`There was an error`, response.data.message, `error`);
+                }
+            })
+        }
+
+</script>

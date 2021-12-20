@@ -118,6 +118,11 @@
                 <i class="ni ni-single-02 text-yellow"></i> My Profile
               </a>
             <% } %>
+            <% if(hasCommonElements(userRoles, allCanSee.clans)){ %>
+              <a class="nav-link" href="/clans">
+                <i class="ni ni-archive-2 text-blue"></i> Clans
+              </a>
+            <% } %>
             
             
           </li>

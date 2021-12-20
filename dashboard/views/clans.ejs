@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<%- include('includes/head') %>
+	<body>
+		<!-- The sidebar includes the menu -->
+		<%- include('./partials/sidebar') %>
+		<div class="main-content">
+		<!-- Top navbar -->
+		<%- include('./partials/navbar') %>
+		<!-- Header -->
+		<%- include('./partials/header') %>
+
+			<!-- Content Wrapper. Contains page content -->
+			<div class="container-fluid mt--7">
+				<div class="card bg-gradient-neutral shadow p-5">
+
+					<div class="row">
+					<!-- Center a big :( Emoji and write below it cenetered "We will shortly fill this page with amazing content for you!"-->
+						<% for(clan in clans) { %>
+							<div class="col-sm-3 m-2 text-center">
+								<div class="card">
+									<div class="box box-solid m-2">
+										<div class="box-body m-2">
+											<div class="text-center">
+												<img src="<%= clans[clan].logo %>" style="border-radius:100%" width="100" height="100" class="img-fluid">
+											</div>
+										</div>
+										<div class="box-header text-center">
+											<h1 style="text-align: center !important;" class="box-title"><%= clans[clan].name %></h1>
+										</div>
+
+										<% if (clans[clan].id === userClan) { %> 
+											<button type="button" onclick="window.location.href='/clans/<%- clans[clan].name %>'" class="btn btn-outline-success">Go to Clan Page</button>
+										<% }%>
+										<button type="button" class="btn btn-outline-secondary">Locked</button>
+										<%if(!userClan){ %>
+											<button type="button" onclick="applyApp('<%- userSteam.steamid %>','<%- clans[clan].id %>')" class="btn btn-outline-warning">Apply</button>
+										<% } %> 
+									<!-- /.box-header -->
+									<!-- /.box-body -->
+									<!-- /.box-footer -->
+									</div>
+								</div>
+								<!-- /.box -->
+							</div>
+							<!-- /.col -->
+						<% } %>
+						<% if (!userDiscord.whitelist.clan) {%> 
+						<div onclick="addClan()" class="col-sm-3 m-2" style="cursor: pointer;">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="text-center"> 
+                                        <span style="font-size: 5rem;">+</span><br>
+                                        <span class="card-title badge badge-dark" style="font-size: 1.5em !important;">Add your Clan</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+						<% } %> 
+					</div>
+				</div>
+				<!-- Footer includes credits and version -->
+			<%- include('./partials/footer') %>
+			</div>
+			<%- include('./partials/clans') %>
+		</div>
+		<%- include('./partials/scripts') %>
+	</body>
+</html>
+
+<script>
+
+</script>

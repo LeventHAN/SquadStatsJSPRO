@@ -50,6 +50,7 @@ class SquadStatsJSv3 extends Client {
 		this.audit = require("./Audit"); // Audit mongoose model
 		this.permission = require("./Permissions"); // Audit mongoose model
 		this.whitelists = require("./Whitelist"); // Audit mongoose model
+		this.clansData = require("./Clan"); // User mongoose model
 		this.dashboard = require("../dashboard/app"); // Dashboard app
 		this.states = {}; // Used for the dashboard
 		this.knownGuilds = [];
@@ -57,6 +58,7 @@ class SquadStatsJSv3 extends Client {
 
 		this.databaseCache = {};
 		this.databaseCache.users = new Collection();
+		this.databaseCache.clans = new Collection();
 		this.databaseCache.guilds = new Collection();
 
 		// For the website
@@ -209,6 +211,27 @@ class SquadStatsJSv3 extends Client {
 			}
 		}
 	}
+
+	async findOrCreateClan({ id: clanID }, isLean = false) {
+        if (this.databaseCache.clans.get(clanID)) {
+            return isLean
+                ? this.databaseCache.clans.get(clanID).toJSON()
+                : this.databaseCache.clans.get(clanID);
+        } else {
+            let clanData = isLean
+                ? await this.clansData.findOne({ id: clanID }).lean()
+                : await this.clansData.findOne({ id: clanID });
+            if (clanData) {
+                if (!isLean) this.databaseCache.clans.set(clanID, clanData);
+                return clanData;
+            } else {
+                clanData = new this.clansData({ id: clanID });
+                await clanData.save();
+                this.databaseCache.clans.set(clanID, clanData);
+                return isLean ? clanData.toJSON() : clanData;
+            }
+        }
+    }
 
 	// Will get the user data via userID and will put the given steam object in it and save it.
 	async linkSteamAccount(userID, steamObj, attempt = 0) {
@@ -370,6 +393,15 @@ class SquadStatsJSv3 extends Client {
 			return console.log(err);
 		});
 		this.logger.log("Whitelists default schema is created 👌", "log");
+	}
+
+	async createClan() {
+		const doesExist = await this.clansData.find({}).lean();
+		if (doesExist.length !== 0) return;
+		this.clansData.create({}).catch((err) => {
+			return console.log(err);
+		});
+		this.logger.log("Clan default schema is created 👌", "log");
 	}
 
 	// Will replace the Whitelist by the new one given (file)
@@ -604,7 +636,144 @@ class SquadStatsJSv3 extends Client {
 		if (!perms) return;
 		return perms.canSee;
 	}
-
+	async getAllClans() {
+		const clans = await this.clansData.find({});
+		if (!clans) return;
+		return clans;
+	}
+	async getClansMember(clanID) {
+		const users = await this.usersData.find({ "whitelist.clan": clanID });
+		if (!users) return;
+		return users;
+	}
+	async getAllWhitelisted()
+	{
+		const whitelisteds = await this.usersData.find();
+		if (!whitelisteds) return;
+		return whitelisteds;
+	}
+	async getClan(clanID) {
+		const clans = await this.clansData.findOne({ id: clanID });
+		if (!clans) return;
+		return clans;
+	}
+	async getClanWhiteLimit(clanID) {
+		const clans = await this.clansData.findOne({ id: clanID });
+		if (!clans) return;
+		return clans.whitelistLimit;
+	}
+	async getClanWhitelisted(clanID) {
+		const whitelisted = await this.usersData.find({ "whitelist.clan": clanID, "whitelist.byClan": true })
+		if (!whitelisted) return;
+		return whitelisted.length;
+	}
+	async addClan(clanName, clanLogo, clanBanner, steamID)
+	{
+		const token = await this.generateToken();
+		const clan = await this.findOrCreateClan(token);
+		clan.createdBy = steamID; 
+		clan.name = clanName; 
+		clan.logo = clanLogo; 
+		clan.banner = clanBanner;
+		await clan.save();
+		await this.usersData.findOneAndUpdate({"steam.steamid": steamID}, { $set: { 'whitelist.clan': clan.id, 'whitelist.byClan': false } });
+		return true;
+	}
+	async getUsersClan(steamid)
+	{
+		const user = await this.usersData.findOne({ "steam.steamid": steamid });
+		if (!user) return;
+		return await user.whitelist.clan;		
+	}
+	async findClanbyName(clanName)
+	{
+		if(!clanName) return;
+		const clans = await this.clansData.findOne({name: clanName});
+		if(!clans) return;
+		return await clans.id;
+	}
+	async findClanbyID(clanID)
+	{
+		if(!clanID) return;
+		const clans = await this.clansData.findOne({id: clanID});
+		if(!clans) return;
+		return await clans;
+	}
+	async clanAddApplication(steamID,  playHour, oldClan, additional, clanID)
+	{
+		let application = {};
+		const clans = await this.clansData.findOne({ id: clanID });
+		if(!clans) return;
+		application.steamID = steamID; 
+		application.playHour = playHour;
+		application.oldClan = oldClan; 
+		application.additional = additional; 
+		application.status = true;
+		await this.clansData.findOneAndUpdate({id: clanID}, {"$push": { applications: application } } );
+		return;
+	}
+	async clanAddUserWL(steamID) {
+		await this.usersData.updateOne({"steam.steamid": steamID}, { $set: { 'whitelist.byClan': true } });
+		return true;
+	}
+	async clanRemoveUserWL(steamID) {
+		await this.usersData.updateOne({"steam.steamid": steamID}, { $set: { 'whitelist.byClan': false } });
+		return true;
+	}
+	async getClanApps(clanID)
+	{
+		const clan = await this.clansData.findOne({id: clanID});
+		for(const app in clan.applications)
+		{
+			if(clan.applications[app].status == true) return [clan.applications[app]];
+		}
+	}
+	async leaveClan(steamID) {
+		await this.usersData.updateOne({ "steam.steamid": steamID }, { $set: { 'whitelist.clan': null, 'whitelist.byClan': false } });
+		return true;
+	}
+	async clanKickUser(steamID) {
+		await this.usersData.updateOne({"steam.steamid": steamID}, { $set: { 'whitelist.clan': null, 'whitelist.byClan': false } });
+		return true;
+	}
+	async clanAddUser(steamID,clanID) {
+		await this.usersData.updateOne({"steam.steamid": steamID}, { $set: { 'whitelist.clan': clanID, 'whitelist.byClan': false } });
+		return true;
+	}
+	async clanAcceptApp(steamID,clanID) {
+		const apps = await this.clansData.findOne( { id: clanID });
+		for(const app in apps.applications)
+		{
+			if(apps.applications[app].steamID === steamID && apps.applications[app].status === true) 
+			{
+				apps.applications[app].status = false; 
+			}
+		}
+		apps.markModified('applications')
+		await apps.save();
+		await this.usersData.updateOne({"steam.steamid": steamID}, { $set: { 'whitelist.clan': clanID, 'whitelist.byClan': false } });
+		return true;
+	}
+	async clanRejectApp(steamID,clanID) {
+		const apps = await this.clansData.findOne( { id: clanID });
+		for(const app in apps.applications)
+		{
+			if(apps.applications[app].steamID === steamID && apps.applications[app].status === true) 
+			{
+				apps.applications[app].status = false; 
+			}
+		}
+		apps.markModified('applications')
+		await apps.save();
+		await this.usersData.updateOne({"steam.steamid": steamID}, { $set: { 'whitelist.clan': clanID, 'whitelist.byClan': false } });
+		return true;
+	}
+	async setClanWhiteLimit(clanID, limit) {
+		const clans = await this.clansData.find({id: clanID});
+		if (!clans) return;
+		await this.clansData.findOneAndUpdate({id: clanID}, { $set: { 'whitelistLimit': limit } });
+		return true;
+	}
 	async getAllDiffrentRoles() {
 		const perms = await this.permission.findOne({});
 		if (!perms) return;
@@ -734,6 +903,12 @@ class SquadStatsJSv3 extends Client {
 			`SELECT COUNT(*) AS Kills_ALL FROM DBLog_Deaths WHERE attacker = "${steamUID}"`,
 			"0",
 			"Kills_ALL"
+		);
+		await res.add(
+			"Matches",
+			`SELECT COUNT(DISTINCT(\`match\`)) FROM DBLog_Deaths WHERE attacker = "${steamUID}" AND \`match\` IS NOT NULL`,
+			"0",
+			"Maches_ALL"
 		);
 		await res.add(
 			"deaths",
