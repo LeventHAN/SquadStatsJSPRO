@@ -41,7 +41,6 @@ const express = require("express"),
         const clanID = await req.client.findClanbyName(clan);
         if (
             !clan ||
-            !canSee ||
             await req.client.getUsersClan(req.userInfos.steam.steamid) != clanID
         )
         {
