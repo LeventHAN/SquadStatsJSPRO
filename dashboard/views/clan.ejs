@@ -83,7 +83,7 @@
                                          <h5>Clan Size: <%- clan.size %> member </h5>    
                                          <h5>Whitelist Limit: <%- clanWhitelisted %>/<%- clanWhiteLimit %>  </h5>   
                                          <h5>Recruit Status: <%- clan.recruitStatus ? "On" : "Off" %></h5>   
-                                         <button type="button" onclick='leaveClan("<%- userDiscord.steam.steamid %>")' style="font-size: 12px !important;" class="badge btn btn-danger">Leave Clan</button>
+                                         <button type="button" onclick='leaveClan("<%- userDiscord.steam.steamid %>","<%- clan.id %>")' style="font-size: 12px !important;" class="badge btn btn-danger">Leave Clan</button>
                                     </div>
                                 <!-- /.box-header -->
                                 <!-- /.box-body -->

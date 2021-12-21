@@ -720,6 +720,11 @@ class SquadStatsJSv3 extends Client {
 		await this.usersData.updateOne({"steam.steamid": steamID}, { $set: { 'whitelist.byClan': false } });
 		return true;
 	}
+	async disbandClan(clanID)
+	{
+		await this.clansData.deleteOne({ id: clanID });
+		return true;
+	}
 	async getClanApps(clanID)
 	{
 		const clan = await this.clansData.findOne({id: clanID});

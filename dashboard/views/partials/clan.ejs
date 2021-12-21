@@ -13,7 +13,7 @@ $(document).ready(function () {
     const clanLimit = "<%- clanWhiteLimit %>";
     let amountWhite = "<%- clanWhitelisted %>";
 
-    async function leaveClan(steamID) {
+    async function leaveClan(steamID, clanID) {
         await Swal.fire({
             title: 'Leaving Clan',
             input: 'checkbox',
@@ -28,7 +28,8 @@ $(document).ready(function () {
         }).then(async (result) => {
             if (result.isConfirmed) {   
                 await axios.post(`${window.location.origin}/squad-api/clan/leaveClan`, {
-                    steamID: steamID
+                    steamID: steamID,
+                    clanID: clanID
                 }).then(function (response) {
                     if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
                     if (response.data.status === "ok") {

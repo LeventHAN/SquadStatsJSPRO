@@ -1677,7 +1677,7 @@ router.post(
 	"/clan/leaveClan",
 	CheckAuth,
 	async function (req, res) {
-		if (!req.body.steamID)
+		if (!req.body.steamID || !req.body.clanID)
 			return res.json({
 				status: "nok",
 				message: "You are doing something wrong.",
@@ -1700,10 +1700,19 @@ router.post(
 		};
 		const moreDetails = {
 			steamID: req.body.steamID,
+			clanID: req.body.clanID,
 		};
 		await req.client.leaveClan(
-			req.body.steamID
+			req.body.steamID,
+			req.body.clanID
 		);
+		const members = await req.client.getClansMember(req.body.clanID);
+		if (!(members.length))
+		{
+			req.client.disbandClan(req.body.clanID);
+			return res.json({ status: "ok", message: "Limit Set!" });
+
+		} 
 		const log = await req.client.addLog({
 			action: "USER_LEFT_CLAN",
 			author: { discord: discordAccount, steam: steamAccount },
