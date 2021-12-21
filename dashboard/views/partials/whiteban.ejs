@@ -289,7 +289,7 @@
         const reason = document.getElementById('reason').value;
         const length = document.getElementById('banLength').value;
         const bannedSteamID = document.getElementById('steamID').value;
-        
+
         let banTime = `${length}${type}`;
         if (!reason) return Swal.fire(`Error`, `Reason cannot be empty.`, `error`);
         if (!bannedSteamID) return Swal.fire(`Error`, `Fill in the Steam64ID, it cannot be empty.`, `error`);
@@ -299,21 +299,21 @@
             reason: reason,
             duration: type === "P" ? "0P" : banTime,
         })
-        .then( async (response) => {
-            if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
-            if (response.data.status === "ok") {
-                location.reload();
-                Toast.fire({
-                    icon: 'success',
-                    title: 'Player has been banned.'
-                })
-            }
-            if (response.data.status === "nok") {
-                Swal.fire(`There was an error`, `We couldn't ban the player. Please try again later.`, `error`);
-            }
-            if (response.data.status === "nok2") {
-                Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
-            }
+            .then(async (response) => {
+                if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                if (response.data.status === "ok") {
+                    location.reload();
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Player has been banned.'
+                    })
+                }
+                if (response.data.status === "nok") {
+                    Swal.fire(`There was an error`, `We couldn't ban the player. Please try again later.`, `error`);
+                }
+                if (response.data.status === "nok2") {
+                    Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
+                }
                 if (response.data.status === "nok3") {
                     const bans = response.data.bans;
                     await Swal.fire({
@@ -364,14 +364,14 @@
                                     ${bans[user].reason} 
                                 </td>    
                                 <td>
-                                    ${bans[user].endDate == 0 ? "Permanent" : new Date( bans[user].endDate ).toLocaleString( { hour12:false } ) } 
+                                    ${bans[user].endDate == 0 ? "Permanent" : new Date(bans[user].endDate).toLocaleString({ hour12: false })} 
                                 </td>    
                                 <td>
                                     ${bans[user].moderator} 
                                 </td>                         
                                 <td>
                                     <button onclick="removeBanlist('${bans[user].steamID}', '${bans[user].endDate}')" class="btn btn-outline-danger badge rounded-pill active">Remove</button>
-                                    <button onclick="editBanlist('${bans[user].steamID}', '${bans[user].endDate}', '${bans[user].reason}')" class="btn btn-outline-success badge rounded-pill active">Edit</button>
+                                    <button onclick="editBanList('${bans[user].steamID}', '${bans[user].endDate}', '${bans[user].reason}')" class="btn btn-outline-success badge rounded-pill active">Edit</button>
                                 </td>
                                 `;
                                 elements.append(divBan);
@@ -379,10 +379,10 @@
                         }
                     }).then(async (result) => {
                         if (result.isConfirmed) {
-                                Swal.fire({
-                                    title: 'Ban Details:',
-                                    html:
-                                        `<div class='d-flex mx-auto'>
+                            Swal.fire({
+                                title: 'Ban Details:',
+                                html:
+                                    `<div class='d-flex mx-auto'>
                 <div class='length mx-auto d-inline-block'>
                     <h4>Length</h4>
                     <input type='number' min="1" id='add_banLength' class='swal2-input' style='position:relative; bottom: 20px; max-width: 100px; height: 47px;'></input>
@@ -402,50 +402,50 @@
                     <input id='add_reason' class='swal2-input mx-auto d-block' style='position:relative; bottom: 5px; width: 400px;'></input>
             </div>
             </div>`,
-                                    inputAttributes: {
-                                        autocapitalize: 'off'
-                                    },
-                                    showCancelButton: true,
-                                    confirmButtonText: 'Ban',
-                                    allowOutsideClick: () => !Swal.isLoading()
-                                }).then(async (result) => {
-                                    if (result.isConfirmed) {
-                                        const selection = document.getElementById('add_selection');
-                                        const type = selection.options[selection.selectedIndex].id;
-                                        const reason = document.getElementById('add_reason').value;
-                                        const length = document.getElementById('add_banLength').value;
-                                        let banTime = `${length}${type}`;
-                                        if (!reason) return Swal.fire(`Error`, `Reason cannot be empty.`, `error`);
-                                        if (!length) return Swal.fire(`Error`, `Ban Length cannot be empty`, `error`);
-                                        await axios.post(`${window.location.origin}/squad-api/ban`, {
-                                            steamUID: bans[0].steamID,
-                                            reason: reason,
-                                            duration: banTime,
-                                            isNew: true
+                                inputAttributes: {
+                                    autocapitalize: 'off'
+                                },
+                                showCancelButton: true,
+                                confirmButtonText: 'Ban',
+                                allowOutsideClick: () => !Swal.isLoading()
+                            }).then(async (result) => {
+                                if (result.isConfirmed) {
+                                    const selection = document.getElementById('add_selection');
+                                    const type = selection.options[selection.selectedIndex].id;
+                                    const reason = document.getElementById('add_reason').value;
+                                    const length = document.getElementById('add_banLength').value;
+                                    let banTime = `${length}${type}`;
+                                    if (!reason) return Swal.fire(`Error`, `Reason cannot be empty.`, `error`);
+                                    if (!length) return Swal.fire(`Error`, `Ban Length cannot be empty`, `error`);
+                                    await axios.post(`${window.location.origin}/squad-api/ban`, {
+                                        steamUID: bans[0].steamID,
+                                        reason: reason,
+                                        duration: banTime,
+                                        isNew: true
+                                    })
+                                        .then((response) => {
+                                            if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                                            if (response.data.status === "ok") {
+                                                if (window.location.href === `${window.location.origin}/players`) {
+                                                    location.reload();
+                                                }
+                                                Toast.fire({
+                                                    icon: 'success',
+                                                    title: 'Player has been banned.'
+                                                })
+                                            }
+                                            if (response.data.status === "nok") {
+                                                Swal.fire(`There was an error`, `We couldn't ban the player. Please try again later.`, `error`);
+                                            }
+                                            if (response.data.status === "nok2") {
+                                                Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
+                                            }
                                         })
-                                            .then((response) => {
-                                                if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
-                                                if (response.data.status === "ok") {
-                                                    if (window.location.href === `${window.location.origin}/players`) {
-                                                        location.reload();
-                                                    }
-                                                    Toast.fire({
-                                                        icon: 'success',
-                                                        title: 'Player has been banned.'
-                                                    })
-                                                }
-                                                if (response.data.status === "nok") {
-                                                    Swal.fire(`There was an error`, `We couldn't ban the player. Please try again later.`, `error`);
-                                                }
-                                                if (response.data.status === "nok2") {
-                                                    Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
-                                                }
-                                            })
-                                            .catch((error) => {
-                                                return Swal.fire(`Error`, `Error: ${error}`, `error`);
-                                            });
-                                    }
-                                })
+                                        .catch((error) => {
+                                            return Swal.fire(`Error`, `Error: ${error}`, `error`);
+                                        });
+                                }
+                            })
                         }
                     })
                 }
@@ -453,9 +453,9 @@
             .catch((error) => {
                 return Swal.fire(`Error`, `Error: ${error}`, `error`);
             });
-        }
+    }
 
-        async function editBanlist(steamID, endDate, reason) {
+    async function editBanList(steamID, endDate, reason) {
         await Swal.fire({
             icon: 'warning',
             title: 'Editing Ban',
@@ -490,7 +490,7 @@
                 const selection = document.getElementById('newSelection');
                 const type = selection.options[selection.selectedIndex].id;
                 const reason = document.getElementById('newReasons').value;
-                const length = document.getElementById('newBanLength').value;
+                const length = type == "P" ? "0" : document.getElementById('newBanLength').value;
                 let banTime = `${length}${type}`;
                 if (!reason) return Swal.fire(`Error`, `Reason cannot be empty.`, `error`);
                 if (!length) return Swal.fire(`Error`, `Ban Length cannot be empty`, `error`);
@@ -522,4 +522,5 @@
     $('input[type="checkbox"]').change(function () {
         $(`label[for="${this.id}"]`).toggleClass('active');
     });
+
 </script>

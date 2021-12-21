@@ -1,16 +1,28 @@
 //<pre>
-/////////////////////////////////////////////////////////////////////////////////////////////
-// Made by LeventHAN
-/////////////////////////////////////////////////////////////////////////////////////////////
-//// https://github.com/11TStudio                                                  
-/////////////////////////////////////////////////////////////////////////////////////////////
-// ----- Groups ----- //
-<% for(role in roles) { %>
-Group=<%= role %>:<%= roles[role].permissions %>
-<% }; %>
-
-// ----- Users ----- // 
-<% for(member in memberData) { %>
-Admin=<%= member %>:<%= memberData[member].role %> // <%= memberData[member].description %>
-<% }; %>
-//</pre>
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    // Made by LeventHAN
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    //// https://github.com/11TStudio                                                  
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    // ----- Groups ----- //
+    <% if(clan) {%> 
+    
+        Group=Whitelist:reserve
+    
+        <% for(member in members){%> 
+            <% if(members[member].whitelist.byClan === true) {%> 
+                Admin=<%- members[member].steam.steamid %>:Whitelist // <%- members[member].name %>  
+            <% } %> 
+        <% } %> 
+    
+    <% }else{%>
+    <% for(role in roles) { %>
+    Group=<%= role %>:<%= roles[role].permissions %>
+    <% }; %>
+    
+    // ----- Users ----- // 
+    <% for(member in memberData) { %>
+    Admin=<%= member %>:<%= memberData[member].role %> // <%= memberData[member].description %>
+    <% }; %>
+    //</pre>
+    <% } %> 

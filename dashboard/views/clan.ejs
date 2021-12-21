@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+	<%- include('includes/head') %>
+	<body>
+		<!-- The sidebar includes the menu -->
+		<%- include('./partials/sidebar') %>
+		<div class="main-content">
+		<!-- Top navbar -->
+		<%- include('./partials/navbar') %>
+		<!-- Header -->
+		<%- include('./partials/header') %>
+
+			<!-- Content Wrapper. Contains page content -->
+			<div class="container-fluid mt--7">
+				<div class="card bg-gradient-neutral shadow p-5">
+
+					<div class="row">
+                        <div class='mx-auto card p-4'>
+                            <div class="widget-member-header bg-aqua-active">
+                                <h3 class="widget-member-membername text-center"> <%- userClan.name %> Clan Members</h3>
+                            </div>
+                            <table id="datatable" class="table datatable text-center">
+                                <thead>
+                                    <tr>
+                                        <th>Player Name</th>
+                                        <th>SteamID</th>
+                                        <th>Whitelist</th>
+                                        <% for(role in userRoles ) { %>
+                                            <% if( userRoles[role] === "clan leader" || userRoles[role] === "clan manager" || userRoles[role] === "owner" ) { %>  
+                                        <th>Actions</th>
+                                            <% } %> 
+                                        <% } %> 
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for(member in clanMembers) {%>
+                                        <tr id="<%- clanMembers[member].steam.steamid %>">
+                                            <td>
+                                                <%- clanMembers[member].steam.steamid %>
+                                            </td>
+                                            <td>
+                                                <%- clanMembers[member].steam.personaname %>
+                                            </td>
+                                            <td>
+                                                <%= clanMembers[member].whitelist.byClan ? "🟢 Active" : "🔴 Disabled" %>
+                                            </td>
+                                        <% for(role in userRoles ) { %>
+                                            <% if( userRoles[role] === "clan leader" || userRoles[role] === "clan manager" || userRoles[role] === "owner" ) { %>  
+                                            <td>
+                                                <% if (clanMembers[member].whitelist.byClan )  { %>
+                                                <button type="button" onclick="RemoveWL('<%- clanMembers[member].steam.steamid %>')" style="font-size: 10px !important;" class="badge btn btn-danger">Remove WL</button>
+                                                <% }else {%>
+                                                <button type="button" onclick="AddWL('<%- clanMembers[member].steam.steamid %>')" style="font-size: 10px !important;" class="badge btn btn-success">Add WL</button>
+                                                <%}%>
+                                                <% if (userRoles[role] != "clan manager" && userRoles[role] != "clan leader")  { %>
+                                                <button type="button" onclick='giveManager("<%- clanMembers[member].id %>")' style="font-size: 10px !important;" class="badge btn btn-warning">Give Manager</button>
+                                                <% } if(clanMembers[member].id != userDiscord.id) { %> 
+                                                <button type="button" style="font-size: 10px !important;" class="badge btn btn-dark">Kick</button>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                            <% } %> 
+                                        <% } %> 
+                                    <% }; %>
+                                </tbody>
+                            </table>
+                            <% for(role in userRoles) { %>
+                                <% if( userRoles[role] === "clan leader" || userRoles[role] === "clan manager" || userRoles[role] === "owner" ) { %> 
+                            <button type="button" onclick="showApps('<%-clan.id%>')" style="top: 10px; font-size: 10px !important; width: 100%;" class="btn btn-dark">Applications</button>
+                                <% } %> 
+                            <% } %> 
+                        </div>
+                        <div class="col-sm-3 m-2 text-center mx-auto">
+                            <div class="card">
+                                <div class="box box-solid m-2">
+                                    <div class="box-body m-2">
+                                        <div class="text-center">
+                                            <img src="<%= clan.logo %>" style="border-radius:100%" width="150" height="150" class="img-fluid">
+                                        </div>
+                                    </div>
+                                    <div class="box-header text-center">
+                                        <h1 style="text-align: center !important; border-bottom: .5px solid gray;" class="box-title"><%= clan.name %></h1>
+                                         <h5>Clan Size: <%- clan.size %> member </h5>    
+                                         <h5>Whitelist Limit: <%- clanWhitelisted %>/<%- clanWhiteLimit %>  </h5>   
+                                         <h5>Recruit Status: <%- clan.recruitStatus ? "On" : "Off" %></h5>   
+                                         <button type="button" onclick='leaveClan("<%- userDiscord.steam.steamid %>","<%- clan.id %>")' style="font-size: 12px !important;" class="badge btn btn-danger">Leave Clan</button>
+                                    </div>
+                                <!-- /.box-header -->
+                                <!-- /.box-body -->
+                                <!-- /.box-footer -->
+                                </div>
+                            </div>
+                            <!-- /.box -->
+                        </div>
+                        <!-- /.col -->
+				    </div>
+                </div>
+                <%- include('./partials/clan') %>
+			<%- include('./partials/footer') %>
+			</div>
+		</div>
+	</body>
+</html>

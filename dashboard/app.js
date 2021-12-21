@@ -36,6 +36,7 @@ module.exports.load = async (client) => {
 		banlistRouter = require("./routes/banlist"),
 		settingsRouter = require("./routes/settings"),
 		rolesRouter = require("./routes/roles"),
+		clansRouter = require("./routes/clans"),
 		steamRouter = require("./routes/steam"),
 		guildManagerRouter = require("./routes/guild-manager"),
 		logsRouter = require("./routes/logs"),
@@ -182,6 +183,7 @@ module.exports.load = async (client) => {
 		.use("/bans", banlistRouter)
 		.use("/", mainRouter)
 		.use("/players", playersRouter)
+		.use("/clans", clansRouter)
 		.use("/profile", profileRouter)
 		.use("/dashboard", dashboardRouter)
 		.use("/auth", authRoutes)
