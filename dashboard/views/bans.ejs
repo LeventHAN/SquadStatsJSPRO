@@ -102,7 +102,7 @@
                                                             <% if(allBannedUsers[user].active) {%>
                                                                 <td>
                                                                     <button onclick="removeBan('<%- allBannedUsers[user].steamID %>', '<%- allBannedUsers[user].endDate %>')" class="btn btn-outline-primary badge rounded-pill active">Expire</button>
-                                                                    <button onclick="editBanList('<%- allBannedUsers[user].steamID %>', '<%- allBannedUsers[user].endDate %>')" class="btn btn-outline-primary badge rounded-pill active">Edit</button>
+                                                                    <button onclick="editBanList('<%- allBannedUsers[user].steamID %>', '<%- allBannedUsers[user].endDate %>', '<%- allBannedUsers[user].reason %>')" class="btn btn-outline-primary badge rounded-pill active">Edit</button>
                                                                 </td>
                                                             <% } else { %>
                                                                 <td>

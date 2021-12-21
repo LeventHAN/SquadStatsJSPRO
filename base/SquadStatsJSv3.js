@@ -448,6 +448,7 @@ class SquadStatsJSv3 extends Client {
 		const ban = await this.moderation.findOne({
 			steamID: steamID,
 			endDate: endDate,
+			active: true,
 		});
 		ban.active = false;
 		await ban.save();

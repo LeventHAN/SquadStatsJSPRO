@@ -1710,7 +1710,7 @@ router.post(
 		if (!(members.length))
 		{
 			req.client.disbandClan(req.body.clanID);
-			return res.json({ status: "ok", message: "Limit Set!" });
+			return res.json({ status: "ok", message: "Clan Disbanded!" });
 
 		} 
 		const log = await req.client.addLog({
@@ -1720,7 +1720,7 @@ router.post(
 			details: { details: moreDetails },
 		});
 		await log.save();
-		return res.json({ status: "ok", message: "Limit Set!" });
+		return res.json({ status: "ok", message: "Left Clan!" });
 	}
 );
 
@@ -1772,7 +1772,7 @@ router.post(
 			details: { details: moreDetails },
 		});
 		await log.save();
-		return res.json({ status: "ok", content: await apps });
+		return res.json({ status: "ok", content: apps });
 	}
 );
 

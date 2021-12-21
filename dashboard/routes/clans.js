@@ -6,6 +6,17 @@ const express = require("express"),
 
     router.get("/", CheckAuth, async (req, res) => {
         const allCanSeeRoles = await req.client.getAllCanSee();
+        const canSee = await req.client.canAccess("clans", req.userInfos.id);
+        if (!canSee){
+            return res.render("404", {
+                userRoles: await req.client.getRoles(req.session.user.id),
+                ownerID: req.client.config.owner.id,
+                serverID: req.client.config.serverID,
+                userDiscord: req.userInfos,
+                translate: req.translate,
+                currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`,
+            });
+        }
         return res.render("clans", {
             userRoles: await req.client.getRoles(req.session.user.id),
             playerAmount: await req.client.getPlayersLength(),
@@ -30,6 +41,7 @@ const express = require("express"),
         const clanID = await req.client.findClanbyName(clan);
         if (
             !clan ||
+            !canSee ||
             await req.client.getUsersClan(req.userInfos.steam.steamid) != clanID
         )
         {
