@@ -47,9 +47,9 @@ $(document).ready(function () {
     }
 
 
-        async function AddWL(steamID) {
+        async function giveWhitelistToUser(steamID) {
             if (!steamID) return console.log("no SteamID");
-            if (clanLimit < (amountWhite + 1)) return console.log("Limit Reached");
+            if (clanLimit < (amountWhite + 1)) return Toast.fire({ icon: 'error', title: 'You can\'t whitelist more players, limit reached!' });
             await axios.post(`${window.location.origin}/squad-api/whitelist/clan/addUserWhitelist`, {
                 steamID: steamID
             }).then((response) => {
@@ -70,7 +70,7 @@ $(document).ready(function () {
                     return Swal.fire(`Error`, `${error}`, `error`);
                 });
         }
-        async function RemoveWL(steamID) {
+        async function removeWhitelistFromUser(steamID) {
             if (!steamID) return console.log("no SteamID");
             if (clanLimit < (amountWhite - 1)) return console.log("Limit Reached");
 
@@ -95,7 +95,7 @@ $(document).ready(function () {
                 });
         }
 
-        async function showApps(clanID) {
+        async function showAllOpenApplications(clanID) {
             await Swal.fire({
                 icon: 'question',
                 title: 'Current Applications:',
@@ -141,7 +141,7 @@ $(document).ready(function () {
                             for (const user in apps) {
                                 const divApp = document.createElement('tr');
                                 const elements = document.getElementById('elements')
-                                divBan.innerHTML = `
+                                divApp.innerHTML = `
                                             <td>
                                                 ${apps[user].steamID} 
                                             </td>               
@@ -153,8 +153,8 @@ $(document).ready(function () {
                                             </td>                      
                                             <td>
                                                 <button onclick="showDetails('${apps[user].steamID}', '${clanID}')" class="btn btn-outline-primary badge rounded-pill active">Details</button>
-                                                <button onclick="acceptApp('${apps[user].steamID}', '${clanID}')" class="btn btn-outline-success badge rounded-pill active">Accept</button>
-                                                <button onclick="rejectApp('${apps[user].steamID}', '${clanID}')" class="btn btn-outline-danger badge rounded-pill active">Reject</button>
+                                                <button onclick="acceptClanApplication('${apps[user].steamID}', '${clanID}')" class="btn btn-outline-success badge rounded-pill active">Accept</button>
+                                                <button onclick="rejectClanApplication('${apps[user].steamID}', '${clanID}')" class="btn btn-outline-danger badge rounded-pill active">Reject</button>
                                             </td>
                                             `;
                                 elements.append(divApp);
@@ -207,7 +207,7 @@ $(document).ready(function () {
             });
         }
 
-        async function acceptApp(steamID, clanID) {
+        async function acceptClanApplication(steamID, clanID) {
             await axios.post(`${window.location.origin}/squad-api/clan/acceptApplications`, {
                 clanID: clanID,
                 steamID: steamID
@@ -225,7 +225,7 @@ $(document).ready(function () {
                 }
             })
         }
-        async function rejectApp(steamID, clanID) {
+        async function rejectClanApplication(steamID, clanID) {
             await axios.post(`${window.location.origin}/squad-api/clan/rejectApplications`, {
                 clanID: clanID,
                 steamID: steamID
@@ -242,6 +242,86 @@ $(document).ready(function () {
                     Swal.fire(`There was an error`, response.data.message, `error`);
                 }
             })
+        }
+
+        async function showDetails(steamID, clanID) {
+            await axios.post(`${window.location.origin}/squad-api/clan/getApplications`, {
+                clanID: clanID,
+                steamID: steamID
+            }).then( async (response) => {
+                if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                if (response.data.status === "ok") {
+                    await Swal.fire({
+                        title: 'Details',
+                        html: `
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>SteamID</label>
+                                                        <input type="text" class="form-control" value="${response.data.content[0].steamID}" disabled>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>Play Hour</label>
+                                                        <input type="text" class="form-control" value="${response.data.content[0].playHour}" disabled>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>Previous Clan</label>
+                                                        <input type="text" class="form-control" value="${response.data.content[0].oldClan}" disabled>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `,
+                        showCloseButton: true,
+                        showCancelButton: true,
+                        cancelButtonText: 'Close',
+                        confirmButtonText: 'Accept',
+                        confirmButtonColor: '#00a8ff',
+                        cancelButtonColor: '#00a8ff',
+                        showLoaderOnConfirm: true,
+                        preConfirm: async () => {
+                            await acceptClanApplication(steamID, clanID);
+                        }
+                    })
+                }}).catch(function (error) {
+                    Toast.fire({ icon: 'error', title: error });
+                });
+        }
+
+        async function toggleRecruitStatus(clanID){
+            await axios.post(`${window.location.origin}/squad-api/clan/toggleRecruitStatus`, {
+                clanID: clanID
+            }).then( async (response) => {
+                if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                if (response.data.status === "ok") {
+                    await Toast.fire({
+                        icon: 'info',
+                        title: response.data.message,
+                    })
+                } else {
+                    await Toast.fire({
+                        icon: 'error',
+                        title: response.data.message,
+                    })
+                }
+            }).catch(function (error) {
+                    Toast.fire({ icon: 'error', title: error });
+                });
         }
 
 </script>

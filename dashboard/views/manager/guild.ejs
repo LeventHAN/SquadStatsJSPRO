@@ -248,7 +248,7 @@
                                                     </td>
                                                     <td>
                                                         <button type="button" onclick="changeLimit('<%- clans[clan].id %>', '<%- clans[clan].name %>')" style="font-size: 10px !important;" class="badge btn btn-danger">Change Limit</button>
-                                                        <button type="button" disabled style="font-size: 10px !important;" class="badge btn btn-dark">Disband</button>
+                                                        <button type="button" onclick="disbandSquad('<%- clans[clan].id %>')" style="font-size: 10px !important;" class="badge btn btn-dark">Disband</button>
                                                     </td>
                                                 </tr>
                                             <% }; %>
@@ -687,25 +687,26 @@
             input: 'range',
             inputLabel: 'Limit',
             inputAttributes: {
-                min: 8,
-                max: 60,
+                min: 1,
+                max: 200,
                 step: 1
             },
-            inputValue: 0
+            inputValue: 1,
             }).then(async (result) => {
             if (result.isConfirmed) {
                 const newLimit = document.getElementById('swal2-input').value;
                 await axios.post(`${window.location.origin}/squad-api/clan/setWhitelistLimit`, {
                     clanID: clanID,
                     limit: newLimit
-                })
-                    .then((response) => {
+                }).then((response) => {
                         if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
                         if (response.data.status === "ok") {
                             Toast.fire({
                                 icon: 'success',
                                 title: 'Limit Set!'
                             })
+                            const tr = document.getElementById(clanID);
+                            tr.cells[2].innerHTML = newLimit;
                         }
                         if (response.data.status === "nok") {
                             Swal.fire(`There was an error`, `We couldn't set the limit. Please try again later.`, `error`);
@@ -717,8 +718,43 @@
                     .catch((error) => {
                         return Swal.fire(`Error`, `Error: ${error}`, `error`);
                     });
+                }
+            })
+        }
+
+        async function disbandSquad(clanID){
+            Swal.fire({
+            title: `Are you sure you want to disband this squad?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, disband it!',
+            allowOutsideClick: () => !Swal.isLoading(),
+            }).then(async (result) => {
+            if (result.isConfirmed) {
+                await axios.post(`${window.location.origin}/squad-api/clan/disabandClan`, {
+                    clanID: clanID
+                }).then((response) => {
+                        if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                        if (response.data.status === "ok") {
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Squad has been disband'
+                            })
+                            const tr = document.getElementById(clanID);
+                            tr.parentNode.removeChild(tr);
+
+                        }
+                        if (response.data.status === "nok2") {
+                            Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
+                        }
+                    })
+                    .catch((error) => {
+                        return Swal.fire(`Error`, `Error: ${error}`, `error`);
+                    });
             }
-        })
-    }
+            })
+        }
     </script>
 </html>

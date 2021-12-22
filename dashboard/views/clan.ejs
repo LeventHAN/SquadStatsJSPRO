@@ -48,9 +48,9 @@
                                             <% if( userRoles[role] === "clan leader" || userRoles[role] === "clan manager" || userRoles[role] === "owner" ) { %>  
                                             <td>
                                                 <% if (clanMembers[member].whitelist.byClan )  { %>
-                                                <button type="button" onclick="RemoveWL('<%- clanMembers[member].steam.steamid %>')" style="font-size: 10px !important;" class="badge btn btn-danger">Remove WL</button>
+                                                <button type="button" onclick="removeWhitelistFromUser('<%- clanMembers[member].steam.steamid %>')" style="font-size: 10px !important;" class="badge btn btn-danger">Remove WL</button>
                                                 <% }else {%>
-                                                <button type="button" onclick="AddWL('<%- clanMembers[member].steam.steamid %>')" style="font-size: 10px !important;" class="badge btn btn-success">Add WL</button>
+                                                <button type="button" onclick="giveWhitelistToUser('<%- clanMembers[member].steam.steamid %>')" style="font-size: 10px !important;" class="badge btn btn-success">Add WL</button>
                                                 <%}%>
                                                 <% if (userRoles[role] != "clan manager" && userRoles[role] != "clan leader")  { %>
                                                 <button type="button" onclick='giveManager("<%- clanMembers[member].id %>")' style="font-size: 10px !important;" class="badge btn btn-warning">Give Manager</button>
@@ -66,7 +66,7 @@
                             </table>
                             <% for(role in userRoles) { %>
                                 <% if( userRoles[role] === "clan leader" || userRoles[role] === "clan manager" || userRoles[role] === "owner" ) { %> 
-                            <button type="button" onclick="showApps('<%-clan.id%>')" style="top: 10px; font-size: 10px !important; width: 100%;" class="btn btn-dark">Applications</button>
+                            <button type="button" onclick="showAllOpenApplications('<%-clan.id%>')" style="top: 10px; font-size: 10px !important; width: 100%;" class="btn btn-dark">Applications</button>
                                 <% } %> 
                             <% } %> 
                         </div>
@@ -75,14 +75,16 @@
                                 <div class="box box-solid m-2">
                                     <div class="box-body m-2">
                                         <div class="text-center">
-                                            <img src="<%= clan.logo %>" style="border-radius:100%" width="150" height="150" class="img-fluid">
+                                            <img src="<%= clan.logo %>" width="150" height="150" class="rounded-circle">
                                         </div>
                                     </div>
                                     <div class="box-header text-center">
                                         <h1 style="text-align: center !important; border-bottom: .5px solid gray;" class="box-title"><%= clan.name %></h1>
-                                         <h5>Clan Size: <%- clan.size %> member </h5>    
-                                         <h5>Whitelist Limit: <%- clanWhitelisted %>/<%- clanWhiteLimit %>  </h5>   
-                                         <h5>Recruit Status: <%- clan.recruitStatus ? "On" : "Off" %></h5>   
+                                         <h5>Clan Size: <span class="badge badge-dark"><%- clan.size %></span> </h5>    
+                                         <h5>Whitelist Limit: <span class="badge badge-dark"><%- clanWhitelisted %>/<%- clanWhiteLimit %></span>  </h5>   
+                                         <h5>Recruit Status:
+                                            <input id="<%= clan.id %>" onchange="toggleRecruitStatus('<%= clan.id %>')" name="toggle-test" type="checkbox" data-style="ios" data-toggle="toggle" data-size="xs" data-on="OPEN" data-off="CLOSE" <%= clan.recruitStatus ? "checked" : "" %> >  </h5> 
+                                         
                                          <button type="button" onclick='leaveClan("<%- userDiscord.steam.steamid %>","<%- clan.id %>")' style="font-size: 12px !important;" class="badge btn btn-danger">Leave Clan</button>
                                     </div>
                                 <!-- /.box-header -->

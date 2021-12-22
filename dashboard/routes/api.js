@@ -1610,13 +1610,55 @@ router.post(
 			req.body.clan
 		);
 		const log = await req.client.addLog({
-			action: "CLAN_WHITELIST_ADD",
+			action: "CLAN_WHITELIST_AclanDD",
 			author: { discord: discordAccount, steam: steamAccount },
 			ip: req.session.user.lastIp,
 			details: { details: moreDetails },
 		});
 		await log.save();
 		return res.json({ status: "ok", message: "Group removed!" });
+	}
+);
+
+router.post(
+	"/clan/toggleRecruitStatus",
+	CheckAuth,
+	async function (req, res) {
+		if (!req.body.clanID)
+			return res.json({
+				status: "nok",
+				message: "You are doing something wrong.",
+			});
+		const steamAccount = {
+			steam64id:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			displayName:
+				req.session?.passport?.user?.displayName ||
+				req.session?.passport?.user?.personaname,
+			identifier:
+				req.session?.passport?.user?.identifier ||
+				req.session?.passport?.user?.profileurl,
+		};
+		const discordAccount = {
+			id: req.session?.user?.id,
+			username: req.session?.user?.username,
+			discriminator: req.session?.user?.discriminator,
+		};
+		const moreDetails = {
+			player: req.body.steamID,
+			clan: req.body.clan
+		};
+		const clanRecStatus = await req.client.toggleRecruitStatus(
+			req.body.clanID
+		);
+		const log = await req.client.addLog({
+			action: "CLAN_RECRUIT_STATUS_TOGGLE",
+			author: { discord: discordAccount, steam: steamAccount },
+			ip: req.session.user.lastIp,
+			details: { details: moreDetails },
+		});
+		await log.save();
+		return res.json({ status: "ok", message: clanRecStatus });
 	}
 );
 
@@ -1707,9 +1749,9 @@ router.post(
 			req.body.clanID
 		);
 		const members = await req.client.getClansMember(req.body.clanID);
-		if (!(members.length))
+		if (!(members.length > 0))
 		{
-			req.client.disbandClan(req.body.clanID);
+			await req.client.disbandClan(req.body.clanID);
 			return res.json({ status: "ok", message: "Clan Disbanded!" });
 
 		} 
@@ -1721,6 +1763,57 @@ router.post(
 		});
 		await log.save();
 		return res.json({ status: "ok", message: "Left Clan!" });
+	}
+);
+
+router.post(
+	"/clan/disabandClan",
+	CheckAuth,
+	async function (req, res) {
+		if (!req.body.clanID)
+			return res.json({
+				status: "nok",
+				message: "You are doing something wrong.",
+			});
+
+		// check if user can disband clan disbandClan
+		const userRole = await req.client.getRoles(req.session?.user?.id);
+		const canUser = await req.client.whoCan("disbandClan");
+		if (!canUser.some((role) => userRole.includes(role)))
+			return res.json({
+				status: "nok2",
+				message: "You are not allowed to do this.",
+			});	
+
+		const steamAccount = {
+			steam64id:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			displayName:
+				req.session?.passport?.user?.displayName ||
+				req.session?.passport?.user?.personaname,
+			identifier:
+				req.session?.passport?.user?.identifier ||
+				req.session?.passport?.user?.profileurl,
+		};
+		const discordAccount = {
+			id: req.session?.user?.id,
+			username: req.session?.user?.username,
+			discriminator: req.session?.user?.discriminator,
+		};
+		const moreDetails = {
+			steamID: req.body.steamID,
+			clanID: req.body.clanID,
+		};
+		await req.client.disbandClan(req.body.clanID);
+		
+		const log = await req.client.addLog({
+			action: "DISBAND_CLAN",
+			author: { discord: discordAccount, steam: steamAccount },
+			ip: req.session.user.lastIp,
+			details: { details: moreDetails },
+		});
+		await log.save();
+		return res.json({ status: "ok", message: "Clan has been disbanned!" });
 	}
 );
 
@@ -1794,7 +1887,7 @@ router.post(
 			return res.json({
 				status: "nok2",
 				message: "You are not allowed to do this.",
-		});		
+			});		
 
 		const steamAccount = {
 			steam64id:
@@ -1948,7 +2041,7 @@ router.post(
 				status: "nok",
 				message: "You are doing something wrong.",
 			});
-			const userRole = await req.client.getRoles(req.session?.user?.id);
+		const userRole = await req.client.getRoles(req.session?.user?.id);
 
 		const canUser = await req.client.whoCan("createClan");
 
@@ -1956,7 +2049,7 @@ router.post(
 			return res.json({
 				status: "nok2",
 				message: "You are not allowed to do this.",
-		});		
+			});		
 		const steamAccount = {
 			steam64id:
 				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,

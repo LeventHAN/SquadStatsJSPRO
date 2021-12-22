@@ -1,3 +1,35 @@
+<% function hasCommonElements(arr1, arr2) {
+     
+	// Create an empty object
+	let obj = {};
+		 
+		// Loop through the first array
+		for (let i = 0; i < arr1.length; i++) {
+			 
+			// Check if element from first array
+			// already exist in object or not
+			if(!obj[arr1[i]]) {
+			 
+				// If it doesn't exist assign the
+				// properties equals to the
+				// elements in the array
+				const element = arr1[i];
+				obj[element] = true;
+			}
+		}
+		 
+		// Loop through the second array
+		for (let j = 0; j < arr2.length ; j++) {
+		 
+		// Check elements from second array exist
+		// in the created object or not
+		if(obj[arr2[j]]) {
+			return true;
+		}
+	}
+	return false;
+  }
+  %>
 <!DOCTYPE html>
 <html>
 	<%- include('includes/head') %>
@@ -22,7 +54,7 @@
 									<div class="box box-solid m-2">
 										<div class="box-body m-2">
 											<div class="text-center">
-												<img src="<%= clans[clan].logo %>" style="border-radius:100%" width="100" height="100" class="img-fluid">
+												<img src="<%= clans[clan].logo %>" width="150" height="150" class="rounded-circle">
 											</div>
 										</div>
 										<div class="box-header text-center">
@@ -32,8 +64,7 @@
 										<% if (clans[clan].id === userClan) { %> 
 											<button type="button" onclick="window.location.href='/clans/<%- clans[clan].name %>'" class="btn btn-outline-success">Go to Clan Page</button>
 										<% }%>
-										<button type="button" class="btn btn-outline-secondary">Locked</button>
-										<%if(!userClan){ %>
+										<%if(!userClan && clans[clan].recruitStatus){ %>
 											<button type="button" onclick="applyApp('<%- userSteam.steamid %>','<%- clans[clan].id %>')" class="btn btn-outline-warning">Apply</button>
 										<% } %> 
 									<!-- /.box-header -->
@@ -45,17 +76,29 @@
 							</div>
 							<!-- /.col -->
 						<% } %>
-						<% if (!(userDiscord.whitelist?.clan?.length > 0)) {%> 
-						<div onclick="addClan()" class="col-sm-3 m-2" style="cursor: pointer;">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="text-center"> 
-                                        <span style="font-size: 5rem;">+</span><br>
-                                        <span class="card-title badge badge-dark" style="font-size: 1.5em !important;">Add your Clan</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+						<% if (hasCommonElements(userRoles, allWhoCan.createClan) && !hasClan) {%> 
+							<div onclick="addClan()" class="col-sm-3 m-2" style="cursor: pointer;">
+								<div class="card">
+									<div class="card-body">
+										<div class="text-center"> 
+											<span style="font-size: 5rem;">+</span><br>
+											<span class="card-title badge badge-dark" style="font-size: 1.5em !important;">Add your Clan</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						<% } else { %> 
+							<div class="col-sm-3 m-2">
+								<div class="card" style="cursor: not-allowed;">
+									<div class="card-body">
+										<div class="text-center muted disabled" > 
+											<span style="font-size: 5rem;">+</span><br>
+											<span class="card-title badge badge-dark" style="font-size: 1.5em !important;">Add your Clan</span>
+											<sm class="card-footer text-muted"><%= (hasCommonElements(userRoles, allWhoCan.createClan)) ? "You already have a clan!" : "You don't have permission to create a clan!" %></sm>
+										</div>
+									</div>
+								</div>
+							</div>
 						<% } %> 
 					</div>
 				</div>

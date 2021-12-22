@@ -213,25 +213,25 @@ class SquadStatsJSv3 extends Client {
 	}
 
 	async findOrCreateClan({ id: clanID }, isLean = false) {
-        if (this.databaseCache.clans.get(clanID)) {
-            return isLean
-                ? this.databaseCache.clans.get(clanID).toJSON()
-                : this.databaseCache.clans.get(clanID);
-        } else {
-            let clanData = isLean
-                ? await this.clansData.findOne({ id: clanID }).lean()
-                : await this.clansData.findOne({ id: clanID });
-            if (clanData) {
-                if (!isLean) this.databaseCache.clans.set(clanID, clanData);
-                return clanData;
-            } else {
-                clanData = new this.clansData({ id: clanID });
-                await clanData.save();
-                this.databaseCache.clans.set(clanID, clanData);
-                return isLean ? clanData.toJSON() : clanData;
-            }
-        }
-    }
+		if (this.databaseCache.clans.get(clanID)) {
+			return isLean
+				? this.databaseCache.clans.get(clanID).toJSON()
+				: this.databaseCache.clans.get(clanID);
+		} else {
+			let clanData = isLean
+				? await this.clansData.findOne({ id: clanID }).lean()
+				: await this.clansData.findOne({ id: clanID });
+			if (clanData) {
+				if (!isLean) this.databaseCache.clans.set(clanID, clanData);
+				return clanData;
+			} else {
+				clanData = new this.clansData({ id: clanID });
+				await clanData.save();
+				this.databaseCache.clans.set(clanID, clanData);
+				return isLean ? clanData.toJSON() : clanData;
+			}
+		}
+	}
 
 	// Will get the user data via userID and will put the given steam object in it and save it.
 	async linkSteamAccount(userID, steamObj, attempt = 0) {
@@ -308,9 +308,9 @@ class SquadStatsJSv3 extends Client {
 		} else {
 			let guildData = isLean
 				? await this.guildsData
-						.findOne({ id: guildID })
-						.populate("members")
-						.lean()
+					.findOne({ id: guildID })
+					.populate("members")
+					.lean()
 				: await this.guildsData.findOne({ id: guildID }).populate("members");
 			if (guildData) {
 				if (!isLean) this.databaseCache.guilds.set(guildID, guildData);
@@ -393,15 +393,6 @@ class SquadStatsJSv3 extends Client {
 			return console.log(err);
 		});
 		this.logger.log("Whitelists default schema is created 👌", "log");
-	}
-
-	async createClan() {
-		const doesExist = await this.clansData.find({}).lean();
-		if (doesExist.length !== 0) return;
-		this.clansData.create({}).catch((err) => {
-			return console.log(err);
-		});
-		this.logger.log("Clan default schema is created 👌", "log");
 	}
 
 	// Will replace the Whitelist by the new one given (file)
@@ -637,6 +628,7 @@ class SquadStatsJSv3 extends Client {
 		if (!perms) return;
 		return perms.canSee;
 	}
+
 	async getAllClans() {
 		const clans = await this.clansData.find({});
 		if (!clans) return;
@@ -671,13 +663,18 @@ class SquadStatsJSv3 extends Client {
 	async addClan(clanName, clanLogo, clanBanner, steamID)
 	{
 		const token = await this.generateToken();
-		const clan = await this.findOrCreateClan(token);
+		const clan = await this.findOrCreateClan({id: token});
 		clan.createdBy = steamID; 
 		clan.name = clanName; 
 		clan.logo = clanLogo; 
 		clan.banner = clanBanner;
 		await clan.save();
-		await this.usersData.findOneAndUpdate({"steam.steamid": steamID}, { $set: { 'whitelist.clan': clan.id, 'whitelist.byClan': false } });
+
+		const userCreated = await this.usersData.findOne({ "steam.steamid": steamID });
+		userCreated.whitelist.clan = token;
+		userCreated.whitelist.byClan = true;
+		await userCreated.markModified("whitelist");
+		await userCreated.save();
 		return true;
 	}
 	async getUsersClan(steamid)
@@ -702,7 +699,7 @@ class SquadStatsJSv3 extends Client {
 	}
 	async clanAddApplication(steamID,  playHour, oldClan, additional, clanID)
 	{
-		let application = {};
+		const application = {};
 		const clans = await this.clansData.findOne({ id: clanID });
 		if(!clans) return;
 		application.steamID = steamID; 
@@ -713,17 +710,44 @@ class SquadStatsJSv3 extends Client {
 		await this.clansData.findOneAndUpdate({id: clanID}, {"$push": { applications: application } } );
 		return;
 	}
+	async toggleRecruitStatus(clanID){
+		let msg = false;
+		const clans = await this.clansData.findOne({ id: clanID });
+		if(!clans) return msg;
+		clans.recruitStatus = !clans.recruitStatus;
+		await clans.save();
+		msg = "Recruitment status is now " + (clans.recruitStatus ? "opened" : "closed") + ".";
+		return msg;
+	}
 	async clanAddUserWL(steamID) {
-		await this.usersData.updateOne({"steam.steamid": steamID}, { $set: { 'whitelist.byClan': true } });
+		const user = await this.usersData.findOne({ "steam.steamid": steamID });
+		if (!user) return;
+		user.whitelist.byClan = true;
+		await user.markModified("whitelist");
+		await user.save();
 		return true;
 	}
 	async clanRemoveUserWL(steamID) {
-		await this.usersData.updateOne({"steam.steamid": steamID}, { $set: { 'whitelist.byClan': false } });
+		const user = await this.usersData.findOne({ "steam.steamid": steamID });
+		if (!user) return;
+		user.whitelist.byClan = false;
+		await user.markModified("whitelist");
+		await user.save();
 		return true;
 	}
 	async disbandClan(clanID)
 	{
-		await this.clansData.deleteOne({ id: clanID });
+		// get all users that have this clan in their whitelist
+		const users = await this.usersData.find({ "whitelist.clan": clanID });
+
+		users.forEach(async user => {
+			user.whitelist.clan= null;
+			user.whitelist.byClan= false;
+			await user.markModified("whitelist");
+			await user.save();
+		});
+		const clan = await this.findOrCreateClan({id: clanID});
+		await clan.delete();
 		return true;
 	}
 	async getClanApps(clanID)
@@ -735,15 +759,21 @@ class SquadStatsJSv3 extends Client {
 		}
 	}
 	async leaveClan(steamID) {
-		await this.usersData.updateOne({ "steam.steamid": steamID }, { $set: { 'whitelist.clan': null, 'whitelist.byClan': false } });
+		const user = await this.usersData.findOne({ "steam.steamid": steamID });
+		if (!user) return;
+		user.whitelist.clan = null;
+		user.whitelist.byClan = false;
+		await user.markModified("whitelist");
+		await user.save();
+		// await this.usersData.findOneAndUpdate({ "steam.steamid": steamID }, { $set: { "whitelist.clan": null, "whitelist.byClan": false } });
 		return true;
 	}
 	async clanKickUser(steamID) {
-		await this.usersData.updateOne({"steam.steamid": steamID}, { $set: { 'whitelist.clan': null, 'whitelist.byClan': false } });
+		await this.usersData.findOneAndUpdate({"steam.steamid": steamID}, { $set: { "whitelist.clan": null, "whitelist.byClan": false } });
 		return true;
 	}
 	async clanAddUser(steamID,clanID) {
-		await this.usersData.updateOne({"steam.steamid": steamID}, { $set: { 'whitelist.clan': clanID, 'whitelist.byClan': false } });
+		await this.usersData.findOneAndUpdate({"steam.steamid": steamID}, { $set: { "whitelist.clan": clanID, "whitelist.byClan": false } });
 		return true;
 	}
 	async clanAcceptApp(steamID,clanID) {
@@ -755,9 +785,9 @@ class SquadStatsJSv3 extends Client {
 				apps.applications[app].status = false; 
 			}
 		}
-		apps.markModified('applications')
+		apps.markModified("applications");
 		await apps.save();
-		await this.usersData.updateOne({"steam.steamid": steamID}, { $set: { 'whitelist.clan': clanID, 'whitelist.byClan': false } });
+		await this.usersData.findOneAndUpdate({"steam.steamid": steamID}, { $set: { "whitelist.clan": clanID, "whitelist.byClan": false } });
 		return true;
 	}
 	async clanRejectApp(steamID,clanID) {
@@ -766,18 +796,18 @@ class SquadStatsJSv3 extends Client {
 		{
 			if(apps.applications[app].steamID === steamID && apps.applications[app].status === true) 
 			{
-				apps.applications[app].status = false; 
+				//remove it 
 			}
 		}
-		apps.markModified('applications')
+		apps.markModified("applications");
 		await apps.save();
-		await this.usersData.updateOne({"steam.steamid": steamID}, { $set: { 'whitelist.clan': clanID, 'whitelist.byClan': false } });
+		await this.usersData.findOneAndUpdate({"steam.steamid": steamID}, { $set: { "whitelist.clan": null, "whitelist.byClan": false } });
 		return true;
 	}
 	async setClanWhiteLimit(clanID, limit) {
 		const clans = await this.clansData.find({id: clanID});
 		if (!clans) return;
-		await this.clansData.findOneAndUpdate({id: clanID}, { $set: { 'whitelistLimit': limit } });
+		await this.clansData.findOneAndUpdate({id: clanID}, { $set: { "whitelistLimit": limit } });
 		return true;
 	}
 	async getAllDiffrentRoles() {
@@ -852,7 +882,7 @@ class SquadStatsJSv3 extends Client {
 		// generate a new token
 		const token = await this.generateToken();
 		// update the token in the whitelists collection
-		await this.whitelists.updateOne({}, { $set: { token: token } });
+		await this.whitelists.findOneAndUpdate({}, { $set: { token: token } });
 		return token;
 	}
 
