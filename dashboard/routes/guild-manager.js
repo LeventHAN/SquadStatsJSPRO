@@ -67,6 +67,7 @@ router.get("/:serverID", CheckAuth, async (req, res) => {
 		allRoles: allDifferentRoles,
 		memberCount: guild.memberCount,
 		guild: guildInfos,
+		clans: await req.client.getAllClans(),
 		userDiscord: req.userInfos,
 		translate: req.translate,
 		repoVersion: version,

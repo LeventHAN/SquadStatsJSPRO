@@ -221,6 +221,40 @@
                                         <% } %>
                                     </div>
                                 </form>
+                                <div class='mx-auto card m-4 p-4'>
+                                    <div class="widget-clan-header bg-aqua-active">
+                                        <h3 class="widget-clan-clanname text-center">Clan Management</h3>
+                                    </div>
+                                    <table id="datatable" class="table datatable text-center">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Size</th>
+                                                <th>Limit</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% for(clan in clans) {%>
+                                                <tr id="<%- clans[clan].id %>">
+                                                    <td>
+                                                        <%- clans[clan].name %>
+                                                    </td>
+                                                    <td>
+                                                        <%- clans[clan].size %>
+                                                    </td>
+                                                    <td>
+                                                        <%- clans[clan].whitelistLimit %>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" onclick="changeLimit('<%- clans[clan].id %>', '<%- clans[clan].name %>')" style="font-size: 10px !important;" class="badge btn btn-danger">Change Limit</button>
+                                                        <button type="button" disabled style="font-size: 10px !important;" class="badge btn btn-dark">Disband</button>
+                                                    </td>
+                                                </tr>
+                                            <% }; %>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -644,4 +678,47 @@
             <%- include('../partials/footer') %>
 		<!-- ./wrapper -->
 	</body>
+    <script>
+        async function changeLimit(clanID, clanName)
+        {
+        Swal.fire({
+            title: `${clanName}'s Whitelist Limit`,
+            icon: 'question',
+            input: 'range',
+            inputLabel: 'Limit',
+            inputAttributes: {
+                min: 8,
+                max: 60,
+                step: 1
+            },
+            inputValue: 0
+            }).then(async (result) => {
+            if (result.isConfirmed) {
+                const newLimit = document.getElementById('swal2-input').value;
+                await axios.post(`${window.location.origin}/squad-api/clan/setWhitelistLimit`, {
+                    clanID: clanID,
+                    limit: newLimit
+                })
+                    .then((response) => {
+                        if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                        if (response.data.status === "ok") {
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Limit Set!'
+                            })
+                        }
+                        if (response.data.status === "nok") {
+                            Swal.fire(`There was an error`, `We couldn't set the limit. Please try again later.`, `error`);
+                        }
+                        if (response.data.status === "nok2") {
+                            Swal.fire(`Insufficent Permissions`, `We couldn't perform your requested action. You don't have the right role to perform this action.`, `warning`);
+                        }
+                    })
+                    .catch((error) => {
+                        return Swal.fire(`Error`, `Error: ${error}`, `error`);
+                    });
+            }
+        })
+    }
+    </script>
 </html>

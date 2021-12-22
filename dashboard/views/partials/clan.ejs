@@ -111,7 +111,7 @@ $(document).ready(function () {
                             <div id='buttons'> </div>                            
                         </div>`,
                 didOpen: async () => {
-                    const divBans = document.getElementById('current-bans');
+                    const divApps = document.getElementById('current-apps');
                     const table = document.createElement('div');
                     const buttons = document.getElementById('buttons')
                     const butDiv = document.createElement('div');
@@ -131,7 +131,7 @@ $(document).ready(function () {
                                         </div>
                                     </div>
                                 `;
-                    divBans.append(table);
+                    divApps.append(table);
                     await axios.post(`${window.location.origin}/squad-api/clan/getApplications`, {
                         clanID: clanID,
                     }).then((response) => {
@@ -139,7 +139,7 @@ $(document).ready(function () {
                         if (response.data.status === "ok") {
                             const apps = response.data.content;
                             for (const user in apps) {
-                                const divBan = document.createElement('tr');
+                                const divApp = document.createElement('tr');
                                 const elements = document.getElementById('elements')
                                 divBan.innerHTML = `
                                             <td>
@@ -157,7 +157,7 @@ $(document).ready(function () {
                                                 <button onclick="rejectApp('${apps[user].steamID}', '${clanID}')" class="btn btn-outline-danger badge rounded-pill active">Reject</button>
                                             </td>
                                             `;
-                                elements.append(divBan);
+                                elements.append(divApp);
                             }
                         }
                         if (response.data.status === "nok") {
