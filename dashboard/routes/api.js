@@ -2238,7 +2238,7 @@ router.post(
 			details: { details: moreDetails },
 		});
 		await log.save();
-		return res.json({ status: "ok", message: "Group removed!" });
+		return res.redirect("../../roles");
 	}
 );
 
