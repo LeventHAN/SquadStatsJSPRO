@@ -1,14 +1,13 @@
 const express = require("express"),
-	utils = require("../utils"),
 	CheckAuth = require("../auth/CheckAuth"),
-	router = express.Router(),
-	version = require("../../package.json").version;
+	router = express.Router();
 
 router.get("/", CheckAuth, async (req, res) => {
 	const allCanSeeRoles = await req.client.getAllCanSee();
 	const allWhoCan = await req.client.getAllActionsWhoCan();
 	const canSee = await req.client.canAccess("clans", req.userInfos.id);
 	const user = await req.client.usersData.find({id: req.userInfos.id}).lean().exec();
+	const clan = await req.client.getUsersClan(req.userInfos.steam.steamid);
 	if (!canSee){
 		return res.render("404", {
 			userRoles: await req.client.getRoles(req.session.user.id),
@@ -27,7 +26,7 @@ router.get("/", CheckAuth, async (req, res) => {
 		allWhoCan: allWhoCan,
 		serverID: req.client.config.serverID,
 		clans: await req.client.getAllClans(),
-		userClan: await req.client.getUsersClan(req.userInfos.steam.steamid),
+		userClan: clan,
 		userDiscord: req.userInfos,
 		hasClan: user[0].whitelist.clan || false,
 		upToDate: user,
@@ -43,11 +42,12 @@ router.get("/", CheckAuth, async (req, res) => {
 router.get("/:clanName", CheckAuth, async (req, res) => {
 	const allCanSeeRoles = await req.client.getAllCanSee(); 
 	const allWhoCan = await req.client.getAllActionsWhoCan();
+	const userClan = await req.client.getUsersClan(req.userInfos.steam.steamid);
 	const clan = await req.params.clanName;
 	const clanID = await req.client.findClanbyName(clan);
 	if (
 		!clan ||
-        await req.client.getUsersClan(req.userInfos.steam.steamid) != clanID
+        userClan != clanID
 	)
 	{
 		return res.render("404", {

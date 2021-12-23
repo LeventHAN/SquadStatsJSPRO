@@ -13,12 +13,13 @@
 			<!-- Content Wrapper. Contains page content -->
 			<div class="container-fluid mt--7">
 				<div class="card bg-gradient-neutral shadow p-5">
-
 					<div class="row">
                         <div class='mx-auto card p-4'>
                             <div class="widget-member-header bg-aqua-active">
                                 <h3 class="widget-member-membername text-center"> <%- userClan.name %> Clan Members</h3>
                             </div>
+                            
+                            
                             <table id="datatable" class="table datatable text-center">
                                 <thead>
                                     <tr>
@@ -36,10 +37,10 @@
                                     <% for(member in clanMembers) {%>
                                         <tr id="<%- clanMembers[member].steam.steamid %>">
                                             <td>
-                                                <%- clanMembers[member].steam.steamid %>
+                                                <%- clanMembers[member].steam.personaname %>
                                             </td>
                                             <td>
-                                                <%- clanMembers[member].steam.personaname %>
+                                                <%- clanMembers[member].steam.steamid %>
                                             </td>
                                             <td>
                                                 <%= clanMembers[member].whitelist.byClan ? "🟢 Active" : "🔴 Disabled" %>
@@ -66,11 +67,63 @@
                             </table>
                             <% for(role in userRoles) { %>
                                 <% if( userRoles[role] === "clan leader" || userRoles[role] === "clan manager" || userRoles[role] === "owner" ) { %> 
-                            <button type="button" onclick="showAllOpenApplications('<%-clan.id%>')" style="top: 10px; font-size: 10px !important; width: 100%;" class="btn btn-dark">Applications</button>
+                                    <button type="button" onclick="showAllOpenApplications('<%-clan.id%>')" style="top: 10px; font-size: 10px !important; width: 100%;" class="btn btn-dark">Applications</button>
                                 <% } %> 
                             <% } %> 
                         </div>
-                        <div class="col-sm-3 m-2 text-center mx-auto">
+
+                        <!-- show all manualWhitelistedUsers -->
+                        <div class='mx-auto card p-4'>
+                            <div class="widget-member-header bg-aqua-active">
+                                <h3 class="widget-member-membername text-center"> Whitelisted Users</h3>
+                            </div>
+                            <table id="datatable2" class="table datatable2 text-center">
+                                <thead>
+                                    <tr>
+                                        <th>Player Name</th>
+                                        <th>SteamID</th>
+                                        <th>Whitelist</th>
+                                        <!-- <% for(role in userRoles ) { %>
+                                            <% if( userRoles[role] === "clan leader" || userRoles[role] === "clan manager" || userRoles[role] === "owner" ) { %>  
+                                        <th>Actions</th>
+                                            <% } %> 
+                                        <% } %>  -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for(user in userClan.manualWhitelistedUsers) { %>
+                                        <tr id="<%= user.steamID %>">
+                                            <td>
+                                                <%= userClan.manualWhitelistedUsers[user].name %>
+                                            </td>
+                                            <td>
+                                                <%= userClan.manualWhitelistedUsers[user].steamID %>
+                                            </td>
+                                            <td>
+                                                <%= userClan.manualWhitelistedUsers[user]['whitelisted'] ? "🟢 Active" : "🔴 Disabled" %>
+                                            </td>
+                                            <!-- <% for(role in userRoles ) { %>
+                                                <% if( userRoles[role] === "clan leader" || userRoles[role] === "clan manager" || userRoles[role] === "owner" ) { %>  
+                                                <td>
+                                                    <% if (userClan.manualWhitelistedUsers[user].whitelisted)  { %>
+                                                        <button type="button" onclick="removeWhitelistFromUserManual('<%- userClan.manualWhitelistedUsers[user].steamID %>', '<%- clan.id %>')" style="font-size: 10px !important;" class="badge btn btn-danger">Remove WL</button>
+                                                    <% } else {%>
+                                                        <button type="button" onclick="giveWhitelistToUserManual('<%- userClan.manualWhitelistedUsers[user].steamID %>', '<%- clan.id %>')" style="font-size: 10px !important;" class="badge btn btn-success">Add WL</button>
+                                                    <%};%>
+                                                </td>
+                                                <% } %>
+                                            <% } %> -->
+                                        </tr>
+                                    <% }; %> 
+                                </tbody>
+                            </table>
+                            <% for(role in userRoles) { %>
+                                <% if( userRoles[role] === "clan leader" || userRoles[role] === "clan manager" || userRoles[role] === "owner" ) { %> 
+                                    <button type="button" onclick="showAddMemberModal('<%-clan.id%>')" style="top: 10px; font-size: 10px !important; width: 100%;" class="btn btn-dark">+ Add Manual SteamID</button>
+                                <% } %> 
+                            <% } %> 
+                        </div>
+                        <div class="flex m-2 text-center mx-auto">
                             <div class="card">
                                 <div class="box box-solid m-2">
                                     <div class="box-body m-2">
@@ -94,8 +147,10 @@
                             </div>
                             <!-- /.box -->
                         </div>
+                    </div>
+                        
                         <!-- /.col -->
-				    </div>
+				    
                 </div>
                 <%- include('./partials/clan') %>
 			<%- include('./partials/footer') %>

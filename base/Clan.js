@@ -48,6 +48,12 @@ module.exports = mongoose.model(
 		whitelistLimit: {
 			type: Number,
 			default: 0,
+		},
+		manualWhitelistedUsers: {
+			type: Array,
+			default: [ 
+				
+			],
 		}
 
 	})

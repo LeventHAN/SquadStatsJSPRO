@@ -70,12 +70,59 @@ $(document).ready(function () {
                     return Swal.fire(`Error`, `${error}`, `error`);
                 });
         }
+
+        async function giveWhitelistToUserManual(steamID, clanID) {
+            if (!steamID || !clanID) return;
+            if (clanLimit < (amountWhite + 1)) return Toast.fire({ icon: 'error', title: 'You can\'t whitelist more players, limit reached!' });
+            await axios.post(`${window.location.origin}/squad-api/whitelist/clan/addUserWhitelistManual`, {
+                clanID: clanID,
+                steamID: steamID
+            }).then((response) => {
+                if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                if (response.data.status === "ok") {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Whitelist added!'
+                    });
+                    location.reload();
+                    // remove the active class from the button inside the div role, and where permission matches exactly with the content of the button
+                }
+                if (response.data.status === "nok") {
+                    Swal.fire(`There was an error`, response.data.message, `error`);
+                }
+            })
+                .catch((error) => {
+                    return Swal.fire(`Error`, `${error}`, `error`);
+                });
+        }
         async function removeWhitelistFromUser(steamID) {
             if (!steamID) return console.log("no SteamID");
-            if (clanLimit < (amountWhite - 1)) return console.log("Limit Reached");
-
             await axios.post(`${window.location.origin}/squad-api/whitelist/clan/removeUserWhitelist`, {
                 steamID: steamID
+            }).then((response) => {
+                if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                if (response.data.status === "ok") {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Whitelist removed!'
+                    });
+                    location.reload();
+                    // remove the active class from the button inside the div role, and where permission matches exactly with the content of the button
+                }
+                if (response.data.status === "nok") {
+                    Swal.fire(`There was an error`, response.data.message, `error`);
+                }
+            })
+                .catch((error) => {
+                    return Swal.fire(`Error`, `${error}`, `error`);
+                });
+        }
+
+        async function removeWhitelistFromUserManual(steamID, clanID) {
+            if (!steamID || !clanID) return console.log("no SteamID");
+            await axios.post(`${window.location.origin}/squad-api/whitelist/clan/removeUserWhitelistManual`, {
+                steamID: steamID,
+                clanID: clanID
             }).then((response) => {
                 if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
                 if (response.data.status === "ok") {
@@ -313,6 +360,7 @@ $(document).ready(function () {
                         icon: 'info',
                         title: response.data.message,
                     })
+                    location.reload();
                 } else {
                     await Toast.fire({
                         icon: 'error',
@@ -322,6 +370,74 @@ $(document).ready(function () {
             }).catch(function (error) {
                     Toast.fire({ icon: 'error', title: error });
                 });
+        }
+
+        async function addMember(playerName, steamID, whitelisted, clanID) {
+            await axios.post(`${window.location.origin}/squad-api/clan/addMember`, {
+                steamID: steamID,
+                name: playerName,
+                whitelisted: whitelisted,
+                clanID: clanID
+            }).then( async (response) => {
+                if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                if (response.data.status === "ok") {
+                    await Toast.fire({
+                        icon: 'info',
+                        title: response.data.message,
+                    })
+                    location.reload();
+                } else {
+                    await Toast.fire({
+                        icon: 'error',
+                        title: response.data.message,
+                    })
+                }
+            }).catch(function (error) {
+                    Toast.fire({ icon: 'error', title: error });
+                });
+        }
+
+        async function showAddMemberModal(clanID){
+            Swal.fire({
+                title: 'Adding Manual Player:',
+                html:
+                    `
+                    <div class='mx-auto text-center'>
+                        <h2 class='text-center mx-auto'>Name</h2>
+                        <input id='playerName' class='swal2-input mx-auto d-block' style='position:relative; bottom: 5px;'></input>
+                    </div>
+                    <div class='mx-auto text-center' >
+                        <h2>SteamID</h2>
+                        <input id='playerSteamID' class='swal2-input mx-auto d-block' style='position:relative; bottom: 5px;'></input>
+                    </div>
+                    <div class='mx-auto text-center'>
+                            <h2>Whitelisted</h2>
+                            <div class="form-check">
+                                <input id="whitelisted" class="form-check-input checkbox" type="checkbox" value="" id="flexCheckDefault" checked disabled>
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    Whitelisted (beta)
+                                </label>
+                            </div>
+                    </div>
+                    `,
+                inputAttributes: {
+                    autocapitalize: 'off'
+                },
+                width: 800,
+                showCancelButton: true,
+                confirmButtonText: 'Add Member',
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then(async (result) => {
+                if (result.isConfirmed) 
+                {
+                    const playerName = document.getElementById('playerName').value;
+                    const playerSteamID = document.getElementById('playerSteamID').value;
+                    const whitelist = document.getElementById('whitelisted').checked;
+                    if(!playerName) return Swal.fire(`Error`, `Inputs cannot be empty.`, `error`);
+                        await addMember(playerName, playerSteamID, whitelist, clanID);
+                        
+                    }		
+            })
         }
 
 </script>

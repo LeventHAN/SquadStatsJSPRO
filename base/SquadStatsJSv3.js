@@ -510,6 +510,24 @@ class SquadStatsJSv3 extends Client {
 		await whitelists.save();
 	}
 
+	async addMember(steamID, name, whitelisted, clanID){
+		const isInClan = await this.getUsersClan(steamID);
+		if(isInClan) return { status: "nok", message: "User is already in a clan" };
+		// get the clan from the database
+		const clan = await this.clansData.findOne({id: clanID});
+		if (!clan) return { status: "nok", message: "We couldn't find the clan you are on" };
+
+		// get the member from the database
+		clan.manualWhitelistedUsers.push({
+			name: name,
+			whitelisted: whitelisted,
+			steamID: steamID,
+		});
+		await clan.markModified("manualWhitelistedUsers");
+		await clan.save();
+		return { status: "ok", message: "User added to clan" };
+	}
+
 	// Righnot hard coded. Might wanna change this...
 	async getAllAvaibleAccesLevels() {
 		return [
@@ -727,12 +745,30 @@ class SquadStatsJSv3 extends Client {
 		await user.save();
 		return true;
 	}
+	async clanAddUserWLManual(steamID, clanID) {
+		const clan = await this.clansData.findOne({ "id": clanID });
+		if (!clan) return;
+		for (let i = 0; i < clan.manualWhitelistedUsers.length; i++) {
+			if (clan.manualWhitelistedUsers[i].steamID === steamID) {
+				console.log(clan.manualWhitelistedUsers[i].steamID);
+				clan.manualWhitelistedUsers[i].whitelisted = true;
+				return;
+			}
+		}
+		clan.markModified("manualWhitelistedUsers");
+		clan.save();
+		return true;
+	}
 	async clanRemoveUserWL(steamID) {
 		const user = await this.usersData.findOne({ "steam.steamid": steamID });
 		if (!user) return;
 		user.whitelist.byClan = false;
 		await user.markModified("whitelist");
 		await user.save();
+		return true;
+	}
+	async clanRemoveUserWLManual(steamID, clanID) {
+		this.clansData.findOneAndUpdate({id: clanID, "manualWhitelistedUsers.steamID": steamID}, { $set: { whitelisted: false } });
 		return true;
 	}
 	async disbandClan(clanID)

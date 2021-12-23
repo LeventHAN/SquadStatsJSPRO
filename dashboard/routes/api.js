@@ -2142,6 +2142,111 @@ router.post(
 	}
 );
 
+router.post(
+	"/whitelist/clan/addUserWhitelistManual",
+	CheckAuth,
+	async function (req, res) {
+		if (!req.body.steamID || !req.body.clanID)
+			return res.json({
+				status: "nok",
+				message: "You are doing something wrong.",
+			});
+		const userRole = await req.client.getRoles(req.session?.user?.id);
+
+		const canUser = await req.client.whoCan("CLgiveWhitelist");
+
+		if (!canUser.some((role) => userRole.includes(role)))
+			return res.json({
+				status: "nok2",
+				message: "You are not allowed to do this.",
+		});		
+		const steamAccount = {
+			steam64id:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			displayName:
+				req.session?.passport?.user?.displayName ||
+				req.session?.passport?.user?.personaname,
+			identifier:
+				req.session?.passport?.user?.identifier ||
+				req.session?.passport?.user?.profileurl,
+		};
+		const discordAccount = {
+			id: req.session?.user?.id,
+			username: req.session?.user?.username,
+			discriminator: req.session?.user?.discriminator,
+		};
+		const moreDetails = {
+			player: req.body.steamID,
+			clan: req.body.clanID,
+		};
+		await req.client.clanAddUserWLManual(
+			req.body.steamID,
+			req.body.clanID
+		);
+		const log = await req.client.addLog({
+			action: "CLAN_WHITELIST_ADD",
+			author: { discord: discordAccount, steam: steamAccount },
+			ip: req.session.user.lastIp,
+			details: { details: moreDetails },
+		});
+		await log.save();
+		return res.json({ status: "ok", message: "Group removed!" });
+	}
+);
+router.post(
+	"/whitelist/clan/removeUserWhitelistManual",
+	CheckAuth,
+	async function (req, res) {
+		if (!req.body.steamID)
+			return res.json({
+				status: "nok",
+				message: "You are doing something wrong.",
+			});
+
+		const userRole = await req.client.getRoles(req.session?.user?.id);
+
+		const canUser = await req.client.whoCan("CLremoveWhitelist");
+
+		if (!canUser.some((role) => userRole.includes(role)))
+			return res.json({
+				status: "nok2",
+				message: "You are not allowed to do this.",
+			});		
+
+		const steamAccount = {
+			steam64id:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			displayName:
+				req.session?.passport?.user?.displayName ||
+				req.session?.passport?.user?.personaname,
+			identifier:
+				req.session?.passport?.user?.identifier ||
+				req.session?.passport?.user?.profileurl,
+		};
+		const discordAccount = {
+			id: req.session?.user?.id,
+			username: req.session?.user?.username,
+			discriminator: req.session?.user?.discriminator,
+		};
+		const moreDetails = {
+			player: req.body.steamID,
+			clan: req.body.clan
+		};
+		await req.client.clanRemoveUserWLManual(
+			req.body.steamID,
+			req.body.clanID
+		);
+		const log = await req.client.addLog({
+			action: "CLAN_WHITELIST_REMOVE",
+			author: { discord: discordAccount, steam: steamAccount },
+			ip: req.session.user.lastIp,
+			details: { details: moreDetails },
+		});
+		await log.save();
+		return res.json({ status: "ok", message: "Group removed!" });
+	}
+);
+
 
 router.post(
 	"/whitelist/clan/removeUserWhitelist",
@@ -2566,6 +2671,48 @@ router.post(
 		);
 		return res.json({ status: "ok", message: "Toggled!" });
 	}
+);
+
+router.post(
+	"/clan/addMember",
+	CheckAuth,
+	async function (req, res) {
+		if(!req.body.steamID || !req.body.name || !req.body.clanID) return res.json({status: "nok", message: "You are doing something wrong."});
+		const steamAccount = {
+			steam64id:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			displayName:
+				req.session?.passport?.user?.displayName ||
+				req.session?.passport?.user?.personaname,
+			identifier:
+				req.session?.passport?.user?.identifier ||
+				req.session?.passport?.user?.profileurl,
+		};
+		const discordAccount = {
+			id: req.session?.user?.id,
+			username: req.session?.user?.username,
+			discriminator: req.session?.user?.discriminator,
+		};
+		const moreDetails = {
+			steamID: req.body.steamID,
+			clanID: req.body.clanID,
+		};	
+		const status = await req.client.addMember(req.body.steamID, req.body.name, req.body.whitelisted, req.body.clanID);
+		if (!status)
+			return res.json({
+				status: "nok",
+				message: "We couldn't add the user, please try again!",
+			});
+		const log = await req.client.addLog({
+			action: "ADD_MEMBER",
+			author: { discord: discordAccount, steam: steamAccount },
+			ip: req.session.user.lastIp,
+			details: { details: moreDetails },
+		});
+		await log.save();
+		// return ok status
+		return res.json({ status: "ok", message: "The new member is added to your squad!" });
+	}		
 );
 
 module.exports = router;
