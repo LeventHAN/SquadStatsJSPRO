@@ -9,18 +9,19 @@ Group=Whitelist:reserve
 <% for(role in roles) { %>
 Group=<%= role %>:<%= roles[role].permissions %>
 <% }; %>
-<% for(member in autoClans){%> 
-<% if(autoClans[member].whitelist.byClan === true) {%> 
-Admin=<%- autoClans[member].steam.steamid %>:Whitelist // <%- autoClans[member].name %>  
-<%}%><%}%> 
 // ----- Users ----- // 
 <% for(member in memberData) { %>
 Admin=<%= member %>:<%= memberData[member].role %> // <%= memberData[member].description %>
 <% }; %>
-// ----- Clans ----- //
+// ----- Manual Clans ----- //
 <% for(clan in manualClans){%> 
 <% for(i in manualClans[clan].manualWhitelistedUsers){%> 
 Admin=<%- manualClans[clan].manualWhitelistedUsers[i].steamID %>:Whitelist // <%- manualClans[clan].manualWhitelistedUsers[i].name %>
 <% }; %>
 <% }; %>
+// ----- Auto Clans ----- //
+<% for(member in autoClans){%> 
+<% if(autoClans[member].whitelist.byClan === true) {%> 
+Admin=<%- autoClans[member].steam.steamid %>:Whitelist // <%- autoClans[member].name %>  
+<%}%><%}%> 
 //</pre>
