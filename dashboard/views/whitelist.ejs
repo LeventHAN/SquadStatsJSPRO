@@ -5,14 +5,12 @@
 //// https://github.com/11TStudio                                                  
 /////////////////////////////////////////////////////////////////////////////////////////////
 // ----- Groups ----- //
-<% if(clan) {%> 
 Group=Whitelist:reserve
-<% for(member in members){%> 
-<% if(members[member].whitelist.byClan === true) {%> 
-Admin=<%- members[member].steam.steamid %>:Whitelist // <%- members[member].name %>  
-<% } %> 
-<% } %> 
-<% }else{%>
+
+<% for(member in autoClans){%> 
+<% if(autoClans[member].whitelist.byClan === true) {%> 
+Admin=<%- autoClans[member].steam.steamid %>:Whitelist // <%- autoClans[member].name %>  
+<%}%><%}%> 
 <% for(role in roles) { %>
 Group=<%= role %>:<%= roles[role].permissions %>
 <% }; %>
@@ -22,5 +20,10 @@ Group=<%= role %>:<%= roles[role].permissions %>
 Admin=<%= member %>:<%= memberData[member].role %> // <%= memberData[member].description %>
 <% }; %>
 
-<% } %> 
+// ----- Clans ----- //
+<% for(clan in manualClans){%> 
+<% for(i in manualClans[clan].manualWhitelistedUsers[0]){%> 
+Admin=<%- manualClans[clan].manualWhitelistedUsers[0].steamID %>:Whitelist // <%- manualClans[clan].manualWhitelistedUsers[0].name %>
+<% }; %>
+<% }; %>
 //</pre>

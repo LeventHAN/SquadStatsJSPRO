@@ -1055,27 +1055,23 @@ router.get("/whitelist/:token", async function (req, res) {
 	if (providedToken === realToken) {
 		const groups = await req.client.getWhitelistRoles();
 		const users = await req.client.getWhitelistUsers();
+		let autoClans = await req.client.getAllWhitelisted();
+		// filter all autoClans that have true whitelist.byClan
+		autoClans = autoClans.filter(
+			(autoClan) => autoClan.whitelist.byClan === true
+		);
+
+		const manualClans = await req.client.clansData.find({}).exec();
 		return res.render("whitelist", {
+			manualClans: manualClans,
+			autoClans: autoClans,
 			roles: groups,
 			memberData: users,
-			clan: false,
 		});
 	}
 	return res.json({ status: "nok", message: "Something went wrong!" });
 });
 
-router.get("/whitelist/:token/clans", async function (req, res) {
-	const providedToken = req.params.token;
-	const realToken = await req.client.getWhitelistToken();
-	if (providedToken === realToken) {
-		const members = await req.client.getAllWhitelisted();
-		return res.render("whitelist", {
-			members: members,
-			clan: true,
-		});
-	}
-	return res.json({ status: "nok", message: "Something went wrong!" });
-});
 
 router.post("/moderation/getCount", CheckAuth, async function (req, res) {
 	if (!req.body.steamid)

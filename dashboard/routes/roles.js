@@ -1,8 +1,7 @@
 const express = require("express"),
 	CheckAuth = require("../auth/CheckAuth"),
 	router = express.Router(),
-	version = require("../../package.json").version,
-	utils = require("../utils");
+	version = require("../../package.json").version;
 
 // Gets profile page
 router.get("/", CheckAuth, async function (req, res) {
