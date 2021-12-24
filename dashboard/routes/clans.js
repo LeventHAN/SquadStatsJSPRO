@@ -45,6 +45,7 @@ router.get("/:clanName", CheckAuth, async (req, res) => {
 	const userClan = await req.client.getUsersClan(req.userInfos.steam.steamid);
 	const clan = await req.params.clanName;
 	const clanID = await req.client.findClanbyName(clan);
+	const userClanObj = await req.client.findClanbyID(clanID);
 	if (
 		!clan ||
         userClan != clanID
@@ -71,7 +72,7 @@ router.get("/:clanName", CheckAuth, async (req, res) => {
 		clanWhiteLimit: await req.client.getClanWhiteLimit(clanID),
 		clanWhitelisted: await req.client.getClanWhitelisted(clanID),
 		clanApplications: await req.client.getClanApps(clanID),
-		userClan: await req.client.findClanbyID(clanID),
+		userClan: userClanObj,
 		userDiscord: req.userInfos,
 		userSteam: req.session?.passport?.user || req.userInfos.steam,
 		translate: req.translate,

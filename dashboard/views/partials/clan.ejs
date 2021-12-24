@@ -407,14 +407,14 @@ $(document).ready(function () {
             await axios.post(`${window.location.origin}/squad-api/clan/addMember`, {
                 steamID: steamID,
                 name: playerName,
-                whitelisted: whitelisted,
+                whitelisted: ((clanLimit <= amountWhite) ? (whitelisted ? false : false) : whitelisted),
                 clanID: clanID
             }).then( async (response) => {
                 if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
                 if (response.data.status === "ok") {
                     await Toast.fire({
                         icon: 'info',
-                        title: response.data.message,
+                        title: response.data.message + ((clanLimit <= amountWhite && whitelisted) ? "\n Your limit was reached, so we added the member as not whitelisted!" : ""),
                     })
                     location.reload();
                 } else {
@@ -469,9 +469,9 @@ $(document).ready(function () {
                     if (playerName.length !== 17  && playerName[0] === "7") return Swal.fire(`Error`, `Players name is a steamID.`, `error`);
 
                     if(!playerName) return Swal.fire(`Error`, `Inputs cannot be empty.`, `error`);
-                        await addMember(playerName, playerSteamID, whitelist, clanID);
+                    await addMember(playerName, playerSteamID, whitelist, clanID);
                         
-                    }		
+                }		
             })
         }
 
