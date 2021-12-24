@@ -126,9 +126,7 @@
                                                     <% } else {%>
                                                         <button type="button" onclick="giveWhitelistToUserManual('<%- userClan.manualWhitelistedUsers[user].steamID %>', '<%- clan.id %>')" style="font-size: 10px !important;" class="badge btn btn-success">Add WL</button>
                                                     <%};%>
-                                                    <% if (userRoles[role] != "clan manager" && userRoles[role] != "clan leader")  { %>
                                                         <button type="button" onclick="removeUserManual('<%- userClan.manualWhitelistedUsers[user].steamID %>', '<%- clan.id %>')" style="font-size: 10px !important;" class="badge btn btn-warning">Kick</button>
-                                                    <% } %>
                                                 </td>
                                                 <% } %>
                                             <% } %>
