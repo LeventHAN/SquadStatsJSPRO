@@ -84,10 +84,10 @@ $(document).ready(function () {
             await axios.post(`${window.location.origin}/squad-api/whitelist/clan/addUserWhitelistManual`, {
                 clanID: clanID,
                 steamID: steamID
-            }).then((response) => {
+            }).then(async (response) => {
                 if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
                 if (response.data.status === "ok") {
-                    Toast.fire({
+                    await Toast.fire({
                         icon: 'success',
                         title: 'Whitelist added!'
                     });

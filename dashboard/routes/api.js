@@ -2179,7 +2179,7 @@ router.post(
 			req.body.steamID,
 			req.body.clanID
 		);
-		if(!limit.success) return res.json({ status: "nok", message: limit.msg });
+		if(limit && !limit?.success) return res.json({ status: "nok", message: limit.msg });
 		const log = await req.client.addLog({
 			action: "CLAN_WHITELIST_ADD",
 			author: { discord: discordAccount, steam: steamAccount },

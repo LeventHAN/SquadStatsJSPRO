@@ -675,9 +675,11 @@ class SquadStatsJSv3 extends Client {
 	async getClanWhitelisted(clanID) {
 		const whitelisted = await this.usersData.find({ "whitelist.clan": clanID, "whitelist.byClan": true });
 		let clanManualWhitelist = await this.clansData.findOne({ id: clanID });
-		clanManualWhitelist = clanManualWhitelist.manualWhitelistedUsers.length;
+		clanManualWhitelist = clanManualWhitelist.manualWhitelistedUsers.filter(
+			(user) => user.whitelisted
+		);
 		if (!whitelisted) return;
-		return (whitelisted.length + clanManualWhitelist);
+		return (whitelisted.length + clanManualWhitelist.length);
 	}
 	async addClan(clanName, clanLogo, clanBanner, steamID)
 	{
@@ -748,7 +750,7 @@ class SquadStatsJSv3 extends Client {
 	}
 	async clanAddUserWLManual(steamID, clanID) {
 		const res = await this.clansData.find({ "id": clanID }).exec(async (err, clan) => {
-			if (err) return;
+			if (err) return {success: false, msg: "Can't find clan."};
 			// check the limit of the clan
 			if (clan[0].whitelistLimit <= clan[0].manualWhitelistedUsers.length) return {success: false, msg: "The clan whitelist limit has been reached."};
 			for (let i = 0; i < clan[0].manualWhitelistedUsers.length; i++) {
