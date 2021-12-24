@@ -8,6 +8,13 @@ $(document).ready(function () {
             "info": true,
             "paging": true
         });
+        $('.datatable2').DataTable({
+            bAutoWidth: true,
+            aoColumns: [{ sWidth: "1%", }, { sWidth: "1%" }, { sWidth: "1%" }, { sWidth: "1%" }],
+            "scrollCollapse": true,
+            "info": true,
+            "paging": true
+        });
     });
 
     const clanLimit = "<%- clanWhiteLimit %>";
@@ -117,7 +124,7 @@ $(document).ready(function () {
                     return Swal.fire(`Error`, `${error}`, `error`);
                 });
         }
-
+        
         async function removeWhitelistFromUserManual(steamID, clanID) {
             if (!steamID || !clanID) return console.log("no SteamID");
             await axios.post(`${window.location.origin}/squad-api/whitelist/clan/removeUserWhitelistManual`, {
@@ -129,6 +136,30 @@ $(document).ready(function () {
                     Toast.fire({
                         icon: 'success',
                         title: 'Whitelist removed!'
+                    });
+                    location.reload();
+                    // remove the active class from the button inside the div role, and where permission matches exactly with the content of the button
+                }
+                if (response.data.status === "nok") {
+                    Swal.fire(`There was an error`, response.data.message, `error`);
+                }
+            })
+                .catch((error) => {
+                    return Swal.fire(`Error`, `${error}`, `error`);
+                });
+        }
+
+        async function removeUserManual(steamID, clanID) {
+            if (!steamID || !clanID) return console.log("no SteamID");
+            await axios.post(`${window.location.origin}/squad-api/whitelist/clan/clanRemoveUserManual`, {
+                steamID: steamID,
+                clanID: clanID
+            }).then((response) => {
+                if (!response.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
+                if (response.data.status === "ok") {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'User removed!'
                     });
                     location.reload();
                     // remove the active class from the button inside the div role, and where permission matches exactly with the content of the button
@@ -413,7 +444,7 @@ $(document).ready(function () {
                     <div class='mx-auto text-center'>
                             <h2>Whitelisted</h2>
                             <div class="form-check">
-                                <input id="whitelisted" class="form-check-input checkbox" type="checkbox" value="" id="flexCheckDefault" checked disabled>
+                                <input id="whitelisted" class="form-check-input checkbox" type="checkbox" value="" id="flexCheckDefault" checked>
                                 <label class="form-check-label" for="flexCheckDefault">
                                     Whitelisted (beta)
                                 </label>
@@ -433,6 +464,10 @@ $(document).ready(function () {
                     const playerName = document.getElementById('playerName').value;
                     const playerSteamID = document.getElementById('playerSteamID').value;
                     const whitelist = document.getElementById('whitelisted').checked;
+                    // check if playerSteamID is correct Steam64ID
+                    if (playerSteamID.length !== 17) return Swal.fire(`Error`, `SteamID is not correct.`, `error`);
+                    if (playerName.length !== 17  && playerName[0] === "7") return Swal.fire(`Error`, `Players name is a steamID.`, `error`);
+
                     if(!playerName) return Swal.fire(`Error`, `Inputs cannot be empty.`, `error`);
                         await addMember(playerName, playerSteamID, whitelist, clanID);
                         

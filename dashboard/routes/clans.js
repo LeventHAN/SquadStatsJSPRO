@@ -79,7 +79,7 @@ router.get("/:clanName", CheckAuth, async (req, res) => {
 		currentURL: `${req.client.config.dashboard.baseURL}/${req.originalUrl}`,
 		usage: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2),
 		config: req.client.config,
-	})
+	});
 });
 
 module.exports = router;

@@ -2138,7 +2138,7 @@ router.post(
 			details: { details: moreDetails },
 		});
 		await log.save();
-		return res.json({ status: "ok", message: "Group removed!" });
+		return res.json({ status: "ok", message: "Whitelist added!" });
 	}
 );
 
@@ -2190,7 +2190,7 @@ router.post(
 			details: { details: moreDetails },
 		});
 		await log.save();
-		return res.json({ status: "ok", message: "Group removed!" });
+		return res.json({ status: "ok", message: "Whitelist added!" });
 	}
 );
 router.post(
@@ -2243,9 +2243,65 @@ router.post(
 			details: { details: moreDetails },
 		});
 		await log.save();
-		return res.json({ status: "ok", message: "Group removed!" });
+		return res.json({ status: "ok", message: "Whitelist removed!" });
 	}
 );
+
+router.post(
+	"/whitelist/clan/clanRemoveUserManual",
+	CheckAuth,
+	async function (req, res) {
+		if (!req.body.steamID)
+			return res.json({
+				status: "nok",
+				message: "You are doing something wrong.",
+			});
+
+		const userRole = await req.client.getRoles(req.session?.user?.id);
+
+		const canUser = await req.client.whoCan("kickFromClan");
+
+		if (!canUser.some((role) => userRole.includes(role)))
+			return res.json({
+				status: "nok2",
+				message: "You are not allowed to do this.",
+			});		
+
+		const steamAccount = {
+			steam64id:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			displayName:
+				req.session?.passport?.user?.displayName ||
+				req.session?.passport?.user?.personaname,
+			identifier:
+				req.session?.passport?.user?.identifier ||
+				req.session?.passport?.user?.profileurl,
+		};
+		const discordAccount = {
+			id: req.session?.user?.id,
+			username: req.session?.user?.username,
+			discriminator: req.session?.user?.discriminator,
+		};
+		const moreDetails = {
+			player: req.body.steamID,
+			clan: req.body.clan
+		};
+		await req.client.clanRemoveUserManual(
+			req.body.steamID,
+			req.body.clanID
+		);
+		const log = await req.client.addLog({
+			action: "CLAN_WHITELIST_REMOVE",
+			author: { discord: discordAccount, steam: steamAccount },
+			ip: req.session.user.lastIp,
+			details: { details: moreDetails },
+		});
+		await log.save();
+		return res.json({ status: "ok", message: "User removed!" });
+	}
+);
+
+
 
 
 router.post(

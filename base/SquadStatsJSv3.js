@@ -746,18 +746,28 @@ class SquadStatsJSv3 extends Client {
 		return true;
 	}
 	async clanAddUserWLManual(steamID, clanID) {
-		const clan = await this.clansData.findOne({ "id": clanID });
-		if (!clan) return;
-		for (let i = 0; i < clan.manualWhitelistedUsers.length; i++) {
-			if (clan.manualWhitelistedUsers[i].steamID === steamID) {
-				console.log(clan.manualWhitelistedUsers[i].steamID);
-				clan.manualWhitelistedUsers[i].whitelisted = true;
-				return;
+		const res = await this.clansData.find({ "id": clanID }).exec(async (err, clan) => {
+			if (err) return;
+			for (let i = 0; i < clan[0].manualWhitelistedUsers.length; i++) {
+				if (clan[0].manualWhitelistedUsers[i].steamID === steamID) {
+					clan[0].manualWhitelistedUsers[i].whitelisted = true;
+					clan[0].markModified("manualWhitelistedUsers");
+					clan[0].save(function (err) {
+						if (err) {
+							return ({
+								success: false,
+								msg: "Update failed"
+							});
+						}
+						return ({
+							success: true,
+							msg: "Successful updated."
+						});
+					});
+				}
 			}
-		}
-		clan.markModified("manualWhitelistedUsers");
-		clan.save();
-		return true;
+			return res;
+		});	
 	}
 	async clanRemoveUserWL(steamID) {
 		const user = await this.usersData.findOne({ "steam.steamid": steamID });
@@ -768,9 +778,55 @@ class SquadStatsJSv3 extends Client {
 		return true;
 	}
 	async clanRemoveUserWLManual(steamID, clanID) {
-		this.clansData.findOneAndUpdate({id: clanID, "manualWhitelistedUsers.steamID": steamID}, { $set: { whitelisted: false } });
-		return true;
+		const res = await this.clansData.find({ "id": clanID }).exec(async (err, clan) => {
+			if (err) return;
+			for (let i = 0; i < clan[0].manualWhitelistedUsers.length; i++) {
+				if (clan[0].manualWhitelistedUsers[i].steamID === steamID) {
+					clan[0].manualWhitelistedUsers[i].whitelisted = false;
+					clan[0].markModified("manualWhitelistedUsers");
+					clan[0].save(function (err) {
+						if (err) {
+							return ({
+								success: false,
+								msg: "Update failed"
+							});
+						}
+						return ({
+							success: true,
+							msg: "Successful updated."
+						});
+					});
+				}
+			}
+			return res;
+		});	
 	}
+	async clanRemoveUserManual(steamID, clanID) {
+		const res = await this.clansData.find({ "id": clanID }).exec(async (err, clan) => {
+			if (err) return;
+			for (let i = 0; i < clan[0].manualWhitelistedUsers.length; i++) {
+				if (clan[0].manualWhitelistedUsers[i].steamID === steamID) {
+					// remove clan[0].manualWhitelistedUsers[i] from clan[0].manualWhitelistedUsers
+					clan[0].manualWhitelistedUsers.splice(i, 1);
+					clan[0].markModified("manualWhitelistedUsers");
+					clan[0].save(function (err) {
+						if (err) {
+							return ({
+								success: false,
+								msg: "Update failed"
+							});
+						}
+						return ({
+							success: true,
+							msg: "Successful updated."
+						});
+					});
+				}
+			}
+			return res;
+		});	
+	}
+	
 	async disbandClan(clanID)
 	{
 		// get all users that have this clan in their whitelist
