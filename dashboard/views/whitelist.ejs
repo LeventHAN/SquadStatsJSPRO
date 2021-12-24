@@ -19,8 +19,8 @@ Admin=<%= member %>:<%= memberData[member].role %> // <%= memberData[member].des
 <% }; %>
 // ----- Clans ----- //
 <% for(clan in manualClans){%> 
-<% for(i in manualClans[clan].manualWhitelistedUsers[0]){%> 
-Admin=<%- manualClans[clan].manualWhitelistedUsers[0].steamID %>:Whitelist // <%- manualClans[clan].manualWhitelistedUsers[0].name %>
+<% for(i in manualClans[clan].manualWhitelistedUsers){%> 
+Admin=<%- manualClans[clan].manualWhitelistedUsers[i].steamID %>:Whitelist // <%- manualClans[clan].manualWhitelistedUsers[i].name %>
 <% }; %>
 <% }; %>
 //</pre>
