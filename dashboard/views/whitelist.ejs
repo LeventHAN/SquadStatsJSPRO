@@ -11,17 +11,17 @@ Group=<%= role %>:<%= roles[role].permissions %>
 <% }; %>
 // ----- Users ----- // 
 <% for(member in memberData) { %>
-Admin=<%= member %>:<%= memberData[member].role %> // <%= memberData[member].description %>
+Admin=<%= member.trim() %>:<%= memberData[member].role %> // <%= memberData[member].description %>
 <% }; %>
 // ----- Manual Clans ----- //
 <% for(clan in manualClans){%> 
 <% for(i in manualClans[clan].manualWhitelistedUsers){%> 
-Admin=<%- manualClans[clan].manualWhitelistedUsers[i].steamID %>:Whitelist // <%- manualClans[clan].manualWhitelistedUsers[i].name %>
+Admin=<%- manualClans[clan].manualWhitelistedUsers[i].steamID.trim() %>:Whitelist // <%- manualClans[clan].manualWhitelistedUsers[i].name %>
 <% }; %>
 <% }; %>
 // ----- Auto Clans ----- //
 <% for(member in autoClans){%> 
 <% if(autoClans[member].whitelist.byClan === true) {%> 
-Admin=<%- autoClans[member].steam.steamid %>:Whitelist // <%- autoClans[member].name %>  
+Admin=<%- autoClans[member].steam.steamid.trim() %>:Whitelist // <%- autoClans[member].name %>  
 <%}%><%}%> 
 //</pre>
