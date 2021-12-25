@@ -678,8 +678,8 @@ class SquadStatsJSv3 extends Client {
 		clanManualWhitelist = clanManualWhitelist.manualWhitelistedUsers.filter(
 			(user) => user.whitelisted
 		);
-		if (!whitelisted) return;
-		return (whitelisted.length + clanManualWhitelist.length);
+		const size = whitelisted.length + clanManualWhitelist.length;
+		return size;
 	}
 	async addClan(clanName, clanLogo, clanBanner, steamID)
 	{
@@ -740,39 +740,49 @@ class SquadStatsJSv3 extends Client {
 		msg = "Recruitment status is now " + (clans.recruitStatus ? "opened" : "closed") + ".";
 		return msg;
 	}
-	async clanAddUserWL(steamID) {
+	async clanAddUserWL(steamID, callback) {
 		const user = await this.usersData.findOne({ "steam.steamid": steamID });
-		if (!user) return;
+		if (!user) return callback({success: false, msg: "User not found."});
+		const amountOfWhitelists = await this.getClanWhitelisted(user.whitelist.clan);
+		const clanLimit = await this.getClanWhiteLimit(user.whitelist.clan);
+		if (clanLimit <= amountOfWhitelists) {
+			return callback({success: false, msg: "The clan whitelist limit has been reached."});
+		}
 		user.whitelist.byClan = true;
 		await user.markModified("whitelist");
 		await user.save();
-		return true;
+		return callback({
+			success: true,
+			msg: "Successful whitelisted."
+		});
 	}
-	async clanAddUserWLManual(steamID, clanID) {
-		const res = await this.clansData.find({ "id": clanID }).exec(async (err, clan) => {
-			if (err) return {success: false, msg: "Can't find clan."};
-			// check the limit of the clan
-			if (clan[0].whitelistLimit <= clan[0].manualWhitelistedUsers.length) return {success: false, msg: "The clan whitelist limit has been reached."};
-			for (let i = 0; i < clan[0].manualWhitelistedUsers.length; i++) {
-				if (clan[0].manualWhitelistedUsers[i].steamID === steamID) {
-					clan[0].manualWhitelistedUsers[i].whitelisted = true;
-					clan[0].markModified("manualWhitelistedUsers");
-					clan[0].save(function (err) {
+	async clanAddUserWLManual(steamID, clanID, callback) {
+		await this.clansData.findOne({ id: clanID }).exec(async (err, clan) => {
+			if (err) return callback({success: false, msg: "Can't find clan."});
+			const amountOfWhitelists = await this.getClanWhitelisted(clanID);
+			const clanLimit = await this.getClanWhiteLimit(clanID);
+			if (clanLimit <= amountOfWhitelists) {
+				return callback({success: false, msg: "The clan whitelist limit has been reached."});
+			}
+			for (let i = 0; i < clan.manualWhitelistedUsers.length; i++) {
+				if (clan.manualWhitelistedUsers[i].steamID === steamID) {
+					clan.manualWhitelistedUsers[i].whitelisted = true;
+					await clan.markModified("manualWhitelistedUsers");
+					await clan.save(function (err) {
 						if (err) {
-							return ({
+							return callback({
 								success: false,
 								msg: "Update failed"
 							});
 						}
-						return ({
+						return callback({
 							success: true,
 							msg: "Successful updated."
 						});
 					});
 				}
 			}
-			return res;
-		});	
+		});
 	}
 	async clanRemoveUserWL(steamID) {
 		const user = await this.usersData.findOne({ "steam.steamid": steamID });

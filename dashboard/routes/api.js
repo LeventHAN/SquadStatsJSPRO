@@ -2126,15 +2126,22 @@ router.post(
 		};
 		await req.client.clanAddUserWL(
 			req.body.steamID,
+			async function(limit) {
+				if (!limit?.success) {
+					return res.json({ status: "nok", message: "Limit reached!" });
+				} else {
+					const log = await req.client.addLog({
+						action: "CLAN_WHITELIST_ADD",
+						author: { discord: discordAccount, steam: steamAccount },
+						ip: req.session.user.lastIp,
+						details: { details: moreDetails },
+					});
+					await log.save();
+					return res.json({ status: "ok", message: "Whitelist added!" });
+				}
+			}
 		);
-		const log = await req.client.addLog({
-			action: "CLAN_WHITELIST_ADD",
-			author: { discord: discordAccount, steam: steamAccount },
-			ip: req.session.user.lastIp,
-			details: { details: moreDetails },
-		});
-		await log.save();
-		return res.json({ status: "ok", message: "Whitelist added!" });
+		
 	}
 );
 
@@ -2175,19 +2182,24 @@ router.post(
 			player: req.body.steamID,
 			clan: req.body.clanID,
 		};
-		const limit = await req.client.clanAddUserWLManual(
+		await req.client.clanAddUserWLManual(
 			req.body.steamID,
-			req.body.clanID
+			req.body.clanID,
+			async function(limit){
+				if(!limit?.success){
+					return res.json({ status: "nok", message: limit.msg });
+				} else {
+					const log = await req.client.addLog({
+						action: "CLAN_WHITELIST_ADD",
+						author: { discord: discordAccount, steam: steamAccount },
+						ip: req.session.user.lastIp,
+						details: { details: moreDetails },
+					});
+					await log.save();
+					return res.json({ status: "ok", message: "Whitelist added!" });
+				}
+			}
 		);
-		if(limit && !limit?.success) return res.json({ status: "nok", message: limit.msg });
-		const log = await req.client.addLog({
-			action: "CLAN_WHITELIST_ADD",
-			author: { discord: discordAccount, steam: steamAccount },
-			ip: req.session.user.lastIp,
-			details: { details: moreDetails },
-		});
-		await log.save();
-		return res.json({ status: "ok", message: "Whitelist added!" });
 	}
 );
 router.post(
