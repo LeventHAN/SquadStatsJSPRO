@@ -1106,6 +1106,8 @@ router.get("/whitelist/:token", async function (req, res) {
 
 		const manualClans = await req.client.clansData.find({}).exec();
 		manualClans.forEach((clan) => clan.manualWhitelistedUsers = clan.manualWhitelistedUsers.filter((user) => user.whitelisted));
+			
+
 		return res.render("whitelist", {
 			manualClans: manualClans,
 			autoClans: autoClans,
