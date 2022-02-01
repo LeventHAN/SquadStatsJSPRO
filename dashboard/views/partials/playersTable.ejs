@@ -598,7 +598,6 @@ function addNewLines(str) {
 }
 async function massTeamChange(players)
 {
-    console.log("asda")
     await axios.post(`${window.location.origin}/squad-api/moderation/massTeamChange`, {
         players: players
     }).then(async (resp) => {
@@ -628,7 +627,6 @@ async function markThis(steamID, squadID)
                 row.style.backgroundColor = "yellow";
                 selected.children[0].style.backgroundColor = "darkgray";
                 selecteds.push(steamID);
-                console.log(selecteds);
                 for(let player in selecteds)
                 {
                     dut._tippy.destroy();
