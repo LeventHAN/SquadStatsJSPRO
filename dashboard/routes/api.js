@@ -619,6 +619,49 @@ router.post("/warn", CheckAuth, async function (req, res) {
 	});
 });
 
+router.post("/moderation/massTeamChange", CheckAuth, async function (req, res) {
+	if (!req.body.players)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
+		const steamAccount = {
+			steam64id:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			displayName:
+				req.session?.passport?.user?.displayName ||
+				req.session?.passport?.user?.personaname,
+			identifier:
+				req.session?.passport?.user?.identifier ||
+				req.session?.passport?.user?.profileurl,
+		};
+		const discordAccount = {
+			id: req.session?.user?.id,
+			username: req.session?.user?.username,
+			discriminator: req.session?.user?.discriminator,
+		};
+	const players = req.body.players;
+	const socket = req.client.socket;
+	players.split(",").forEach(async (player) => {
+		setTimeout(async () => {
+			 socket.emit(
+				"rcon.execute",
+				`AdminForceTeamChange ${player}`,
+					async () => {
+						const log = await req.client.addLog({
+							action: "MASS_PLAYER_FORCE_TEAMCHANGE",
+							author: { discord: discordAccount, steam: steamAccount },
+							ip: req.session.user.lastIp,
+							details: { details: player },
+						});
+						await log.save();
+					}
+				);
+		}, 500);
+	});
+	return res.json({ status: "ok", message: "Players team changed!" });
+});
+
 router.post("/forceTeamChange", CheckAuth, async function (req, res) {
 	if (!req.body.steamUID || !req.body.reason) {
 		return res.json({
@@ -1062,6 +1105,7 @@ router.get("/whitelist/:token", async function (req, res) {
 		);
 
 		const manualClans = await req.client.clansData.find({}).exec();
+		manualClans.forEach((clan) => clan.manualWhitelistedUsers = clan.manualWhitelistedUsers.filter((user) => user.whitelisted));
 		return res.render("whitelist", {
 			manualClans: manualClans,
 			autoClans: autoClans,
@@ -1096,6 +1140,7 @@ router.post("/moderation/getCount", CheckAuth, async function (req, res) {
 		count: { kick: `${kick}`, ban: `${ban}`, warn: `${warn}` },
 	});
 });
+
 
 router.post("/whitelist/import", CheckAuth, async function (req, res, next) {
 	const userRole = await req.client.getRoles(req.session?.user?.id);
