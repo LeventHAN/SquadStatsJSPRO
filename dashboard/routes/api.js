@@ -619,6 +619,146 @@ router.post("/warn", CheckAuth, async function (req, res) {
 	});
 });
 
+router.post("/moderation/massBan", CheckAuth, async function (req, res) {
+	if (!req.body.steamUID || !req.body.reason || !req.body.duration)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
+		const steamAccount = {
+			steam64id:
+				req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+			displayName:
+				req.session?.passport?.user?.displayName ||
+				req.session?.passport?.user?.personaname,
+			identifier:
+				req.session?.passport?.user?.identifier ||
+				req.session?.passport?.user?.profileurl,
+	};
+	const moreDetails = {
+		player: req.body.steamUID,
+		reason: req.body.reason,
+		duration: req.body.duration,
+		isNew: req?.body?.isNew || false
+	};
+		const discordAccount = {
+			id: req.session?.user?.id,
+			username: req.session?.user?.username,
+			discriminator: req.session?.user?.discriminator,
+		};
+	const players = req.body.players;
+	const socket = req.client.socket;
+	players.split(",").forEach(async (player) => {
+		setTimeout(async () => {
+			 socket.emit(
+				"rcon.execute",
+				`AdminBan ${moreDetails.player} ${moreDetails.duration} ${moreDetails.reason}`,
+				async () => {
+						const log = await req.client.addLog({
+							action: "MASS_PLAYER_BANNED",
+							author: { discord: discordAccount, steam: steamAccount },
+							ip: req.session.user.lastIp,
+							details: { details: player },
+						});
+						await log.save();
+					}
+				);
+		}, 500);
+	});
+	return res.json({ status: "ok", message: "Players banned!" });
+});
+
+router.post("/moderation/massKick", CheckAuth, async function (req, res) {
+	if (!req.body.steamUID || !req.body.reason)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
+	const steamAccount = {
+		steam64id: req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
+	};
+	const moreDetails = {
+		player: req.body.steamUID,
+		reason: req.body.reason,
+	};
+	const discordAccount = {
+
+		id: req.session?.user?.id,
+		username: req.session?.user?.username,
+		discriminator: req.session?.user?.discriminator,
+	};
+	const players = req.body.players;
+	const socket = req.client.socket;
+	players.split(",").forEach(async (player) => {
+		setTimeout(async () => {
+			socket.emit(
+				"rcon.execute",
+				`AdminKick ${moreDetails.player} ${moreDetails.reason}`,
+				async () => {
+					const log = await req.client.addLog({
+						action: "MASS_PLAYER_KICKED",
+						author: { discord: discordAccount, steam: steamAccount },
+						ip: req.session.user.lastIp,
+						details: { details: player },
+					});
+					await log.save();
+				}
+			);
+		}, 500);
+	});
+	return res.json({ status: "ok", message: "Players kicked!" });
+});
+
+router.post("/moderation/massWarn", CheckAuth, async function (req, res) {
+	if (!req.body.steamUID || !req.body.reason)
+		return res.json({
+			status: "nok",
+			message: "You are doing something wrong.",
+		});
+	const steamAccount = {
+		steam64id: req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+		displayName:
+			req.session?.passport?.user?.displayName ||
+			req.session?.passport?.user?.personaname,
+		identifier:
+			req.session?.passport?.user?.identifier ||
+			req.session?.passport?.user?.profileurl,
+	};
+	const moreDetails = {
+		player: req.body.steamUID,
+		reason: req.body.reason,
+	};
+	const discordAccount = {
+
+		id: req.session?.user?.id,
+		username: req.session?.user?.username,
+		discriminator: req.session?.user?.discriminator,
+	};
+	const players = req.body.players;
+	const socket = req.client.socket;
+	players.split(",").forEach(async (player) => {
+		setTimeout(async () => {
+			socket.emit("rcon.warn", moreDetails.player, moreDetails.reason, async () => {
+					const log = await req.client.addLog({
+						action: "MASS_PLAYER_WARNED",
+						author: { discord: discordAccount, steam: steamAccount },
+						ip: req.session.user.lastIp,
+						details: { details: player },
+					});
+					await log.save();
+				}
+			);
+		}, 500);
+	});
+	return res.json({ status: "ok", message: "Players warned!" });
+});
+
 router.post("/moderation/massTeamChange", CheckAuth, async function (req, res) {
 	if (!req.body.players)
 		return res.json({
