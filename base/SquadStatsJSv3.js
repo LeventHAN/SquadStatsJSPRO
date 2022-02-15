@@ -412,7 +412,29 @@ class SquadStatsJSv3 extends Client {
 		const bans = await this.moderation.find({});
 		return bans.filter((ban) => ban.typeModeration === "ban");
 	}
-
+	async getPlayerBan(steamID) {
+		const bans = await this.moderation.find({
+			steamID: steamID,
+			active: true,
+			typeModeration: "ban",
+			$or:
+				[
+					{
+						endDate:
+						{
+							$gt: Date.now()
+						}
+					},
+					{
+						endDate:
+						{	
+							$eq: 0
+						}
+					}
+				]
+			});
+		return bans;
+	}
 	async editBan(steamID, oldDate, newDate, reason)
 	{
 		await this.moderation.findOneAndUpdate(

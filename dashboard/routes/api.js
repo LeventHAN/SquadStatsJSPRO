@@ -620,7 +620,7 @@ router.post("/warn", CheckAuth, async function (req, res) {
 });
 
 router.post("/moderation/massBan", CheckAuth, async function (req, res) {
-	if (!req.body.steamUID || !req.body.reason || !req.body.duration)
+	if (!req.body.players || !req.body.reason || !req.body.duration)
 		return res.json({
 			status: "nok",
 			message: "You are doing something wrong.",
@@ -636,7 +636,7 @@ router.post("/moderation/massBan", CheckAuth, async function (req, res) {
 				req.session?.passport?.user?.profileurl,
 	};
 	const moreDetails = {
-		player: req.body.steamUID,
+		players: req.body.players,
 		reason: req.body.reason,
 		duration: req.body.duration,
 		isNew: req?.body?.isNew || false
@@ -646,21 +646,53 @@ router.post("/moderation/massBan", CheckAuth, async function (req, res) {
 			username: req.session?.user?.username,
 			discriminator: req.session?.user?.discriminator,
 		};
-	const players = req.body.players;
 	const socket = req.client.socket;
-	players.split(",").forEach(async (player) => {
+	moreDetails.players.split(",").forEach(async (player) => {
 		setTimeout(async () => {
 			 socket.emit(
 				"rcon.execute",
-				`AdminBan ${moreDetails.player} ${moreDetails.duration} ${moreDetails.reason}`,
-				async () => {
+				`AdminKick ${player} ${moreDetails.reason}`,
+				 async () => {
+					 let banNumber = moreDetails.duration.match(/\d+/g);
+					 banNumber = parseInt(banNumber);
+					 const banLetter = moreDetails.duration.match(/[a-zA-Z]/g)[0];
+					 let epochDuration;
 						const log = await req.client.addLog({
 							action: "MASS_PLAYER_BANNED",
 							author: { discord: discordAccount, steam: steamAccount },
 							ip: req.session.user.lastIp,
 							details: { details: player },
 						});
-						await log.save();
+					await log.save();
+					switch (banLetter) {
+						case "m":
+							epochDuration = Date.now() + banNumber * 1000 * 60;
+							break;
+						case "d":
+							epochDuration = Date.now() + banNumber * 1000 * 60 * 60 * 24;
+							break;
+						case "M":
+							epochDuration = Date.now() + banNumber * 1000 * 60 * 60 * 24 * 30;
+							break;
+						case "P":
+							epochDuration = 0;
+							break;
+						default:
+							epochDuration = Date.now() + 1 * 1000 * 60; // 1 minute ban FAST BAN
+							break;
+					}
+					const moderation = await req.client.addModeration({
+						steamID: player,
+						moderatorSteamID:
+							req.session?.passport?.user?.id ||
+							req.session?.passport?.user?.steamid,
+						moderatorName: req.session.user.username,
+						moderator: req.session?.user?.id,
+						typeModeration: "ban",
+						reason: req.body.reason,
+						endDate: epochDuration,
+					});
+					await moderation.save();
 					}
 				);
 		}, 500);
@@ -669,7 +701,7 @@ router.post("/moderation/massBan", CheckAuth, async function (req, res) {
 });
 
 router.post("/moderation/massKick", CheckAuth, async function (req, res) {
-	if (!req.body.steamUID || !req.body.reason)
+	if (!req.body.players || !req.body.reason)
 		return res.json({
 			status: "nok",
 			message: "You are doing something wrong.",
@@ -684,7 +716,7 @@ router.post("/moderation/massKick", CheckAuth, async function (req, res) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const moreDetails = {
-		player: req.body.steamUID,
+		players: req.body.players,
 		reason: req.body.reason,
 	};
 	const discordAccount = {
@@ -693,13 +725,12 @@ router.post("/moderation/massKick", CheckAuth, async function (req, res) {
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
-	const players = req.body.players;
 	const socket = req.client.socket;
-	players.split(",").forEach(async (player) => {
+	moreDetails.players.split(",").forEach(async (player) => {
 		setTimeout(async () => {
 			socket.emit(
 				"rcon.execute",
-				`AdminKick ${moreDetails.player} ${moreDetails.reason}`,
+				`AdminKick ${player} ${moreDetails.reason}`,
 				async () => {
 					const log = await req.client.addLog({
 						action: "MASS_PLAYER_KICKED",
@@ -708,6 +739,18 @@ router.post("/moderation/massKick", CheckAuth, async function (req, res) {
 						details: { details: player },
 					});
 					await log.save();
+					const moderation = await req.client.addModeration({
+						steamID: player,
+						moderatorSteamID:
+							req.session?.passport?.user?.id ||
+							req.session?.passport?.user?.steamid,
+						moderatorName: req.session.user.username,
+						moderator: req.session?.user?.id,
+						typeModeration: "kick",
+						reason: req.body.reason,
+						endDate: null,
+					});
+					await moderation.save();
 				}
 			);
 		}, 500);
@@ -716,7 +759,7 @@ router.post("/moderation/massKick", CheckAuth, async function (req, res) {
 });
 
 router.post("/moderation/massWarn", CheckAuth, async function (req, res) {
-	if (!req.body.steamUID || !req.body.reason)
+	if (!req.body.players || !req.body.reason)
 		return res.json({
 			status: "nok",
 			message: "You are doing something wrong.",
@@ -731,7 +774,7 @@ router.post("/moderation/massWarn", CheckAuth, async function (req, res) {
 			req.session?.passport?.user?.profileurl,
 	};
 	const moreDetails = {
-		player: req.body.steamUID,
+		players: req.body.players,
 		reason: req.body.reason,
 	};
 	const discordAccount = {
@@ -740,11 +783,10 @@ router.post("/moderation/massWarn", CheckAuth, async function (req, res) {
 		username: req.session?.user?.username,
 		discriminator: req.session?.user?.discriminator,
 	};
-	const players = req.body.players;
 	const socket = req.client.socket;
-	players.split(",").forEach(async (player) => {
+	moreDetails.players.split(",").forEach(async (player) => {
 		setTimeout(async () => {
-			socket.emit("rcon.warn", moreDetails.player, moreDetails.reason, async () => {
+			socket.emit("rcon.warn", player, moreDetails.reason, async () => {
 					const log = await req.client.addLog({
 						action: "MASS_PLAYER_WARNED",
 						author: { discord: discordAccount, steam: steamAccount },
@@ -752,6 +794,17 @@ router.post("/moderation/massWarn", CheckAuth, async function (req, res) {
 						details: { details: player },
 					});
 					await log.save();
+					const moderation = await req.client.addModeration({
+						steamID: player,
+						moderatorSteamID:
+							req.session?.passport?.user?.id || req.session?.passport?.user?.steamid,
+						moderatorName: req.session.user.username,
+						moderator: req.session?.user?.id,
+						typeModeration: "warn",
+						reason: req.body.reason,
+						endDate: null,
+					});
+					await moderation.save();
 				}
 			);
 		}, 500);
@@ -932,7 +985,7 @@ router.post("/ban", CheckAuth, async function (req, res) {
 	if (activeBans.length === 0 || moreDetails.isNew) {
 		socket.emit(
 			"rcon.execute",
-			`AdminBan ${moreDetails.player} ${moreDetails.duration} ${moreDetails.reason}`,
+			`AdminKick ${moreDetails.player} ${moreDetails.reason}`,
 			async () => {
 				let banNumber = moreDetails.duration.match(/\d+/g);
 				banNumber = parseInt(banNumber);
