@@ -24,6 +24,13 @@ module.exports = class {
 			socket.on("PLAYER_CONNECTED", async (playerData) => {
 				// here all events that relate with player connection
 
+				const banData = await client.getPlayerBan(playerData.player.id);
+				if (banData) {
+						socket.emit(
+							"rcon.execute",
+							`AdminKick ${playerData.player.id} ${banData[0].reason}`
+						);				
+				}
 				// Name checker plugin
 				if (nameChecker.enabled) {
 					await client.emit(
