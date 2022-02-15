@@ -25,7 +25,7 @@ module.exports = class {
 				// here all events that relate with player connection
 
 				const banData = await client.getPlayerBan(playerData.player.id);
-				if (banData) {
+				if (banData.length > 0) {
 						socket.emit(
 							"rcon.execute",
 							`AdminKick ${playerData.player.id} ${banData[0].reason}`
