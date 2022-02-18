@@ -142,12 +142,12 @@
         if (!table) return;
         row.id = data?.steamID;
         if (data?.squad?.squadID) {
-            row.innerHTML = `<td id="select" class='p-2'><button type="button" class='btn' onclick="markThis('${player.steamID}','${player.squadID}')" style='border-radius: 12px; width: 30px; height: 40px;'></button></td><td class="name font-weight-bold">${addNewLines(data?.name)}<br><span class="badge bg-warning text-dark data-toggle="tooltip" data-placement="top" title="${data?.possessClassname || "No Role Selected Yet"}" ">${data?.steamID}</span></td>
+            row.innerHTML = `<td id="select" class='p-2'><button type="button" class='btn' onclick="markThis('${data?.steamID}','${data?.squad?.squadID}')" style='border-radius: 12px; width: 30px; height: 40px;'></button></td><td class="name font-weight-bold">${addNewLines(data?.name)}<br><span class="badge bg-warning text-dark data-toggle="tooltip" data-placement="top" title="${data?.possessClassname || "No Role Selected Yet"}" ">${data?.steamID}</span></td>
                         <td><span ${data?.squad?.squadID ? 'id=' + (data?.squad?.squadID + data?.squad.teamID) : ""}>${data?.squad?.locked !== "False" ? "<span class='badge bg-danger text-dark'><span style='font-size: 0.1px'>locked</span>🔒</span></td>" : data?.squad?.squadID ? "<span class='badge bg-success text-dark'><span style='font-size: 0.1px'>unlocked</span>🔓</span></td>" : "<td><span class='badge bg-danger text-dark'>not in squad</span></td>"}<td><span class="badge bg-secondary text-dark">${data?.squad?.size ? "👥 " + data?.squad?.size : ""}</span></td><td><span class="badge bg-primary text-dark">${addNewLines(data?.squad?.squadName)}</span></td>
                         <td class="squadName"><button class="badge btn btn-secondary" id="settings${data?.steamID}" aria-describedby="Actions">Actions</button></td>
                         `;
         } else {
-            row.innerHTML = `<td id="select" class='p-2'><button type="button" class='btn' onclick="markThis('${player.steamID}','${player.squadID}')" style='border-radius: 12px; width: 30px; height: 40px;'></button></td><td class="name font-weight-bold">${addNewLines(data?.name)}<br><span class="badge bg-warning text-dark data-toggle="tooltip" data-placement="top" title="${data?.possessClassname || "No Role Selected Yet"}" ">${data?.steamID}</span></td>
+            row.innerHTML = `<td id="select" class='p-2'><button type="button" class='btn' onclick="markThis('${data?.steamID}','${data?.squad?.squadID}')" style='border-radius: 12px; width: 30px; height: 40px;'></button></td><td class="name font-weight-bold">${addNewLines(data?.name)}<br><span class="badge bg-warning text-dark data-toggle="tooltip" data-placement="top" title="${data?.possessClassname || "No Role Selected Yet"}" ">${data?.steamID}</span></td>
                         <td></td><td></td><td><span class='badge bg-danger text-dark'>not in squad</span></td>
                         <td class="squadName"><button class="badge btn btn-secondary" id="settings${data?.steamID}" aria-describedby="Actions">Actions</button></td>
                         `;
@@ -626,8 +626,10 @@
             allowOutsideClick: () => !Swal.isLoading()
         }).then(async (result) => {
             if (result.isConfirmed) {
+                const reason = result.value;
                 await axios.post(`${window.location.origin}/squad-api/moderation/massWarn`, {
-                    players: players
+                    players: players,
+                    reason: reason
                 }).then(async (resp) => {
                     if (!resp.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
                     if (resp.data.status === "ok") {
@@ -660,8 +662,10 @@
             allowOutsideClick: () => !Swal.isLoading()
         }).then(async (result) => {
             if (result.isConfirmed) {
+                const reason = result.value;
                 await axios.post(`${window.location.origin}/squad-api/moderation/massKick`, {
-                    players: players
+                    players: players,
+                    reason: reason
                 }).then(async (resp) => {
                     if (!resp.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
                     if (resp.data.status === "ok") {
@@ -713,8 +717,17 @@
             allowOutsideClick: () => !Swal.isLoading()
         }).then(async (result) => {
             if (result.isConfirmed) {
+                const selection = document.getElementById('selection');
+                    const type = selection.options[selection.selectedIndex].id;
+                    const reason = document.getElementById('reason').value;
+                    const length = document.getElementById('banLength').value;
+                    let banTime = `${length}${type}`;
+                    if (!reason) return Swal.fire(`Error`, `Reason cannot be empty.`, `error`);
+                    if (!length && type !== "P") return Swal.fire(`Error`, `Ban Length cannot be empty`, `error`);
                 await axios.post(`${window.location.origin}/squad-api/moderation/massBan`, {
-                    players: players
+                    players: players,
+                    reason: reason,
+                    duration: type === "P" ? "0P" : banTime
                 }).then(async (resp) => {
                     if (!resp.data.status) return Swal.fire(`Error`, `Error while getting response.`, `error`);
                     if (resp.data.status === "ok") {
@@ -876,12 +889,12 @@
                     let row = document.createElement("tr");
                     row.id = `${player?.steamID}`;
                     if (player.squadID) {
-                        row.innerHTML = `<td id="select" class='p-2'><div class='p-2' style='width: 60px;padding: 5px;height: 55px;'><button type="button" class='btn' onclick="markThis('${player.steamID}','${player.squadID}')" style='border-radius: 12px; width: 30px; height: 40px;'></button></div></td><td class="name font-weight-bold">${addNewLines(player.name)}<br><span class="badge bg-warning text-dark player-toggle="tooltip" player-placement="top" title="${player.possessClassname || "No Role Selected Yet"}" "><span id="${player.playerID}"></span>${player.steamID}</span></td>
+                        row.innerHTML = `<td id="select" class='p-2'><button type="button" class='btn' onclick="markThis('${player.steamID}','${player.squadID}')" style='border-radius: 12px; width: 30px; height: 40px;'></button></td><td class="name font-weight-bold">${addNewLines(player.name)}<br><span class="badge bg-warning text-dark player-toggle="tooltip" player-placement="top" title="${player.possessClassname || "No Role Selected Yet"}" "><span id="${player.playerID}"></span>${player.steamID}</span></td>
                                     <td><span ${player.squadID ? 'id=' + (player.squadID + player.squad.teamID) : ""}>${player.squad?.locked !== "False" ? "<span class='badge bg-danger text-dark'><span style='font-size: 0.1px'>locked</span>🔒</span></td>" : player.squadID ? "<span class='badge bg-success text-dark'><span style='font-size: 0.1px'>unlocked</span>🔓</span></td>" : "<td><span class='badge bg-danger text-dark'>not in squad</span></td>"}<td><span class="badge bg-secondary text-dark">${player.squad?.size ? "👥 " + player.squad?.size : ""}</span></td><td><span class="badge bg-primary text-dark">${addNewLines(player.squad?.squadName) || ""}</span></td>                                
                                     <td class="squadName"><button class="badge btn btn-secondary" id="settings${player.steamID}" aria-describedby="Actions">Actions</button></td>
                                     `;
                     } else {
-                        row.innerHTML = `<td id="select" class='p-2'><div class='p-2' style='width: 60px;padding: 5px;height: 55px;'><button type="button" class='btn' onclick="markThis('${player.steamID}','${player.squadID}')" style='border-radius: 12px; width: 30px; height: 40px;'></button></div></td></td><td class="name font-weight-bold">${addNewLines(player.name)}<br><span class="badge bg-warning text-dark player-toggle="tooltip" player-placement="top" title="${player.possessClassname || "No Role Selected Yet"}" "><span id="${player.playerID}"></span>${player.steamID}</span></td>
+                        row.innerHTML = `<td id="select" class='p-2'><button type="button" class='btn' onclick="markThis('${player.steamID}','${player.squadID}')" style='border-radius: 12px; width: 30px; height: 40px;'></button></td><td class="name font-weight-bold">${addNewLines(player.name)}<br><span class="badge bg-warning text-dark player-toggle="tooltip" player-placement="top" title="${player.possessClassname || "No Role Selected Yet"}" "><span id="${player.playerID}"></span>${player.steamID}</span></td>
                                     <td></td><td></td><td><span class='badge bg-danger text-dark'>not in squad</span></td>
                                     <td class="squadName"><button class="badge btn btn-secondary" id="settings${player.steamID}" aria-describedby="Actions">Actions</button></td>
                                     `;
