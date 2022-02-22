@@ -534,6 +534,8 @@ class SquadStatsJSv3 extends Client {
 
 	async findUserByID(steamID) {
 		const user = await this.usersData.findOne({ id: steamID });
+	async findUserByID(userID) {
+		const user = await this.usersData.findOne({ id: userID });
 		if (!user) return;
 		return user;
 	}
