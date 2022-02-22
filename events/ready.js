@@ -41,7 +41,7 @@ module.exports = class {
 						} else {
 							// set the data in db to false if the player is not banned anymore
 							await axios.post(client.config.dashboard.baseURL + "/squad-api/banlist/removeUserBanlist", {
-								steamUID: banData[0].steamID,
+								steamUID: ban.steamID,
 								reason: "Time Expired",
 								endDate: ban.endDate,
 								apiToken: owner.apiToken,
