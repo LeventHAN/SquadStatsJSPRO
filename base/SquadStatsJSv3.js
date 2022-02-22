@@ -531,9 +531,6 @@ class SquadStatsJSv3 extends Client {
 		await whitelists.markModified("memberData");
 		await whitelists.save();
 	}
-
-	async findUserByID(steamID) {
-		const user = await this.usersData.findOne({ id: steamID });
 	async findUserByID(userID) {
 		const user = await this.usersData.findOne({ id: userID });
 		if (!user) return;
