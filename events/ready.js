@@ -25,14 +25,29 @@ module.exports = class {
 			socket.on("PLAYER_CONNECTED", async (playerData) => {
 				// here all events that relate with player connection
 				const banData = await client.getPlayerBan(playerData?.player?.steamID),
-					  owner = await client.findUserByID(client.config.owner.id);
+					owner = await client.findUserByID(client.config.owner.id);
 				if (!owner.apiToken) return;
 				if (banData.length > 0) {
-					await axios.post(client.config.dashboard.baseURL + "/squad-api/kick", {
-						apiToken: owner.apiToken,
-						steamUID: banData[0].steamID,
-						reason: banData[0].reason,
-					})
+					// check every ban the player has
+					for (let i = 0; i < banData.length; i++) {
+						const ban = banData[i];
+						if (ban.endDate > new Date().getTime()) {
+							// if the player is banned, then kick him
+							await axios.post(client.config.dashboard.baseURL + "/squad-api/kick", {
+								apiToken: owner.apiToken,
+								steamUID: ban.steamID,
+								reason: ban.reason,
+							})
+						} else {
+							// set the data in db to false if the player is not banned anymore
+							await axios.post(client.config.dashboard.baseURL + "/squad-api/banlist/removeUserBanlist", {
+								steamUID: banData[0].steamID,
+								reason: "Time Expired",
+								endDate: ban.endDate,
+								apiToken: owner.apiToken,
+							})
+						}
+					}
 				}
 				// Name checker plugin
 				if (nameChecker.enabled) {
