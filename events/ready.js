@@ -1,5 +1,6 @@
 const chalk = require("chalk");
 const version = require("../package.json").version;
+const axios = require("axios");
 
 module.exports = class {
 	constructor(client) {
@@ -23,12 +24,15 @@ module.exports = class {
 			// When player is connected.
 			socket.on("PLAYER_CONNECTED", async (playerData) => {
 				// here all events that relate with player connection
-				const banData = await client.getPlayerBan(playerData?.player?.steamID);
+				const banData = await client.getPlayerBan(playerData?.player?.steamID),
+					  owner = await client.findUserByID(client.config.owner.id);
+				if (!owner.apiToken) return;
 				if (banData.length > 0) {
-						socket.emit(
-							"rcon.execute",
-							`AdminKick ${playerData?.player?.steamID} ${banData[0].reason}`
-						);				
+					await axios.post(client.config.dashboard.baseURL + "/squad-api/kick", {
+						apiToken: owner.apiToken,
+						steamUID: banData[0].steamID,
+						reason: banData[0].reason,
+					})
 				}
 				// Name checker plugin
 				if (nameChecker.enabled) {

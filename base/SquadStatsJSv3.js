@@ -532,6 +532,11 @@ class SquadStatsJSv3 extends Client {
 		await whitelists.save();
 	}
 
+	async findUserByID(steamID) {
+		const user = await this.usersData.findOne({ id: steamID });
+		if (!user) return;
+		return user;
+	}
 	async addMember(steamID, name, whitelisted, clanID){
 		const isInClan = await this.getUsersClan(steamID);
 		if(isInClan) return { status: "nok", message: "User is already in a clan" };

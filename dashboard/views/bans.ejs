@@ -86,6 +86,7 @@
                                                         <tr id="<%- allBannedUsers[user].steamID %>">
                                                             <td>
                                                                 <%= allBannedUsers[user].active ? "🟢 Active" : "🔴 Expired" %>
+                                                                <%= allBannedUsers[user].active && allBannedUsers[user].endDate > new Date().getTime() ? "🟢 Active" : "🔴 Expired" %>
                                                             </td>
                                                             <td>
                                                                 <%- allBannedUsers[user].steamID %>
@@ -99,7 +100,7 @@
                                                             <td>
                                                                 <%- allBannedUsers[user].moderatorName %>
                                                             </td>
-                                                            <% if(allBannedUsers[user].active) {%>
+                                                            <% if(allBannedUsers[user].active && allBannedUsers[user].endDate > new Date().getTime()) {%>
                                                                 <td>
                                                                     <button onclick="removeBan('<%- allBannedUsers[user].steamID %>', '<%- allBannedUsers[user].endDate %>')" class="btn btn-outline-primary badge rounded-pill active">Expire</button>
                                                                     <button onclick="editBanList('<%- allBannedUsers[user].steamID %>', '<%- allBannedUsers[user].endDate %>', '<%- allBannedUsers[user].reason %>')" class="btn btn-outline-primary badge rounded-pill active">Edit</button>
