@@ -17,8 +17,8 @@
         );
     }
 
-    // check if url is localhost
-    if (!urlNorthflank && url && url.includes("localhost")) {
+    // check if url is exist
+    if (!urlNorthflank && url ) {
         socket = io(
             "<%= config.socketIOURL %>:<%=config.socketIO.localPort%>",
             {
