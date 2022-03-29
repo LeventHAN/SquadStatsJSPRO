@@ -6,25 +6,25 @@
     let playersSizeTitle = document.getElementById("headerTitle2");
     playersSizeTitle.innerHTML = "Realtime Players Count"
     gaugePlayers = Gauge(
-            document.getElementById("headerDesc2"), {
-            min: 0,
-            max: 100,
-            value: 0,
-            dialStartAngle: 180,
-            dialEndAngle: 0,
-            color: function (value) {
-                if (value < 0) {
-                    return "#5ee432";
-                } else if (value < 50) {
-                    return "#fffa50";
-                } else if (value < 80) {
-                    return "#f7aa38";
-                } else {
-                    return "#ef4655";
-                }
+        document.getElementById("headerDesc2"), {
+        min: 0,
+        max: 100,
+        value: 0,
+        dialStartAngle: 180,
+        dialEndAngle: 0,
+        color: function (value) {
+            if (value < 0) {
+                return "#5ee432";
+            } else if (value < 50) {
+                return "#fffa50";
+            } else if (value < 80) {
+                return "#f7aa38";
+            } else {
+                return "#ef4655";
             }
         }
-        );
+    }
+    );
 
     gaugePlayers.setValueAnimated(<%- playerAmount %>, 2);
 
@@ -81,14 +81,15 @@
         }
     }
     );
-    
+
     socket.on("TICK_RATE", async (data) => {
         gaugeTPS.setValueAnimated(data.tickRate, 2);
     });
 
     let unset;
+    const onlineAdmins = [];
     let usetTitle = document.getElementById("headerTitle4");
-    usetTitle.innerHTML = "Nothing"
+    usetTitle.innerHTML = "Online Admins"
     unset = Gauge(
         document.getElementById("headerDesc4"), {
         min: 0,
@@ -96,22 +97,62 @@
         dialStartAngle: 180,
         dialEndAngle: 0,
         color: function (value) {
-            if (value < 15) {
-                return "#e74c3c";
-            } else if (value < 25) {
-                return "#e67e22";
-            } else if (value < 35) {
-                return "#f1c40f";
-            } else if (value < 45) {
-                return "#2ecc71";
-            } else if (value < 50) {
+            if (value < 1) {
                 return "#27ae60";
+            } else if (value < 6) {
+                return "#2ecc71";
+            }else if (value < 10) {
+                return "#e67e22";
             } else {
                 return "#27ae60";
             }
         }
-    }
-    );
+    });
 
-    unset.setValueAnimated(50, 2);
+    const rawAdmins = new Promise(async (resolve) => {
+        socket.emit("admins", async (list) => {
+            resolve(list);
+        });
+    });
+
+    async function setOnlineAdmins() {
+        const adminList = await rawAdmins;
+        const players = new Promise(async (resolve) => {
+            socket.emit("players", async (list) => {
+                resolve(list);
+            });
+        });
+        for (const player of await players) {
+            for (const admin in adminList) {
+                if (player.steamID === admin) {
+                    onlineAdmins.push(player);
+                }
+            }
+        }
+        unset.setValueAnimated(onlineAdmins.length, 2);
+    }
+    async function checkPlayerIsAdmin(steamID)
+    {
+        const adminList = await rawAdmins;
+        for (const admin in adminList) {
+            if (steamID === admin) {
+                return true;
+            }
+        }
+        return false;
+    }
+    socket.on("PLAYER_CONNECTED", async(data) => {
+        const isAdmin = await checkPlayerIsAdmin(data.player?.steamID);
+        if(!isAdmin) return;
+        onlineAdmins.push(data.player?.steamID);
+        unset.setValueAnimated(onlineAdmins.length, 2);
+    })
+    socket.on("PLAYER_DISCONNECTED", async (data) => {
+        const isAdmin = await checkPlayerIsAdmin(data.player?.steamID);
+        if(!isAdmin) return;
+        onlineAdmins.splice(onlineAdmins.indexOf(data.player?.steamID), 1);
+        unset.setValueAnimated(onlineAdmins.length, 2);
+    });
+    setOnlineAdmins();
+
 </script>
