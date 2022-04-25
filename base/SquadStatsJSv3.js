@@ -8,7 +8,7 @@ const util = require("util"),
 	axios = require("axios"),
 	BM = require("@leventhan/battlemetrics");
 
-const mysql = require("mysql");
+const mysql = require("mysql2");
 moment.relativeTimeThreshold("s", 60);
 moment.relativeTimeThreshold("ss", 5);
 moment.relativeTimeThreshold("m", 60);
