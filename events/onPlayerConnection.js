@@ -56,8 +56,8 @@ module.exports = class {
 					nameChecker.showWhichLetters
 						? nameChecker.blacklist.some((x) => playerName.includes(x))
 							? nameChecker.blacklist
-									.filter((x) => playerName.includes(x))
-									.toString()
+								.filter((x) => playerName.includes(x))
+								.toString()
 							: playerName.match(regex).toString()
 						: ""
 				}`
@@ -79,7 +79,6 @@ module.exports = class {
 			await log.save();
 
 			const kickEmbed = new Discord.MessageEmbed()
-				.setAuthor("BAD NAME CHECKER")
 				.setDescription(
 					`${playerName} was kicked because he has not readable name!`
 				)
@@ -91,8 +90,8 @@ module.exports = class {
 						nameChecker.showWhichLetters
 							? nameChecker.blacklist.some((x) => playerName.includes(x))
 								? nameChecker.blacklist
-										.filter((x) => playerName.includes(x))
-										.toString()
+									.filter((x) => playerName.includes(x))
+									.toString()
 								: playerName.match(regex).toString()
 							: "Not enabled."
 					}`,

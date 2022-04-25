@@ -39,7 +39,9 @@ class Clear extends Command {
 				// title
 				.setTitle(message.translate("moderation/clear:CHANNEL_CLEARED"))
 				.setColor(data.config.embed.color)
-				.setFooter(data.config.embed.footer);
+				.setFooter({
+					text: data.config.embed.footer
+				});
 			return newChannel.send({
 				embeds: [embed],
 			});

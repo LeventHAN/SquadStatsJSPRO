@@ -116,7 +116,7 @@ router.get("/callback", async (req, res) => {
 		if (logsChannel) {
 			// Set logged in for the first time to true and send the embed!
 			const embed = new Discord.MessageEmbed()
-				.setAuthor(user.username, user.displayAvatarURL())
+				.setAuthor({ name: user.username, iconURL: user.displayAvatarURL()})
 				.setColor("#DA70D6")
 				.setDescription(
 					req.client.translate("dashboard:FIRST_LOGIN", {

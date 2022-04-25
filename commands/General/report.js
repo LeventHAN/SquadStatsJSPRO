@@ -41,10 +41,12 @@ class Report extends Command {
 
 		const embed = new Discord.MessageEmbed()
 			.setAuthor(
-				message.translate("general/report:TITLE", {
-					user: member.user.tag,
-				}),
-				message.author.displayAvatarURL()
+				{
+					name: message.translate("general/report:TITLE", {
+						user: member.user.tag,
+					}),
+					iconURL: message.author.displayAvatarURL()
+				}
 			)
 			.addField(message.translate("common:AUTHOR"), message.author.tag, true)
 			.addField(
@@ -59,7 +61,9 @@ class Report extends Command {
 				true
 			)
 			.setColor(data.config.embed.color)
-			.setFooter(data.config.embed.footer);
+			.setFooter({
+				text: data.config.embed.footer
+			});
 
 		repChannel.send({ embeds: [embed] }).then(async (m) => {
 			await m.react("👍");

@@ -112,7 +112,9 @@ class Help extends Command {
 				})
 			)
 			.setColor(data.config.embed.color)
-			.setFooter(data.config.embed.footer);
+			.setFooter({
+				text: data.config.embed.footer
+			});
 		categories.sort().forEach((cat) => {
 			const tCommands = commands.filter((cmd) => cmd.help.category === cat);
 			embed.addField(
@@ -152,14 +154,16 @@ class Help extends Command {
 			})
 		);
 		embed.setAuthor(
-			message.translate("general/help:TITLE", {
-				name: this.client.user.username,
-			}),
-			this.client.user.displayAvatarURL({
-				size: 512,
-				dynamic: true,
-				format: "png",
-			})
+			{
+				name: message.translate("general/help:TITLE", {
+					name: this.client.user.username,
+				}),
+				iconURL: this.client.user.displayAvatarURL({
+					size: 512,
+					dynamic: true,
+					format: "png",
+				})
+			}
 		);
 		return message.channel.send({ embeds: [embed] });
 	}

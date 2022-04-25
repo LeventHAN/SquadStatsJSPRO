@@ -32,10 +32,12 @@ class Suggest extends Command {
 
 		const embed = new Discord.MessageEmbed()
 			.setAuthor(
-				message.translate("general/suggest:TITLE", {
-					user: message.author.username,
-				}),
-				message.author.displayAvatarURL()
+				{
+					name: message.translate("general/suggest:TITLE", {
+						user: message.author.username,
+					}),
+					iconURL: message.author.displayAvatarURL()
+				}
 			)
 			.addField(
 				message.translate("common:AUTHOR"),
@@ -49,7 +51,9 @@ class Suggest extends Command {
 			)
 			.addField(message.translate("common:CONTENT"), "**" + sugg + "**")
 			.setColor(data.config.embed.color)
-			.setFooter(data.config.embed.footer);
+			.setFooter({
+				text: data.config.embed.footer
+			});
 
 		suggChannel.send({ embeds: [embed] }).then(async (m) => {
 			await m.react("👍");

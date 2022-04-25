@@ -103,16 +103,18 @@ class Profile extends Command {
 		function sendEmbed() {
 			const profileEmbed = new Discord.MessageEmbed()
 				.setAuthor(
-					message.translate("squad/profile:TITLE", {
-						username: member.tag,
-					}),
-					member.displayAvatarURL()
+					{
+						name: message.translate("squad/profile:TITLE", {
+							username: member.tag,
+						}),
+						iconURL: member.displayAvatarURL()
+					}
 				)
 				.setDescription(
 					userData.bio
 						? userData.bio
 						: message.translate("squad/profile:NO_BIO", {
-								prefix: data.guild.prefix,
+							prefix: data.guild.prefix,
 						  })
 				)
 				.addField(
@@ -214,7 +216,9 @@ class Profile extends Command {
 					})
 				)
 				.setColor(data.config.embed.color) // Sets the color of the embed
-				.setFooter(data.config.embed.footer) // Sets the footer of the embed
+				.setFooter({
+					text: data.config.embed.footer
+				}) // Sets the footer of the embed
 				.setTimestamp();
 			message.channel.send({ embeds: [profileEmbed] });
 		}

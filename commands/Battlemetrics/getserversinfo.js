@@ -42,7 +42,10 @@ class GetServerInfo extends Command {
 		);
 		const embed = new Discord.MessageEmbed()
 			.setColor(client.config.color)
-			.setAuthor(message.author.tag, message.author.displayAvatarURL())
+			.setAuthor({
+				name: message.author.tag, 
+				iconURL: message.author.displayAvatarURL()
+			})
 			.setTitle("BattleMetrics Servers")
 			.setDescription(
 				"How much results should we return? Maximum 100. Write `cancel` to cancel."
@@ -83,7 +86,10 @@ class GetServerInfo extends Command {
 
 			const secondEmbed = new Discord.MessageEmbed()
 				.setColor(client.config.color)
-				.setAuthor(message.author.tag, message.author.displayAvatarURL())
+				.setAuthor({
+					name: message.author.tag, 
+					iconURL: message.author.displayAvatarURL()
+				})
 				.setTitle("BattleMetrics Servers")
 				.setDescription(
 					"Filter on which country? Write `Skip` to skip or write the country CODE name (ex: DE, TR, US, etc...)"
