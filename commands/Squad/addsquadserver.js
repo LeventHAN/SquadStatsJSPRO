@@ -1,7 +1,7 @@
 const Command = require("../../base/Command.js"),
 	Discord = require("discord.js");
 
-const mysql = require("mysql");
+const mysql = require("mysql2");
 // An object to store pending requests
 const pendings = {};
 let con;
@@ -94,7 +94,7 @@ class AddSquadDB extends Command {
 				? "squad/addsquadserver:CONNECTION_SUCCESS"
 				: "squad/addsquadserver:CONNECTION_ERROR";
 			const profileEmbed = new Discord.MessageEmbed()
-				.setAuthor(message.translate("squad/addsquadserver:PANE_NAME"))
+				.setAuthor({ name: message.translate("squad/addsquadserver:PANE_NAME") })
 				.setDescription(message.translate("squad/addsquadserver:PANE_DESC"))
 				.addField(
 					message.translate("squad/addsquadserver:CONNECTION_TITLE"),
@@ -241,7 +241,7 @@ class AddSquadDB extends Command {
 					})
 				)
 				.setColor(data.config.embed.color) // Sets the color of the embed
-				.setFooter(data.config.embed.footer) // Sets the footer of the embed
+				.setFooter({ text: data.config.embed.footer }) // Sets the footer of the embed
 				.setTimestamp();
 
 			let controlPoint = "";
@@ -260,11 +260,11 @@ class AddSquadDB extends Command {
 					roles.forEach((role) => {
 						message.guild.roles
 							.create({
-								data: {
-									name: role,
-									color: rolesColors[i],
-								},
+								name: role,
+								color: rolesColors[i],
 								reason: "Roles will be used by the SquadStatsJS",
+							}).then(newRole => {
+								client.logger.log(`Role: ${newRole.name} has been created!`, "log");
 							})
 							.catch(console.error);
 						i++;
@@ -431,6 +431,7 @@ class AddSquadDB extends Command {
 				return message.success("squad/addsquadserver:CAN_SUC");
 			}
 		});
+		con.end();
 	}
 }
 
