@@ -1,6 +1,6 @@
 {
 	"name": "squadstatsjs-pro",
-	"version": "2.1.2",
+	"version": "2.1.3",
 	"description": "An advanced version of SquadStatsJS (tracking your squad stats) with advanced discord commands to manage your discord server.",
 	"main": "index.js",
 	"scripts": {
