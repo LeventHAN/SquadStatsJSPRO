@@ -11,7 +11,6 @@ module.exports = class {
 		const client = this.client;
 		const socket = client.socket;
 		const nameChecker = await client.getNameCheckerConfig();
-		client.players = [];
 		if (socket) {
 			socket.on("connect_error", (err) => {
 				return client.logger.log(err, "ERROR");

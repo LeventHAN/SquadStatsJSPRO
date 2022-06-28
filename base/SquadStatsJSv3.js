@@ -54,6 +54,7 @@ class SquadStatsJSv3 extends Client {
 		this.dashboard = require("../dashboard/app"); // Dashboard app
 		this.states = {}; // Used for the dashboard
 		this.knownGuilds = [];
+		this.players = [];
 		this.pool = null;
 
 		this.databaseCache = {};
