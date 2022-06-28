@@ -1131,6 +1131,7 @@ class SquadStatsJSv3 extends Client {
 		}
 		await user.markModified("squad");
 		await user.save();
+		return true;
 	}
 
 	// Get all player squad stats from mongoose
