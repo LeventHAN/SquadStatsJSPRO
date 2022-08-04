@@ -1,7 +1,7 @@
 {
-	"token": "Discord_Bot_Token",
-	"serverID": "Discord_Server_ID",
-	"squadBattleMetricsID": "BattleMetrics_ServerID",
+	"token": "ODYxNjUzMTY1NzE0NzAyMzU2.GzP5Dg.rXTsRwlUn1W-B0RCg3PzAgAFk4pLrAMAGeuyo8",
+	"serverID": "1004792705995522070",
+	"squadBattleMetricsID": "https://www.battlemetrics.com/servers/squad/6097396",
 	"support": {
 		"logs": "827885263438217226",
 		"debug": false
