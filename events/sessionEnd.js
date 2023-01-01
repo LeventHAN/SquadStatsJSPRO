@@ -18,7 +18,7 @@ module.exports = class {
         const guild = await this.client.findOrCreateGuild({ id: this.client.config.serverID });
 
         // to be sure that this not a false alarm ( NEW GAME event triggers player disconnect event ETA time for NEW_GAME is 25-30 seconds )
-        if (!isNewGame) {
+        /* if (!isNewGame) {
             setTimeout(async () => {
                 const user = await client.findUserByID(playerData?.player?.steamID);
                 if (!user) return;
@@ -35,6 +35,6 @@ module.exports = class {
                     await client.players.splice(client.players.indexOf(inList), 1);
                 }
             }, 25000);
-        }
+        } */
     }
 }
