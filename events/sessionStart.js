@@ -16,6 +16,6 @@ module.exports = class {
             deaths: 0,
             revives: 0,
         }
-        client.players.push(playerData);
+        await client.players.push(playerData);
     }
 }
